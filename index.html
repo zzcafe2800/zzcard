@@ -848,6 +848,15 @@
   </div>
 
   <script type="module">
+
+
+
+
+
+    const stampSound = document.getElementById("stampSound");
+
+
+    
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
 
@@ -1196,6 +1205,9 @@
       redoStack = [];
       renderStamps();
       updateHistoryButtons();
+
+       stampSound.currentTime = 0;
+  stampSound.play().catch(() => {});
     }
 
     function undoStamp(){
@@ -1526,6 +1538,26 @@
     updateCounts();
     showSelectScreen();
     updateTopVisibility();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
   </script>
+
+
+<audio id="stampSound" src="stamp.mp3" preload="auto"></audio>
+
+  
 </body>
 </html>

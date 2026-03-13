@@ -15,10 +15,7 @@
       --white:#ffffff;
       --line:rgba(143,220,255,.34);
       --glass:rgba(255,255,255,.58);
-      --glass-strong:rgba(255,255,255,.74);
-      --shadow:0 18px 42px rgba(111,205,255,.18);
       --shadow-soft:0 10px 24px rgba(111,205,255,.12);
-      --radius:24px;
     }
 
     *{
@@ -58,7 +55,7 @@
       opacity:.85;
     }
 
-    button,input,select{
+    button,input{
       font:inherit;
     }
 
@@ -72,8 +69,8 @@
     .glass{
       backdrop-filter:blur(18px);
       -webkit-backdrop-filter:blur(18px);
-      background:var(--glass);
-      border:1px solid var(--line);
+      background:rgba(255,255,255,.58);
+      border:1px solid rgba(143,220,255,.34);
       box-shadow:var(--shadow-soft);
     }
 
@@ -81,7 +78,7 @@
       display:none !important;
     }
 
-    /* ===== 最初の選択画面 ===== */
+    /* 選択画面 */
     #selectScreen{
       position:absolute;
       inset:0;
@@ -98,8 +95,22 @@
       -webkit-backdrop-filter:blur(8px);
     }
 
+    #selectInner{
+      width:min(1180px, 100%);
+      display:flex;
+      flex-direction:column;
+      gap:22px;
+    }
+
+    #selectTitle{
+      text-align:center;
+      color:#5c93ad;
+      font-size:28px;
+      letter-spacing:.12em;
+      font-weight:700;
+    }
+
     #selectWrap{
-      width:min(1100px, 100%);
       display:grid;
       grid-template-columns:1fr 1fr;
       gap:28px;
@@ -194,6 +205,49 @@
       -webkit-backdrop-filter:blur(12px);
     }
 
+    .randomTodayCircle{
+      position:absolute;
+      right:22px;
+      top:22px;
+      width:160px;
+      height:160px;
+      border-radius:50%;
+      background:rgba(255,255,255,.58);
+      border:1px solid rgba(143,220,255,.26);
+      box-shadow:0 18px 40px rgba(111,205,255,.12);
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      z-index:3;
+      overflow:hidden;
+    }
+
+    .randomTodayCircle img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      display:block;
+    }
+
+    .randomTodayLabel{
+      position:absolute;
+      right:36px;
+      top:190px;
+      z-index:4;
+      font-size:12px;
+      letter-spacing:.08em;
+      color:#7ca8bd;
+      background:rgba(255,255,255,.48);
+      padding:7px 12px;
+      border-radius:999px;
+      border:1px solid rgba(143,220,255,.18);
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
+    }
+
     .modeDisabled{
       cursor:not-allowed;
       opacity:.72;
@@ -229,34 +283,10 @@
       box-shadow:0 0 0 1px rgba(255,255,255,.18);
     }
 
-    .modeDisabled::before{
-      transform:rotate(19deg);
-    }
+    .modeDisabled::before{ transform:rotate(19deg); }
+    .modeDisabled::after{ transform:rotate(-19deg); }
 
-    .modeDisabled::after{
-      transform:rotate(-19deg);
-    }
-
-    @media (hover:none), (pointer:coarse){
-      .modePreview{
-        opacity:.40;
-      }
-    }
-
-    @media (max-width: 900px){
-      #selectWrap{
-        grid-template-columns:1fr;
-        max-width:580px;
-      }
-      .modeCard{
-        min-height:240px;
-      }
-      .modeLabel{
-        font-size:24px;
-      }
-    }
-
-    /* ===== 時間外タブ ===== */
+    /* 時間外タブ */
     #timeGate{
       position:absolute;
       top:14px;
@@ -277,9 +307,7 @@
       gap:14px;
     }
 
-    #timeGate.visible{
-      display:flex;
-    }
+    #timeGate.visible{ display:flex; }
 
     #gateCardThumb{
       width:58px;
@@ -354,7 +382,7 @@
       transition:width .5s ease;
     }
 
-    /* ===== メイン画面 ===== */
+    /* メイン画面 */
     #mainScreen{
       position:absolute;
       inset:0;
@@ -409,20 +437,21 @@
       justify-content:center;
       text-align:center;
       line-height:1.45;
-      color:#77a8bd;
+      color:#ffffff;
+      background:#8fdcff;
+      border:1px solid rgba(255,255,255,.28);
       cursor:pointer;
       transition:transform .2s ease, box-shadow .2s ease, opacity .2s ease;
       overflow:hidden;
+      box-shadow:0 14px 34px rgba(111,205,255,.18);
     }
 
     #uploadArea:hover{
       transform:translateY(-1px);
-      box-shadow:0 14px 34px rgba(111,205,255,.18);
+      box-shadow:0 18px 38px rgba(111,205,255,.24);
     }
 
-    #uploadArea input{
-      display:none;
-    }
+    #uploadArea input{ display:none; }
 
     #stageWrap{
       position:absolute;
@@ -565,14 +594,8 @@
       transition:.2s ease;
     }
 
-    .historyBtn:hover{
-      background:rgba(255,255,255,.56);
-    }
-
-    .historyBtn:disabled{
-      opacity:.35;
-      cursor:default;
-    }
+    .historyBtn:hover{ background:rgba(255,255,255,.56); }
+    .historyBtn:disabled{ opacity:.35; cursor:default; }
 
     #saveBtn{
       position:absolute;
@@ -591,9 +614,7 @@
       transition:.2s ease;
     }
 
-    #saveBtn:hover{
-      background:rgba(255,255,255,.60);
-    }
+    #saveBtn:hover{ background:rgba(255,255,255,.60); }
 
     #pressRing{
       position:absolute;
@@ -676,27 +697,33 @@
       letter-spacing:.20em;
     }
 
-    #passwordInput::placeholder{
-      color:transparent;
+    #passwordInput::placeholder{ color:transparent; }
+
+    @media (hover:none), (pointer:coarse){
+      .modePreview{ opacity:.40; }
     }
 
-    #artInfo{
-      position:absolute;
-      left:20px;
-      bottom:18px;
-      z-index:12;
-      padding:12px 16px;
-      border-radius:18px;
-      color:#6f9cb2;
-      font-size:13px;
-      letter-spacing:.04em;
-      display:none;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
+    @media (max-width: 900px){
+      #selectWrap{
+        grid-template-columns:1fr;
+        max-width:580px;
+      }
+      .modeCard{ min-height:260px; }
+      .modeLabel{ font-size:24px; }
+      .randomTodayCircle{
+        width:120px;
+        height:120px;
+        right:16px;
+        top:16px;
+      }
+      .randomTodayLabel{
+        right:20px;
+        top:144px;
+      }
     }
 
     @media (max-width: 780px){
+      #selectTitle{ font-size:22px; }
       #uploadArea{
         width:158px;
         min-height:60px;
@@ -714,19 +741,13 @@
       #stageWrap{
         padding:90px 14px 24px;
       }
-      #timeGate{
-        width:calc(100vw - 28px);
-      }
+      #timeGate{ width:calc(100vw - 28px); }
       #gateCardThumb{
         width:48px;
         height:48px;
       }
-      #gateTitle{
-        font-size:14px;
-      }
-      #gateHours,#gateRemain{
-        font-size:12px;
-      }
+      #gateTitle{ font-size:14px; }
+      #gateHours,#gateRemain{ font-size:12px; }
       #secretTapZone{
         width:96px;
         height:96px;
@@ -735,34 +756,35 @@
         left:16px;
         bottom:68px;
       }
-      #artInfo{
-        left:14px;
-        bottom:14px;
-        right:14px;
-      }
     }
   </style>
 </head>
 <body>
   <div id="app">
-    <!-- 選択画面 -->
     <div id="selectScreen">
-      <div id="selectWrap">
-        <button class="modeCard modeDisabled" id="artModeBtn" type="button" disabled>
-          <div class="modePreview"><img src="art.png" alt="art preview"></div>
-          <div class="modeLabel">アート型</div>
-          <div class="modeCount" id="artCountText">カード総数 0</div>
-        </button>
+      <div id="selectInner">
+        <div id="selectTitle">スタンプの種類を選択</div>
 
-        <button class="modeCard" id="randomModeBtn" type="button">
-          <div class="modePreview"><img src="randm.png" alt="random preview"></div>
-          <div class="modeLabel">ランダム型</div>
-          <div class="modeCount" id="randomCountText">スタンプ総数 0</div>
-        </button>
+        <div id="selectWrap">
+          <button class="modeCard modeDisabled" id="artModeBtn" type="button" disabled>
+            <div class="modePreview"><img src="art.png" alt="art preview"></div>
+            <div class="modeLabel">アート型</div>
+            <div class="modeCount" id="artCountText">カード総数 0</div>
+          </button>
+
+          <button class="modeCard" id="randomModeBtn" type="button">
+            <div class="modePreview"><img src="randm.png" alt="random preview"></div>
+            <div class="modeLabel">ランダム型</div>
+            <div class="randomTodayCircle">
+              <img id="todayStampPreview" src="" alt="today stamp">
+            </div>
+            <div class="randomTodayLabel">今日のスタンプ</div>
+            <div class="modeCount" id="randomCountText">スタンプ総数 0</div>
+          </button>
+        </div>
       </div>
     </div>
 
-    <!-- 時間外タブ -->
     <div id="timeGate">
       <div id="gateCardThumb"></div>
       <div id="gateInfo">
@@ -777,13 +799,12 @@
       </div>
     </div>
 
-    <!-- メイン -->
     <div id="mainScreen">
       <button id="backToSelect" class="glass" type="button">もどる</button>
       <button id="getCardBtn" class="glass hidden" type="button">カード入手</button>
 
-      <label id="uploadArea" class="glass hidden" for="imageInput">
-        <span id="uploadText">カード入れてね</span>
+      <label id="uploadArea" for="imageInput">
+        <span id="uploadText">カードを入れてね</span>
         <input id="imageInput" type="file" accept="image/*" />
       </label>
 
@@ -792,8 +813,7 @@
           <div id="emptyHint">CARD</div>
 
           <div id="imageFrame">
-            <img id="cardImage" alt="card" />
-
+            <img id="cardImage" alt="card">
             <div id="stampLayer"></div>
 
             <div id="ghostStamp"><img id="ghostStampImg" alt="ghost stamp"></div>
@@ -818,11 +838,8 @@
           </div>
         </div>
       </div>
-
-      <div id="artInfo" class="glass"></div>
     </div>
 
-    <!-- 隠し解除 -->
     <div id="secretTapZone"></div>
     <div id="passwordPopup">
       <input id="passwordInput" type="password" inputmode="numeric" autocomplete="off" maxlength="4" placeholder="">
@@ -833,9 +850,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
 
-    // =========================
-    // Firebase
-    // =========================
     const firebaseConfig = {
       apiKey: "AIzaSyCC7KAv7V4j1Z6-o1Y8ikmb3r5htN9O_aA",
       authDomain: "zzgohan-280.firebaseapp.com",
@@ -850,9 +864,6 @@
     const app = initializeApp(firebaseConfig);
     getAnalytics(app);
 
-    // =========================
-    // 設定
-    // =========================
     const JST_OPEN_HOUR = 6;
     const JST_OPEN_MINUTE = 0;
     const JST_CLOSE_HOUR = 6;
@@ -862,45 +873,29 @@
     const OVERRIDE_PASSWORD = "1111";
     const STORAGE_KEY_OVERRIDE = "radio_stamp_time_override";
 
-    // ランダム型
     const RANDOM_CARD_PATH = "card.png";
-
-    // ここに「必ず存在するスタンプ」を入れておく
-    // 何もない状態は作らない
     const RANDOM_STAMP_POOL = [
       "stamp100.png",
-       "stamp101.png",
-       "stamp102.png", 
+      "stamp101.png",
+      "stamp102.png",
       "stamp103.png",
-       "stamp104.png"
-    
+      "stamp104.png"
     ];
 
-    // アート型（いったん無効化中）
     const ART_CARD_CONFIG = {
-      "card1": {
-        card: "card1.png",
-        stamps: ["stamp001.png","stamp002.png","stamp003.png"]
-      },
-      "card2": {
-        card: "card2.png",
-        stamps: ["stamp011.png","stamp012.png","stamp013.png"]
-      }
+      "card1": { card: "card1.png", stamps: ["stamp001.png","stamp002.png","stamp003.png"] },
+      "card2": { card: "card2.png", stamps: ["stamp011.png","stamp012.png","stamp013.png"] }
     };
 
-    // =========================
-    // 要素
-    // =========================
     const selectScreen = document.getElementById("selectScreen");
-    const artModeBtn = document.getElementById("artModeBtn");
     const randomModeBtn = document.getElementById("randomModeBtn");
+    const artModeBtn = document.getElementById("artModeBtn");
     const artCountText = document.getElementById("artCountText");
     const randomCountText = document.getElementById("randomCountText");
+    const todayStampPreview = document.getElementById("todayStampPreview");
 
     const timeGate = document.getElementById("timeGate");
     const gateCardThumb = document.getElementById("gateCardThumb");
-    const gateTitle = document.getElementById("gateTitle");
-    const gateHours = document.getElementById("gateHours");
     const gateRemain = document.getElementById("gateRemain");
     const progressBar = document.getElementById("progressBar");
 
@@ -920,7 +915,6 @@
 
     const ghostStamp = document.getElementById("ghostStamp");
     const ghostStampImg = document.getElementById("ghostStampImg");
-
     const undoBtn = document.getElementById("undoBtn");
     const redoBtn = document.getElementById("redoBtn");
     const saveBtn = document.getElementById("saveBtn");
@@ -932,17 +926,12 @@
     const passwordPopup = document.getElementById("passwordPopup");
     const passwordInput = document.getElementById("passwordInput");
 
-    // =========================
-    // 状態
-    // =========================
-    let currentMode = null; // "random" only for now
+    let currentMode = null;
     let currentCardPath = null;
     let activeWindow = false;
-
     let uploadedImage = null;
     let displayedStamps = [];
     let redoStack = [];
-
     let pointerDown = false;
     let activePointerId = null;
     let pressAnimating = false;
@@ -950,14 +939,9 @@
     let pressPoint = null;
     let pressTimer = null;
     let rafId = null;
-
     let overrideOpen = localStorage.getItem(STORAGE_KEY_OVERRIDE) === "true";
-
     let currentRandomStampPath = null;
 
-    // =========================
-    // util
-    // =========================
     function clamp(v, min, max){
       return Math.max(min, Math.min(max, v));
     }
@@ -1016,11 +1000,11 @@
         const totalOpenSeconds = (closeMin - openMin) * 60;
         remainingMs = Math.max(0, (totalOpenSeconds - elapsedInOpen) * 1000);
         progress = 100;
-      }else{
+      } else {
         let minutesUntilNextOpen;
         if(nowMin < openMin){
           minutesUntilNextOpen = openMin - nowMin;
-        }else{
+        } else {
           minutesUntilNextOpen = (24 * 60 - nowMin) + openMin;
         }
         remainingMs = Math.max(0, (minutesUntilNextOpen * 60 - p.second) * 1000);
@@ -1038,29 +1022,6 @@
       return `残り ${h}時間 ${m}分`;
     }
 
-    function getCardRect(){
-      const r = cardImage.getBoundingClientRect();
-      return { left:r.left, top:r.top, width:r.width, height:r.height };
-    }
-
-    function pointInsideImage(clientX, clientY){
-      const r = getCardRect();
-      return (
-        clientX >= r.left &&
-        clientX <= r.left + r.width &&
-        clientY >= r.top &&
-        clientY <= r.top + r.height
-      );
-    }
-
-    function clientToImageRatio(clientX, clientY){
-      const r = getCardRect();
-      return {
-        x: clamp((clientX - r.left) / r.width, 0, 1),
-        y: clamp((clientY - r.top) / r.height, 0, 1)
-      };
-    }
-
     function todaySeed(){
       const key = getJSTDateKey().replaceAll("-", "");
       return Number(key);
@@ -1071,48 +1032,28 @@
       return Math.floor((x - Math.floor(x)) * length) % length;
     }
 
-    function loadImage(src){
-      return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.onload = () => resolve(img);
-        img.onerror = reject;
-        img.src = src;
-      });
-    }
-
-    function setGateThumb(src){
-      if(!src){
-        gateCardThumb.innerHTML = "";
-        return;
+    function ensureRandomPool(){
+      if(!Array.isArray(RANDOM_STAMP_POOL) || RANDOM_STAMP_POOL.length === 0){
+        throw new Error("RANDOM_STAMP_POOL は空にできません。");
       }
-      gateCardThumb.innerHTML = `<img src="${src}" alt="">`;
     }
 
-    function hidePasswordPopup(){
-      passwordPopup.style.display = "none";
-      passwordInput.value = "";
-    }
-
-    function showPasswordPopup(){
-      passwordPopup.style.display = "block";
-      passwordInput.value = "";
-      passwordInput.focus();
+    function getTodayRandomStamp(){
+      ensureRandomPool();
+      const idx = seededIndex(todaySeed(), RANDOM_STAMP_POOL.length);
+      return RANDOM_STAMP_POOL[idx];
     }
 
     function updateCounts(){
       randomCountText.textContent = `スタンプ総数 ${RANDOM_STAMP_POOL.length}`;
       artCountText.textContent = `カード総数 ${Object.keys(ART_CARD_CONFIG).length}`;
+      todayStampPreview.src = getTodayRandomStamp();
     }
 
-    function ensureRandomPool(){
-      if(!Array.isArray(RANDOM_STAMP_POOL) || RANDOM_STAMP_POOL.length === 0){
-        throw new Error("RANDOM_STAMP_POOL は空にできません。少なくとも1つ必要です。");
-      }
+    function setGateThumb(src){
+      gateCardThumb.innerHTML = src ? `<img src="${src}" alt="">` : "";
     }
 
-    // =========================
-    // 表示制御
-    // =========================
     function showSelectScreen(){
       selectScreen.classList.remove("hidden");
       backToSelect.style.display = "none";
@@ -1138,23 +1079,15 @@
 
       if(status.isOpen){
         timeGate.classList.remove("visible");
-      }else{
+      } else {
         timeGate.classList.add("visible");
-        gateTitle.textContent = "時間外です";
-        gateHours.textContent = "6:00~6:30";
         gateRemain.textContent = formatRemaining(status.remainingMs);
         progressBar.style.width = `${clamp(status.progress, 0, 100)}%`;
       }
 
       stageWrap.classList.toggle("closed", !status.isOpen);
-
-      if(currentMode === "random"){
-        getCardBtn.classList.remove("hidden");
-        uploadArea.classList.remove("hidden");
-      }else{
-        getCardBtn.classList.add("hidden");
-        uploadArea.classList.add("hidden");
-      }
+      getCardBtn.classList.remove("hidden");
+      uploadArea.classList.remove("hidden");
     }
 
     function setCardImage(src){
@@ -1163,7 +1096,6 @@
       cardImage.style.display = "block";
       emptyHint.style.display = "none";
       setGateThumb(src);
-
       cardImage.onload = () => {
         renderStamps();
         updateGhostSizeOnly();
@@ -1182,34 +1114,26 @@
       redoBtn.disabled = redoStack.length === 0;
     }
 
-    // =========================
-    // ランダム型
-    // =========================
-    function getTodayRandomStamp(){
-      ensureRandomPool();
-      const idx = seededIndex(todaySeed(), RANDOM_STAMP_POOL.length);
-      return RANDOM_STAMP_POOL[idx];
+    function getCardRect(){
+      const r = cardImage.getBoundingClientRect();
+      return { left:r.left, top:r.top, width:r.width, height:r.height };
     }
 
-    function setupRandomMode(){
-      currentMode = "random";
-      currentRandomStampPath = getTodayRandomStamp();
-      ghostStampImg.src = currentRandomStampPath;
-
-      hideSelectScreen();
-      clearStamps();
-      uploadedImage = null;
-      uploadText.textContent = "カード入れてね";
-      setCardImage(RANDOM_CARD_PATH);
-      updateTopVisibility();
+    function pointInsideImage(clientX, clientY){
+      const r = getCardRect();
+      return clientX >= r.left && clientX <= r.left + r.width && clientY >= r.top && clientY <= r.top + r.height;
     }
 
-    // =========================
-    // スタンプ描画
-    // =========================
+    function clientToImageRatio(clientX, clientY){
+      const r = getCardRect();
+      return {
+        x: clamp((clientX - r.left) / r.width, 0, 1),
+        y: clamp((clientY - r.top) / r.height, 0, 1)
+      };
+    }
+
     function renderStamps(){
       stampLayer.innerHTML = "";
-
       const rect = getCardRect();
       if(!rect.width || !rect.height) return;
 
@@ -1224,9 +1148,7 @@
 
         const img = document.createElement("img");
         img.src = s.src;
-        img.alt = "stamp";
         el.appendChild(img);
-
         stampLayer.appendChild(el);
       }
     }
@@ -1243,7 +1165,6 @@
       if(!currentRandomStampPath) return;
       const rect = getCardRect();
       if(!rect.width) return;
-
       ghostStampImg.src = currentRandomStampPath;
       const size = Math.max(38, rect.width * 0.17);
       ghostStamp.style.width = `${size}px`;
@@ -1263,9 +1184,6 @@
       ghostStamp.style.display = "none";
     }
 
-    // =========================
-    // undo / redo
-    // =========================
     function pushRandomStamp(xRatio, yRatio){
       displayedStamps.push({
         x: clamp(xRatio,0,1),
@@ -1293,9 +1211,6 @@
       updateHistoryButtons();
     }
 
-    // =========================
-    // 長押しゲージ
-    // =========================
     function showPressRing(clientX, clientY){
       const stageRect = stage.getBoundingClientRect();
       pressRing.style.left = `${clientX - stageRect.left}px`;
@@ -1325,11 +1240,7 @@
       if(ratio >= 1){
         pressAnimating = false;
         hidePressRing();
-
-        if(pressPoint){
-          pushRandomStamp(pressPoint.x, pressPoint.y);
-        }
-
+        if(pressPoint) pushRandomStamp(pressPoint.x, pressPoint.y);
         hideGhostStamp();
         return;
       }
@@ -1341,7 +1252,6 @@
       activePointerId = null;
       pressAnimating = false;
       pressPoint = null;
-
       if(pressTimer){
         clearTimeout(pressTimer);
         pressTimer = null;
@@ -1355,21 +1265,14 @@
     }
 
     function startPress(clientX, clientY){
-      if(!activeWindow) return;
-      if(!currentCardPath) return;
-      if(!pointInsideImage(clientX, clientY)) return;
-
+      if(!activeWindow || !currentCardPath || !pointInsideImage(clientX, clientY)) return;
       pressPoint = clientToImageRatio(clientX, clientY);
       showGhostStamp(clientX, clientY);
-
       pressStartAt = performance.now();
       pressAnimating = true;
       showPressRing(clientX, clientY);
       animateRing();
-
-      pressTimer = setTimeout(() => {
-        pressTimer = null;
-      }, LONG_PRESS_MS);
+      pressTimer = setTimeout(() => { pressTimer = null; }, LONG_PRESS_MS);
     }
 
     function movePress(clientX, clientY){
@@ -1378,18 +1281,22 @@
         cancelPress();
         return;
       }
-
       movePressRing(clientX, clientY);
       pressPoint = clientToImageRatio(clientX, clientY);
       moveGhostStamp(clientX, clientY);
     }
 
-    // =========================
-    // 保存
-    // =========================
+    async function loadImage(src){
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = src;
+      });
+    }
+
     async function saveCompositePNG(){
       if(!currentCardPath) return;
-
       const baseImg = await loadImage(cardImage.src);
       const outCanvas = document.createElement("canvas");
       const ctx = outCanvas.getContext("2d");
@@ -1421,9 +1328,6 @@
       a.remove();
     }
 
-    // =========================
-    // カード入手
-    // =========================
     function downloadCard(src, filename){
       const a = document.createElement("a");
       a.href = src;
@@ -1433,29 +1337,42 @@
       a.remove();
     }
 
-    // =========================
-    // イベント
-    // =========================
+    function setupRandomMode(){
+      currentMode = "random";
+      currentRandomStampPath = getTodayRandomStamp();
+      ghostStampImg.src = currentRandomStampPath;
+      hideSelectScreen();
+      clearStamps();
+      uploadedImage = null;
+      uploadText.textContent = "カードを入れてね";
+      setCardImage(RANDOM_CARD_PATH);
+      updateTopVisibility();
+    }
+
+    function hidePasswordPopup(){
+      passwordPopup.style.display = "none";
+      passwordInput.value = "";
+    }
+
+    function showPasswordPopup(){
+      passwordPopup.style.display = "block";
+      passwordInput.value = "";
+      passwordInput.focus();
+    }
+
     randomModeBtn.addEventListener("click", () => {
       const status = getJSTStatus();
-
-      // 時間外は「残り時間だけ見せる」
-      // 開くのはパスワード解除時のみ
       if(!status.isOpen){
         currentMode = null;
         setGateThumb(RANDOM_CARD_PATH);
         timeGate.classList.add("visible");
-        gateTitle.textContent = "時間外です";
-        gateHours.textContent = "6:00~6:30";
         gateRemain.textContent = formatRemaining(status.remainingMs);
         progressBar.style.width = `${clamp(status.progress, 0, 100)}%`;
         return;
       }
-
       setupRandomMode();
     });
 
-    // アート型は無効。押しても何もしない
     artModeBtn.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -1477,16 +1394,14 @@
     });
 
     imageInput.addEventListener("change", (e) => {
-      if(!activeWindow) return;
-      if(currentMode !== "random") return;
-
+      if(!activeWindow || currentMode !== "random") return;
       const file = e.target.files?.[0];
       if(!file) return;
 
       const reader = new FileReader();
       reader.onload = () => {
         uploadedImage = reader.result;
-        uploadText.textContent = "カード入れ替え";
+        uploadText.textContent = "カードを入れてね";
         setCardImage(uploadedImage);
         clearStamps();
       };
@@ -1538,9 +1453,8 @@
     });
 
     imageFrame.addEventListener("pointermove", (e) => {
-      if(pointerDown) return;
-      if(!activeWindow || !currentCardPath) return;
-      if(!pointInsideImage(e.clientX, e.clientY)) {
+      if(pointerDown || !activeWindow || !currentCardPath) return;
+      if(!pointInsideImage(e.clientX, e.clientY)){
         hideGhostStamp();
         return;
       }
@@ -1551,12 +1465,11 @@
       if(!pointerDown) hideGhostStamp();
     });
 
-    // 左下ダブルタップ
     secretTapZone.addEventListener("dblclick", (e) => {
       e.preventDefault();
       if(passwordPopup.style.display === "block"){
         hidePasswordPopup();
-      }else{
+      } else {
         showPasswordPopup();
       }
     });
@@ -1568,7 +1481,7 @@
         e.preventDefault();
         if(passwordPopup.style.display === "block"){
           hidePasswordPopup();
-        }else{
+        } else {
           showPasswordPopup();
         }
       }
@@ -1585,10 +1498,7 @@
     });
 
     document.addEventListener("pointerdown", (e) => {
-      if(
-        !passwordPopup.contains(e.target) &&
-        !secretTapZone.contains(e.target)
-      ){
+      if(!passwordPopup.contains(e.target) && !secretTapZone.contains(e.target)){
         hidePasswordPopup();
       }
     });
@@ -1599,6 +1509,7 @@
     });
 
     setInterval(() => {
+      todayStampPreview.src = getTodayRandomStamp();
       if(currentMode){
         updateTopVisibility();
       } else {
@@ -1610,9 +1521,6 @@
       }
     }, 1000);
 
-    // =========================
-    // 初期化
-    // =========================
     ensureRandomPool();
     updateCounts();
     showSelectScreen();
@@ -1620,4 +1528,3 @@
   </script>
 </body>
 </html>
-

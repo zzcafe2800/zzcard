@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ラジオ体操 スタンプ</title>
+  <style>
+    :root{
+      --bg:#f7fcff;
+      --blue:#86d7ff;
+      --blue2:#dff5ff;
+      --blue3:#b8e8ff;
+      --text:#4f7f98;
+      --white:#ffffff;
+      --shadow:0 18px 40px rgba(134,215,255,.18);
+      --shadow-soft:0 8px 24px rgba(134,215,255,.14);
+      --radius:22px;
+    }
+
+    *{
+      box-sizing:border-box;
+      -webkit-tap-highlight-color:transparent;
+      user-select:none;
+    }
+
+    html,body{
+      margin:0;
+      width:100%;
+      height:100%;
+      overflow:hidden;
+      font-family:"Hiragino Sans","Yu Gothic UI","Yu Gothic","Noto Sans JP",system-ui,sans-serif;
+      background:
+        radial-gradient(circle at 15% 15%, rgba(134,215,255,.24), transparent 26%),
+        radial-gradient(circle at 85% 12%, rgba(134,215,255,.18), transparent 24%),
+        radial-gradient(circle at 80% 78%, rgba(134,215,255,.20), transparent 26%),
+        linear-gradient(180deg, #fcfeff 0%, #f1fbff 100%);
+      color:var(--text);
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.45), rgba(255,255,255,.08)),
+        repeating-linear-gradient(
+          90deg,
+          rgba(255,255,255,.0) 0px,
+          rgba(255,255,255,.0) 48px,
+          rgba(134,215,255,.035) 49px,
+          rgba(134,215,255,.035) 50px
+        );
+      opacity:.8;
+    }
+
+    #app{
+      position:relative;
+      width:100%;
+      height:100%;
+      overflow:hidden;
+    }
+
+    .floating{
+      position:absolute;
+      z-index:10;
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      background:rgba(255,255,255,.42);
+      border:1px solid rgba(134,215,255,.25);
+      box-shadow:var(--shadow-soft);
+    }
+
+    #getCardBtn{
+      top:20px;
+      left:20px;
+      padding:13px 18px;
+      border-radius:999px;
+      font-size:15px;
+      letter-spacing:.08em;
+      color:#5d90aa;
+      cursor:pointer;
+      transition:.25s ease;
+    }
+    #getCardBtn:hover{
+      transform:translateY(-1px);
+      box-shadow:0 14px 32px rgba(134,215,255,.23);
+    }
+
+    #uploadArea{
+      top:20px;
+      right:20px;
+      width:210px;
+      min-height:68px;
+      padding:14px 16px;
+      border-radius:18px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      line-height:1.5;
+      color:#74a8c3;
+      font-size:14px;
+      cursor:pointer;
+      transition:.25s ease;
+      overflow:hidden;
+    }
+    #uploadArea:hover{
+      transform:translateY(-1px);
+      box-shadow:0 14px 32px rgba(134,215,255,.22);
+    }
+    #uploadArea.has-image{
+      color:#5f93ad;
+    }
+    #uploadArea input{
+      display:none;
+    }
+
+    #stageWrap{
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:100px 40px 80px;
+      transition:filter .35s ease, opacity .35s ease;
+    }
+
+    #stage{
+      position:relative;
+      width:min(80vw,1100px);
+      height:min(72vh,760px);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    #imageFrame{
+      position:relative;
+      max-width:100%;
+      max-height:100%;
+      box-shadow:0 18px 45px rgba(134,215,255,.16);
+      border-radius:16px;
+      overflow:visible;
+      touch-action:none;
+    }
+
+    #cardImage{
+      display:none;
+      width:auto;
+      height:auto;
+      max-width:min(80vw,1100px);
+      max-height:min(72vh,760px);
+      object-fit:contain;
+      border-radius:16px;
+      box-shadow:0 28px 60px rgba(134,215,255,.14);
+      -webkit-user-drag:none;
+      user-drag:none;
+      pointer-events:none;
+    }
+
+    #stampLayer{
+      position:absolute;
+      inset:0;
+      overflow:hidden;
+      border-radius:16px;
+      pointer-events:none;
+    }
+
+    .stamp{
+      position:absolute;
+      width:88px;
+      height:88px;
+      transform:translate(-50%, -50%) rotate(var(--rot, 0deg));
+      transform-origin:center center;
+      opacity:.97;
+      pointer-events:none;
+      filter:drop-shadow(0 6px 12px rgba(134,215,255,.12));
+    }
+
+    .stamp img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      display:block;
+      pointer-events:none;
+      -webkit-user-drag:none;
+    }
+
+    .stamp .stamp-number{
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#4d83a0;
+      font-size:22px;
+      font-weight:700;
+      letter-spacing:.03em;
+      opacity:.0;
+      pointer-events:none;
+    }
+
+    #pressTarget{
+      position:absolute;
+      inset:0;
+      border-radius:16px;
+      z-index:3;
+      background:transparent;
+      cursor:crosshair;
+      touch-action:none;
+    }
+
+    #saveBtn{
+      left:22px;
+      bottom:20px;
+      padding:12px 18px;
+      border-radius:999px;
+      font-size:14px;
+      color:#5f95af;
+      cursor:pointer;
+      transition:.25s ease;
+      z-index:10;
+    }
+    #saveBtn:hover{
+      transform:translateY(-1px);
+      box-shadow:0 14px 32px rgba(134,215,255,.23);
+    }
+
+    #historyControls{
+      position:absolute;
+      right:20px;
+      bottom:20px;
+      z-index:12;
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+
+    .historyBtn{
+      width:34px;
+      height:34px;
+      border-radius:999px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:18px;
+      color:rgba(88,133,156,.8);
+      background:rgba(255,255,255,.28);
+      border:1px solid rgba(134,215,255,.18);
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
+      cursor:pointer;
+      transition:.2s ease;
+    }
+    .historyBtn:hover{
+      background:rgba(255,255,255,.5);
+      color:rgba(88,133,156,1);
+    }
+    .historyBtn:disabled{
+      opacity:.35;
+      cursor:default;
+    }
+
+    #timeGate{
+      position:absolute;
+      top:14px;
+      left:50%;
+      transform:translateX(-50%);
+      width:min(680px, calc(100vw - 28px));
+      z-index:30;
+      padding:14px 16px 14px;
+      border-radius:24px;
+      background:rgba(255,255,255,.76);
+      border:1px solid rgba(134,215,255,.28);
+      box-shadow:0 20px 50px rgba(134,215,255,.16);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      transition:.25s ease;
+    }
+
+    #timeGateInner{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      flex-wrap:wrap;
+      justify-content:space-between;
+    }
+
+    #timeText{
+      display:flex;
+      gap:14px;
+      align-items:baseline;
+      flex-wrap:wrap;
+    }
+
+    #openHours{
+      font-size:18px;
+      letter-spacing:.09em;
+      color:#5d96b2;
+      font-weight:700;
+      white-space:nowrap;
+    }
+
+    #countdown{
+      font-size:14px;
+      color:#7aa8bf;
+      white-space:nowrap;
+    }
+
+    #progressWrap{
+      flex:1;
+      min-width:220px;
+      height:12px;
+      border-radius:999px;
+      background:rgba(134,215,255,.16);
+      overflow:hidden;
+      position:relative;
+    }
+
+    #progressBar{
+      position:absolute;
+      inset:0 auto 0 0;
+      width:0%;
+      border-radius:999px;
+      background:linear-gradient(90deg, rgba(134,215,255,.55), rgba(134,215,255,.95));
+      box-shadow:0 0 16px rgba(134,215,255,.35);
+      transition:width .6s ease;
+    }
+
+    #gateOverlay{
+      position:absolute;
+      inset:0;
+      z-index:20;
+      display:none;
+      pointer-events:auto;
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+      background:rgba(247,252,255,.40);
+    }
+
+    #emptyHint{
+      position:absolute;
+      z-index:2;
+      text-align:center;
+      color:#87aec3;
+      font-size:19px;
+      letter-spacing:.08em;
+      opacity:.6;
+      pointer-events:none;
+    }
+
+    #pressRing{
+      position:absolute;
+      width:110px;
+      height:110px;
+      border-radius:50%;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      transform:translate(-50%, -50%);
+      pointer-events:none;
+      z-index:15;
+    }
+
+    #pressRing svg{
+      width:110px;
+      height:110px;
+      overflow:visible;
+      filter:drop-shadow(0 8px 18px rgba(134,215,255,.18));
+    }
+
+    #pressRing .ring-bg{
+      stroke:rgba(255,255,255,.72);
+      stroke-width:8;
+      fill:rgba(255,255,255,.15);
+      backdrop-filter:blur(8px);
+    }
+
+    #pressRing .ring-progress{
+      stroke:var(--blue);
+      stroke-width:8;
+      fill:none;
+      stroke-linecap:round;
+      transform:rotate(-90deg);
+      transform-origin:50% 50%;
+      stroke-dasharray:251.2;
+      stroke-dashoffset:251.2;
+    }
+
+    #pressRing .ring-center{
+      fill:rgba(255,255,255,.55);
+      stroke:rgba(134,215,255,.22);
+      stroke-width:1.5;
+    }
+
+    @media (max-width: 700px){
+      #uploadArea{
+        width:160px;
+        min-height:60px;
+        font-size:12px;
+      }
+      #getCardBtn,#saveBtn{
+        font-size:13px;
+        padding:11px 14px;
+      }
+      #openHours{
+        font-size:16px;
+      }
+      #countdown{
+        font-size:12px;
+      }
+      #stageWrap{
+        padding:88px 16px 72px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="timeGate">
+      <div id="timeGateInner">
+        <div id="timeText">
+          <div id="openHours">6:00~6:30</div>
+          <div id="countdown">残り --時間 --分</div>
+        </div>
+        <div id="progressWrap">
+          <div id="progressBar"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="gateOverlay"></div>
+
+    <button id="getCardBtn" class="floating" type="button">カード入手</button>
+
+    <label id="uploadArea" class="floating" for="imageInput">
+      <span id="uploadText">カード入れてね</span>
+      <input id="imageInput" type="file" accept="image/*" />
+    </label>
+
+    <div id="stageWrap">
+      <div id="stage">
+        <div id="emptyHint">CARD</div>
+
+        <div id="imageFrame">
+          <img id="cardImage" alt="card" />
+          <div id="stampLayer"></div>
+          <div id="pressTarget"></div>
+
+          <div id="pressRing" aria-hidden="true">
+            <svg viewBox="0 0 100 100">
+              <circle class="ring-bg" cx="50" cy="50" r="40"></circle>
+              <circle class="ring-progress" cx="50" cy="50" r="40"></circle>
+              <circle class="ring-center" cx="50" cy="50" r="25"></circle>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button id="saveBtn" class="floating" type="button">保存</button>
+
+    <div id="historyControls">
+      <button id="undoBtn" class="historyBtn" type="button" aria-label="undo">↶</button>
+      <button id="redoBtn" class="historyBtn" type="button" aria-label="redo">↷</button>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      // =========================
+      // 設定
+      // =========================
+      const JST_OPEN_HOUR = 6;
+      const JST_OPEN_MINUTE = 0;
+      const JST_CLOSE_HOUR = 6;
+      const JST_CLOSE_MINUTE = 30;
+
+      const LONG_PRESS_MS = 4000;
+      const STAMP_IMAGE_PATH = "stamp.png";
+      const CARD_DOWNLOAD_PATH = "card.png";
+
+      // コードで指定した数値
+      const STAMP_NUMBER = 1;
+
+      // スタンプサイズ（表示中の画像幅に対する割合）
+      const STAMP_SIZE_RATIO = 0.17;
+
+      // =========================
+      // 要素
+      // =========================
+      const imageInput = document.getElementById("imageInput");
+      const uploadArea = document.getElementById("uploadArea");
+      const uploadText = document.getElementById("uploadText");
+      const getCardBtn = document.getElementById("getCardBtn");
+      const saveBtn = document.getElementById("saveBtn");
+
+      const stageWrap = document.getElementById("stageWrap");
+      const gateOverlay = document.getElementById("gateOverlay");
+      const emptyHint = document.getElementById("emptyHint");
+
+      const imageFrame = document.getElementById("imageFrame");
+      const cardImage = document.getElementById("cardImage");
+      const stampLayer = document.getElementById("stampLayer");
+      const pressTarget = document.getElementById("pressTarget");
+      const pressRing = document.getElementById("pressRing");
+      const ringProgress = pressRing.querySelector(".ring-progress");
+
+      const countdown = document.getElementById("countdown");
+      const progressBar = document.getElementById("progressBar");
+
+      const undoBtn = document.getElementById("undoBtn");
+      const redoBtn = document.getElementById("redoBtn");
+
+      // =========================
+      // 状態
+      // =========================
+      const stampImg = new Image();
+      stampImg.src = STAMP_IMAGE_PATH;
+
+      let uploadedImage = null;
+      let activeWindow = false;
+
+      let stamps = [];
+      let redoStack = [];
+
+      let pressTimer = null;
+      let pressStartAt = 0;
+      let pressPoint = null;
+      let pressAnimating = false;
+      let rafId = null;
+      let pointerDown = false;
+      let activePointerId = null;
+
+      // =========================
+      // ユーティリティ
+      // =========================
+      function pad(n){
+        return String(n).padStart(2, "0");
+      }
+
+      function getJSTNowParts(){
+        const now = new Date();
+        const parts = new Intl.DateTimeFormat("en-CA", {
+          timeZone: "Asia/Tokyo",
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false
+        }).formatToParts(now);
+
+        const map = {};
+        for(const p of parts){
+          if(p.type !== "literal") map[p.type] = p.value;
+        }
+
+        return {
+          year: Number(map.year),
+          month: Number(map.month),
+          day: Number(map.day),
+          hour: Number(map.hour),
+          minute: Number(map.minute),
+          second: Number(map.second)
+        };
+      }
+
+      function getMinutesOfDay(h, m){
+        return h * 60 + m;
+      }
+
+      function getJSTStatus(){
+        const p = getJSTNowParts();
+        const nowMin = getMinutesOfDay(p.hour, p.minute);
+        const openMin = getMinutesOfDay(JST_OPEN_HOUR, JST_OPEN_MINUTE);
+        const closeMin = getMinutesOfDay(JST_CLOSE_HOUR, JST_CLOSE_MINUTE);
+
+        const isOpen = nowMin >= openMin && nowMin < closeMin;
+
+        let remainingMs = 0;
+        let progress = 0;
+
+        if(isOpen){
+          const elapsedInOpen = (nowMin - openMin) * 60 + p.second;
+          const totalOpenSeconds = (closeMin - openMin) * 60;
+          remainingMs = Math.max(0, (totalOpenSeconds - elapsedInOpen) * 1000);
+          progress = 100;
+        }else{
+          let minutesUntilNextOpen;
+          if(nowMin < openMin){
+            minutesUntilNextOpen = openMin - nowMin;
+          }else{
+            minutesUntilNextOpen = (24 * 60 - nowMin) + openMin;
+          }
+          remainingMs = Math.max(0, (minutesUntilNextOpen * 60 - p.second) * 1000);
+
+          const cycleTotal = 24 * 60 * 60 * 1000;
+          progress = ((cycleTotal - remainingMs) / cycleTotal) * 100;
+        }
+
+        return {
+          isOpen,
+          remainingMs,
+          progress
+        };
+      }
+
+      function formatRemaining(ms){
+        const totalMinutes = Math.ceil(ms / 60000);
+        const h = Math.floor(totalMinutes / 60);
+        const m = totalMinutes % 60;
+        return `残り ${h}時間 ${m}分`;
+      }
+
+      function clamp(v, min, max){
+        return Math.max(min, Math.min(max, v));
+      }
+
+      function imageRect(){
+        const r = cardImage.getBoundingClientRect();
+        return {
+          left: r.left,
+          top: r.top,
+          width: r.width,
+          height: r.height
+        };
+      }
+
+      function setGateVisual(isOpen){
+        activeWindow = isOpen;
+
+        if(isOpen){
+          gateOverlay.style.display = "none";
+          stageWrap.style.filter = "none";
+          stageWrap.style.opacity = "1";
+          getCardBtn.style.pointerEvents = "auto";
+          uploadArea.style.pointerEvents = "auto";
+          saveBtn.style.pointerEvents = "auto";
+          undoBtn.style.pointerEvents = "auto";
+          redoBtn.style.pointerEvents = "auto";
+        }else{
+          gateOverlay.style.display = "block";
+          stageWrap.style.filter = "blur(8px)";
+          stageWrap.style.opacity = ".82";
+          getCardBtn.style.pointerEvents = "none";
+          uploadArea.style.pointerEvents = "none";
+          saveBtn.style.pointerEvents = "none";
+          undoBtn.style.pointerEvents = "none";
+          redoBtn.style.pointerEvents = "none";
+          cancelPress();
+        }
+      }
+
+      function updateTimeGate(){
+        const status = getJSTStatus();
+        progressBar.style.width = `${clamp(status.progress, 0, 100)}%`;
+
+        if(status.isOpen){
+          countdown.textContent = "使用できます";
+        }else{
+          countdown.textContent = formatRemaining(status.remainingMs);
+        }
+
+        setGateVisual(status.isOpen);
+      }
+
+      function updateHistoryButtons(){
+        undoBtn.disabled = stamps.length === 0;
+        redoBtn.disabled = redoStack.length === 0;
+      }
+
+      function clearStampLayer(){
+        stampLayer.innerHTML = "";
+      }
+
+      function renderStamps(){
+        clearStampLayer();
+
+        const rect = imageRect();
+        if(!rect.width || !rect.height) return;
+
+        const stampPx = Math.max(40, rect.width * STAMP_SIZE_RATIO);
+
+        for(const s of stamps){
+          const el = document.createElement("div");
+          el.className = "stamp";
+          el.style.left = `${s.x * 100}%`;
+          el.style.top = `${s.y * 100}%`;
+          el.style.width = `${stampPx}px`;
+          el.style.height = `${stampPx}px`;
+          el.style.setProperty("--rot", `${s.rotation}deg`);
+
+          const img = document.createElement("img");
+          img.src = STAMP_IMAGE_PATH;
+          img.alt = "stamp";
+
+          const num = document.createElement("div");
+          num.className = "stamp-number";
+          num.textContent = s.number;
+
+          el.appendChild(img);
+          el.appendChild(num);
+          stampLayer.appendChild(el);
+        }
+      }
+
+      function pushStamp(xRatio, yRatio){
+        const rotation = (-10 + Math.random() * 20).toFixed(2);
+        stamps.push({
+          x: clamp(xRatio, 0, 1),
+          y: clamp(yRatio, 0, 1),
+          number: STAMP_NUMBER,
+          rotation
+        });
+        redoStack = [];
+        renderStamps();
+        updateHistoryButtons();
+      }
+
+      function undoStamp(){
+        if(stamps.length === 0) return;
+        redoStack.push(stamps.pop());
+        renderStamps();
+        updateHistoryButtons();
+      }
+
+      function redoStamp(){
+        if(redoStack.length === 0) return;
+        stamps.push(redoStack.pop());
+        renderStamps();
+        updateHistoryButtons();
+      }
+
+      function setUploadedImage(src){
+        uploadedImage = src;
+        cardImage.src = src;
+        cardImage.style.display = "block";
+        emptyHint.style.display = "none";
+        uploadArea.classList.add("has-image");
+        uploadText.textContent = "カード入れ替え";
+        cardImage.onload = () => {
+          renderStamps();
+        };
+      }
+
+      async function downloadFile(url, filename){
+        try{
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+        }catch(e){
+          console.error(e);
+        }
+      }
+
+      function pointInsideImage(clientX, clientY){
+        const rect = imageRect();
+        return (
+          clientX >= rect.left &&
+          clientX <= rect.left + rect.width &&
+          clientY >= rect.top &&
+          clientY <= rect.top + rect.height
+        );
+      }
+
+      function clientToImageRatio(clientX, clientY){
+        const rect = imageRect();
+        const x = (clientX - rect.left) / rect.width;
+        const y = (clientY - rect.top) / rect.height;
+        return {
+          x: clamp(x, 0, 1),
+          y: clamp(y, 0, 1)
+        };
+      }
+
+      function showPressRing(clientX, clientY){
+        const appRect = document.getElementById("app").getBoundingClientRect();
+        pressRing.style.display = "flex";
+        pressRing.style.left = `${clientX - appRect.left}px`;
+        pressRing.style.top = `${clientY - appRect.top}px`;
+        ringProgress.style.strokeDashoffset = "251.2";
+      }
+
+      function hidePressRing(){
+        pressRing.style.display = "none";
+        ringProgress.style.strokeDashoffset = "251.2";
+      }
+
+      function animateRing(){
+        if(!pressAnimating) return;
+        const elapsed = performance.now() - pressStartAt;
+        const ratio = clamp(elapsed / LONG_PRESS_MS, 0, 1);
+        const total = 251.2;
+        ringProgress.style.strokeDashoffset = String(total * (1 - ratio));
+
+        if(ratio >= 1){
+          pressAnimating = false;
+          hidePressRing();
+          if(pressPoint){
+            pushStamp(pressPoint.x, pressPoint.y);
+          }
+          return;
+        }
+        rafId = requestAnimationFrame(animateRing);
+      }
+
+      function cancelPress(){
+        pointerDown = false;
+        activePointerId = null;
+        pressAnimating = false;
+        pressPoint = null;
+
+        if(pressTimer){
+          clearTimeout(pressTimer);
+          pressTimer = null;
+        }
+        if(rafId){
+          cancelAnimationFrame(rafId);
+          rafId = null;
+        }
+        hidePressRing();
+      }
+
+      function startPress(clientX, clientY){
+        if(!activeWindow) return;
+        if(!uploadedImage) return;
+        if(!pointInsideImage(clientX, clientY)) return;
+
+        pressPoint = clientToImageRatio(clientX, clientY);
+        pressStartAt = performance.now();
+        pressAnimating = true;
+        showPressRing(clientX, clientY);
+        animateRing();
+
+        pressTimer = setTimeout(() => {
+          pressTimer = null;
+        }, LONG_PRESS_MS);
+      }
+
+      function movePress(clientX, clientY){
+        if(!pointerDown || !pressPoint) return;
+        if(!pointInsideImage(clientX, clientY)){
+          cancelPress();
+          return;
+        }
+      }
+
+      async function saveCompositePNG(){
+        if(!uploadedImage) return;
+
+        const baseImg = await loadImage(cardImage.src);
+        const stampBase = await loadImage(STAMP_IMAGE_PATH);
+
+        const outCanvas = document.createElement("canvas");
+        const ctx = outCanvas.getContext("2d");
+
+        outCanvas.width = baseImg.naturalWidth || baseImg.width;
+        outCanvas.height = baseImg.naturalHeight || baseImg.height;
+
+        ctx.clearRect(0, 0, outCanvas.width, outCanvas.height);
+        ctx.drawImage(baseImg, 0, 0, outCanvas.width, outCanvas.height);
+
+        const stampSize = outCanvas.width * STAMP_SIZE_RATIO;
+
+        for(const s of stamps){
+          const cx = s.x * outCanvas.width;
+          const cy = s.y * outCanvas.height;
+
+          ctx.save();
+          ctx.translate(cx, cy);
+          ctx.rotate((Number(s.rotation) * Math.PI) / 180);
+          ctx.drawImage(stampBase, -stampSize / 2, -stampSize / 2, stampSize, stampSize);
+          ctx.restore();
+        }
+
+        const a = document.createElement("a");
+        a.href = outCanvas.toDataURL("image/png");
+        a.download = "radio-stamp.png";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }
+
+      function loadImage(src){
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => resolve(img);
+          img.onerror = reject;
+          img.src = src;
+        });
+      }
+
+      // =========================
+      // イベント
+      // =========================
+      getCardBtn.addEventListener("click", () => {
+        if(!activeWindow) return;
+        downloadFile(CARD_DOWNLOAD_PATH, "card.png");
+      });
+
+      imageInput.addEventListener("change", (e) => {
+        if(!activeWindow) return;
+        const file = e.target.files?.[0];
+        if(!file) return;
+
+        const reader = new FileReader();
+        reader.onload = () => {
+          setUploadedImage(reader.result);
+        };
+        reader.readAsDataURL(file);
+      });
+
+      saveBtn.addEventListener("click", async () => {
+        if(!activeWindow) return;
+        await saveCompositePNG();
+      });
+
+      undoBtn.addEventListener("click", () => {
+        if(!activeWindow) return;
+        undoStamp();
+      });
+
+      redoBtn.addEventListener("click", () => {
+        if(!activeWindow) return;
+        redoStamp();
+      });
+
+      pressTarget.addEventListener("contextmenu", (e) => e.preventDefault());
+
+      pressTarget.addEventListener("pointerdown", (e) => {
+        if(!activeWindow || !uploadedImage) return;
+        pointerDown = true;
+        activePointerId = e.pointerId;
+        pressTarget.setPointerCapture(e.pointerId);
+        startPress(e.clientX, e.clientY);
+      });
+
+      pressTarget.addEventListener("pointermove", (e) => {
+        if(!pointerDown || e.pointerId !== activePointerId) return;
+        movePress(e.clientX, e.clientY);
+      });
+
+      pressTarget.addEventListener("pointerup", (e) => {
+        if(e.pointerId !== activePointerId) return;
+        cancelPress();
+      });
+
+      pressTarget.addEventListener("pointercancel", (e) => {
+        if(e.pointerId !== activePointerId) return;
+        cancelPress();
+      });
+
+      pressTarget.addEventListener("pointerleave", () => {
+        if(pointerDown) cancelPress();
+      });
+
+      window.addEventListener("resize", () => {
+        renderStamps();
+      });
+
+      // =========================
+      // 初期化
+      // =========================
+      updateHistoryButtons();
+      updateTimeGate();
+      setInterval(updateTimeGate, 1000);
+    })();
+  </script>
+</body>
+</html>

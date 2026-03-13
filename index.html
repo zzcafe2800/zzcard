@@ -78,21 +78,21 @@ html,body{
     }
 
     /* 選択画面 */
-    #selectScreen{
-      position:absolute;
-      inset:0;
-      z-index:100;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:32px;
-      background:
-        radial-gradient(circle at 16% 18%, rgba(143,220,255,.18), transparent 24%),
-        radial-gradient(circle at 82% 16%, rgba(143,220,255,.14), transparent 22%),
-        linear-gradient(180deg, rgba(252,254,255,.98) 0%, rgba(241,251,255,.98) 100%);
-      backdrop-filter:blur(8px);
-      -webkit-backdrop-filter:blur(8px);
-    }
+#selectScreen{
+  position:absolute;
+  inset:0;
+  z-index:100;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:32px;
+  background:
+    linear-gradient(rgba(252,254,255,.78), rgba(241,251,255,.78)),
+    url("hk.jpg") center / cover no-repeat;
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+
 
     #selectInner{
       width:min(1180px, 100%);

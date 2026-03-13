@@ -197,7 +197,7 @@
       font-size:22px;
       font-weight:700;
       letter-spacing:.03em;
-      opacity:.0;
+      opacity:0;
       pointer-events:none;
     }
 
@@ -262,21 +262,27 @@
       cursor:default;
     }
 
+    /* 時間外タブ */
     #timeGate{
       position:absolute;
       top:14px;
       left:50%;
       transform:translateX(-50%);
-      width:min(680px, calc(100vw - 28px));
+      width:min(720px, calc(100vw - 56px));
       z-index:30;
       padding:14px 16px 14px;
-      border-radius:24px;
-      background:rgba(255,255,255,.76);
+      border-radius:26px;
+      background:rgba(255,255,255,.78);
       border:1px solid rgba(134,215,255,.28);
       box-shadow:0 20px 50px rgba(134,215,255,.16);
       backdrop-filter:blur(18px);
       -webkit-backdrop-filter:blur(18px);
       transition:.25s ease;
+    }
+
+    #timeGate.closed{
+      background:rgba(255,255,255,.66);
+      box-shadow:0 24px 60px rgba(134,215,255,.18);
     }
 
     #timeGateInner{
@@ -328,17 +334,6 @@
       transition:width .6s ease;
     }
 
-    #gateOverlay{
-      position:absolute;
-      inset:0;
-      z-index:20;
-      display:none;
-      pointer-events:auto;
-      backdrop-filter:blur(12px);
-      -webkit-backdrop-filter:blur(12px);
-      background:rgba(247,252,255,.40);
-    }
-
     #emptyHint{
       position:absolute;
       z-index:2;
@@ -374,7 +369,6 @@
       stroke:rgba(255,255,255,.72);
       stroke-width:8;
       fill:rgba(255,255,255,.15);
-      backdrop-filter:blur(8px);
     }
 
     #pressRing .ring-progress{
@@ -392,6 +386,57 @@
       fill:rgba(255,255,255,.55);
       stroke:rgba(134,215,255,.22);
       stroke-width:1.5;
+    }
+
+    /* 時間外のぼかし */
+    .closed-blur{
+      filter:blur(8px) saturate(.92);
+      opacity:.82;
+    }
+
+    /* 左下ダブルタップ用の見えない領域 */
+    #secretTapZone{
+      position:absolute;
+      left:0;
+      bottom:0;
+      width:110px;
+      height:110px;
+      z-index:25;
+      background:transparent;
+    }
+
+    /* パスワード欄 */
+    #passwordPopup{
+      position:absolute;
+      left:22px;
+      bottom:72px;
+      z-index:40;
+      width:120px;
+      padding:10px;
+      border-radius:16px;
+      background:rgba(255,255,255,.72);
+      border:1px solid rgba(134,215,255,.22);
+      box-shadow:0 14px 36px rgba(134,215,255,.18);
+      backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
+      display:none;
+    }
+
+    #passwordInput{
+      width:100%;
+      border:none;
+      outline:none;
+      background:rgba(255,255,255,.55);
+      border-radius:12px;
+      padding:10px 12px;
+      text-align:center;
+      font-size:18px;
+      color:#5c8fa8;
+      letter-spacing:.2em;
+    }
+
+    #passwordInput::placeholder{
+      color:transparent;
     }
 
     @media (max-width: 700px){
@@ -413,6 +458,14 @@
       #stageWrap{
         padding:88px 16px 72px;
       }
+      #passwordPopup{
+        left:16px;
+        bottom:68px;
+      }
+      #secretTapZone{
+        width:96px;
+        height:96px;
+      }
     }
   </style>
 </head>
@@ -429,8 +482,6 @@
         </div>
       </div>
     </div>
-
-    <div id="gateOverlay"></div>
 
     <button id="getCardBtn" class="floating" type="button">カード入手</button>
 
@@ -465,13 +516,16 @@
       <button id="undoBtn" class="historyBtn" type="button" aria-label="undo">↶</button>
       <button id="redoBtn" class="historyBtn" type="button" aria-label="redo">↷</button>
     </div>
+
+    <div id="secretTapZone"></div>
+
+    <div id="passwordPopup">
+      <input id="passwordInput" type="password" inputmode="numeric" autocomplete="off" maxlength="4" placeholder="" />
+    </div>
   </div>
 
   <script>
     (() => {
-      // =========================
-      // 設定
-      // =========================
       const JST_OPEN_HOUR = 6;
       const JST_OPEN_MINUTE = 0;
       const JST_CLOSE_HOUR = 6;
@@ -480,44 +534,34 @@
       const LONG_PRESS_MS = 4000;
       const STAMP_IMAGE_PATH = "stamp.png";
       const CARD_DOWNLOAD_PATH = "card.png";
-
-      // コードで指定した数値
       const STAMP_NUMBER = 1;
-
-      // スタンプサイズ（表示中の画像幅に対する割合）
       const STAMP_SIZE_RATIO = 0.17;
 
-      // =========================
-      // 要素
-      // =========================
+      const OVERRIDE_PASSWORD = "1111";
+      const STORAGE_KEY_OVERRIDE = "radio_stamp_time_override";
+
       const imageInput = document.getElementById("imageInput");
       const uploadArea = document.getElementById("uploadArea");
       const uploadText = document.getElementById("uploadText");
       const getCardBtn = document.getElementById("getCardBtn");
       const saveBtn = document.getElementById("saveBtn");
-
       const stageWrap = document.getElementById("stageWrap");
-      const gateOverlay = document.getElementById("gateOverlay");
       const emptyHint = document.getElementById("emptyHint");
-
       const imageFrame = document.getElementById("imageFrame");
       const cardImage = document.getElementById("cardImage");
       const stampLayer = document.getElementById("stampLayer");
       const pressTarget = document.getElementById("pressTarget");
       const pressRing = document.getElementById("pressRing");
       const ringProgress = pressRing.querySelector(".ring-progress");
-
       const countdown = document.getElementById("countdown");
       const progressBar = document.getElementById("progressBar");
-
       const undoBtn = document.getElementById("undoBtn");
       const redoBtn = document.getElementById("redoBtn");
+      const timeGate = document.getElementById("timeGate");
 
-      // =========================
-      // 状態
-      // =========================
-      const stampImg = new Image();
-      stampImg.src = STAMP_IMAGE_PATH;
+      const secretTapZone = document.getElementById("secretTapZone");
+      const passwordPopup = document.getElementById("passwordPopup");
+      const passwordInput = document.getElementById("passwordInput");
 
       let uploadedImage = null;
       let activeWindow = false;
@@ -533,11 +577,14 @@
       let pointerDown = false;
       let activePointerId = null;
 
-      // =========================
-      // ユーティリティ
-      // =========================
-      function pad(n){
-        return String(n).padStart(2, "0");
+      let overrideOpen = localStorage.getItem(STORAGE_KEY_OVERRIDE) === "true";
+
+      function clamp(v, min, max){
+        return Math.max(min, Math.min(max, v));
+      }
+
+      function getMinutesOfDay(h, m){
+        return h * 60 + m;
       }
 
       function getJSTNowParts(){
@@ -568,22 +615,19 @@
         };
       }
 
-      function getMinutesOfDay(h, m){
-        return h * 60 + m;
-      }
-
       function getJSTStatus(){
         const p = getJSTNowParts();
         const nowMin = getMinutesOfDay(p.hour, p.minute);
         const openMin = getMinutesOfDay(JST_OPEN_HOUR, JST_OPEN_MINUTE);
         const closeMin = getMinutesOfDay(JST_CLOSE_HOUR, JST_CLOSE_MINUTE);
 
-        const isOpen = nowMin >= openMin && nowMin < closeMin;
+        const isOpenByTime = nowMin >= openMin && nowMin < closeMin;
+        const isOpen = isOpenByTime || overrideOpen;
 
         let remainingMs = 0;
         let progress = 0;
 
-        if(isOpen){
+        if(isOpenByTime){
           const elapsedInOpen = (nowMin - openMin) * 60 + p.second;
           const totalOpenSeconds = (closeMin - openMin) * 60;
           remainingMs = Math.max(0, (totalOpenSeconds - elapsedInOpen) * 1000);
@@ -596,13 +640,13 @@
             minutesUntilNextOpen = (24 * 60 - nowMin) + openMin;
           }
           remainingMs = Math.max(0, (minutesUntilNextOpen * 60 - p.second) * 1000);
-
           const cycleTotal = 24 * 60 * 60 * 1000;
           progress = ((cycleTotal - remainingMs) / cycleTotal) * 100;
         }
 
         return {
           isOpen,
+          isOpenByTime,
           remainingMs,
           progress
         };
@@ -615,10 +659,6 @@
         return `残り ${h}時間 ${m}分`;
       }
 
-      function clamp(v, min, max){
-        return Math.max(min, Math.min(max, v));
-      }
-
       function imageRect(){
         const r = cardImage.getBoundingClientRect();
         return {
@@ -629,22 +669,29 @@
         };
       }
 
+      function hidePasswordPopup(){
+        passwordPopup.style.display = "none";
+        passwordInput.value = "";
+      }
+
+      function showPasswordPopup(){
+        passwordPopup.style.display = "block";
+        passwordInput.value = "";
+        passwordInput.focus();
+      }
+
       function setGateVisual(isOpen){
         activeWindow = isOpen;
 
         if(isOpen){
-          gateOverlay.style.display = "none";
-          stageWrap.style.filter = "none";
-          stageWrap.style.opacity = "1";
+          stageWrap.classList.remove("closed-blur");
           getCardBtn.style.pointerEvents = "auto";
           uploadArea.style.pointerEvents = "auto";
           saveBtn.style.pointerEvents = "auto";
           undoBtn.style.pointerEvents = "auto";
           redoBtn.style.pointerEvents = "auto";
         }else{
-          gateOverlay.style.display = "block";
-          stageWrap.style.filter = "blur(8px)";
-          stageWrap.style.opacity = ".82";
+          stageWrap.classList.add("closed-blur");
           getCardBtn.style.pointerEvents = "none";
           uploadArea.style.pointerEvents = "none";
           saveBtn.style.pointerEvents = "none";
@@ -658,10 +705,18 @@
         const status = getJSTStatus();
         progressBar.style.width = `${clamp(status.progress, 0, 100)}%`;
 
-        if(status.isOpen){
+        if(status.isOpenByTime){
+          countdown.textContent = "使用できます";
+        }else if(status.isOpen && overrideOpen){
           countdown.textContent = "使用できます";
         }else{
           countdown.textContent = formatRemaining(status.remainingMs);
+        }
+
+        if(status.isOpenByTime || (status.isOpen && overrideOpen)){
+          timeGate.classList.remove("closed");
+        }else{
+          timeGate.classList.add("closed");
         }
 
         setGateVisual(status.isOpen);
@@ -678,7 +733,6 @@
 
       function renderStamps(){
         clearStampLayer();
-
         const rect = imageRect();
         if(!rect.width || !rect.height) return;
 
@@ -741,22 +795,16 @@
         emptyHint.style.display = "none";
         uploadArea.classList.add("has-image");
         uploadText.textContent = "カード入れ替え";
-        cardImage.onload = () => {
-          renderStamps();
-        };
+        cardImage.onload = () => renderStamps();
       }
 
       async function downloadFile(url, filename){
-        try{
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = filename;
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-        }catch(e){
-          console.error(e);
-        }
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
       }
 
       function pointInsideImage(clientX, clientY){
@@ -773,10 +821,7 @@
         const rect = imageRect();
         const x = (clientX - rect.left) / rect.width;
         const y = (clientY - rect.top) / rect.height;
-        return {
-          x: clamp(x, 0, 1),
-          y: clamp(y, 0, 1)
-        };
+        return { x: clamp(x, 0, 1), y: clamp(y, 0, 1) };
       }
 
       function showPressRing(clientX, clientY){
@@ -847,8 +892,16 @@
         if(!pointerDown || !pressPoint) return;
         if(!pointInsideImage(clientX, clientY)){
           cancelPress();
-          return;
         }
+      }
+
+      function loadImage(src){
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => resolve(img);
+          img.onerror = reject;
+          img.src = src;
+        });
       }
 
       async function saveCompositePNG(){
@@ -887,18 +940,6 @@
         a.remove();
       }
 
-      function loadImage(src){
-        return new Promise((resolve, reject) => {
-          const img = new Image();
-          img.onload = () => resolve(img);
-          img.onerror = reject;
-          img.src = src;
-        });
-      }
-
-      // =========================
-      // イベント
-      // =========================
       getCardBtn.addEventListener("click", () => {
         if(!activeWindow) return;
         downloadFile(CARD_DOWNLOAD_PATH, "card.png");
@@ -910,9 +951,7 @@
         if(!file) return;
 
         const reader = new FileReader();
-        reader.onload = () => {
-          setUploadedImage(reader.result);
-        };
+        reader.onload = () => setUploadedImage(reader.result);
         reader.readAsDataURL(file);
       });
 
@@ -964,9 +1003,47 @@
         renderStamps();
       });
 
-      // =========================
-      // 初期化
-      // =========================
+      // 左下ダブルタップ
+      secretTapZone.addEventListener("dblclick", (e) => {
+        e.preventDefault();
+        if(passwordPopup.style.display === "block"){
+          hidePasswordPopup();
+        }else{
+          showPasswordPopup();
+        }
+      });
+
+      let lastTapTime = 0;
+      secretTapZone.addEventListener("touchend", (e) => {
+        const now = Date.now();
+        if(now - lastTapTime < 350){
+          e.preventDefault();
+          if(passwordPopup.style.display === "block"){
+            hidePasswordPopup();
+          }else{
+            showPasswordPopup();
+          }
+        }
+        lastTapTime = now;
+      }, { passive:false });
+
+      passwordInput.addEventListener("input", () => {
+        if(passwordInput.value === OVERRIDE_PASSWORD){
+          overrideOpen = true;
+          localStorage.setItem(STORAGE_KEY_OVERRIDE, "true");
+          hidePasswordPopup();
+          updateTimeGate();
+        }
+      });
+
+      document.addEventListener("pointerdown", (e) => {
+        const insidePopup = passwordPopup.contains(e.target);
+        const insideSecret = secretTapZone.contains(e.target);
+        if(!insidePopup && !insideSecret){
+          hidePasswordPopup();
+        }
+      });
+
       updateHistoryButtons();
       updateTimeGate();
       setInterval(updateTimeGate, 1000);

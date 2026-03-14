@@ -95,7 +95,32 @@ html,body{
 }
 
 
- 
+ .modeCard.selected{
+  transform:translateY(-3px);
+  box-shadow:0 30px 70px rgba(111,205,255,.22);
+  border-color:rgba(143,220,255,.55);
+  background:rgba(255,255,255,.78);
+}
+
+.modeCard.selected .modePreview{
+  opacity:.55;
+  transform:scale(1.01);
+}
+
+.modeCard.selected .modeLabel{
+  background:rgba(255,255,255,.82);
+  color:#4a7892;
+}
+
+.modeCard.selected .modeCount,
+.modeCard.selected .randomTodayLabel{
+  background:rgba(255,255,255,.68);
+}
+
+.modeCard.selected .randomTodayCircle{
+  background:rgba(255,255,255,.74);
+  border-color:rgba(143,220,255,.38);
+}
 
 .modeCard{
   position: relative;
@@ -951,6 +976,7 @@ html,body{
 
     let currentMode = null;
     let currentCardPath = null;
+    let currentRandomStampPath = null;
     let activeWindow = false;
     let uploadedImage = null;
     let displayedStamps = [];
@@ -1077,12 +1103,13 @@ html,body{
       gateCardThumb.innerHTML = src ? `<img src="${src}" alt="">` : "";
     }
 
-    function showSelectScreen(){
-      selectScreen.classList.remove("hidden");
-      backToSelect.style.display = "none";
-      timeGate.classList.remove("visible");
-      currentMode = null;
-    }
+ function showSelectScreen(){
+  selectScreen.classList.remove("hidden");
+  backToSelect.style.display = "none";
+  timeGate.classList.remove("visible");
+  currentMode = null;
+  clearModeSelection();
+}
 
     function hideSelectScreen(){
       selectScreen.classList.add("hidden");
@@ -1558,7 +1585,17 @@ html,body{
 
 
 
+function clearModeSelection(){
+  selectedMode = null;
+  randomModeBtn.classList.remove("selected");
+  artModeBtn.classList.remove("selected");
+}
 
+function setModeSelection(mode){
+  selectedMode = mode;
+  randomModeBtn.classList.toggle("selected", mode === "random");
+  artModeBtn.classList.toggle("selected", mode === "art");
+}
 
 
 

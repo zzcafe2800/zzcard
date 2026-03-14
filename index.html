@@ -91,8 +91,21 @@ html,body{
     url("hk.jpg") center / cover no-repeat;
   backdrop-filter:blur(8px);
   -webkit-backdrop-filter:blur(8px);
+    touch-action: manipulation;
 }
 
+
+ 
+
+.modeCard{
+  position: relative;
+  z-index: 1;
+  pointer-events: auto;
+}
+
+.modeCard *{
+  pointer-events: none;
+}
 
     #selectInner{
       width:min(1180px, 100%);

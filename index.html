@@ -23,7 +23,7 @@ button,input{font:inherit;}
 .glass{backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);background:rgba(255,255,255,.58);border:1px solid rgba(143,220,255,.34);box-shadow:var(--shadow);}
 .hidden{display:none!important;}
 
-/* ── SELECT ── */
+/* SELECT */
 #selectScreen{position:absolute;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:32px;
   background:linear-gradient(rgba(252,254,255,.78),rgba(241,251,255,.78)),url("hk.jpg") center/cover no-repeat;
   backdrop-filter:blur(8px);touch-action:manipulation;}
@@ -31,15 +31,17 @@ button,input{font:inherit;}
 #selectTitle{text-align:center;color:#5c93ad;font-size:28px;letter-spacing:.1em;font-weight:700;}
 #selectWrap{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:stretch;}
 
-/* ── MODE CARD: touch-action fix + cursor ── */
+/* modeCard: スマホ完全対応 */
 .modeCard{position:relative;min-height:470px;border-radius:30px;overflow:hidden;cursor:pointer;
   background:rgba(255,255,255,.58);border:1px solid rgba(143,220,255,.28);
   box-shadow:0 26px 60px rgba(111,205,255,.15);
   transition:transform .28s,box-shadow .28s,border-color .28s;
-  appearance:none;outline:none;
-  touch-action:manipulation;   /* fix mobile tap */
-  -webkit-appearance:none;}
-.modeCard *{pointer-events:none;}
+  appearance:none;-webkit-appearance:none;outline:none;
+  touch-action:manipulation;-webkit-touch-callout:none;}
+/* すべての子要素のpointer-eventsをnoneにして、ボタン自体だけが反応する */
+.modeCard>*{pointer-events:none;}
+/* todayCircleとtodayLabelだけpointer-events:auto */
+.randomTodayCircle,.randomTodayLabel{pointer-events:auto!important;}
 
 @media(hover:hover)and(pointer:fine){
   .modePreview{opacity:.08;transition:opacity .38s,transform .38s;}
@@ -48,26 +50,25 @@ button,input{font:inherit;}
   .modeCard:hover .modeLabel{transform:translate(-50%,-50%) scale(1.03);background:rgba(255,255,255,.72);}
 }
 @media(hover:none),(pointer:coarse){.modePreview{opacity:.40;}}
-.modePreview{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:22px;pointer-events:none;}
+
+.modePreview{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  padding:22px;pointer-events:none;z-index:1;}
 .modePreview img{max-width:100%;max-height:100%;object-fit:contain;border-radius:20px;}
 .modeLabel{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;
   padding:16px 30px;border-radius:999px;color:var(--text-d);letter-spacing:.1em;font-size:26px;font-weight:700;
   background:rgba(255,255,255,.60);border:1px solid rgba(143,220,255,.26);backdrop-filter:blur(14px);white-space:nowrap;}
 .modeCount{position:absolute;left:24px;bottom:22px;z-index:2;padding:10px 14px;border-radius:999px;
   color:#79a6bc;font-size:12px;background:rgba(255,255,255,.42);border:1px solid rgba(143,220,255,.18);}
-
-/* Today stamp circle — pointer-events:auto so click works */
 .randomTodayCircle{position:absolute;right:22px;bottom:22px;width:160px;height:160px;border-radius:50%;
   background:rgba(255,255,255,.58);border:1px solid rgba(143,220,255,.26);
   display:flex;align-items:center;justify-content:center;padding:18px;z-index:3;overflow:hidden;
-  cursor:pointer;pointer-events:auto;transition:transform .2s,box-shadow .2s;
+  cursor:pointer;transition:transform .2s,box-shadow .2s;
   box-shadow:0 8px 24px rgba(111,205,255,.18);}
 .randomTodayCircle:hover{transform:scale(1.06);}
 .randomTodayCircle img{width:100%;height:100%;object-fit:contain;}
-.randomTodayLabel{position:absolute;right:44px;bottom:188px;z-index:4;font-size:11px;
+.randomTodayLabel{position:absolute;right:44px;bottom:34px;z-index:4;font-size:11px;
   color:#7ca8bd;background:rgba(255,255,255,.52);padding:6px 10px;border-radius:999px;
-  border:1px solid rgba(143,220,255,.18);cursor:pointer;pointer-events:auto;}
-
+  border:1px solid rgba(143,220,255,.18);cursor:pointer;}
 .modeDisabled{cursor:not-allowed;opacity:.72;}
 .modeDisabled:hover{transform:none!important;}
 .modeDisabled .modePreview{opacity:.18!important;transform:none!important;}
@@ -77,7 +78,7 @@ button,input{font:inherit;}
 .modeDisabled::before{transform:rotate(19deg);}
 .modeDisabled::after{transform:rotate(-19deg);}
 
-/* ── CALENDAR ── */
+/* CALENDAR */
 #calendarPopup{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;
   background:rgba(220,240,255,.32);backdrop-filter:blur(10px);}
 #calendarPopup.visible{display:flex;}
@@ -99,7 +100,7 @@ button,input{font:inherit;}
 .calDaySun .calDayNum{color:#e08080;}.calDaySat .calDayNum{color:#80a8e0;}
 .calDayStamp{width:44px;height:44px;}.calDayStamp img{width:100%;height:100%;object-fit:contain;}
 
-/* ── TIME GATE ── */
+/* TIME GATE */
 #timeGate{position:absolute;top:14px;left:50%;transform:translateX(-50%);
   width:min(760px,calc(100vw - 54px));min-height:84px;z-index:80;border-radius:28px;
   padding:12px 16px;background:rgba(255,255,255,.74);border:1px solid rgba(143,220,255,.30);
@@ -117,7 +118,7 @@ button,input{font:inherit;}
 #progressBar{position:absolute;inset:0 auto 0 0;width:0%;border-radius:999px;
   background:linear-gradient(90deg,rgba(143,220,255,.55),rgba(99,204,255,.96));transition:width .5s;}
 
-/* ── MAIN SCREEN ── */
+/* MAIN */
 #mainScreen{position:absolute;inset:0;z-index:10;}
 #backToSelect{position:absolute;left:20px;top:18px;z-index:13;padding:10px 16px;
   border:none;border-radius:999px;color:#6e9db4;cursor:pointer;display:none;font-size:13px;
@@ -125,13 +126,10 @@ button,input{font:inherit;}
   backdrop-filter:blur(12px);box-shadow:0 4px 14px rgba(111,205,255,.14);transition:.2s;}
 #backToSelect:hover{background:rgba(255,255,255,.82);}
 
-/* ── Upload + Download row (top-right) ── */
-#uploadWrap{position:absolute;right:20px;top:18px;z-index:14;
-  display:flex;align-items:center;gap:10px;}
-
-/* Download card button — top-right, left of upload */
-#dlWrapper{position:relative;flex:0 0 auto;}
-#getCardBtn{width:52px;height:52px;border-radius:999px;border:none;outline:none;cursor:pointer;
+/* Upload + Download: flex row, 右上 */
+#uploadWrap{position:absolute;right:20px;top:18px;z-index:14;display:flex;align-items:center;gap:10px;}
+#getCardWrap{position:relative;}
+#getCardBtn{width:56px;height:56px;border-radius:50%;border:none;outline:none;cursor:pointer;
   background:linear-gradient(135deg,#4dc8ff,#63ccff,#8fdcff);
   display:flex;align-items:center;justify-content:center;
   box-shadow:0 6px 22px rgba(99,204,255,.50),0 0 0 2.5px rgba(255,255,255,.7);
@@ -141,8 +139,7 @@ button,input{font:inherit;}
 #newBadge{position:absolute;top:-5px;right:-6px;background:linear-gradient(135deg,#ff9ed0,#ff6faf);color:#fff;
   font-size:9px;font-weight:700;padding:2px 7px;border-radius:999px;letter-spacing:.04em;
   white-space:nowrap;pointer-events:none;box-shadow:0 2px 8px rgba(255,120,180,.34);}
-
-/* Upload area button */
+#getCardBtn.hidden~#newBadge{display:none!important;}
 #uploadArea{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;
   background:#8fdcff;border:2.5px solid rgba(255,255,255,.6);cursor:pointer;
   transition:transform .2s,box-shadow .2s;
@@ -151,7 +148,7 @@ button,input{font:inherit;}
 #uploadArea input{display:none;}
 #uploadArea svg{width:30px;height:30px;}
 
-/* ── STAGE ── */
+/* STAGE */
 #stageWrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   padding:100px 32px 58px;transition:filter .3s,opacity .3s;}
 #stageWrap.closed{filter:blur(8px) saturate(.92);opacity:.82;}
@@ -174,50 +171,46 @@ button,input{font:inherit;}
 #pressTarget{position:absolute;inset:0;border-radius:18px;background:transparent;z-index:5;cursor:crosshair;touch-action:none;}
 #cardControls{position:absolute;inset:0;pointer-events:none;z-index:8;}
 
-/* ── History controls: undo / redo / save (light blue) ── */
-#historyControls{position:absolute;top:12px;left:12px;display:flex;gap:8px;pointer-events:auto;align-items:center;}
+/* historyControls: 画像左下に移動、より白い半透明 */
+#historyControls{position:absolute;bottom:12px;left:12px;display:flex;gap:8px;pointer-events:auto;align-items:center;}
 .historyBtn{width:42px;height:42px;border:none;border-radius:999px;
-  background:rgba(255,255,255,.70);border:1.5px solid rgba(143,220,255,.36);
-  backdrop-filter:blur(10px);color:rgba(75,120,145,.95);font-size:20px;cursor:pointer;
+  background:rgba(255,255,255,.88);border:1.5px solid rgba(255,255,255,.70);
+  backdrop-filter:blur(10px);color:rgba(75,120,145,.85);font-size:20px;cursor:pointer;
   transition:.2s;display:flex;align-items:center;justify-content:center;
-  box-shadow:0 6px 18px rgba(111,205,255,.18);}
-.historyBtn:hover{background:rgba(255,255,255,.90);transform:translateY(-1px);}
-.historyBtn:disabled{opacity:.35;cursor:default;transform:none;}
-
-/* Save button — light blue, inline in historyControls */
+  box-shadow:0 4px 14px rgba(111,205,255,.12);}
+.historyBtn:hover{background:rgba(255,255,255,.97);transform:translateY(-1px);}
+.historyBtn:disabled{opacity:.30;cursor:default;transform:none;}
 #saveBtn{width:42px;height:42px;border:none;border-radius:999px;
-  background:rgba(143,220,255,.28);border:1.5px solid rgba(99,204,255,.55);
-  backdrop-filter:blur(10px);color:#2e96bc;cursor:pointer;
+  background:rgba(255,255,255,.82);border:1.5px solid rgba(143,220,255,.45);
+  backdrop-filter:blur(10px);cursor:pointer;pointer-events:auto;
   transition:.2s;display:flex;align-items:center;justify-content:center;
-  box-shadow:0 6px 18px rgba(111,205,255,.22);}
-#saveBtn:hover{background:rgba(143,220,255,.46);transform:translateY(-1px);}
+  box-shadow:0 4px 14px rgba(111,205,255,.12);}
+#saveBtn:hover{background:rgba(255,255,255,.97);transform:translateY(-1px);}
 #saveBtn svg{width:20px;height:20px;}
 
-/* ── QR overlay — bottom-left of card ── */
-#qrOverlay{position:absolute;left:2%;bottom:2%;z-index:6;pointer-events:none;opacity:1;}
-#qrOverlay canvas{width:100%;height:100%;image-rendering:pixelated;border-radius:3px;display:block;}
+/* 朝/夜 切り替えアイコン (画像中央下) */
+#timeOfDayWrap{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);
+  z-index:8;pointer-events:auto;cursor:pointer;display:none;}
+#timeOfDayWrap.visible{display:block;}
+#timeOfDayInner{position:relative;display:flex;align-items:center;justify-content:center;
+  width:56px;height:56px;border-radius:50%;
+  background:rgba(255,255,255,.22);backdrop-filter:blur(10px);
+  border:1.5px solid rgba(255,255,255,.40);
+  box-shadow:0 6px 20px rgba(111,205,255,.22);
+  transition:background .28s,box-shadow .28s;}
+#timeOfDayInner:hover{background:rgba(255,255,255,.34);box-shadow:0 8px 26px rgba(111,205,255,.32);}
+#todBadge{position:absolute;top:-3px;right:-3px;font-size:10px;font-weight:700;
+  color:rgba(255,255,255,.96);background:rgba(255,178,50,.72);
+  border-radius:999px;padding:2px 6px;letter-spacing:.05em;
+  backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.30);
+  transition:background .28s;}
+#timeOfDayWrap.night #todBadge{background:rgba(80,60,160,.72);}
+#todSunIcon{display:block;}
+#todMoonIcon{display:none;}
+#timeOfDayWrap.night #todSunIcon{display:none;}
+#timeOfDayWrap.night #todMoonIcon{display:block;}
 
-/* QR cover — slides down from top to hide QR */
-#qrCover{position:absolute;left:2%;bottom:2%;z-index:7;pointer-events:none;
-  background:linear-gradient(135deg,rgba(143,220,255,.85),rgba(99,204,255,.75));
-  border-radius:5px;overflow:hidden;
-  transform:scaleY(0);transform-origin:top center;
-  transition:transform .35s cubic-bezier(.4,0,.2,1);}
-#qrCover.active{transform:scaleY(1);}
-#qrCover::after{content:"✕";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  color:rgba(255,255,255,.8);font-size:10px;}
-
-/* ── Visit count — right of QR ── */
-#visitCountOverlay{position:absolute;left:12%;bottom:2.5%;z-index:6;pointer-events:none;
-  font-size:clamp(10px,1.3vw,16px);color:#63ccff;font-weight:700;letter-spacing:.08em;
-  text-shadow:0 1px 6px rgba(200,235,255,.9);opacity:0;transition:opacity .4s;}
-#visitCountOverlay.visible{opacity:1;}
-@keyframes ldot{0%,80%,100%{opacity:.25}40%{opacity:1}}
-.ldots span{display:inline-block;animation:ldot 1.1s infinite;}
-.ldots span:nth-child(2){animation-delay:.18s;}
-.ldots span:nth-child(3){animation-delay:.36s;}
-
-/* ── Press ring ── */
+/* Press ring */
 #pressRing{position:absolute;width:112px;height:112px;transform:translate(-50%,-50%);
   display:none;align-items:center;justify-content:center;pointer-events:none;z-index:9;}
 #pressRing svg{width:112px;height:112px;overflow:visible;}
@@ -226,33 +219,15 @@ button,input{font:inherit;}
   transform:rotate(-90deg);transform-origin:50% 50%;stroke-dasharray:251.2;stroke-dashoffset:251.2;}
 .ring-center{fill:rgba(255,255,255,.50);stroke:rgba(143,220,255,.24);stroke-width:1.5;}
 
-/* ── Bottom buttons row (SNS + QR toggle) ── */
-#bottomBtns{position:absolute;left:20px;bottom:52px;z-index:14;
-  display:flex;align-items:center;gap:10px;}
+/* SNS: 左下 */
+#bottomLeftBar{position:absolute;left:20px;bottom:58px;z-index:14;display:flex;align-items:center;gap:10px;}
 #snsBtn{padding:10px 18px;border:none;border-radius:999px;cursor:pointer;
   background:rgba(255,255,255,.70);border:1.5px solid rgba(143,220,255,.34);
   backdrop-filter:blur(12px);color:#5e93ad;font-size:13px;letter-spacing:.08em;
   box-shadow:0 6px 18px rgba(111,205,255,.16);transition:.2s;display:flex;align-items:center;gap:6px;}
 #snsBtn:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(111,205,255,.26);}
 
-/* QR toggle button — pill with left-right slide */
-#qrToggleBtn{padding:0;border:none;cursor:pointer;border-radius:999px;
-  background:rgba(255,255,255,.70);border:1.5px solid rgba(143,220,255,.34);
-  backdrop-filter:blur(12px);
-  box-shadow:0 6px 18px rgba(111,205,255,.16);
-  transition:.2s;display:flex;align-items:center;overflow:hidden;
-  position:relative;height:36px;min-width:130px;}
-#qrToggleBtn:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(111,205,255,.26);}
-#qrToggleSlider{position:absolute;top:3px;bottom:3px;width:30px;border-radius:999px;
-  background:linear-gradient(135deg,#63ccff,#8fdcff);
-  transition:left .3s cubic-bezier(.4,0,.2,1),right .3s cubic-bezier(.4,0,.2,1);
-  left:3px;}
-#qrToggleBtn.qr-hidden #qrToggleSlider{left:calc(100% - 33px);}
-#qrToggleText{position:relative;z-index:1;padding:0 10px 0 38px;font-size:12px;color:#5e93ad;
-  letter-spacing:.06em;white-space:nowrap;transition:padding .3s;}
-#qrToggleBtn.qr-hidden #qrToggleText{padding:0 38px 0 10px;}
-
-/* ── Secret zone ── */
+/* Secret zone */
 #secretTapZone{position:absolute;left:0;bottom:44px;width:110px;height:110px;z-index:90;background:transparent;}
 #passwordPopup{position:absolute;left:20px;bottom:112px;z-index:95;width:120px;padding:10px;
   border-radius:16px;display:none;background:rgba(255,255,255,.84);
@@ -261,63 +236,50 @@ button,input{font:inherit;}
   text-align:center;background:rgba(255,255,255,.56);color:#5c90a8;font-size:18px;letter-spacing:.20em;}
 #passwordInput::placeholder{color:transparent;}
 
-/* ── BGM BAR — compact, right side only, ~25% width ── */
+/* BGM BAR: 右側コンパクト */
 #bgmBar{position:absolute;right:0;bottom:0;
-  width:min(26vw,280px);height:44px;z-index:92;
-  background:rgba(99,190,240,.18);backdrop-filter:blur(12px);
-  border-top:1px solid rgba(143,220,255,.28);
-  border-left:1px solid rgba(143,220,255,.20);
+  width:clamp(170px,26vw,310px);height:46px;z-index:92;
+  background:rgba(99,190,240,.20);backdrop-filter:blur(12px);
+  border-top:1px solid rgba(143,220,255,.28);border-left:1px solid rgba(143,220,255,.18);
   border-radius:14px 0 0 0;
-  display:flex;align-items:center;padding:0 12px;gap:8px;}
-
-/* Mute icon — overlaid on the note icon positionally */
-#bgmIconWrap{position:relative;flex:0 0 auto;width:22px;height:22px;cursor:pointer;}
-#bgmNote{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  font-size:16px;color:#7ab8d4;transition:opacity .2s,transform .2s;line-height:1;}
-#bgmMuteIco{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  font-size:16px;color:#7ab8d4;opacity:0;transition:opacity .2s,transform .2s;line-height:1;transform:scale(.7);}
-#bgmIconWrap.muted #bgmNote{opacity:0;transform:scale(.7);}
-#bgmIconWrap.muted #bgmMuteIco{opacity:1;transform:scale(1);}
-#bgmIconWrap:hover #bgmNote,#bgmIconWrap:hover #bgmMuteIco{color:#3ab8ee;}
-
+  display:flex;align-items:center;padding:0 14px;gap:10px;}
+#bgmIcon{position:relative;font-size:16px;color:#7ab8d4;flex:0 0 auto;cursor:pointer;
+  transition:color .2s;line-height:1;display:inline-block;width:18px;text-align:center;}
+#bgmIcon:hover{color:#3ab8ee;}
+#bgmIcon::after{content:"";position:absolute;left:50%;top:50%;
+  transform:translate(-50%,-50%) rotate(-42deg);
+  width:2px;height:140%;
+  background:rgba(210,50,50,.82);border-radius:1px;
+  opacity:0;transition:opacity .18s;pointer-events:none;}
+#bgmIcon.muted::after{opacity:1;}
 #bgmTrack{flex:1;height:6px;border-radius:999px;background:rgba(143,220,255,.22);position:relative;cursor:pointer;touch-action:none;}
 #bgmFill{height:100%;border-radius:999px;background:linear-gradient(90deg,#8fdcff,#63ccff);
   width:10%;pointer-events:none;transition:width .06s;}
 #bgmThumb{position:absolute;top:50%;transform:translate(-50%,-50%);
-  width:18px;height:18px;border-radius:50%;
+  width:20px;height:20px;border-radius:50%;
   background:linear-gradient(135deg,#8fdcff,#40c0f0);
   border:2.5px solid #fff;box-shadow:0 2px 10px rgba(99,204,255,.42);left:10%;cursor:grab;transition:left .06s;}
 #bgmPct{font-size:11px;color:#7ab8d4;min-width:28px;text-align:right;flex:0 0 auto;}
 
-/* ── RESPONSIVE ── */
+/* RESPONSIVE */
 @media(max-width:900px){
   #selectWrap{grid-template-columns:1fr;max-width:580px;}
   .modeCard{min-height:260px;}.modeLabel{font-size:22px;}
-
-  /* Portrait: move circle to bottom-right so it doesn't overlap label */
-  .randomTodayCircle{width:110px;height:110px;right:14px;bottom:14px;top:auto;}
-  .randomTodayLabel{right:18px;bottom:130px;top:auto;}
-
-  #bgmBar{width:min(40vw,200px);}
-  #stageWrap{padding:90px 14px 52px;}
-  #timeGate{width:calc(100vw - 28px);}
-  #bottomBtns{font-size:12px;left:14px;bottom:50px;}
-  #secretTapZone{bottom:44px;}
+  .randomTodayCircle{width:120px;height:120px;right:14px;top:14px;bottom:auto;}
+  .randomTodayLabel{right:20px;top:144px;bottom:auto;}
 }
 @media(max-width:780px){
-  #selectTitle{font-size:20px;}
-  #uploadArea{width:56px;height:56px;}
-  #getCardBtn{width:46px;height:46px;}
-  #bgmBar{width:min(42vw,180px);}
-  #qrToggleBtn{min-width:112px;}
-  #qrToggleText{font-size:11px;}
+  #selectTitle{font-size:20px;}#uploadArea{width:56px;height:56px;}
+  #stageWrap{padding:90px 14px 58px;}#timeGate{width:calc(100vw - 28px);}
+  #bottomLeftBar{font-size:12px;left:16px;bottom:52px;}
+  #snsBtn{font-size:12px;padding:8px 14px;}
+  #secretTapZone{bottom:46px;}
 }
 </style>
 </head>
 <body>
 <div id="app">
 
-<!-- SELECT SCREEN -->
 <div id="selectScreen">
   <div id="selectInner">
     <div id="selectTitle">カードの種類を選択</div>
@@ -338,7 +300,6 @@ button,input{font:inherit;}
   </div>
 </div>
 
-<!-- CALENDAR POPUP -->
 <div id="calendarPopup">
   <div id="calendarBox">
     <div id="calendarHeader">
@@ -349,7 +310,6 @@ button,input{font:inherit;}
   </div>
 </div>
 
-<!-- TIME GATE -->
 <div id="timeGate">
   <div id="gateCardThumb"></div>
   <div id="gateInfo">
@@ -362,13 +322,12 @@ button,input{font:inherit;}
   </div>
 </div>
 
-<!-- MAIN SCREEN -->
 <div id="mainScreen">
   <button id="backToSelect" class="glass" type="button">もどる</button>
 
-  <!-- Top-right: download card btn + upload btn -->
+  <!-- 右上: ダウンロード + アップロード -->
   <div id="uploadWrap">
-    <div id="dlWrapper">
+    <div id="getCardWrap">
       <button id="getCardBtn" class="hidden" type="button" title="カードをダウンロード">
         <svg viewBox="0 0 24 24" fill="none">
           <path d="M4 17v2a1 1 0 001 1h14a1 1 0 001-1v-2" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
@@ -387,8 +346,8 @@ button,input{font:inherit;}
     </label>
   </div>
 
-  <!-- Bottom-left buttons: SNS + QR toggle -->
-  <div id="bottomBtns">
+  <!-- 左下: SNS -->
+  <div id="bottomLeftBar">
     <button id="snsBtn" type="button">
       <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
         <circle cx="3" cy="8" r="2" fill="#8fdcff"/>
@@ -399,10 +358,6 @@ button,input{font:inherit;}
       </svg>
       SNS投稿◯
     </button>
-    <button id="qrToggleBtn" type="button" title="QRは何回目かを記録しています">
-      <div id="qrToggleSlider"></div>
-      <span id="qrToggleText">QRコード 非表示</span>
-    </button>
   </div>
 
   <div id="stageWrap">
@@ -412,21 +367,42 @@ button,input{font:inherit;}
         <img id="cardImage" alt="card">
         <div id="stampLayer"></div>
         <div id="ghostStamp"><img id="ghostStampImg" alt=""></div>
-        <!-- QR overlay + cover -->
-        <div id="qrOverlay"></div>
-        <div id="qrCover"></div>
-        <div id="visitCountOverlay"></div>
         <div id="cardControls">
-          <!-- Top-left: undo / redo / save(light-blue) -->
+          <!-- ↶↷↓ ボタン: 画像左下に移動、より白い半透明 -->
           <div id="historyControls">
             <button id="undoBtn" class="historyBtn" type="button" title="元に戻す">↶</button>
             <button id="redoBtn" class="historyBtn" type="button" title="やり直す">↷</button>
-            <button id="saveBtn" type="button" title="保存（スタンプをカードに焼き込む）">
+            <button id="saveBtn" type="button" title="保存">
               <svg viewBox="0 0 20 20" fill="none">
-                <path d="M3 13v3a1 1 0 001 1h12a1 1 0 001-1v-3" stroke="#2e96bc" stroke-width="1.8" stroke-linecap="round"/>
-                <path d="M10 3v9M7 9l3 3 3-3" stroke="#2e96bc" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M3 13v3a1 1 0 001 1h12a1 1 0 001-1v-3" stroke="#7ab8d4" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M10 3v9M7 9l3 3 3-3" stroke="#7ab8d4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </button>
+          </div>
+          <!-- 朝/夜 切り替えアイコン (画像中央下) -->
+          <div id="timeOfDayWrap" title="朝・夜を切り替え">
+            <div id="timeOfDayInner">
+              <!-- 太陽アイコン (朝) -->
+              <svg id="todSunIcon" width="30" height="30" viewBox="0 0 30 30" fill="none">
+                <circle cx="15" cy="15" r="5.5" fill="white" opacity=".92"/>
+                <line x1="15" y1="2" x2="15" y2="6.5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                <line x1="15" y1="23.5" x2="15" y2="28" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                <line x1="2" y1="15" x2="6.5" y2="15" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                <line x1="23.5" y1="15" x2="28" y2="15" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                <line x1="5.8" y1="5.8" x2="9" y2="9" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                <line x1="21" y1="21" x2="24.2" y2="24.2" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                <line x1="24.2" y1="5.8" x2="21" y2="9" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                <line x1="9" y1="21" x2="5.8" y2="24.2" stroke="white" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              <!-- 月アイコン (夜) -->
+              <svg id="todMoonIcon" width="28" height="28" viewBox="0 0 28 28" fill="none">
+                <path d="M21 15A9 9 0 1 1 13 7a6.5 6.5 0 0 0 8 8z" fill="white" opacity=".92"/>
+                <circle cx="21" cy="8" r="1.2" fill="white" opacity=".6"/>
+                <circle cx="24" cy="12" r="0.8" fill="white" opacity=".45"/>
+                <circle cx="19" cy="5" r="0.7" fill="white" opacity=".4"/>
+              </svg>
+              <span id="todBadge">朝</span>
+            </div>
           </div>
         </div>
         <div id="pressTarget"></div>
@@ -442,12 +418,9 @@ button,input{font:inherit;}
   </div>
 </div>
 
-<!-- BGM BAR — compact, right side -->
+<!-- BGM: 右側コンパクト -->
 <div id="bgmBar">
-  <div id="bgmIconWrap" title="BGM ON/OFF">
-    <span id="bgmNote">♪</span>
-    <span id="bgmMuteIco">🔇</span>
-  </div>
+  <span id="bgmIcon" title="BGM ON/OFF">♪</span>
   <div id="bgmTrack"><div id="bgmFill"></div><div id="bgmThumb"></div></div>
   <span id="bgmPct">10%</span>
 </div>
@@ -490,35 +463,34 @@ const stageWrap=$("stageWrap"),stage=$("stage"),emptyHint=$("emptyHint"),imgFram
 const cardImg=$("cardImage"),stampLayer=$("stampLayer"),ghost=$("ghostStamp"),ghostImg=$("ghostStampImg");
 const undoBtn=$("undoBtn"),redoBtn=$("redoBtn"),saveBtn=$("saveBtn"),pressRing=$("pressRing"),ringProg=document.querySelector(".ring-progress");
 const secZone=$("secretTapZone"),pwPopup=$("passwordPopup"),pwInput=$("passwordInput");
-const qrOverlay=$("qrOverlay"),qrCover=$("qrCover"),vcOverlay=$("visitCountOverlay"),snsBtn=$("snsBtn");
-const bgmTrack=$("bgmTrack"),bgmFill=$("bgmFill"),bgmThumb=$("bgmThumb"),bgmPct=$("bgmPct");
-const bgmIconWrap=$("bgmIconWrap");
-const qrToggleBtn=$("qrToggleBtn"),qrToggleText=$("qrToggleText");
+const snsBtn=$("snsBtn");
+const bgmTrack=$("bgmTrack"),bgmFill=$("bgmFill"),bgmThumb=$("bgmThumb"),bgmPct=$("bgmPct"),bgmIcon=$("bgmIcon");
+const todWrap=$("timeOfDayWrap"),todBadge=$("todBadge");
 
 let mode=null,selMode=null,cardPath=null,stampPath=null;
 let activeWin=false,uploaded=null,stamps=[],redo=[];
 let pDown=false,pId=null,pAnim=false,pStart=0,pPt=null,pTimer=null,rAF=null;
 let ovOpen=localStorage.getItem(SK_OV)==="true";
-let qrHist=[],visitN=0;
 let bgmVol=0.10,bgmDrag=false,bgmMuted=false,bgmStarted=false;
-let qrVisible=true; // QR show/hide state
+let todIsNight=false; /* 朝=false, 夜=true */
 
-/* ── QR TOGGLE ── */
-function setQRVisible(v){
-  qrVisible=v;
-  if(v){
-    qrToggleBtn.classList.remove("qr-hidden");
-    qrToggleText.textContent="QRコード 非表示";
-    qrCover.classList.remove("active");
+/* 朝/夜トグル */
+function setTimeOfDay(night){
+  todIsNight=night;
+  if(night){
+    todWrap.classList.add("night");
+    todBadge.textContent="夜";
   }else{
-    qrToggleBtn.classList.add("qr-hidden");
-    qrToggleText.textContent="QRコード 表示";
-    qrCover.classList.add("active");
+    todWrap.classList.remove("night");
+    todBadge.textContent="朝";
   }
 }
-qrToggleBtn.addEventListener("click",()=>{playClick();setQRVisible(!qrVisible);});
+todWrap.addEventListener("click",()=>{
+  playClick();
+  setTimeOfDay(!todIsNight);
+});
 
-/* ── AUDIO ── */
+/* AUDIO */
 function playClick(){clickSnd.currentTime=0;clickSnd.play().catch(()=>{});}
 function setBGM(v){
   bgmVol=Math.max(0,Math.min(1,v));
@@ -529,17 +501,20 @@ function setBGM(v){
 }
 setBGM(0.10);
 
-bgmIconWrap.addEventListener("click",()=>{
-  playClick();bgmMuted=!bgmMuted;bgmAudio.volume=bgmMuted?0:bgmVol;
-  bgmIconWrap.classList.toggle("muted",bgmMuted);
+bgmIcon.addEventListener("click",()=>{
+  playClick();
+  bgmMuted=!bgmMuted;
+  bgmAudio.volume=bgmMuted?0:bgmVol;
+  bgmIcon.classList.toggle("muted",bgmMuted);
 });
+
 function trkPos(e){const r=bgmTrack.getBoundingClientRect(),cx=e.touches?e.touches[0].clientX:e.clientX;return Math.max(0,Math.min(1,(cx-r.left)/r.width));}
 bgmTrack.addEventListener("pointerdown",e=>{bgmDrag=true;bgmTrack.setPointerCapture(e.pointerId);setBGM(trkPos(e));});
 bgmTrack.addEventListener("pointermove",e=>{if(bgmDrag)setBGM(trkPos(e));});
 bgmTrack.addEventListener("pointerup",()=>{bgmDrag=false;});
 document.addEventListener("pointerdown",()=>{if(!bgmStarted){bgmStarted=true;bgmAudio.play().catch(()=>{});}},{once:true});
 
-/* ── TIME ── */
+/* TIME */
 function jstParts(){
   const p={};new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Tokyo",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false}).formatToParts(new Date()).filter(x=>x.type!=="literal").forEach(x=>p[x.type]=x.value);
   return{Y:+p.year,M:+p.month,D:+p.day,h:+p.hour,m:+p.minute,s:+p.second};
@@ -558,7 +533,7 @@ function jstStatus(){
 function fmtRem(ms){const tm=Math.ceil(ms/60000);return`残り${Math.floor(tm/60)}時間${tm%60}分`;}
 function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
 
-/* ── STAMP POOL ── */
+/* STAMP POOL */
 function seedIdx(seed,len){const x=Math.sin(seed*9999)*10000;return Math.floor((x-Math.floor(x))*len)%len;}
 function stampForDate(dk){return POOL[seedIdx(+dk.replaceAll("-",""),POOL.length)];}
 function todayStamp(){return stampForDate(jstKey());}
@@ -568,7 +543,7 @@ function updateCounts(){
   todayPrv.src=todayStamp();
 }
 
-/* ── CALENDAR ── */
+/* CALENDAR */
 function buildCal(){
   const p=jstParts(),y=p.Y,mo=p.M;
   calMonth.textContent=`${y}年${mo}月`;
@@ -591,121 +566,11 @@ todayLabel.addEventListener("click",showCal);
 calClose.addEventListener("click",()=>{playClick();calPop.classList.remove("visible");});
 calPop.addEventListener("click",e=>{if(e.target===calPop)calPop.classList.remove("visible");});
 
-/* ── QR LIBRARY ── */
-let _qrLib=null;
-async function getQRLib(){
-  if(_qrLib)return _qrLib;
-  if(window.QRCode){_qrLib=window.QRCode;return _qrLib;}
-  return new Promise(res=>{
-    const s=document.createElement("script");
-    s.src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js";
-    s.onload=()=>{_qrLib=window.QRCode;res(_qrLib);};
-    s.onerror=()=>res(null);
-    document.head.appendChild(s);
-  });
-}
-
-async function mkQRCanvas(text,size){
-  const lib=await getQRLib();if(!lib)return null;
-  const wrap=document.createElement("div");wrap.style.cssText="position:absolute;left:-9999px;top:-9999px;";
-  document.body.appendChild(wrap);
-  try{
-    new lib(wrap,{text,width:size,height:size,colorDark:"#2a9dcc",colorLight:"#ffffff",correctLevel:lib.CorrectLevel.M});
-    await new Promise(r=>setTimeout(r,160));
-    const inner=wrap.querySelector("canvas")||wrap.querySelector("img");
-    if(!inner){wrap.remove();return null;}
-    const c=document.createElement("canvas");c.width=size;c.height=size;
-    const ctx=c.getContext("2d");
-    /* Always white background first — prevents any transparency */
-    ctx.fillStyle="#ffffff";
-    ctx.fillRect(0,0,size,size);
-    if(inner.tagName==="IMG"){await new Promise(r=>{inner.onload=r;if(inner.complete)r();});}
-    ctx.drawImage(inner,0,0,size,size);
-    wrap.remove();return c;
-  }catch(err){wrap.remove();return null;}
-}
-function qrTxt(h){
-  if(!h||!h.length)return"radio-stamp:0";
-  return`radio-stamp:${h.length}|${h.map(x=>`${x.n}:${x.date}`).join("|")}`;
-}
-function parseQR(t){
-  if(!t||!t.startsWith("radio-stamp:"))return null;
-  const parts=t.slice(12).split("|");
-  if(parts.length<=1)return[];
-  const h=[];
-  for(let i=1;i<parts.length;i++){
-    const sp=parts[i].split(":");
-    if(sp.length>=2){const n=+sp[0],date=sp.slice(1).join(":");if(!isNaN(n)&&n>0&&date)h.push({n,date});}
-  }
-  return h;
-}
-
-async function detectOnCanvas(c){
-  if(!("BarcodeDetector" in window))return null;
-  try{
-    const det=new BarcodeDetector({formats:["qr_code"]});
-    const codes=await det.detect(c);
-    for(const b of codes)if(b.rawValue.startsWith("radio-stamp:"))return parseQR(b.rawValue);
-    return null;
-  }catch(e){return null;}
-}
-async function cropDetect(src,sx,sy,sw,sh,sc){
-  const c=document.createElement("canvas");c.width=Math.round(sw*sc);c.height=Math.round(sh*sc);
-  const ctx=c.getContext("2d");ctx.imageSmoothingEnabled=false;
-  ctx.drawImage(src,sx,sy,sw,sh,0,0,c.width,c.height);
-  return detectOnCanvas(c);
-}
-async function readQRFromImage(imgEl){
-  let r=await detectOnCanvas(imgEl);if(r!==null)return r;
-  try{
-    const nw=imgEl.naturalWidth||imgEl.width,nh=imgEl.naturalHeight||imgEl.height;
-    if(!nw||!nh)return null;
-    const qw=Math.round(nw*0.15),qh=Math.round(nh*0.15);
-    for(const sc of [5,7,4,9,3]){r=await cropDetect(imgEl,0,nh-qh,qw,qh,sc);if(r!==null)return r;}
-    const qw2=Math.round(nw*0.22),qh2=Math.round(nh*0.22);
-    for(const sc of [4,6]){r=await cropDetect(imgEl,0,nh-qh2,qw2,qh2,sc);if(r!==null)return r;}
-  }catch(e){}
-  return null;
-}
-
-/* ── QR sizing helpers — single source of truth ── */
-function qrNaturalSize(W){return Math.floor(W*0.072);}
-function qrNaturalX(W){return Math.floor(W*0.02);}
-function qrNaturalY(W,H,sz){return H-sz-Math.floor(H*0.02);}
-
-function qrDispSz(){const r=cardImg.getBoundingClientRect();return r.width?Math.floor(r.width*0.072):40;}
-function setQRSize(){
-  const sz=qrDispSz();
-  qrOverlay.style.width=`${sz}px`;
-  qrOverlay.style.height=`${sz}px`;
-  qrCover.style.width=`${sz}px`;
-  qrCover.style.height=`${sz}px`;
-}
-
-async function refreshQR(){
-  qrOverlay.innerHTML="";setQRSize();
-  const sz=qrDispSz();
-  const renderSz=Math.max(sz*4,160);
-  const c=await mkQRCanvas(qrTxt(qrHist),renderSz);
-  if(c){
-    c.style.cssText="width:100%;height:100%;image-rendering:pixelated;border-radius:3px;display:block;";
-    qrOverlay.appendChild(c);
-  }
-}
-
-function setVCLoading(){
-  vcOverlay.innerHTML='ロード中<span class="ldots"><span>・</span><span>・</span><span>・</span></span>';
-  vcOverlay.classList.add("visible");
-}
-function updateVC(){
-  if(visitN>0){vcOverlay.textContent=`${visitN}日目`;vcOverlay.classList.add("visible");}
-  else{vcOverlay.classList.remove("visible");vcOverlay.textContent="";}
-}
-
-/* ── SCREEN ── */
+/* SCREEN */
 function setGateThumb(src){gateThumb.innerHTML=src?`<img src="${src}" alt="">`:"";}
-function showSelect(){selectScreen.classList.remove("hidden");backBtn.style.display="none";timeGate.classList.remove("visible");mode=null;}
-function hideSelect(){selectScreen.classList.add("hidden");backBtn.style.display="block";}
+function clearModeSel(){selMode=null;randomBtn.classList.remove("selected");artBtn.classList.remove("selected");}
+function showSelect(){selectScreen.classList.remove("hidden");backBtn.style.display="none";timeGate.classList.remove("visible");mode=null;clearModeSel();todWrap.classList.remove("visible");}
+function hideSelect(){selectScreen.classList.add("hidden");backBtn.style.display="block";todWrap.classList.add("visible");}
 function updateTop(){
   const st=jstStatus();activeWin=st.open;
   if(!mode){timeGate.classList.remove("visible");dlBtn.classList.add("hidden");return;}
@@ -717,13 +582,8 @@ function updateTop(){
 
 async function setCard(src){
   cardPath=src;cardImg.src=src;cardImg.style.display="block";emptyHint.style.display="none";setGateThumb(src);
-  setVCLoading();
   await new Promise(r=>{cardImg.onload=r;if(cardImg.complete&&cardImg.naturalWidth)r();});
-  renderStamps();setQRSize();
-  const parsed=await readQRFromImage(cardImg);
-  if(parsed&&parsed.length>0){qrHist=parsed;visitN=parsed[parsed.length-1].n;}
-  else{qrHist=parsed||[];visitN=0;}
-  updateVC();await refreshQR();
+  renderStamps();
 }
 
 function clearStamps(){stamps=[];redo=[];renderStamps();updHistory();}
@@ -731,6 +591,7 @@ function updHistory(){undoBtn.disabled=!stamps.length;redoBtn.disabled=!redo.len
 function cardRect(){const r=cardImg.getBoundingClientRect();return{l:r.left,t:r.top,w:r.width,h:r.height};}
 function inCard(cx,cy){const r=cardRect();return cx>=r.l&&cx<=r.l+r.w&&cy>=r.t&&cy<=r.t+r.h;}
 function toRatio(cx,cy){const r=cardRect();return{x:clamp((cx-r.l)/r.w,0,1),y:clamp((cy-r.t)/r.h,0,1)};}
+function updateGhostSize(){const r=cardRect();if(!r.w||!stampPath)return;const sz=Math.max(38,r.w*0.17);ghost.style.width=`${sz}px`;ghost.style.height=`${sz}px`;}
 
 function renderStamps(){
   stampLayer.innerHTML="";const rect=cardRect();if(!rect.w||!rect.h)return;
@@ -769,7 +630,7 @@ function cancelPress(){pDown=false;pId=null;pAnim=false;pPt=null;if(pTimer){clea
 function startPress(cx,cy){if(!activeWin||!cardPath||!inCard(cx,cy))return;pPt=toRatio(cx,cy);showGhost(cx,cy);pStart=performance.now();pAnim=true;showRing(cx,cy);animRing();pTimer=setTimeout(()=>{pTimer=null;},LONG_MS);}
 function movePress(cx,cy){if(!pDown)return;if(!inCard(cx,cy)){cancelPress();return;}moveRing(cx,cy);pPt=toRatio(cx,cy);moveGhost(cx,cy);}
 
-async function loadImg(src){return new Promise((res,rej)=>{const i=new Image();i.crossOrigin="anonymous";i.onload=()=>res(i);i.onerror=rej;i.src=src;});}
+async function loadImg(src){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=src;});}
 
 async function savePNG(){
   if(!cardPath)return;
@@ -777,9 +638,8 @@ async function savePNG(){
   const oc=document.createElement("canvas");const ctx=oc.getContext("2d");
   oc.width=base.naturalWidth||base.width;oc.height=base.naturalHeight||base.height;
   const W=oc.width,H=oc.height;
+  ctx.imageSmoothingEnabled=false;
   ctx.drawImage(base,0,0,W,H);
-
-  /* draw stamps */
   for(const s of stamps){
     const img=await loadImg(s.src);const sz=W*(s.size||0.17),cx=s.x*W,cy=s.y*H;
     ctx.save();ctx.translate(cx,cy);ctx.rotate(+s.rot*Math.PI/180);ctx.drawImage(img,-sz/2,-sz/2,sz,sz);
@@ -789,73 +649,54 @@ async function savePNG(){
     ctx.shadowColor="rgba(200,235,255,.7)";ctx.shadowBlur=4;
     ctx.fillText(s.date||jstDisp(),0,sz/2+2);ctx.shadowBlur=0;ctx.restore();
   }
-
-  /* ── QR — deterministic pixel-exact placement ── */
-  const qsz=qrNaturalSize(W);          // Math.floor(W*0.072)
-  const qx=qrNaturalX(W);              // Math.floor(W*0.02)
-  const qy=qrNaturalY(W,H,qsz);        // H - qsz - Math.floor(H*0.02)
-  const pad=Math.ceil(qsz*0.08);       // small padding for white bleed-over
-
-  /* Erase old QR area with solid white — generous pad to catch any drift */
-  ctx.fillStyle="#ffffff";
-  ctx.fillRect(qx-pad,qy-pad,qsz+pad*2,qsz+pad*2);
-
-  /* Build new QR history */
-  const lastN=qrHist.length>0?qrHist[qrHist.length-1].n:0;
-  const newN=lastN+1;
   const today=jstKey();
-  const newHist=[...qrHist,{n:newN,date:today}];
-
-  /* Render QR at high-res (4×) then draw at exact pixel size */
-  const renderSz=Math.max(qsz*4,200);
-  const qc=await mkQRCanvas(qrTxt(newHist),renderSz);
-  if(qc){
-    /* White background behind QR first */
-    ctx.fillStyle="#ffffff";
-    ctx.fillRect(qx,qy,qsz,qsz);
-    ctx.imageSmoothingEnabled=false;
-    ctx.drawImage(qc,0,0,renderSz,renderSz,qx,qy,qsz,qsz);
-  }
-
-  qrHist=newHist;visitN=newN;updateVC();await refreshQR();
-
   const a=document.createElement("a");a.href=oc.toDataURL("image/png");
   a.download=`radio-stamp-${today}.png`;document.body.appendChild(a);a.click();a.remove();
 }
+
 function dlCard(src,name){const a=document.createElement("a");a.href=src;a.download=name;document.body.appendChild(a);a.click();a.remove();}
 
 function setupRandom(){
-  mode="random";stampPath=todayStamp();ghostImg.src=stampPath;qrHist=[];visitN=0;
+  mode="random";stampPath=todayStamp();ghostImg.src=stampPath;
   hideSelect();clearStamps();uploaded=null;setCard(RAND_CARD);updateTop();
+  setTimeOfDay(false); /* デフォルトは朝 */
 }
 function hidePW(){pwPopup.style.display="none";pwInput.value="";}
 function showPW(){pwPopup.style.display="block";pwInput.value="";pwInput.focus();}
 
-/* ── EVENTS ── */
-
-/* Mobile tap fix: use both click AND touchend for modeCard */
-function handleRandomSelect(){
-  playClick();const st=jstStatus();
-  if(!st.open){mode=null;setGateThumb(RAND_CARD);timeGate.classList.add("visible");gateRemain.textContent=fmtRem(st.rem);progBar.style.width=`${clamp(st.prog,0,100)}%`;return;}
-  setupRandom();
+/* =======================================================
+   カード選択: スマホ完全対応
+   pointerup を使用し、todayCircle/todayLabel は除外
+   時間制限を選択画面では行わず、メイン画面で管理
+   ======================================================= */
+let _cardBusy=false;
+function handleCardSelect(e){
+  /* todayCircle / todayLabel はカレンダーを開く */
+  if(todayCircle.contains(e.target)||todayLabel.contains(e.target))return;
+  /* 重複防止 */
+  if(_cardBusy)return;
+  _cardBusy=true;
+  setTimeout(()=>{_cardBusy=false;},600);
+  playClick();
+  setupRandom(); /* 時間に関わらず常にメイン画面へ */
 }
-randomBtn.addEventListener("click",handleRandomSelect);
-randomBtn.addEventListener("touchend",e=>{
-  /* only fire if touch didn't land on the todayCircle */
-  const t=e.changedTouches[0];
-  const cr=todayCircle.getBoundingClientRect();
-  const lr=todayLabel.getBoundingClientRect();
-  const inCircle=t.clientX>=cr.left&&t.clientX<=cr.right&&t.clientY>=cr.top&&t.clientY<=cr.bottom;
-  const inLabel=t.clientX>=lr.left&&t.clientX<=lr.right&&t.clientY>=lr.top&&t.clientY<=lr.bottom;
-  if(!inCircle&&!inLabel){e.preventDefault();handleRandomSelect();}
-},{passive:false});
+
+/* pointerup: タッチ・マウス両対応、最もシンプルで確実 */
+randomBtn.addEventListener("pointerup",e=>{
+  e.preventDefault();
+  handleCardSelect(e);
+});
+/* fallback: click (pointerupが動いた場合は_cardBusyで防ぐ) */
+randomBtn.addEventListener("click",e=>{
+  handleCardSelect(e);
+});
 
 artBtn.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();});
 backBtn.addEventListener("click",()=>{playClick();stamps=[];redo=[];renderStamps();hideGhost();hideRing();showSelect();updateTop();});
 dlBtn.addEventListener("click",()=>{if(!activeWin)return;playClick();dlCard(RAND_CARD,"card.png");});
 imgInput.addEventListener("change",e=>{
   if(!activeWin||mode!=="random")return;const f=e.target.files?.[0];if(!f)return;
-  const r=new FileReader();r.onload=()=>{uploaded=r.result;clearStamps();qrHist=[];visitN=0;setCard(uploaded);};r.readAsDataURL(f);
+  const r=new FileReader();r.onload=()=>{uploaded=r.result;clearStamps();setCard(uploaded);};r.readAsDataURL(f);
 });
 saveBtn.addEventListener("click",async()=>{if(!activeWin)return;playClick();await savePNG();});
 undoBtn.addEventListener("click",()=>{if(!activeWin)return;playClick();undoS();});
@@ -880,11 +721,10 @@ document.addEventListener("pointerdown",e=>{
   if(!pwPopup.contains(e.target)&&!secZone.contains(e.target))hidePW();
   if(!calPop.contains(e.target)&&!todayCircle.contains(e.target)&&!todayLabel.contains(e.target))calPop.classList.remove("visible");
 });
-window.addEventListener("resize",()=>{renderStamps();setQRSize();});
+window.addEventListener("resize",()=>{renderStamps();updateGhostSize();});
 setInterval(()=>{
   todayPrv.src=todayStamp();
   if(mode)updateTop();
-  else{const st=jstStatus();if(timeGate.classList.contains("visible")){gateRemain.textContent=fmtRem(st.rem);progBar.style.width=`${clamp(st.prog,0,100)}%`;}}
 },1000);
 
 if(!POOL.length)throw new Error("STAMP_POOL empty");

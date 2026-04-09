@@ -17,1597 +17,1285 @@
       --glass:rgba(255,255,255,.58);
       --shadow-soft:0 10px 24px rgba(111,205,255,.12);
     }
-
-    *{
-      box-sizing:border-box;
-      -webkit-tap-highlight-color:transparent;
-      user-select:none;
+    *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none; }
+    html,body{
+      margin:0; width:100%; height:100%; overflow:hidden;
+      font-family:"Hiragino Sans","Yu Gothic UI","Yu Gothic","Noto Sans JP",system-ui,sans-serif;
+      color:var(--text);
+      background:linear-gradient(rgba(245,251,255,.72),rgba(245,251,255,.72)),url("hk.jpg") center/cover no-repeat;
     }
-
-html,body{
-  margin:0;
-  width:100%;
-  height:100%;
-  overflow:hidden;
-  font-family:"Hiragino Sans","Yu Gothic UI","Yu Gothic","Noto Sans JP",system-ui,sans-serif;
-  color:var(--text);
-  background:
-    linear-gradient(rgba(245,251,255,.72), rgba(245,251,255,.72)),
-    url("hk.jpg") center / cover no-repeat;
-}
-
-
     body::before{
-      content:"";
-      position:fixed;
-      inset:0;
-      pointer-events:none;
-      background:
-        linear-gradient(135deg, rgba(255,255,255,.34), rgba(255,255,255,.05)),
-        repeating-linear-gradient(
-          90deg,
-          rgba(255,255,255,0) 0px,
-          rgba(255,255,255,0) 54px,
-          rgba(143,220,255,.03) 55px,
-          rgba(143,220,255,.03) 56px
-        );
+      content:""; position:fixed; inset:0; pointer-events:none;
+      background:linear-gradient(135deg,rgba(255,255,255,.34),rgba(255,255,255,.05)),
+        repeating-linear-gradient(90deg,rgba(255,255,255,0) 0px,rgba(255,255,255,0) 54px,rgba(143,220,255,.03) 55px,rgba(143,220,255,.03) 56px);
       opacity:.85;
     }
-
-    button,input{
-      font:inherit;
-    }
-
-    #app{
-      position:relative;
-      width:100%;
-      height:100%;
-      overflow:hidden;
-    }
-
+    button,input{ font:inherit; }
+    #app{ position:relative; width:100%; height:100%; overflow:hidden; }
     .glass{
-      backdrop-filter:blur(18px);
-      -webkit-backdrop-filter:blur(18px);
-      background:rgba(255,255,255,.58);
-      border:1px solid rgba(143,220,255,.34);
+      backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+      background:rgba(255,255,255,.58); border:1px solid rgba(143,220,255,.34);
       box-shadow:var(--shadow-soft);
     }
+    .hidden{ display:none !important; }
 
-    .hidden{
-      display:none !important;
+    /* ===== SELECT SCREEN ===== */
+    #selectScreen{
+      position:absolute; inset:0; z-index:100; display:flex;
+      align-items:center; justify-content:center; padding:32px;
+      background:linear-gradient(rgba(252,254,255,.78),rgba(241,251,255,.78)),url("hk.jpg") center/cover no-repeat;
+      backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+      touch-action:manipulation;
     }
-
-    /* 選択画面 */
-#selectScreen{
-  position:absolute;
-  inset:0;
-  z-index:100;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:32px;
-  background:
-    linear-gradient(rgba(252,254,255,.78), rgba(241,251,255,.78)),
-    url("hk.jpg") center / cover no-repeat;
-  backdrop-filter:blur(8px);
-  -webkit-backdrop-filter:blur(8px);
-    touch-action: manipulation;
-}
-
-
- .modeCard.selected{
-  transform:translateY(-3px);
-  box-shadow:0 30px 70px rgba(111,205,255,.22);
-  border-color:rgba(143,220,255,.55);
-  background:rgba(255,255,255,.78);
-}
-
-.modeCard.selected .modePreview{
-  opacity:.55;
-  transform:scale(1.01);
-}
-
-.modeCard.selected .modeLabel{
-  background:rgba(255,255,255,.82);
-  color:#4a7892;
-}
-
-.modeCard.selected .modeCount,
-.modeCard.selected .randomTodayLabel{
-  background:rgba(255,255,255,.68);
-}
-
-.modeCard.selected .randomTodayCircle{
-  background:rgba(255,255,255,.74);
-  border-color:rgba(143,220,255,.38);
-}
-
-.modeCard{
-  position: relative;
-  z-index: 1;
-  pointer-events: auto;
-}
-
-.modeCard *{
-  pointer-events: none;
-}
-
-    #selectInner{
-      width:min(1180px, 100%);
-      display:flex;
-      flex-direction:column;
-      gap:22px;
-    }
-
-    #selectTitle{
-      text-align:center;
-      color:#5c93ad;
-      font-size:28px;
-      letter-spacing:.12em;
-      font-weight:700;
-    }
-
-    #selectWrap{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:28px;
-      align-items:stretch;
-    }
+    #selectInner{ width:min(1180px,100%); display:flex; flex-direction:column; gap:22px; }
+    #selectTitle{ text-align:center; color:#5c93ad; font-size:28px; letter-spacing:.12em; font-weight:700; }
+    #selectWrap{ display:grid; grid-template-columns:1fr 1fr; gap:28px; align-items:stretch; }
 
     .modeCard{
-      position:relative;
-      min-height:470px;
-      border-radius:30px;
-      overflow:hidden;
-      cursor:pointer;
-      background:rgba(255,255,255,.58);
-      border:1px solid rgba(143,220,255,.28);
+      position:relative; min-height:470px; border-radius:30px; overflow:hidden;
+      cursor:pointer; background:rgba(255,255,255,.58); border:1px solid rgba(143,220,255,.28);
       box-shadow:0 26px 60px rgba(111,205,255,.15);
-      transition:transform .28s ease, box-shadow .28s ease, border-color .28s ease, opacity .28s ease;
-      appearance:none;
-      -webkit-appearance:none;
-      outline:none;
+      transition:transform .28s ease,box-shadow .28s ease,border-color .28s ease,opacity .28s ease;
+      appearance:none; -webkit-appearance:none; outline:none;
     }
+    .modeCard *{ pointer-events:none; }
 
-    .modeCard:hover{
-      transform:translateY(-3px);
-      box-shadow:0 30px 70px rgba(111,205,255,.20);
-      border-color:rgba(143,220,255,.42);
+    /* PC: preview hidden by default, shown on hover */
+    @media (hover:hover) and (pointer:fine){
+      .modePreview{ opacity:0.08; transition:opacity .38s ease,transform .38s ease; }
+      .modeCard:hover .modePreview{ opacity:.92; transform:scale(1.03); }
+      .modeLabel{ transition:transform .25s ease,background .25s ease,opacity .25s ease; }
+      .modeCard:hover .modeLabel{ transform:translate(-50%,-50%) scale(1.03); background:rgba(255,255,255,.68); }
     }
-
-    .modePreview{
-      position:absolute;
-      inset:0;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:22px;
-      opacity:.14;
-      transition:opacity .28s ease, transform .28s ease;
-      pointer-events:none;
-    }
-
-    .modePreview img{
-      max-width:100%;
-      max-height:100%;
-      object-fit:contain;
-      border-radius:20px;
-      box-shadow:0 22px 46px rgba(111,205,255,.12);
-    }
-
-    .modeCard:hover .modePreview{
-      opacity:.9;
-      transform:scale(1.02);
-    }
-
-    .modeLabel{
-      position:absolute;
-      left:50%;
-      top:50%;
-      transform:translate(-50%,-50%);
-      z-index:2;
-      padding:16px 30px;
-      border-radius:999px;
-      color:var(--text-deep);
-      letter-spacing:.12em;
-      font-size:28px;
-      font-weight:700;
-      background:rgba(255,255,255,.56);
-      border:1px solid rgba(143,220,255,.26);
-      backdrop-filter:blur(14px);
-      -webkit-backdrop-filter:blur(14px);
-      box-shadow:0 14px 34px rgba(111,205,255,.12);
-      transition:transform .25s ease, background .25s ease;
-      white-space:nowrap;
-    }
-
-    .modeCard:hover .modeLabel{
-      transform:translate(-50%,-50%) scale(1.03);
-      background:rgba(255,255,255,.68);
-    }
-
-    .modeCount{
-      position:absolute;
-      left:24px;
-      bottom:22px;
-      z-index:2;
-      padding:10px 14px;
-      border-radius:999px;
-      color:#79a6bc;
-      font-size:13px;
-      letter-spacing:.08em;
-      background:rgba(255,255,255,.42);
-      border:1px solid rgba(143,220,255,.18);
-      backdrop-filter:blur(12px);
-      -webkit-backdrop-filter:blur(12px);
-    }
-
- .randomTodayCircle{
-  position:absolute;
-  right:22px;
-  bottom:22px;
-  width:160px;
-  height:160px;
-  border-radius:50%;
-  background:rgba(255,255,255,.58);
-  border:1px solid rgba(143,220,255,.26);
-  box-shadow:0 18px 40px rgba(111,205,255,.12);
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:18px;
-  z-index:3;
-  overflow:hidden;
-}
-
-.randomTodayCircle img{
-  width:100%;
-  height:100%;
-  object-fit:contain;
-  display:block;
-}
-
-.randomTodayLabel{
-  position:absolute;
-  right:44px;
-  bottom:34px;
-  z-index:4;
-  font-size:11px;
-  letter-spacing:.08em;
-  color:#7ca8bd;
-  background:rgba(255,255,255,.52);
-  padding:6px 10px;
-  border-radius:999px;
-  border:1px solid rgba(143,220,255,.18);
-  backdrop-filter:blur(10px);
-  -webkit-backdrop-filter:blur(10px);
-}
-
-
-
-    .modeDisabled{
-      cursor:not-allowed;
-      opacity:.72;
-    }
-
-    .modeDisabled:hover{
-      transform:none;
-      box-shadow:0 26px 60px rgba(111,205,255,.15);
-      border-color:rgba(143,220,255,.28);
-    }
-
-    .modeDisabled .modePreview{
-      opacity:.18;
-      transform:none !important;
-    }
-
-    .modeDisabled .modeLabel{
-      transform:translate(-50%,-50%) !important;
-      background:rgba(255,255,255,.56) !important;
-    }
-
-    .modeDisabled::before,
-    .modeDisabled::after{
-      content:"";
-      position:absolute;
-      left:-12%;
-      width:124%;
-      height:2px;
-      background:rgba(94,148,173,.48);
-      top:50%;
-      z-index:3;
-      pointer-events:none;
-      box-shadow:0 0 0 1px rgba(255,255,255,.18);
-    }
-
-    .modeDisabled::before{ transform:rotate(19deg); }
-    .modeDisabled::after{ transform:rotate(-19deg); }
-
-    /* 時間外タブ */
-    #timeGate{
-      position:absolute;
-      top:14px;
-      left:50%;
-      transform:translateX(-50%);
-      width:min(760px, calc(100vw - 54px));
-      min-height:84px;
-      z-index:80;
-      border-radius:28px;
-      padding:12px 16px;
-      background:rgba(255,255,255,.74);
-      border:1px solid rgba(143,220,255,.30);
-      box-shadow:0 18px 42px rgba(111,205,255,.15);
-      backdrop-filter:blur(18px);
-      -webkit-backdrop-filter:blur(18px);
-      display:none;
-      align-items:center;
-      gap:14px;
-    }
-
-    #timeGate.visible{ display:flex; }
-
-    #gateCardThumb{
-      width:58px;
-      height:58px;
-      border-radius:14px;
-      background:rgba(143,220,255,.10);
-      border:1px solid rgba(143,220,255,.18);
-      overflow:hidden;
-      flex:0 0 auto;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-    }
-
-    #gateCardThumb img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-    }
-
-    #gateInfo{
-      min-width:0;
-      flex:1;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
-
-    #gateTopLine{
-      display:flex;
-      align-items:baseline;
-      gap:12px;
-      flex-wrap:wrap;
-    }
-
-    #gateTitle{
-      font-size:16px;
-      letter-spacing:.1em;
-      color:#5f91a8;
-      font-weight:700;
-      white-space:nowrap;
-    }
-
-    #gateHours{
-      font-size:14px;
-      color:#79a7bc;
-      white-space:nowrap;
-    }
-
-    #gateRemain{
-      font-size:13px;
-      color:#86aabc;
-      white-space:nowrap;
-    }
-
-    #progressWrap{
-      width:100%;
-      height:12px;
-      border-radius:999px;
-      overflow:hidden;
-      background:rgba(143,220,255,.14);
-      position:relative;
-    }
-
-    #progressBar{
-      position:absolute;
-      inset:0 auto 0 0;
-      width:0%;
-      border-radius:999px;
-      background:linear-gradient(90deg, rgba(143,220,255,.55), rgba(99,204,255,.96));
-      box-shadow:0 0 16px rgba(99,204,255,.28);
-      transition:width .5s ease;
-    }
-
-    /* メイン画面 */
-    #mainScreen{
-      position:absolute;
-      inset:0;
-      z-index:10;
-    }
-
-    #backToSelect{
-      position:absolute;
-      left:20px;
-      top:18px;
-      z-index:13;
-      padding:10px 14px;
-      border:none;
-      border-radius:999px;
-      color:#6e9db4;
-      cursor:pointer;
-      display:none;
-    }
-
-    #getCardBtn{
-      position:absolute;
-      left:20px;
-      top:18px;
-      z-index:14;
-      padding:13px 18px;
-      border:none;
-      outline:none;
-      cursor:pointer;
-      color:#5f94ad;
-      font-size:15px;
-      letter-spacing:.08em;
-      border-radius:999px;
-      transition:transform .2s ease, box-shadow .2s ease, opacity .2s ease;
-    }
-
-    #getCardBtn:hover{
-      transform:translateY(-1px);
-      box-shadow:0 14px 36px rgba(111,205,255,.18);
-    }
-
-    #uploadArea{
-      position:absolute;
-      right:20px;
-      top:18px;
-      z-index:14;
-      width:210px;
-      min-height:68px;
-      padding:14px 16px;
-      border-radius:20px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      text-align:center;
-      line-height:1.45;
-      color:#ffffff;
-      background:#8fdcff;
-      border:1px solid rgba(255,255,255,.28);
-      cursor:pointer;
-      transition:transform .2s ease, box-shadow .2s ease, opacity .2s ease;
-      overflow:hidden;
-      box-shadow:0 14px 34px rgba(111,205,255,.18);
-    }
-
-    #uploadArea:hover{
-      transform:translateY(-1px);
-      box-shadow:0 18px 38px rgba(111,205,255,.24);
-    }
-
-    #uploadArea input{ display:none; }
-
-    #stageWrap{
-      position:absolute;
-      inset:0;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:92px 32px 48px;
-      transition:filter .3s ease, opacity .3s ease;
-    }
-
-    #stageWrap.closed{
-      filter:blur(8px) saturate(.92);
-      opacity:.82;
-    }
-
-    #stage{
-      position:relative;
-      width:min(82vw, 1120px);
-      height:min(78vh, 780px);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-    }
-
-    #emptyHint{
-      position:absolute;
-      z-index:1;
-      font-size:20px;
-      letter-spacing:.10em;
-      color:#87adc2;
-      opacity:.62;
-      pointer-events:none;
-    }
-
-    #imageFrame{
-      position:relative;
-      max-width:100%;
-      max-height:100%;
-      border-radius:18px;
-      overflow:visible;
-      touch-action:none;
-    }
-
-    #cardImage{
-      display:none;
-      width:auto;
-      height:auto;
-      max-width:min(82vw,1120px);
-      max-height:min(78vh,780px);
-      object-fit:contain;
-      border-radius:18px;
-      box-shadow:0 28px 60px rgba(111,205,255,.15);
-      pointer-events:none;
-      -webkit-user-drag:none;
-      user-drag:none;
-    }
-
-    #stampLayer{
-      position:absolute;
-      inset:0;
-      overflow:hidden;
-      border-radius:18px;
-      pointer-events:none;
-    }
-
-    .stamp{
-      position:absolute;
-      transform:translate(-50%, -50%) rotate(var(--rot, 0deg));
-      transform-origin:center center;
-      opacity:.98;
-      pointer-events:none;
-      filter:drop-shadow(0 6px 12px rgba(111,205,255,.12));
-    }
-
-    .stamp img{
-      display:block;
-      width:100%;
-      height:100%;
-      object-fit:contain;
-      pointer-events:none;
-      -webkit-user-drag:none;
-    }
-
-    #ghostStamp{
-      position:absolute;
-      transform:translate(-50%,-50%);
-      pointer-events:none;
-      opacity:.22;
-      display:none;
-      z-index:4;
-      filter:drop-shadow(0 6px 12px rgba(111,205,255,.08));
-    }
-
-    #ghostStamp img{
-      width:100%;
-      height:100%;
-      object-fit:contain;
-      display:block;
-    }
-
-    #pressTarget{
-      position:absolute;
-      inset:0;
-      border-radius:18px;
-      background:transparent;
-      z-index:5;
-      cursor:crosshair;
-      touch-action:none;
-    }
-
-    #cardControls{
-      position:absolute;
-      inset:0;
-      pointer-events:none;
-      z-index:8;
-    }
-
-    #historyControls{
-      position:absolute;
-      top:12px;
-      right:12px;
-      display:flex;
-      gap:8px;
-      pointer-events:auto;
-    }
-
-    .historyBtn{
-      width:34px;
-      height:34px;
-      border:none;
-      border-radius:999px;
-      background:rgba(255,255,255,.36);
-      border:1px solid rgba(143,220,255,.18);
-      backdrop-filter:blur(10px);
-      -webkit-backdrop-filter:blur(10px);
-      color:rgba(88,133,156,.88);
-      font-size:18px;
-      cursor:pointer;
-      transition:.2s ease;
-    }
-
-    .historyBtn:hover{ background:rgba(255,255,255,.56); }
-    .historyBtn:disabled{ opacity:.35; cursor:default; }
-
-    #saveBtn{
-      position:absolute;
-      right:12px;
-      bottom:12px;
-      padding:10px 16px;
-      border:none;
-      border-radius:999px;
-      background:rgba(255,255,255,.42);
-      border:1px solid rgba(143,220,255,.18);
-      backdrop-filter:blur(12px);
-      -webkit-backdrop-filter:blur(12px);
-      color:#5e93ad;
-      cursor:pointer;
-      pointer-events:auto;
-      transition:.2s ease;
-    }
-
-    #saveBtn:hover{ background:rgba(255,255,255,.60); }
-
-    #pressRing{
-      position:absolute;
-      width:112px;
-      height:112px;
-      transform:translate(-50%,-50%);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      pointer-events:none;
-      z-index:9;
-    }
-
-    #pressRing svg{
-      width:112px;
-      height:112px;
-      overflow:visible;
-      filter:drop-shadow(0 10px 18px rgba(111,205,255,.14));
-    }
-
-    .ring-bg{
-      stroke:rgba(255,255,255,.75);
-      stroke-width:8;
-      fill:rgba(255,255,255,.10);
-    }
-
-    .ring-progress{
-      stroke:var(--blue-strong);
-      stroke-width:8;
-      fill:none;
-      stroke-linecap:round;
-      transform:rotate(-90deg);
-      transform-origin:50% 50%;
-      stroke-dasharray:251.2;
-      stroke-dashoffset:251.2;
-    }
-
-    .ring-center{
-      fill:rgba(255,255,255,.50);
-      stroke:rgba(143,220,255,.24);
-      stroke-width:1.5;
-    }
-
-    #secretTapZone{
-      position:absolute;
-      left:0;
-      bottom:0;
-      width:110px;
-      height:110px;
-      z-index:90;
-      background:transparent;
-    }
-
-    #passwordPopup{
-      position:absolute;
-      left:20px;
-      bottom:74px;
-      z-index:95;
-      width:120px;
-      padding:10px;
-      border-radius:16px;
-      display:none;
-      background:rgba(255,255,255,.76);
-      border:1px solid rgba(143,220,255,.24);
-      box-shadow:0 14px 36px rgba(111,205,255,.14);
-      backdrop-filter:blur(14px);
-      -webkit-backdrop-filter:blur(14px);
-    }
-
-    #passwordInput{
-      width:100%;
-      border:none;
-      outline:none;
-      border-radius:12px;
-      padding:10px 12px;
-      text-align:center;
-      background:rgba(255,255,255,.56);
-      color:#5c90a8;
-      font-size:18px;
-      letter-spacing:.20em;
-    }
-
-    #passwordInput::placeholder{ color:transparent; }
-
-    @media (hover:none), (pointer:coarse){
+    /* Mobile: always show preview at moderate opacity */
+    @media (hover:none),(pointer:coarse){
       .modePreview{ opacity:.40; }
     }
 
-    @media (max-width: 900px){
-      #selectWrap{
-        grid-template-columns:1fr;
-        max-width:580px;
-      }
-      .modeCard{ min-height:260px; }
-      .modeLabel{ font-size:24px; }
-      .randomTodayCircle{
-        width:120px;
-        height:120px;
-        right:16px;
-        top:16px;
-      }
-      .randomTodayLabel{
-        right:20px;
-        top:144px;
-      }
+    .modePreview{
+      position:absolute; inset:0; display:flex; align-items:center;
+      justify-content:center; padding:22px; pointer-events:none;
+    }
+    .modePreview img{ max-width:100%; max-height:100%; object-fit:contain; border-radius:20px; box-shadow:0 22px 46px rgba(111,205,255,.12); }
+    .modeLabel{
+      position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+      z-index:2; padding:16px 30px; border-radius:999px; color:var(--text-deep);
+      letter-spacing:.12em; font-size:28px; font-weight:700;
+      background:rgba(255,255,255,.56); border:1px solid rgba(143,220,255,.26);
+      backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+      box-shadow:0 14px 34px rgba(111,205,255,.12); white-space:nowrap;
+    }
+    .modeCount{
+      position:absolute; left:24px; bottom:22px; z-index:2;
+      padding:10px 14px; border-radius:999px; color:#79a6bc; font-size:13px;
+      letter-spacing:.08em; background:rgba(255,255,255,.42);
+      border:1px solid rgba(143,220,255,.18); backdrop-filter:blur(12px);
+    }
+    /* Today's stamp circle - now clickable */
+    .randomTodayCircle{
+      position:absolute; right:22px; bottom:22px; width:160px; height:160px;
+      border-radius:50%; background:rgba(255,255,255,.58); border:1px solid rgba(143,220,255,.26);
+      box-shadow:0 18px 40px rgba(111,205,255,.12); backdrop-filter:blur(12px);
+      display:flex; align-items:center; justify-content:center; padding:18px;
+      z-index:3; overflow:hidden; cursor:pointer; pointer-events:auto;
+      transition:transform .2s ease,box-shadow .2s ease;
+    }
+    .randomTodayCircle:hover{ transform:scale(1.06); box-shadow:0 22px 50px rgba(111,205,255,.22); }
+    .randomTodayCircle img{ width:100%; height:100%; object-fit:contain; display:block; }
+    .randomTodayLabel{
+      position:absolute; right:44px; bottom:34px; z-index:4; font-size:11px;
+      letter-spacing:.08em; color:#7ca8bd; background:rgba(255,255,255,.52);
+      padding:6px 10px; border-radius:999px; border:1px solid rgba(143,220,255,.18);
+      backdrop-filter:blur(10px); cursor:pointer; pointer-events:auto;
     }
 
-    @media (max-width: 780px){
+    .modeCard.selected{
+      transform:translateY(-3px); box-shadow:0 30px 70px rgba(111,205,255,.22);
+      border-color:rgba(143,220,255,.55); background:rgba(255,255,255,.78);
+    }
+    .modeDisabled{
+      cursor:not-allowed; opacity:.72;
+    }
+    .modeDisabled:hover{ transform:none; box-shadow:0 26px 60px rgba(111,205,255,.15); border-color:rgba(143,220,255,.28); }
+    .modeDisabled .modePreview{ opacity:.18; transform:none !important; }
+    .modeDisabled .modeLabel{ transform:translate(-50%,-50%) !important; background:rgba(255,255,255,.56) !important; }
+    .modeDisabled::before,.modeDisabled::after{
+      content:""; position:absolute; left:-12%; width:124%; height:2px;
+      background:rgba(94,148,173,.48); top:50%; z-index:3; pointer-events:none;
+      box-shadow:0 0 0 1px rgba(255,255,255,.18);
+    }
+    .modeDisabled::before{ transform:rotate(19deg); }
+    .modeDisabled::after{ transform:rotate(-19deg); }
+
+    /* ===== CALENDAR POPUP ===== */
+    #calendarPopup{
+      position:fixed; inset:0; z-index:200; display:none;
+      align-items:center; justify-content:center;
+      background:rgba(220,240,255,.32); backdrop-filter:blur(10px);
+    }
+    #calendarPopup.visible{ display:flex; }
+    #calendarBox{
+      width:min(640px,94vw); max-height:90vh; overflow-y:auto;
+      border-radius:28px; padding:28px; background:rgba(255,255,255,.88);
+      border:1px solid rgba(143,220,255,.36); box-shadow:0 30px 70px rgba(111,205,255,.22);
+      backdrop-filter:blur(18px);
+    }
+    #calendarHeader{
+      display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;
+    }
+    #calendarMonth{ font-size:20px; font-weight:700; color:#5c93ad; letter-spacing:.1em; }
+    #calendarClose{
+      width:34px; height:34px; border:none; border-radius:999px;
+      background:rgba(143,220,255,.14); color:#5c93ad; font-size:20px;
+      cursor:pointer; display:flex; align-items:center; justify-content:center;
+    }
+    #calendarGrid{
+      display:grid; grid-template-columns:repeat(7,1fr); gap:6px;
+    }
+    .calDow{
+      text-align:center; font-size:11px; color:#8ab0c4; letter-spacing:.08em;
+      padding:4px 0; font-weight:700;
+    }
+    .calDow:first-child{ color:#e08080; }
+    .calDow:last-child{ color:#80a8e0; }
+    .calDay{
+      display:flex; flex-direction:column; align-items:center;
+      border-radius:14px; padding:6px 2px; min-height:72px;
+      background:rgba(255,255,255,.56); border:1px solid rgba(143,220,255,.14);
+    }
+    .calDay.empty{ background:transparent; border-color:transparent; }
+    .calDay.today{ background:rgba(143,220,255,.18); border-color:rgba(143,220,255,.36); }
+    .calDayNum{ font-size:12px; color:#7aa5bc; font-weight:700; margin-bottom:4px; }
+    .calDay:not(.empty) .calDayNum:first-child:nth-child(1){ color:#e08080; }
+    .calDayStamp{ width:44px; height:44px; }
+    .calDayStamp img{ width:100%; height:100%; object-fit:contain; }
+    .calDaySun .calDayNum{ color:#e08080; }
+    .calDaySat .calDayNum{ color:#80a8e0; }
+
+    /* ===== TIME GATE ===== */
+    #timeGate{
+      position:absolute; top:14px; left:50%; transform:translateX(-50%);
+      width:min(760px,calc(100vw - 54px)); min-height:84px; z-index:80;
+      border-radius:28px; padding:12px 16px; background:rgba(255,255,255,.74);
+      border:1px solid rgba(143,220,255,.30); box-shadow:0 18px 42px rgba(111,205,255,.15);
+      backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+      display:none; align-items:center; gap:14px;
+    }
+    #timeGate.visible{ display:flex; }
+    #gateCardThumb{
+      width:58px; height:58px; border-radius:14px; background:rgba(143,220,255,.10);
+      border:1px solid rgba(143,220,255,.18); overflow:hidden; flex:0 0 auto;
+      display:flex; align-items:center; justify-content:center;
+    }
+    #gateCardThumb img{ width:100%; height:100%; object-fit:cover; }
+    #gateInfo{ min-width:0; flex:1; display:flex; flex-direction:column; gap:8px; }
+    #gateTopLine{ display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; }
+    #gateTitle{ font-size:16px; letter-spacing:.1em; color:#5f91a8; font-weight:700; white-space:nowrap; }
+    #gateHours{ font-size:14px; color:#79a7bc; white-space:nowrap; }
+    #gateRemain{ font-size:13px; color:#86aabc; white-space:nowrap; }
+    #progressWrap{ width:100%; height:12px; border-radius:999px; overflow:hidden; background:rgba(143,220,255,.14); position:relative; }
+    #progressBar{
+      position:absolute; inset:0 auto 0 0; width:0%; border-radius:999px;
+      background:linear-gradient(90deg,rgba(143,220,255,.55),rgba(99,204,255,.96));
+      box-shadow:0 0 16px rgba(99,204,255,.28); transition:width .5s ease;
+    }
+
+    /* ===== MAIN SCREEN ===== */
+    #mainScreen{ position:absolute; inset:0; z-index:10; }
+    #backToSelect{
+      position:absolute; left:20px; top:18px; z-index:13;
+      padding:10px 14px; border:none; border-radius:999px;
+      color:#6e9db4; cursor:pointer; display:none;
+    }
+
+    /* Upload button - icon style */
+    #uploadArea{
+      position:absolute; right:20px; top:18px; z-index:14;
+      width:68px; height:68px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      background:#8fdcff; border:2px solid rgba(255,255,255,.5);
+      cursor:pointer; transition:transform .2s ease,box-shadow .2s ease;
+      overflow:hidden; box-shadow:0 10px 28px rgba(111,205,255,.30);
+    }
+    #uploadArea:hover{ transform:translateY(-2px) scale(1.06); box-shadow:0 16px 38px rgba(111,205,255,.38); }
+    #uploadArea input{ display:none; }
+    #uploadArea svg{ width:32px; height:32px; }
+
+    /* Download button - icon style */
+    #getCardBtn{
+      position:absolute; right:100px; top:22px; z-index:14;
+      width:62px; height:62px; border-radius:50%;
+      border:2px solid rgba(255,255,255,.5); outline:none; cursor:pointer;
+      background:rgba(255,255,255,.62); backdrop-filter:blur(14px);
+      display:flex; align-items:center; justify-content:center;
+      transition:transform .2s ease,box-shadow .2s ease;
+      box-shadow:0 8px 22px rgba(111,205,255,.20);
+    }
+    #getCardBtn:hover{ transform:translateY(-2px) scale(1.06); box-shadow:0 14px 36px rgba(111,205,255,.28); }
+    #getCardBtn svg{ width:28px; height:28px; }
+
+    /* ===== STAGE ===== */
+    #stageWrap{
+      position:absolute; inset:0; display:flex; align-items:center;
+      justify-content:center; padding:106px 32px 48px;
+      transition:filter .3s ease,opacity .3s ease;
+    }
+    #stageWrap.closed{ filter:blur(8px) saturate(.92); opacity:.82; }
+    #stage{
+      position:relative; width:min(82vw,1120px); height:min(78vh,780px);
+      display:flex; align-items:center; justify-content:center;
+    }
+    #emptyHint{ position:absolute; z-index:1; font-size:20px; letter-spacing:.10em; color:#87adc2; opacity:.62; pointer-events:none; }
+    #imageFrame{
+      position:relative; max-width:100%; max-height:100%;
+      border-radius:18px; overflow:visible; touch-action:none;
+    }
+    #cardImage{
+      display:none; width:auto; height:auto;
+      max-width:min(82vw,1120px); max-height:min(78vh,780px);
+      object-fit:contain; border-radius:18px;
+      box-shadow:0 28px 60px rgba(111,205,255,.15);
+      pointer-events:none; -webkit-user-drag:none; user-drag:none;
+    }
+    #stampLayer{
+      position:absolute; inset:0; overflow:hidden; border-radius:18px; pointer-events:none;
+    }
+    .stamp{
+      position:absolute; transform:translate(-50%,-50%) rotate(var(--rot,0deg));
+      transform-origin:center center; opacity:.98; pointer-events:none;
+      filter:drop-shadow(0 6px 12px rgba(111,205,255,.12));
+    }
+    .stamp img{ display:block; width:100%; height:100%; object-fit:contain; pointer-events:none; -webkit-user-drag:none; }
+    .stamp-date{
+      position:absolute; left:50%; transform:translateX(-50%);
+      bottom:-2px;
+      font-size:inherit;
+      color:#63ccff;
+      white-space:nowrap;
+      letter-spacing:.06em;
+      text-align:center;
+      font-weight:700;
+      pointer-events:none;
+      text-shadow:0 1px 4px rgba(200,235,255,.7);
+      opacity:.88;
+    }
+
+    #ghostStamp{
+      position:absolute; transform:translate(-50%,-50%); pointer-events:none;
+      opacity:.22; display:none; z-index:4;
+      filter:drop-shadow(0 6px 12px rgba(111,205,255,.08));
+    }
+    #ghostStamp img{ width:100%; height:100%; object-fit:contain; display:block; }
+
+    #pressTarget{
+      position:absolute; inset:0; border-radius:18px;
+      background:transparent; z-index:5; cursor:crosshair; touch-action:none;
+    }
+    #cardControls{ position:absolute; inset:0; pointer-events:none; z-index:8; }
+
+    /* History + save on LEFT side, more prominent */
+    #historyControls{
+      position:absolute; top:12px; left:12px;
+      display:flex; gap:8px; pointer-events:auto;
+    }
+    .historyBtn{
+      width:42px; height:42px; border:none; border-radius:999px;
+      background:rgba(255,255,255,.56); border:1.5px solid rgba(143,220,255,.30);
+      backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+      color:rgba(75,120,145,.95); font-size:20px; cursor:pointer;
+      transition:.2s ease; box-shadow:0 6px 18px rgba(111,205,255,.14);
+      display:flex; align-items:center; justify-content:center;
+    }
+    .historyBtn:hover{ background:rgba(255,255,255,.76); transform:translateY(-1px); box-shadow:0 10px 24px rgba(111,205,255,.20); }
+    .historyBtn:disabled{ opacity:.35; cursor:default; transform:none; }
+
+    #saveBtn{
+      position:absolute; left:12px; bottom:12px;
+      width:42px; height:42px; border:none; border-radius:999px;
+      background:rgba(255,255,255,.56); border:1.5px solid rgba(143,220,255,.30);
+      backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+      color:#5e93ad; cursor:pointer; pointer-events:auto;
+      transition:.2s ease; box-shadow:0 6px 18px rgba(111,205,255,.14);
+      display:flex; align-items:center; justify-content:center;
+    }
+    #saveBtn:hover{ background:rgba(255,255,255,.76); transform:translateY(-1px); box-shadow:0 10px 24px rgba(111,205,255,.20); }
+    #saveBtn svg{ width:20px; height:20px; }
+
+    /* Visit count overlay on card */
+    #visitCountOverlay{
+      position:absolute; left:9%; bottom:3%;
+      z-index:6; pointer-events:none;
+      font-size:clamp(11px,1.4vw,17px);
+      color:#63ccff; font-weight:700; letter-spacing:.08em;
+      text-shadow:0 1px 6px rgba(200,235,255,.9);
+      opacity:0; transition:opacity .4s ease;
+    }
+    #visitCountOverlay.visible{ opacity:1; }
+
+    /* Press ring */
+    #pressRing{
+      position:absolute; width:112px; height:112px; transform:translate(-50%,-50%);
+      display:none; align-items:center; justify-content:center;
+      pointer-events:none; z-index:9;
+    }
+    #pressRing svg{ width:112px; height:112px; overflow:visible; filter:drop-shadow(0 10px 18px rgba(111,205,255,.14)); }
+    .ring-bg{ stroke:rgba(255,255,255,.75); stroke-width:8; fill:rgba(255,255,255,.10); }
+    .ring-progress{ stroke:var(--blue-strong); stroke-width:8; fill:none; stroke-linecap:round; transform:rotate(-90deg); transform-origin:50% 50%; stroke-dasharray:251.2; stroke-dashoffset:251.2; }
+    .ring-center{ fill:rgba(255,255,255,.50); stroke:rgba(143,220,255,.24); stroke-width:1.5; }
+
+    /* Secret zone */
+    #secretTapZone{ position:absolute; left:0; bottom:0; width:110px; height:110px; z-index:90; background:transparent; }
+    #passwordPopup{
+      position:absolute; left:20px; bottom:74px; z-index:95; width:120px; padding:10px;
+      border-radius:16px; display:none; background:rgba(255,255,255,.76);
+      border:1px solid rgba(143,220,255,.24); box-shadow:0 14px 36px rgba(111,205,255,.14);
+      backdrop-filter:blur(14px);
+    }
+    #passwordInput{
+      width:100%; border:none; outline:none; border-radius:12px; padding:10px 12px;
+      text-align:center; background:rgba(255,255,255,.56); color:#5c90a8;
+      font-size:18px; letter-spacing:.20em;
+    }
+    #passwordInput::placeholder{ color:transparent; }
+
+    /* QR canvas overlay on card (bottom-right) */
+    #qrOverlay{
+      position:absolute; right:2%; bottom:2%; width:10%; aspect-ratio:1;
+      z-index:7; pointer-events:none; opacity:.88;
+    }
+    #qrOverlay canvas{ width:100%; height:100%; image-rendering:pixelated; }
+
+    @media (max-width:900px){
+      #selectWrap{ grid-template-columns:1fr; max-width:580px; }
+      .modeCard{ min-height:260px; }
+      .modeLabel{ font-size:24px; }
+      .randomTodayCircle{ width:120px; height:120px; right:16px; top:16px; }
+      .randomTodayLabel{ right:20px; top:144px; }
+    }
+    @media (max-width:780px){
       #selectTitle{ font-size:22px; }
-      #uploadArea{
-        width:158px;
-        min-height:60px;
-        font-size:12px;
-      }
-      #getCardBtn{
-        font-size:13px;
-        padding:11px 14px;
-      }
-      #backToSelect{
-        top:auto;
-        left:16px;
-        bottom:16px;
-      }
-      #stageWrap{
-        padding:90px 14px 24px;
-      }
+      #uploadArea{ width:58px; height:58px; }
+      #uploadArea svg{ width:26px; height:26px; }
+      #getCardBtn{ width:54px; height:54px; right:88px; top:22px; }
+      #getCardBtn svg{ width:24px; height:24px; }
+      #backToSelect{ top:auto; left:16px; bottom:16px; }
+      #stageWrap{ padding:90px 14px 24px; }
       #timeGate{ width:calc(100vw - 28px); }
-      #gateCardThumb{
-        width:48px;
-        height:48px;
-      }
+      #gateCardThumb{ width:48px; height:48px; }
       #gateTitle{ font-size:14px; }
       #gateHours,#gateRemain{ font-size:12px; }
-      #secretTapZone{
-        width:96px;
-        height:96px;
-      }
-      #passwordPopup{
-        left:16px;
-        bottom:68px;
-      }
+      #secretTapZone{ width:96px; height:96px; }
+      #passwordPopup{ left:16px; bottom:68px; }
     }
   </style>
 </head>
 <body>
-  <div id="app">
-    <div id="selectScreen">
-      <div id="selectInner">
-        <div id="selectTitle">カードの種類を選択</div>
-
-        <div id="selectWrap">
-          <button class="modeCard modeDisabled" id="artModeBtn" type="button" disabled>
-            <div class="modePreview"><img src="art.png" alt="art preview"></div>
-            <div class="modeLabel">版画スタンプ</div>
-            <div class="modeCount" id="artCountText">カード総数 0</div>
-          </button>
-
-          <button class="modeCard" id="randomModeBtn" type="button">
-            <div class="modePreview"><img src="randm.png" alt="random preview"></div>
-            <div class="modeLabel">スタンプラリー</div>
-            <div class="randomTodayCircle">
-              <img id="todayStampPreview" src="" alt="today stamp">
-            </div>
-            <div class="randomTodayLabel">今日のスタンプ</div>
-            <div class="modeCount" id="randomCountText">スタンプ総数 0</div>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div id="timeGate">
-      <div id="gateCardThumb"></div>
-      <div id="gateInfo">
-        <div id="gateTopLine">
-          <div id="gateTitle">時間外です</div>
-          <div id="gateHours">6:00~6:30</div>
-          <div id="gateRemain">残り --時間 --分</div>
-        </div>
-        <div id="progressWrap">
-          <div id="progressBar"></div>
-        </div>
-      </div>
-    </div>
-
-    <div id="mainScreen">
-      <button id="backToSelect" class="glass" type="button">もどる</button>
-      <button id="getCardBtn" class="glass hidden" type="button">カードダウンロード</button>
-
-      <label id="uploadArea" for="imageInput">
-        <span id="uploadText">カードを入れてね</span>
-        <input id="imageInput" type="file" accept="image/*" />
-      </label>
-
-      <div id="stageWrap">
-        <div id="stage">
-          <div id="emptyHint">CARD</div>
-
-          <div id="imageFrame">
-            <img id="cardImage" alt="card">
-            <div id="stampLayer"></div>
-
-            <div id="ghostStamp"><img id="ghostStampImg" alt="ghost stamp"></div>
-
-            <div id="cardControls">
-              <div id="historyControls">
-                <button id="undoBtn" class="historyBtn" type="button">↶</button>
-                <button id="redoBtn" class="historyBtn" type="button">↷</button>
-              </div>
-              <button id="saveBtn" type="button">保存</button>
-            </div>
-
-            <div id="pressTarget"></div>
+<div id="app">
+  <!-- SELECT SCREEN -->
+  <div id="selectScreen">
+    <div id="selectInner">
+      <div id="selectTitle">カードの種類を選択</div>
+      <div id="selectWrap">
+        <button class="modeCard modeDisabled" id="artModeBtn" type="button" disabled>
+          <div class="modePreview"><img src="art.png" alt="art preview"></div>
+          <div class="modeLabel">版画スタンプ</div>
+          <div class="modeCount" id="artCountText">カード総数 0</div>
+        </button>
+        <button class="modeCard" id="randomModeBtn" type="button">
+          <div class="modePreview"><img src="randm.png" alt="random preview"></div>
+          <div class="modeLabel">スタンプラリー</div>
+          <div class="randomTodayCircle" id="todayCircle">
+            <img id="todayStampPreview" src="" alt="today stamp">
           </div>
-
-          <div id="pressRing" aria-hidden="true">
-            <svg viewBox="0 0 100 100">
-              <circle class="ring-bg" cx="50" cy="50" r="40"></circle>
-              <circle class="ring-progress" cx="50" cy="50" r="40"></circle>
-              <circle class="ring-center" cx="50" cy="50" r="25"></circle>
-            </svg>
-          </div>
-        </div>
+          <div class="randomTodayLabel" id="todayLabel">今日のスタンプ</div>
+          <div class="modeCount" id="randomCountText">スタンプ総数 0</div>
+        </button>
       </div>
-    </div>
-
-    <div id="secretTapZone"></div>
-    <div id="passwordPopup">
-      <input id="passwordInput" type="password" inputmode="numeric" autocomplete="off" maxlength="4" placeholder="">
     </div>
   </div>
 
-  <script type="module">
-
-
-
-
-
-    const stampSound = document.getElementById("stampSound");
-
-
-    
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCC7KAv7V4j1Z6-o1Y8ikmb3r5htN9O_aA",
-      authDomain: "zzgohan-280.firebaseapp.com",
-      databaseURL: "https://zzgohan-280-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "zzgohan-280",
-      storageBucket: "zzgohan-280.firebasestorage.app",
-      messagingSenderId: "459336048542",
-      appId: "1:459336048542:web:ff6c825dec81cc7df8008f",
-      measurementId: "G-JX4RP9LWR3"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    getAnalytics(app);
-
-    const JST_OPEN_HOUR = 6;
-    const JST_OPEN_MINUTE = 0;
-    const JST_CLOSE_HOUR = 6;
-    const JST_CLOSE_MINUTE = 30;
-
-    const LONG_PRESS_MS = 4000;
-    const OVERRIDE_PASSWORD = "1111";
-    const STORAGE_KEY_OVERRIDE = "radio_stamp_time_override";
-
-    const RANDOM_CARD_PATH = "card.png";
-    const RANDOM_STAMP_POOL = [
-      "stamp100.png",
-      "stamp101.png",
-      "stamp102.png",
-      "stamp103.png",
-      "stamp104.png"
-    ];
-
-    const ART_CARD_CONFIG = {
-      "card1": { card: "card1.png", stamps: ["stamp001.png","stamp002.png","stamp003.png"] },
-      "card2": { card: "card2.png", stamps: ["stamp011.png","stamp012.png","stamp013.png"] }
-    };
-
-    const selectScreen = document.getElementById("selectScreen");
-    const randomModeBtn = document.getElementById("randomModeBtn");
-    const artModeBtn = document.getElementById("artModeBtn");
-    const artCountText = document.getElementById("artCountText");
-    const randomCountText = document.getElementById("randomCountText");
-    const todayStampPreview = document.getElementById("todayStampPreview");
-
-    const timeGate = document.getElementById("timeGate");
-    const gateCardThumb = document.getElementById("gateCardThumb");
-    const gateRemain = document.getElementById("gateRemain");
-    const progressBar = document.getElementById("progressBar");
-
-    const backToSelect = document.getElementById("backToSelect");
-    const getCardBtn = document.getElementById("getCardBtn");
-    const uploadArea = document.getElementById("uploadArea");
-    const uploadText = document.getElementById("uploadText");
-    const imageInput = document.getElementById("imageInput");
-
-    const stageWrap = document.getElementById("stageWrap");
-    const stage = document.getElementById("stage");
-    const emptyHint = document.getElementById("emptyHint");
-    const imageFrame = document.getElementById("imageFrame");
-    const cardImage = document.getElementById("cardImage");
-    const stampLayer = document.getElementById("stampLayer");
-    const pressTarget = document.getElementById("pressTarget");
-
-    const ghostStamp = document.getElementById("ghostStamp");
-    const ghostStampImg = document.getElementById("ghostStampImg");
-    const undoBtn = document.getElementById("undoBtn");
-    const redoBtn = document.getElementById("redoBtn");
-    const saveBtn = document.getElementById("saveBtn");
-
-    const pressRing = document.getElementById("pressRing");
-    const ringProgress = document.querySelector(".ring-progress");
-
-    const secretTapZone = document.getElementById("secretTapZone");
-    const passwordPopup = document.getElementById("passwordPopup");
-    const passwordInput = document.getElementById("passwordInput");
-
-    let currentMode = null;
-    let currentCardPath = null;
-    let currentRandomStampPath = null;
-    let activeWindow = false;
-    let uploadedImage = null;
-    let displayedStamps = [];
-    let redoStack = [];
-    let pointerDown = false;
-    let activePointerId = null;
-    let pressAnimating = false;
-    let pressStartAt = 0;
-    let pressPoint = null;
-    let pressTimer = null;
-    let rafId = null;
-    let overrideOpen = localStorage.getItem(STORAGE_KEY_OVERRIDE) === "true";
-
-
-    function clamp(v, min, max){
-      return Math.max(min, Math.min(max, v));
-    }
-
-    function getJSTNowParts(){
-      const now = new Date();
-      const parts = new Intl.DateTimeFormat("en-CA", {
-        timeZone: "Asia/Tokyo",
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false
-      }).formatToParts(now);
-
-      const map = {};
-      for(const p of parts){
-        if(p.type !== "literal") map[p.type] = p.value;
-      }
-
-      return {
-        year: Number(map.year),
-        month: Number(map.month),
-        day: Number(map.day),
-        hour: Number(map.hour),
-        minute: Number(map.minute),
-        second: Number(map.second)
-      };
-    }
-
-    function getJSTDateKey(){
-      const p = getJSTNowParts();
-      return `${p.year}-${String(p.month).padStart(2,"0")}-${String(p.day).padStart(2,"0")}`;
-    }
-
-    function getMinutesOfDay(h, m){
-      return h * 60 + m;
-    }
-
-    function getJSTStatus(){
-      const p = getJSTNowParts();
-      const nowMin = getMinutesOfDay(p.hour, p.minute);
-      const openMin = getMinutesOfDay(JST_OPEN_HOUR, JST_OPEN_MINUTE);
-      const closeMin = getMinutesOfDay(JST_CLOSE_HOUR, JST_CLOSE_MINUTE);
-
-      const isOpenByTime = nowMin >= openMin && nowMin < closeMin;
-      const isOpen = isOpenByTime || overrideOpen;
-
-      let remainingMs = 0;
-      let progress = 0;
-
-      if(isOpenByTime){
-        const elapsedInOpen = (nowMin - openMin) * 60 + p.second;
-        const totalOpenSeconds = (closeMin - openMin) * 60;
-        remainingMs = Math.max(0, (totalOpenSeconds - elapsedInOpen) * 1000);
-        progress = 100;
-      } else {
-        let minutesUntilNextOpen;
-        if(nowMin < openMin){
-          minutesUntilNextOpen = openMin - nowMin;
-        } else {
-          minutesUntilNextOpen = (24 * 60 - nowMin) + openMin;
-        }
-        remainingMs = Math.max(0, (minutesUntilNextOpen * 60 - p.second) * 1000);
-        const cycleTotal = 24 * 60 * 60 * 1000;
-        progress = ((cycleTotal - remainingMs) / cycleTotal) * 100;
-      }
-
-      return { isOpen, isOpenByTime, remainingMs, progress };
-    }
-
-    function formatRemaining(ms){
-      const totalMinutes = Math.ceil(ms / 60000);
-      const h = Math.floor(totalMinutes / 60);
-      const m = totalMinutes % 60;
-      return `残り ${h}時間 ${m}分`;
-    }
-
-    function todaySeed(){
-      const key = getJSTDateKey().replaceAll("-", "");
-      return Number(key);
-    }
-
-    function seededIndex(seed, length){
-      const x = Math.sin(seed * 9999) * 10000;
-      return Math.floor((x - Math.floor(x)) * length) % length;
-    }
-
-    function ensureRandomPool(){
-      if(!Array.isArray(RANDOM_STAMP_POOL) || RANDOM_STAMP_POOL.length === 0){
-        throw new Error("RANDOM_STAMP_POOL は空にできません。");
-      }
-    }
-
-    function getTodayRandomStamp(){
-      ensureRandomPool();
-      const idx = seededIndex(todaySeed(), RANDOM_STAMP_POOL.length);
-      return RANDOM_STAMP_POOL[idx];
-    }
-
-    function updateCounts(){
-      randomCountText.textContent = `スタンプ総数 ${RANDOM_STAMP_POOL.length}`;
-      artCountText.textContent = `カード総数 ${Object.keys(ART_CARD_CONFIG).length}`;
-      todayStampPreview.src = getTodayRandomStamp();
-    }
-
-    function setGateThumb(src){
-      gateCardThumb.innerHTML = src ? `<img src="${src}" alt="">` : "";
-    }
-
- function showSelectScreen(){
-  selectScreen.classList.remove("hidden");
-  backToSelect.style.display = "none";
-  timeGate.classList.remove("visible");
-  currentMode = null;
-  clearModeSelection();
-}
-
-    function hideSelectScreen(){
-      selectScreen.classList.add("hidden");
-      backToSelect.style.display = "block";
-    }
-
-    function updateTopVisibility(){
-      const status = getJSTStatus();
-      activeWindow = status.isOpen;
-
-      if(!currentMode){
-        timeGate.classList.remove("visible");
-        getCardBtn.classList.add("hidden");
-        uploadArea.classList.add("hidden");
-        return;
-      }
-
-      if(status.isOpen){
-        timeGate.classList.remove("visible");
-      } else {
-        timeGate.classList.add("visible");
-        gateRemain.textContent = formatRemaining(status.remainingMs);
-        progressBar.style.width = `${clamp(status.progress, 0, 100)}%`;
-      }
-
-      stageWrap.classList.toggle("closed", !status.isOpen);
-      getCardBtn.classList.remove("hidden");
-      uploadArea.classList.remove("hidden");
-    }
-
-    function setCardImage(src){
-      currentCardPath = src;
-      cardImage.src = src;
-      cardImage.style.display = "block";
-      emptyHint.style.display = "none";
-      setGateThumb(src);
-      cardImage.onload = () => {
-        renderStamps();
-        updateGhostSizeOnly();
-      };
-    }
-
-    function clearStamps(){
-      displayedStamps = [];
-      redoStack = [];
-      renderStamps();
-      updateHistoryButtons();
-    }
-
-    function updateHistoryButtons(){
-      undoBtn.disabled = displayedStamps.length === 0;
-      redoBtn.disabled = redoStack.length === 0;
-    }
-
-    function getCardRect(){
-      const r = cardImage.getBoundingClientRect();
-      return { left:r.left, top:r.top, width:r.width, height:r.height };
-    }
-
-    function pointInsideImage(clientX, clientY){
-      const r = getCardRect();
-      return clientX >= r.left && clientX <= r.left + r.width && clientY >= r.top && clientY <= r.top + r.height;
-    }
-
-    function clientToImageRatio(clientX, clientY){
-      const r = getCardRect();
-      return {
-        x: clamp((clientX - r.left) / r.width, 0, 1),
-        y: clamp((clientY - r.top) / r.height, 0, 1)
-      };
-    }
-
-    function renderStamps(){
-      stampLayer.innerHTML = "";
-      const rect = getCardRect();
-      if(!rect.width || !rect.height) return;
-
-      for(const s of displayedStamps){
-        const el = document.createElement("div");
-        el.className = "stamp";
-        el.style.left = `${s.x * 100}%`;
-        el.style.top = `${s.y * 100}%`;
-        el.style.width = `${Math.max(38, rect.width * (s.size || 0.17))}px`;
-        el.style.height = `${Math.max(38, rect.width * (s.size || 0.17))}px`;
-        el.style.setProperty("--rot", `${s.rotation || 0}deg`);
-
-        const img = document.createElement("img");
-        img.src = s.src;
-        el.appendChild(img);
-        stampLayer.appendChild(el);
-      }
-    }
-
-    function updateGhostSizeOnly(){
-      const rect = getCardRect();
-      if(!rect.width || !currentRandomStampPath) return;
-      const size = Math.max(38, rect.width * 0.17);
-      ghostStamp.style.width = `${size}px`;
-      ghostStamp.style.height = `${size}px`;
-    }
-
-    function showGhostStamp(clientX, clientY){
-      if(!currentRandomStampPath) return;
-      const rect = getCardRect();
-      if(!rect.width) return;
-      ghostStampImg.src = currentRandomStampPath;
-      const size = Math.max(38, rect.width * 0.17);
-      ghostStamp.style.width = `${size}px`;
-      ghostStamp.style.height = `${size}px`;
-      moveGhostStamp(clientX, clientY);
-      ghostStamp.style.display = "block";
-    }
-
-    function moveGhostStamp(clientX, clientY){
-      const rect = getCardRect();
-      ghostStamp.style.left = `${clientX - rect.left}px`;
-      ghostStamp.style.top = `${clientY - rect.top}px`;
-      ghostStamp.style.transform = `translate(-50%,-50%) rotate(0deg)`;
-    }
-
-    function hideGhostStamp(){
-      ghostStamp.style.display = "none";
-    }
-
-    function pushRandomStamp(xRatio, yRatio){
-      displayedStamps.push({
-        x: clamp(xRatio,0,1),
-        y: clamp(yRatio,0,1),
-        rotation: (-10 + Math.random() * 20).toFixed(2),
-        size:0.17,
-        src: currentRandomStampPath
-      });
-      redoStack = [];
-      renderStamps();
-      updateHistoryButtons();
-
-       stampSound.currentTime = 0;
-  stampSound.play().catch(() => {});
-    }
-
-    function undoStamp(){
-      if(displayedStamps.length === 0) return;
-      redoStack.push(displayedStamps.pop());
-      renderStamps();
-      updateHistoryButtons();
-    }
-
-    function redoStamp(){
-      if(redoStack.length === 0) return;
-      displayedStamps.push(redoStack.pop());
-      renderStamps();
-      updateHistoryButtons();
-    }
-
-    function showPressRing(clientX, clientY){
-      const stageRect = stage.getBoundingClientRect();
-      pressRing.style.left = `${clientX - stageRect.left}px`;
-      pressRing.style.top = `${clientY - stageRect.top}px`;
-      pressRing.style.display = "flex";
-      ringProgress.style.strokeDashoffset = "251.2";
-    }
-
-    function movePressRing(clientX, clientY){
-      const stageRect = stage.getBoundingClientRect();
-      pressRing.style.left = `${clientX - stageRect.left}px`;
-      pressRing.style.top = `${clientY - stageRect.top}px`;
-    }
-
-    function hidePressRing(){
-      pressRing.style.display = "none";
-      ringProgress.style.strokeDashoffset = "251.2";
-    }
-
-    function animateRing(){
-      if(!pressAnimating) return;
-      const elapsed = performance.now() - pressStartAt;
-      const ratio = clamp(elapsed / LONG_PRESS_MS, 0, 1);
-      const total = 251.2;
-      ringProgress.style.strokeDashoffset = String(total * (1 - ratio));
-
-      if(ratio >= 1){
-        pressAnimating = false;
-        hidePressRing();
-        if(pressPoint) pushRandomStamp(pressPoint.x, pressPoint.y);
-        hideGhostStamp();
-        return;
-      }
-      rafId = requestAnimationFrame(animateRing);
-    }
-
-    function cancelPress(){
-      pointerDown = false;
-      activePointerId = null;
-      pressAnimating = false;
-      pressPoint = null;
-      if(pressTimer){
-        clearTimeout(pressTimer);
-        pressTimer = null;
-      }
-      if(rafId){
-        cancelAnimationFrame(rafId);
-        rafId = null;
-      }
-      hidePressRing();
-      hideGhostStamp();
-    }
-
-    function startPress(clientX, clientY){
-      if(!activeWindow || !currentCardPath || !pointInsideImage(clientX, clientY)) return;
-      pressPoint = clientToImageRatio(clientX, clientY);
-      showGhostStamp(clientX, clientY);
-      pressStartAt = performance.now();
-      pressAnimating = true;
-      showPressRing(clientX, clientY);
-      animateRing();
-      pressTimer = setTimeout(() => { pressTimer = null; }, LONG_PRESS_MS);
-    }
-
-    function movePress(clientX, clientY){
-      if(!pointerDown) return;
-      if(!pointInsideImage(clientX, clientY)){
-        cancelPress();
-        return;
-      }
-      movePressRing(clientX, clientY);
-      pressPoint = clientToImageRatio(clientX, clientY);
-      moveGhostStamp(clientX, clientY);
-    }
-
-    async function loadImage(src){
-      return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.onload = () => resolve(img);
-        img.onerror = reject;
-        img.src = src;
-      });
-    }
-
-    async function saveCompositePNG(){
-      if(!currentCardPath) return;
-      const baseImg = await loadImage(cardImage.src);
-      const outCanvas = document.createElement("canvas");
-      const ctx = outCanvas.getContext("2d");
-
-      outCanvas.width = baseImg.naturalWidth || baseImg.width;
-      outCanvas.height = baseImg.naturalHeight || baseImg.height;
-
-      ctx.clearRect(0, 0, outCanvas.width, outCanvas.height);
-      ctx.drawImage(baseImg, 0, 0, outCanvas.width, outCanvas.height);
-
-      for(const s of displayedStamps){
-        const img = await loadImage(s.src);
-        const size = outCanvas.width * (s.size || 0.17);
-        const cx = s.x * outCanvas.width;
-        const cy = s.y * outCanvas.height;
-
-        ctx.save();
-        ctx.translate(cx, cy);
-        ctx.rotate((Number(s.rotation || 0) * Math.PI) / 180);
-        ctx.drawImage(img, -size/2, -size/2, size, size);
-        ctx.restore();
-      }
-
-      const a = document.createElement("a");
-      a.href = outCanvas.toDataURL("image/png");
-      a.download = "random-stamp.png";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-    }
-
-    function downloadCard(src, filename){
-      const a = document.createElement("a");
-      a.href = src;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-    }
-
-    function setupRandomMode(){
-      currentMode = "random";
-      currentRandomStampPath = getTodayRandomStamp();
-      ghostStampImg.src = currentRandomStampPath;
-      hideSelectScreen();
-      clearStamps();
-      uploadedImage = null;
-      uploadText.textContent = "カードを入れてね";
-      setCardImage(RANDOM_CARD_PATH);
-      updateTopVisibility();
-    }
-
-    function hidePasswordPopup(){
-      passwordPopup.style.display = "none";
-      passwordInput.value = "";
-    }
-
-    function showPasswordPopup(){
-      passwordPopup.style.display = "block";
-      passwordInput.value = "";
-      passwordInput.focus();
-    }
-
-    randomModeBtn.addEventListener("click", () => {
-      const status = getJSTStatus();
-      if(!status.isOpen){
-        currentMode = null;
-        setGateThumb(RANDOM_CARD_PATH);
-        timeGate.classList.add("visible");
-        gateRemain.textContent = formatRemaining(status.remainingMs);
-        progressBar.style.width = `${clamp(status.progress, 0, 100)}%`;
-        return;
-      }
-      setupRandomMode();
-    });
-
-    artModeBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-    });
-
-    backToSelect.addEventListener("click", () => {
-      displayedStamps = [];
-      redoStack = [];
-      renderStamps();
-      hideGhostStamp();
-      hidePressRing();
-      showSelectScreen();
-      updateTopVisibility();
-    });
-
-    getCardBtn.addEventListener("click", () => {
-      if(!activeWindow) return;
-      downloadCard(RANDOM_CARD_PATH, "card.png");
-    });
-
-    imageInput.addEventListener("change", (e) => {
-      if(!activeWindow || currentMode !== "random") return;
-      const file = e.target.files?.[0];
-      if(!file) return;
-
-      const reader = new FileReader();
-      reader.onload = () => {
-        uploadedImage = reader.result;
-        uploadText.textContent = "カードを入れてね";
-        setCardImage(uploadedImage);
-        clearStamps();
-      };
-      reader.readAsDataURL(file);
-    });
-
-    saveBtn.addEventListener("click", async () => {
-      if(!activeWindow) return;
-      await saveCompositePNG();
-    });
-
-    undoBtn.addEventListener("click", () => {
-      if(!activeWindow) return;
-      undoStamp();
-    });
-
-    redoBtn.addEventListener("click", () => {
-      if(!activeWindow) return;
-      redoStamp();
-    });
-
-    pressTarget.addEventListener("contextmenu", (e) => e.preventDefault());
-
-    pressTarget.addEventListener("pointerdown", (e) => {
-      if(!activeWindow || !currentCardPath) return;
-      pointerDown = true;
-      activePointerId = e.pointerId;
-      pressTarget.setPointerCapture(e.pointerId);
-      startPress(e.clientX, e.clientY);
-    });
-
-    pressTarget.addEventListener("pointermove", (e) => {
-      if(!pointerDown || e.pointerId !== activePointerId) return;
-      movePress(e.clientX, e.clientY);
-    });
-
-    pressTarget.addEventListener("pointerup", (e) => {
-      if(e.pointerId !== activePointerId) return;
-      cancelPress();
-    });
-
-    pressTarget.addEventListener("pointercancel", (e) => {
-      if(e.pointerId !== activePointerId) return;
-      cancelPress();
-    });
-
-    pressTarget.addEventListener("pointerleave", () => {
-      if(pointerDown) cancelPress();
-    });
-
-    imageFrame.addEventListener("pointermove", (e) => {
-      if(pointerDown || !activeWindow || !currentCardPath) return;
-      if(!pointInsideImage(e.clientX, e.clientY)){
-        hideGhostStamp();
-        return;
-      }
-      showGhostStamp(e.clientX, e.clientY);
-    });
-
-    imageFrame.addEventListener("pointerleave", () => {
-      if(!pointerDown) hideGhostStamp();
-    });
-
-    secretTapZone.addEventListener("dblclick", (e) => {
-      e.preventDefault();
-      if(passwordPopup.style.display === "block"){
-        hidePasswordPopup();
-      } else {
-        showPasswordPopup();
-      }
-    });
-
-    let lastTapTime = 0;
-    secretTapZone.addEventListener("touchend", (e) => {
-      const now = Date.now();
-      if(now - lastTapTime < 350){
-        e.preventDefault();
-        if(passwordPopup.style.display === "block"){
-          hidePasswordPopup();
-        } else {
-          showPasswordPopup();
-        }
-      }
-      lastTapTime = now;
-    }, { passive:false });
-
-    passwordInput.addEventListener("input", () => {
-      if(passwordInput.value === OVERRIDE_PASSWORD){
-        overrideOpen = true;
-        localStorage.setItem(STORAGE_KEY_OVERRIDE, "true");
-        hidePasswordPopup();
-        setupRandomMode();
-      }
-    });
-
-    document.addEventListener("pointerdown", (e) => {
-      if(!passwordPopup.contains(e.target) && !secretTapZone.contains(e.target)){
-        hidePasswordPopup();
-      }
-    });
-
-    window.addEventListener("resize", () => {
-      renderStamps();
-      updateGhostSizeOnly();
-    });
-
-    setInterval(() => {
-      todayStampPreview.src = getTodayRandomStamp();
-      if(currentMode){
-        updateTopVisibility();
-      } else {
-        const status = getJSTStatus();
-        if(timeGate.classList.contains("visible")){
-          gateRemain.textContent = formatRemaining(status.remainingMs);
-          progressBar.style.width = `${clamp(status.progress, 0, 100)}%`;
-        }
-      }
-    }, 1000);
-
-    ensureRandomPool();
-    updateCounts();
-    showSelectScreen();
-    updateTopVisibility();
-
-
-
-
-
-
-
-function clearModeSelection(){
-  selectedMode = null;
-  randomModeBtn.classList.remove("selected");
-  artModeBtn.classList.remove("selected");
-}
-
-function setModeSelection(mode){
-  selectedMode = mode;
-  randomModeBtn.classList.toggle("selected", mode === "random");
-  artModeBtn.classList.toggle("selected", mode === "art");
-}
-
-
-
-
-
-
-    
-  </script>
-
+  <!-- CALENDAR POPUP -->
+  <div id="calendarPopup">
+    <div id="calendarBox">
+      <div id="calendarHeader">
+        <div id="calendarMonth"></div>
+        <button id="calendarClose" type="button">×</button>
+      </div>
+      <div id="calendarGrid"></div>
+    </div>
+  </div>
+
+  <!-- TIME GATE -->
+  <div id="timeGate">
+    <div id="gateCardThumb"></div>
+    <div id="gateInfo">
+      <div id="gateTopLine">
+        <div id="gateTitle">時間外です</div>
+        <div id="gateHours">6:00~6:30</div>
+        <div id="gateRemain">残り --時間 --分</div>
+      </div>
+      <div id="progressWrap"><div id="progressBar"></div></div>
+    </div>
+  </div>
+
+  <!-- MAIN SCREEN -->
+  <div id="mainScreen">
+    <button id="backToSelect" class="glass" type="button">もどる</button>
+
+    <!-- Download card icon button -->
+    <button id="getCardBtn" class="hidden" type="button" title="カードをダウンロード">
+      <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="4" y="20" width="20" height="2.5" rx="1.25" fill="#5f94ad"/>
+        <path d="M14 5v12M9 12l5 5 5-5" stroke="#5f94ad" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+
+    <!-- Upload card icon button -->
+    <label id="uploadArea" for="imageInput" title="カードを入れてね">
+      <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Card shape -->
+        <rect x="5" y="8" width="22" height="16" rx="3" stroke="white" stroke-width="2" fill="none"/>
+        <!-- Arrow up -->
+        <path d="M16 22v-9M12 17l4-4 4 4" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Small star sparkle -->
+        <circle cx="24" cy="10" r="1.5" fill="white" opacity=".7"/>
+      </svg>
+      <input id="imageInput" type="file" accept="image/*" />
+    </label>
+
+    <div id="stageWrap">
+      <div id="stage">
+        <div id="emptyHint">CARD</div>
+        <div id="imageFrame">
+          <img id="cardImage" alt="card">
+          <div id="stampLayer"></div>
+          <div id="ghostStamp"><img id="ghostStampImg" alt="ghost stamp"></div>
+          <div id="qrOverlay"></div>
+          <div id="visitCountOverlay"></div>
+          <div id="cardControls">
+            <div id="historyControls">
+              <button id="undoBtn" class="historyBtn" type="button" title="元に戻す">↶</button>
+              <button id="redoBtn" class="historyBtn" type="button" title="やり直す">↷</button>
+            </div>
+            <button id="saveBtn" type="button" title="保存">
+              <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 13v3a1 1 0 001 1h12a1 1 0 001-1v-3" stroke="#5e93ad" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M10 3v9M7 9l3 3 3-3" stroke="#5e93ad" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+          <div id="pressTarget"></div>
+        </div>
+        <div id="pressRing" aria-hidden="true">
+          <svg viewBox="0 0 100 100">
+            <circle class="ring-bg" cx="50" cy="50" r="40"></circle>
+            <circle class="ring-progress" cx="50" cy="50" r="40"></circle>
+            <circle class="ring-center" cx="50" cy="50" r="25"></circle>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="secretTapZone"></div>
+  <div id="passwordPopup">
+    <input id="passwordInput" type="password" inputmode="numeric" autocomplete="off" maxlength="4" placeholder="">
+  </div>
+</div>
 
 <audio id="stampSound" src="stamp.mp3" preload="auto"></audio>
 
-  
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCC7KAv7V4j1Z6-o1Y8ikmb3r5htN9O_aA",
+    authDomain: "zzgohan-280.firebaseapp.com",
+    databaseURL: "https://zzgohan-280-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "zzgohan-280",
+    storageBucket: "zzgohan-280.firebasestorage.app",
+    messagingSenderId: "459336048542",
+    appId: "1:459336048542:web:ff6c825dec81cc7df8008f",
+    measurementId: "G-JX4RP9LWR3"
+  };
+  const fbApp = initializeApp(firebaseConfig);
+  getAnalytics(fbApp);
+
+  const JST_OPEN_HOUR = 6, JST_OPEN_MINUTE = 0;
+  const JST_CLOSE_HOUR = 6, JST_CLOSE_MINUTE = 30;
+  const LONG_PRESS_MS = 4000;
+  const OVERRIDE_PASSWORD = "1111";
+  const STORAGE_KEY_OVERRIDE = "radio_stamp_time_override";
+  const RANDOM_CARD_PATH = "card.png";
+
+  const RANDOM_STAMP_POOL = [
+    "stamp100.png","stamp101.png","stamp102.png","stamp103.png","stamp104.png"
+  ];
+
+  const ART_CARD_CONFIG = {
+    "card1":{ card:"card1.png", stamps:["stamp001.png","stamp002.png","stamp003.png"] },
+    "card2":{ card:"card2.png", stamps:["stamp011.png","stamp012.png","stamp013.png"] }
+  };
+
+  // === DOM refs ===
+  const stampSound = document.getElementById("stampSound");
+  const selectScreen = document.getElementById("selectScreen");
+  const randomModeBtn = document.getElementById("randomModeBtn");
+  const artModeBtn = document.getElementById("artModeBtn");
+  const artCountText = document.getElementById("artCountText");
+  const randomCountText = document.getElementById("randomCountText");
+  const todayStampPreview = document.getElementById("todayStampPreview");
+  const todayCircle = document.getElementById("todayCircle");
+  const todayLabel = document.getElementById("todayLabel");
+  const calendarPopup = document.getElementById("calendarPopup");
+  const calendarClose = document.getElementById("calendarClose");
+  const calendarMonth = document.getElementById("calendarMonth");
+  const calendarGrid = document.getElementById("calendarGrid");
+  const timeGate = document.getElementById("timeGate");
+  const gateCardThumb = document.getElementById("gateCardThumb");
+  const gateRemain = document.getElementById("gateRemain");
+  const progressBar = document.getElementById("progressBar");
+  const backToSelect = document.getElementById("backToSelect");
+  const getCardBtn = document.getElementById("getCardBtn");
+  const uploadArea = document.getElementById("uploadArea");
+  const imageInput = document.getElementById("imageInput");
+  const stageWrap = document.getElementById("stageWrap");
+  const stage = document.getElementById("stage");
+  const emptyHint = document.getElementById("emptyHint");
+  const imageFrame = document.getElementById("imageFrame");
+  const cardImage = document.getElementById("cardImage");
+  const stampLayer = document.getElementById("stampLayer");
+  const ghostStamp = document.getElementById("ghostStamp");
+  const ghostStampImg = document.getElementById("ghostStampImg");
+  const undoBtn = document.getElementById("undoBtn");
+  const redoBtn = document.getElementById("redoBtn");
+  const saveBtn = document.getElementById("saveBtn");
+  const pressRing = document.getElementById("pressRing");
+  const ringProgress = document.querySelector(".ring-progress");
+  const secretTapZone = document.getElementById("secretTapZone");
+  const passwordPopup = document.getElementById("passwordPopup");
+  const passwordInput = document.getElementById("passwordInput");
+  const qrOverlay = document.getElementById("qrOverlay");
+  const visitCountOverlay = document.getElementById("visitCountOverlay");
+
+  let currentMode = null;
+  let selectedMode = null; // FIX: was undefined
+  let currentCardPath = null;
+  let currentRandomStampPath = null;
+  let activeWindow = false;
+  let uploadedImage = null;
+  let displayedStamps = [];
+  let redoStack = [];
+  let pointerDown = false;
+  let activePointerId = null;
+  let pressAnimating = false;
+  let pressStartAt = 0;
+  let pressPoint = null;
+  let pressTimer = null;
+  let rafId = null;
+  let overrideOpen = localStorage.getItem(STORAGE_KEY_OVERRIDE) === "true";
+
+  // QR visit history - stored as array of {n, date} strings
+  let qrHistory = []; // [{n:1,date:"2025-01-15"},...]
+  let visitCount = 0; // derived from QR data
+
+  function clamp(v,min,max){ return Math.max(min,Math.min(max,v)); }
+
+  function getJSTNowParts(){
+    const now = new Date();
+    const parts = new Intl.DateTimeFormat("en-CA",{
+      timeZone:"Asia/Tokyo", year:"numeric", month:"2-digit", day:"2-digit",
+      hour:"2-digit", minute:"2-digit", second:"2-digit", hour12:false
+    }).formatToParts(now);
+    const map = {};
+    for(const p of parts) if(p.type !== "literal") map[p.type] = p.value;
+    return { year:Number(map.year), month:Number(map.month), day:Number(map.day),
+             hour:Number(map.hour), minute:Number(map.minute), second:Number(map.second) };
+  }
+
+  function getJSTDateKey(){
+    const p = getJSTNowParts();
+    return `${p.year}-${String(p.month).padStart(2,"0")}-${String(p.day).padStart(2,"0")}`;
+  }
+
+  function getMinutesOfDay(h,m){ return h*60+m; }
+
+  function getJSTStatus(){
+    const p = getJSTNowParts();
+    const nowMin = getMinutesOfDay(p.hour,p.minute);
+    const openMin = getMinutesOfDay(JST_OPEN_HOUR,JST_OPEN_MINUTE);
+    const closeMin = getMinutesOfDay(JST_CLOSE_HOUR,JST_CLOSE_MINUTE);
+    const isOpenByTime = nowMin >= openMin && nowMin < closeMin;
+    const isOpen = isOpenByTime || overrideOpen;
+    let remainingMs = 0, progress = 0;
+    if(isOpenByTime){
+      const elapsedInOpen = (nowMin - openMin)*60 + p.second;
+      const totalOpenSeconds = (closeMin - openMin)*60;
+      remainingMs = Math.max(0,(totalOpenSeconds - elapsedInOpen)*1000);
+      progress = 100;
+    } else {
+      let minutesUntilNextOpen = nowMin < openMin ? openMin - nowMin : (24*60 - nowMin) + openMin;
+      remainingMs = Math.max(0,(minutesUntilNextOpen*60 - p.second)*1000);
+      const cycleTotal = 24*60*60*1000;
+      progress = ((cycleTotal - remainingMs)/cycleTotal)*100;
+    }
+    return { isOpen, isOpenByTime, remainingMs, progress };
+  }
+
+  function formatRemaining(ms){
+    const totalMinutes = Math.ceil(ms/60000);
+    const h = Math.floor(totalMinutes/60), m = totalMinutes%60;
+    return `残り ${h}時間 ${m}分`;
+  }
+
+  function todaySeed(){
+    return Number(getJSTDateKey().replaceAll("-",""));
+  }
+
+  function seededIndex(seed,length){
+    const x = Math.sin(seed*9999)*10000;
+    return Math.floor((x - Math.floor(x))*length)%length;
+  }
+
+  function getStampForDate(dateKey){
+    const seed = Number(dateKey.replaceAll("-",""));
+    const idx = seededIndex(seed, RANDOM_STAMP_POOL.length);
+    return RANDOM_STAMP_POOL[idx];
+  }
+
+  function getTodayRandomStamp(){ return getStampForDate(getJSTDateKey()); }
+
+  function updateCounts(){
+    randomCountText.textContent = `スタンプ総数 ${RANDOM_STAMP_POOL.length}`;
+    artCountText.textContent = `カード総数 ${Object.keys(ART_CARD_CONFIG).length}`;
+    todayStampPreview.src = getTodayRandomStamp();
+  }
+
+  // ===== CALENDAR =====
+  function buildCalendar(){
+    const p = getJSTNowParts();
+    const year = p.year, month = p.month;
+    const monthLabel = `${year}年${month}月`;
+    calendarMonth.textContent = monthLabel;
+
+    const daysInMonth = new Date(year, month, 0).getDate();
+    const firstDow = new Date(year, month-1, 1).getDay(); // 0=Sun
+
+    const dows = ["日","月","火","水","木","金","土"];
+    calendarGrid.innerHTML = "";
+
+    for(let d=0; d<7; d++){
+      const el = document.createElement("div");
+      el.className = "calDow";
+      el.textContent = dows[d];
+      calendarGrid.appendChild(el);
+    }
+
+    // blank cells before day 1
+    for(let i=0; i<firstDow; i++){
+      const el = document.createElement("div");
+      el.className = "calDay empty";
+      calendarGrid.appendChild(el);
+    }
+
+    for(let day=1; day<=daysInMonth; day++){
+      const dateKey = `${year}-${String(month).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+      const stampSrc = getStampForDate(dateKey);
+      const dow = (firstDow + day - 1) % 7;
+      const isToday = day === p.day;
+
+      const el = document.createElement("div");
+      el.className = "calDay" + (isToday?" today":"") + (dow===0?" calDaySun":dow===6?" calDaySat":"");
+
+      const numEl = document.createElement("div");
+      numEl.className = "calDayNum";
+      numEl.textContent = day;
+      el.appendChild(numEl);
+
+      const stampEl = document.createElement("div");
+      stampEl.className = "calDayStamp";
+      const img = document.createElement("img");
+      img.src = stampSrc;
+      img.alt = "";
+      stampEl.appendChild(img);
+      el.appendChild(stampEl);
+
+      calendarGrid.appendChild(el);
+    }
+  }
+
+  function showCalendar(e){
+    e.stopPropagation();
+    buildCalendar();
+    calendarPopup.classList.add("visible");
+  }
+
+  todayCircle.addEventListener("click", showCalendar);
+  todayLabel.addEventListener("click", showCalendar);
+  calendarClose.addEventListener("click", () => calendarPopup.classList.remove("visible"));
+  calendarPopup.addEventListener("click", (e) => {
+    if(e.target === calendarPopup) calendarPopup.classList.remove("visible");
+  });
+
+  // ===== QR CODE (tiny pure-JS QR encoder) =====
+  // We use a minimal QR encoder for short text
+  function encodeQRtoMatrix(text){
+    // Use qrcodejs from CDN (loaded below)
+    // Returns: canvas element
+    const canvas = document.createElement("canvas");
+    canvas.width = 64; canvas.height = 64;
+    // Will be drawn by qrLib after load
+    canvas._qrText = text;
+    return canvas;
+  }
+
+  let qrLib = null;
+
+  function loadQRLib(){
+    return new Promise((resolve) => {
+      if(window.QRCode){ resolve(window.QRCode); return; }
+      const s = document.createElement("script");
+      s.src = "https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js";
+      s.onload = () => resolve(window.QRCode);
+      s.onerror = () => resolve(null);
+      document.head.appendChild(s);
+    });
+  }
+
+  async function buildQRCanvas(text, size=64){
+    const lib = qrLib || (qrLib = await loadQRLib());
+    if(!lib) return null;
+    const wrap = document.createElement("div");
+    wrap.style.cssText = "position:absolute;left:-9999px;";
+    document.body.appendChild(wrap);
+    try {
+      new lib(wrap, { text, width:size, height:size, colorDark:"#4ab8e0", colorLight:"#ffffff", correctLevel:lib.CorrectLevel.L });
+      const img = wrap.querySelector("img") || wrap.querySelector("canvas");
+      const canvas = document.createElement("canvas");
+      canvas.width = size; canvas.height = size;
+      const ctx = canvas.getContext("2d");
+      if(img.tagName === "IMG"){
+        await new Promise(r => { img.onload=r; if(img.complete) r(); });
+        ctx.drawImage(img,0,0,size,size);
+      } else {
+        ctx.drawImage(img,0,0,size,size);
+      }
+      wrap.remove();
+      return canvas;
+    } catch(e){ wrap.remove(); return null; }
+  }
+
+  function qrTextFromHistory(history){
+    if(!history || history.length===0) return "radio-stamp:0";
+    const lines = history.map(h => `${h.n}:${h.date}`).join("|");
+    return `radio-stamp:${history.length}|${lines}`;
+  }
+
+  function parseQRText(text){
+    if(!text || !text.startsWith("radio-stamp:")) return [];
+    const body = text.slice("radio-stamp:".length);
+    const parts = body.split("|");
+    if(parts.length <= 1) return [];
+    const history = [];
+    for(let i=1; i<parts.length; i++){
+      const [n, date] = parts[i].split(":");
+      if(n && date) history.push({ n:Number(n), date });
+    }
+    return history;
+  }
+
+  async function updateQROverlay(){
+    qrOverlay.innerHTML = "";
+    const text = qrTextFromHistory(qrHistory);
+    const canvas = await buildQRCanvas(text, 80);
+    if(canvas){
+      canvas.style.cssText = "width:100%;height:100%;image-rendering:pixelated;border-radius:4px;";
+      qrOverlay.appendChild(canvas);
+    }
+  }
+
+  function updateVisitCountOverlay(){
+    if(visitCount > 0){
+      visitCountOverlay.textContent = `${visitCount}日目`;
+      visitCountOverlay.classList.add("visible");
+    } else {
+      visitCountOverlay.classList.remove("visible");
+    }
+  }
+
+  // Try to read QR from loaded card image
+  async function tryReadQRFromImage(imgEl){
+    // Use BarcodeDetector if available
+    if(!("BarcodeDetector" in window)) return null;
+    try {
+      const detector = new BarcodeDetector({ formats:["qr_code"] });
+      const barcodes = await detector.detect(imgEl);
+      for(const b of barcodes){
+        const parsed = parseQRText(b.rawValue);
+        if(parsed.length > 0) return parsed;
+        if(b.rawValue.startsWith("radio-stamp:")) return [];
+      }
+    } catch(e){}
+    return null;
+  }
+
+  // ===== GATE + DISPLAY =====
+  function setGateThumb(src){
+    gateCardThumb.innerHTML = src ? `<img src="${src}" alt="">` : "";
+  }
+
+  function showSelectScreen(){
+    selectScreen.classList.remove("hidden");
+    backToSelect.style.display = "none";
+    timeGate.classList.remove("visible");
+    currentMode = null;
+    clearModeSelection();
+  }
+
+  function hideSelectScreen(){
+    selectScreen.classList.add("hidden");
+    backToSelect.style.display = "block";
+  }
+
+  function clearModeSelection(){
+    selectedMode = null;
+    randomModeBtn.classList.remove("selected");
+    artModeBtn.classList.remove("selected");
+  }
+
+  function setModeSelection(mode){
+    selectedMode = mode;
+    randomModeBtn.classList.toggle("selected", mode === "random");
+    artModeBtn.classList.toggle("selected", mode === "art");
+  }
+
+  function updateTopVisibility(){
+    const status = getJSTStatus();
+    activeWindow = status.isOpen;
+    if(!currentMode){
+      timeGate.classList.remove("visible");
+      getCardBtn.classList.add("hidden");
+      uploadArea.classList.add("hidden");
+      return;
+    }
+    if(status.isOpen){
+      timeGate.classList.remove("visible");
+    } else {
+      timeGate.classList.add("visible");
+      gateRemain.textContent = formatRemaining(status.remainingMs);
+      progressBar.style.width = `${clamp(status.progress,0,100)}%`;
+    }
+    stageWrap.classList.toggle("closed", !status.isOpen);
+    getCardBtn.classList.remove("hidden");
+    uploadArea.classList.remove("hidden");
+  }
+
+  async function setCardImage(src){
+    currentCardPath = src;
+    cardImage.src = src;
+    cardImage.style.display = "block";
+    emptyHint.style.display = "none";
+    setGateThumb(src);
+    cardImage.onload = async () => {
+      renderStamps();
+      updateGhostSizeOnly();
+      // Try to read QR from this image
+      const parsed = await tryReadQRFromImage(cardImage);
+      if(parsed !== null){
+        qrHistory = parsed;
+        visitCount = parsed.length > 0 ? parsed[parsed.length-1].n : 0;
+      } else {
+        // No QR found - keep current history
+      }
+      updateVisitCountOverlay();
+      await updateQROverlay();
+    };
+  }
+
+  function clearStamps(){
+    displayedStamps = [];
+    redoStack = [];
+    renderStamps();
+    updateHistoryButtons();
+  }
+
+  function updateHistoryButtons(){
+    undoBtn.disabled = displayedStamps.length === 0;
+    redoBtn.disabled = redoStack.length === 0;
+  }
+
+  function getCardRect(){ const r = cardImage.getBoundingClientRect(); return { left:r.left, top:r.top, width:r.width, height:r.height }; }
+
+  function pointInsideImage(cx,cy){ const r = getCardRect(); return cx>=r.left && cx<=r.left+r.width && cy>=r.top && cy<=r.top+r.height; }
+
+  function clientToImageRatio(cx,cy){ const r = getCardRect(); return { x:clamp((cx-r.left)/r.width,0,1), y:clamp((cy-r.top)/r.height,0,1) }; }
+
+  function getJSTDateDisplay(){
+    const p = getJSTNowParts();
+    return `${p.month}/${p.day}`;
+  }
+
+  function renderStamps(){
+    stampLayer.innerHTML = "";
+    const rect = getCardRect();
+    if(!rect.width || !rect.height) return;
+
+    for(const s of displayedStamps){
+      const el = document.createElement("div");
+      el.className = "stamp";
+      el.style.left = `${s.x*100}%`;
+      el.style.top = `${s.y*100}%`;
+      const size = Math.max(38, rect.width*(s.size||0.17));
+      el.style.width = `${size}px`;
+      el.style.height = `${size}px`;
+      el.style.setProperty("--rot",`${s.rotation||0}deg`);
+
+      const img = document.createElement("img");
+      img.src = s.src;
+      el.appendChild(img);
+
+      // Date label below stamp
+      const dateEl = document.createElement("div");
+      dateEl.className = "stamp-date";
+      dateEl.textContent = s.date || getJSTDateDisplay();
+      dateEl.style.fontSize = `${Math.max(9, size*0.18)}px`;
+      dateEl.style.bottom = `${-size*0.12}px`;
+      el.appendChild(dateEl);
+
+      stampLayer.appendChild(el);
+    }
+  }
+
+  function updateGhostSizeOnly(){
+    const rect = getCardRect();
+    if(!rect.width || !currentRandomStampPath) return;
+    const size = Math.max(38, rect.width*0.17);
+    ghostStamp.style.width = `${size}px`;
+    ghostStamp.style.height = `${size}px`;
+  }
+
+  function showGhostStamp(cx,cy){
+    if(!currentRandomStampPath) return;
+    const rect = getCardRect();
+    if(!rect.width) return;
+    ghostStampImg.src = currentRandomStampPath;
+    const size = Math.max(38, rect.width*0.17);
+    ghostStamp.style.width = `${size}px`;
+    ghostStamp.style.height = `${size}px`;
+    moveGhostStamp(cx,cy);
+    ghostStamp.style.display = "block";
+  }
+
+  function moveGhostStamp(cx,cy){
+    const rect = getCardRect();
+    ghostStamp.style.left = `${cx - rect.left}px`;
+    ghostStamp.style.top = `${cy - rect.top}px`;
+    ghostStamp.style.transform = "translate(-50%,-50%) rotate(0deg)";
+  }
+
+  function hideGhostStamp(){ ghostStamp.style.display = "none"; }
+
+  async function pushRandomStamp(xRatio,yRatio){
+    displayedStamps.push({
+      x:clamp(xRatio,0,1), y:clamp(yRatio,0,1),
+      rotation:(-10+Math.random()*20).toFixed(2),
+      size:0.17,
+      src:currentRandomStampPath,
+      date:getJSTDateDisplay()
+    });
+    redoStack = [];
+    renderStamps();
+    updateHistoryButtons();
+    stampSound.currentTime = 0;
+    stampSound.play().catch(()=>{});
+  }
+
+  function undoStamp(){ if(!displayedStamps.length) return; redoStack.push(displayedStamps.pop()); renderStamps(); updateHistoryButtons(); }
+  function redoStamp(){ if(!redoStack.length) return; displayedStamps.push(redoStack.pop()); renderStamps(); updateHistoryButtons(); }
+
+  function showPressRing(cx,cy){
+    const stageRect = stage.getBoundingClientRect();
+    pressRing.style.left = `${cx - stageRect.left}px`;
+    pressRing.style.top = `${cy - stageRect.top}px`;
+    pressRing.style.display = "flex";
+    ringProgress.style.strokeDashoffset = "251.2";
+  }
+
+  function movePressRing(cx,cy){
+    const stageRect = stage.getBoundingClientRect();
+    pressRing.style.left = `${cx - stageRect.left}px`;
+    pressRing.style.top = `${cy - stageRect.top}px`;
+  }
+
+  function hidePressRing(){ pressRing.style.display = "none"; ringProgress.style.strokeDashoffset = "251.2"; }
+
+  function animateRing(){
+    if(!pressAnimating) return;
+    const elapsed = performance.now() - pressStartAt;
+    const ratio = clamp(elapsed/LONG_PRESS_MS,0,1);
+    ringProgress.style.strokeDashoffset = String(251.2*(1-ratio));
+    if(ratio >= 1){
+      pressAnimating = false;
+      hidePressRing();
+      if(pressPoint) pushRandomStamp(pressPoint.x, pressPoint.y);
+      hideGhostStamp();
+      return;
+    }
+    rafId = requestAnimationFrame(animateRing);
+  }
+
+  function cancelPress(){
+    pointerDown = false; activePointerId = null; pressAnimating = false; pressPoint = null;
+    if(pressTimer){ clearTimeout(pressTimer); pressTimer = null; }
+    if(rafId){ cancelAnimationFrame(rafId); rafId = null; }
+    hidePressRing(); hideGhostStamp();
+  }
+
+  function startPress(cx,cy){
+    if(!activeWindow || !currentCardPath || !pointInsideImage(cx,cy)) return;
+    pressPoint = clientToImageRatio(cx,cy);
+    showGhostStamp(cx,cy);
+    pressStartAt = performance.now();
+    pressAnimating = true;
+    showPressRing(cx,cy);
+    animateRing();
+    pressTimer = setTimeout(()=>{ pressTimer = null; }, LONG_PRESS_MS);
+  }
+
+  function movePress(cx,cy){
+    if(!pointerDown) return;
+    if(!pointInsideImage(cx,cy)){ cancelPress(); return; }
+    movePressRing(cx,cy);
+    pressPoint = clientToImageRatio(cx,cy);
+    moveGhostStamp(cx,cy);
+  }
+
+  async function loadImage(src){
+    return new Promise((resolve,reject) => {
+      const img = new Image(); img.onload = ()=>resolve(img); img.onerror = reject; img.src = src;
+    });
+  }
+
+  async function saveCompositePNG(){
+    if(!currentCardPath) return;
+    const baseImg = await loadImage(cardImage.src);
+    const outCanvas = document.createElement("canvas");
+    const ctx = outCanvas.getContext("2d");
+    outCanvas.width = baseImg.naturalWidth || baseImg.width;
+    outCanvas.height = baseImg.naturalHeight || baseImg.height;
+    ctx.clearRect(0,0,outCanvas.width,outCanvas.height);
+    ctx.drawImage(baseImg,0,0,outCanvas.width,outCanvas.height);
+
+    const W = outCanvas.width, H = outCanvas.height;
+
+    // Draw stamps with date labels
+    for(const s of displayedStamps){
+      const img = await loadImage(s.src);
+      const size = W*(s.size||0.17);
+      const cx = s.x*W, cy = s.y*H;
+      ctx.save();
+      ctx.translate(cx,cy);
+      ctx.rotate((Number(s.rotation||0)*Math.PI)/180);
+      ctx.drawImage(img,-size/2,-size/2,size,size);
+      // Date text below stamp
+      const fontSize = Math.max(9, size*0.18);
+      ctx.font = `bold ${fontSize}px "Hiragino Sans","Yu Gothic",sans-serif`;
+      ctx.fillStyle = "rgba(99,204,255,0.88)";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "top";
+      // Subtle shadow/fade
+      ctx.shadowColor = "rgba(200,235,255,0.7)";
+      ctx.shadowBlur = 4;
+      ctx.fillText(s.date || getJSTDateDisplay(), 0, size/2 + 2);
+      ctx.shadowBlur = 0;
+      ctx.restore();
+    }
+
+    // Update visit history
+    const newN = (qrHistory.length > 0 ? qrHistory[qrHistory.length-1].n : 0) + 1;
+    const today = getJSTDateKey();
+    const newHistory = [...qrHistory, { n:newN, date:today }];
+
+    // Draw new QR overlay (bottom-right, covering old QR)
+    const qrSize = Math.round(W*0.10);
+    const qrX = W - qrSize - Math.round(W*0.02);
+    const qrY = H - qrSize - Math.round(H*0.02);
+
+    // Blank out old QR area
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(qrX, qrY, qrSize, qrSize);
+
+    // Draw new QR
+    const qrText = qrTextFromHistory(newHistory);
+    const qrCanvas = await buildQRCanvas(qrText, qrSize);
+    if(qrCanvas){
+      ctx.drawImage(qrCanvas, qrX, qrY, qrSize, qrSize);
+    }
+
+    // Update in-memory state
+    qrHistory = newHistory;
+    visitCount = newN;
+    updateVisitCountOverlay();
+    await updateQROverlay();
+
+    // Trigger download
+    const a = document.createElement("a");
+    a.href = outCanvas.toDataURL("image/png");
+    a.download = `radio-stamp-${today}.png`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+
+  function downloadCard(src, filename){
+    const a = document.createElement("a"); a.href = src; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+
+  function setupRandomMode(){
+    currentMode = "random";
+    currentRandomStampPath = getTodayRandomStamp();
+    ghostStampImg.src = currentRandomStampPath;
+    qrHistory = [];
+    visitCount = 0;
+    hideSelectScreen();
+    clearStamps();
+    uploadedImage = null;
+    setCardImage(RANDOM_CARD_PATH);
+    updateTopVisibility();
+  }
+
+  function hidePasswordPopup(){ passwordPopup.style.display = "none"; passwordInput.value = ""; }
+  function showPasswordPopup(){ passwordPopup.style.display = "block"; passwordInput.value = ""; passwordInput.focus(); }
+
+  // ===== EVENT LISTENERS =====
+  randomModeBtn.addEventListener("click", () => {
+    const status = getJSTStatus();
+    if(!status.isOpen){
+      currentMode = null;
+      setGateThumb(RANDOM_CARD_PATH);
+      timeGate.classList.add("visible");
+      gateRemain.textContent = formatRemaining(status.remainingMs);
+      progressBar.style.width = `${clamp(status.progress,0,100)}%`;
+      return;
+    }
+    setupRandomMode();
+  });
+
+  artModeBtn.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); });
+
+  backToSelect.addEventListener("click", () => {
+    displayedStamps = []; redoStack = [];
+    renderStamps(); hideGhostStamp(); hidePressRing();
+    showSelectScreen(); updateTopVisibility();
+  });
+
+  getCardBtn.addEventListener("click", () => {
+    if(!activeWindow) return;
+    downloadCard(RANDOM_CARD_PATH,"card.png");
+  });
+
+  imageInput.addEventListener("change", (e) => {
+    if(!activeWindow || currentMode !== "random") return;
+    const file = e.target.files?.[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      uploadedImage = reader.result;
+      clearStamps();
+      qrHistory = [];
+      visitCount = 0;
+      setCardImage(uploadedImage);
+    };
+    reader.readAsDataURL(file);
+  });
+
+  saveBtn.addEventListener("click", async () => {
+    if(!activeWindow) return;
+    await saveCompositePNG();
+  });
+
+  undoBtn.addEventListener("click", () => { if(!activeWindow) return; undoStamp(); });
+  redoBtn.addEventListener("click", () => { if(!activeWindow) return; redoStamp(); });
+
+  pressTarget.addEventListener("contextmenu", (e) => e.preventDefault());
+  pressTarget.addEventListener("pointerdown", (e) => {
+    if(!activeWindow || !currentCardPath) return;
+    pointerDown = true; activePointerId = e.pointerId;
+    pressTarget.setPointerCapture(e.pointerId);
+    startPress(e.clientX, e.clientY);
+  });
+  pressTarget.addEventListener("pointermove", (e) => {
+    if(!pointerDown || e.pointerId !== activePointerId) return;
+    movePress(e.clientX, e.clientY);
+  });
+  pressTarget.addEventListener("pointerup", (e) => { if(e.pointerId !== activePointerId) return; cancelPress(); });
+  pressTarget.addEventListener("pointercancel", (e) => { if(e.pointerId !== activePointerId) return; cancelPress(); });
+  pressTarget.addEventListener("pointerleave", () => { if(pointerDown) cancelPress(); });
+
+  imageFrame.addEventListener("pointermove", (e) => {
+    if(pointerDown || !activeWindow || !currentCardPath) return;
+    if(!pointInsideImage(e.clientX,e.clientY)){ hideGhostStamp(); return; }
+    showGhostStamp(e.clientX, e.clientY);
+  });
+  imageFrame.addEventListener("pointerleave", () => { if(!pointerDown) hideGhostStamp(); });
+
+  secretTapZone.addEventListener("dblclick", (e) => {
+    e.preventDefault();
+    passwordPopup.style.display==="block" ? hidePasswordPopup() : showPasswordPopup();
+  });
+
+  let lastTapTime = 0;
+  secretTapZone.addEventListener("touchend", (e) => {
+    const now = Date.now();
+    if(now - lastTapTime < 350){
+      e.preventDefault();
+      passwordPopup.style.display==="block" ? hidePasswordPopup() : showPasswordPopup();
+    }
+    lastTapTime = now;
+  }, { passive:false });
+
+  passwordInput.addEventListener("input", () => {
+    if(passwordInput.value === OVERRIDE_PASSWORD){
+      overrideOpen = true;
+      localStorage.setItem(STORAGE_KEY_OVERRIDE,"true");
+      hidePasswordPopup();
+      setupRandomMode();
+    }
+  });
+
+  document.addEventListener("pointerdown", (e) => {
+    if(!passwordPopup.contains(e.target) && !secretTapZone.contains(e.target)){
+      hidePasswordPopup();
+    }
+    if(!calendarPopup.contains(e.target) && !todayCircle.contains(e.target) && !todayLabel.contains(e.target)){
+      calendarPopup.classList.remove("visible");
+    }
+  });
+
+  window.addEventListener("resize", () => { renderStamps(); updateGhostSizeOnly(); });
+
+  setInterval(() => {
+    todayStampPreview.src = getTodayRandomStamp();
+    if(currentMode){
+      updateTopVisibility();
+    } else {
+      const status = getJSTStatus();
+      if(timeGate.classList.contains("visible")){
+        gateRemain.textContent = formatRemaining(status.remainingMs);
+        progressBar.style.width = `${clamp(status.progress,0,100)}%`;
+      }
+    }
+  }, 1000);
+
+  // ===== INIT =====
+  if(!Array.isArray(RANDOM_STAMP_POOL) || RANDOM_STAMP_POOL.length === 0){
+    throw new Error("RANDOM_STAMP_POOL は空にできません。");
+  }
+  updateCounts();
+  showSelectScreen();
+  updateTopVisibility();
+</script>
 </body>
 </html>

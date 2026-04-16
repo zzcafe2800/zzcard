@@ -1027,10 +1027,11 @@ function startRandomMode(){
 }
 
 let _cardBusy=false;
-function handleCardSelect(e){
-  if(todayCircle.contains(e.target)||todayLabel.contains(e.target))return;
+function handleCardSelect(target){
+  if(todayCircle.contains(target)||todayLabel.contains(target))return;
   if(_cardBusy)return;
-  _cardBusy=true;setTimeout(()=>{_cardBusy=false;},600);
+  _cardBusy=true;setTimeout(()=>{_cardBusy=false;},800);
+  startBGM();           /* スマホはここでBGM開始トリガー */
   playClick();
   const st=jstStatus();
   if(!st.open){
@@ -1043,9 +1044,22 @@ function handleCardSelect(e){
   startRandomMode();
 }
 
-/* pointerup: タッチ・マウス両対応 */
-randomBtn.addEventListener("pointerup",e=>{e.preventDefault();handleCardSelect(e);});
-randomBtn.addEventListener("click",e=>{handleCardSelect(e);});
+/* -------------------------------------------------------
+   カード選択イベント: スマホ最優先 = touchend
+   touchend で preventDefault() → click をキャンセル
+   マウス環境は click のみ到達
+   ------------------------------------------------------- */
+randomBtn.addEventListener("touchend",e=>{
+  if(todayCircle.contains(e.target)||todayLabel.contains(e.target))return;
+  e.preventDefault();          // 後続 click をキャンセル
+  e.stopPropagation();
+  handleCardSelect(e.target);
+},{passive:false});
+
+/* fallback: マウス／pointer環境 */
+randomBtn.addEventListener("click",e=>{
+  handleCardSelect(e.target);
+});
 artBtn.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();});
 
 /* =========================================================

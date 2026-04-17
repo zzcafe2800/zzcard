@@ -1,1 +1,1179 @@
 
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>ラジオ体操スタンプ</title>
+<link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=Yomogi&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --blue:#8fdcff;--blue-s:#63ccff;--text:#55839a;--text-d:#4d7790;
+  --glass:rgba(255,255,255,.58);--shadow:0 10px 24px rgba(111,205,255,.12);
+  --font:"Kosugi Maru","Yomogi","Hiragino Maru Gothic Pro","Yu Gothic",sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:var(--font);color:var(--text);
+  background:linear-gradient(rgba(245,251,255,.72),rgba(245,251,255,.72)),url("hk.jpg") center/cover no-repeat;}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;
+  background:linear-gradient(135deg,rgba(255,255,255,.34),rgba(255,255,255,.05)),
+    repeating-linear-gradient(90deg,rgba(255,255,255,0) 0,rgba(255,255,255,0) 54px,rgba(143,220,255,.03) 55px,rgba(143,220,255,.03) 56px);
+  opacity:.85;}
+button,input{font:inherit;}
+#app{position:relative;width:100%;height:100%;overflow:hidden;}
+.glass{backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);background:rgba(255,255,255,.58);border:1px solid rgba(143,220,255,.34);box-shadow:var(--shadow);}
+.hidden{display:none!important;}
+
+/* ===================== SELECT ===================== */
+#selectScreen{position:absolute;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:32px;
+  background:linear-gradient(rgba(252,254,255,.78),rgba(241,251,255,.78)),url("hk.jpg") center/cover no-repeat;
+  backdrop-filter:blur(8px);touch-action:manipulation;}
+#selectInner{width:min(1180px,100%);display:flex;flex-direction:column;gap:22px;}
+#selectTitle{text-align:center;color:#5c93ad;font-size:28px;letter-spacing:.1em;font-weight:700;}
+#selectWrap{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:stretch;}
+/* 長押し解除ゾーン（選択画面左下、非表示） */
+#selectLongPress{position:absolute;left:0;bottom:0;width:80px;height:80px;z-index:200;
+  background:transparent;touch-action:none;cursor:default;}
+
+.modeCard{position:relative;min-height:470px;border-radius:30px;overflow:hidden;cursor:pointer;
+  background:rgba(255,255,255,.58);border:1px solid rgba(143,220,255,.28);
+  box-shadow:0 26px 60px rgba(111,205,255,.15);
+  transition:transform .28s,box-shadow .28s,border-color .28s;
+  appearance:none;-webkit-appearance:none;outline:none;
+  touch-action:manipulation;-webkit-touch-callout:none;}
+.modeCard>*{pointer-events:none;}
+.randomTodayCircle,.randomTodayLabel{pointer-events:auto!important;}
+@media(hover:hover)and(pointer:fine){
+  .modePreview{opacity:.08;transition:opacity .38s,transform .38s;}
+  .modeCard:hover .modePreview{opacity:.92;transform:scale(1.03);}
+  .modeLabel{transition:transform .25s,background .25s;}
+  .modeCard:hover .modeLabel{transform:translate(-50%,-50%) scale(1.03);background:rgba(255,255,255,.72);}
+}
+@media(hover:none),(pointer:coarse){.modePreview{opacity:.40;}}
+.modePreview{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  padding:22px;pointer-events:none;z-index:1;}
+.modePreview img{max-width:100%;max-height:100%;object-fit:contain;border-radius:20px;}
+.modeLabel{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;
+  padding:16px 30px;border-radius:999px;color:var(--text-d);letter-spacing:.1em;font-size:26px;font-weight:700;
+  background:rgba(255,255,255,.60);border:1px solid rgba(143,220,255,.26);backdrop-filter:blur(14px);white-space:nowrap;}
+.modeCount{position:absolute;left:24px;bottom:22px;z-index:2;padding:10px 14px;border-radius:999px;
+  color:#79a6bc;font-size:12px;background:rgba(255,255,255,.42);border:1px solid rgba(143,220,255,.18);}
+.randomTodayCircle{position:absolute;right:22px;bottom:22px;width:160px;height:160px;border-radius:50%;
+  background:rgba(255,255,255,.58);border:1px solid rgba(143,220,255,.26);
+  display:flex;align-items:center;justify-content:center;padding:18px;z-index:3;overflow:hidden;
+  cursor:pointer;transition:transform .2s,box-shadow .2s;box-shadow:0 8px 24px rgba(111,205,255,.18);}
+.randomTodayCircle:hover{transform:scale(1.06);}
+.randomTodayCircle img{width:100%;height:100%;object-fit:contain;}
+.randomTodayLabel{position:absolute;right:44px;bottom:34px;z-index:4;font-size:11px;
+  color:#7ca8bd;background:rgba(255,255,255,.52);padding:6px 10px;border-radius:999px;
+  border:1px solid rgba(143,220,255,.18);cursor:pointer;}
+.modeDisabled{cursor:not-allowed;opacity:.72;}
+.modeDisabled:hover{transform:none!important;}
+.modeDisabled .modePreview{opacity:.18!important;transform:none!important;}
+.modeDisabled .modeLabel{transform:translate(-50%,-50%)!important;}
+.modeDisabled::before,.modeDisabled::after{content:"";position:absolute;left:-12%;width:124%;height:2px;
+  background:rgba(94,148,173,.48);top:50%;z-index:3;}
+.modeDisabled::before{transform:rotate(19deg);}
+.modeDisabled::after{transform:rotate(-19deg);}
+
+/* ===================== TASK SCREEN ===================== */
+#taskScreen{position:absolute;inset:0;z-index:50;display:none;flex-direction:column;
+  align-items:center;justify-content:center;
+  background:rgba(215,238,255,.48);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);}
+#taskScreen.visible{display:flex;}
+#taskContainer{width:min(1260px,100%);padding:0 8px 20px;display:flex;flex-direction:column;gap:16px;}
+#taskTitle{text-align:center;font-size:20px;font-weight:700;color:#5c93ad;letter-spacing:.14em;
+  text-shadow:0 1px 8px rgba(255,255,255,.7);}
+
+#taskCarouselArea{display:flex;align-items:center;gap:6px;}
+.taskNavBtn{width:38px;height:38px;flex:0 0 38px;border:none;border-radius:50%;cursor:pointer;
+  background:rgba(255,255,255,.76);border:1.5px solid rgba(143,220,255,.40);
+  backdrop-filter:blur(10px);color:#5e93ad;font-size:18px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 14px rgba(111,205,255,.18);transition:.2s;}
+.taskNavBtn:hover{background:rgba(255,255,255,.96);transform:scale(1.10);}
+.taskNavBtn:disabled{opacity:.22;cursor:default;transform:none;}
+#taskCarousel{flex:1;overflow:hidden;min-width:0;}
+#taskTrack{display:flex;transition:transform .42s cubic-bezier(.4,0,.2,1);}
+
+.taskCard{flex:0 0 auto;border-radius:22px;overflow:hidden;cursor:default;
+  background:rgba(255,255,255,.74);border:1.5px solid rgba(143,220,255,.24);
+  box-shadow:0 10px 28px rgba(111,205,255,.14);
+  padding:16px 10px 14px;
+  display:flex;flex-direction:column;align-items:center;gap:9px;}
+.taskCard.center{background:rgba(195,238,255,.80);border-color:rgba(99,204,255,.50);
+  box-shadow:0 14px 36px rgba(99,204,255,.26);transform:scale(1.04);z-index:1;}
+.taskCardImgWrap{width:60px;height:60px;border-radius:14px;overflow:hidden;
+  background:rgba(143,220,255,.16);display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+.taskCardImgWrap img{width:100%;height:100%;object-fit:contain;}
+.taskCardImgPh{font-size:34px;line-height:1;}
+.taskCardName{font-size:14px;font-weight:700;color:#4d7790;letter-spacing:.06em;text-align:center;}
+.taskCardTime{font-size:10px;color:#8ab8cc;letter-spacing:.06em;margin-top:-4px;}
+.taskCardBtns{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;margin-top:auto;}
+.taskBtnChallenge{width:100%;padding:10px 0;border:none;border-radius:14px;cursor:pointer;
+  background:linear-gradient(135deg,#3ab8f5,#63ccff);
+  color:white;font-size:16px;font-weight:700;letter-spacing:.12em;
+  box-shadow:0 6px 18px rgba(99,204,255,.40);transition:.2s;}
+.taskBtnChallenge:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(99,204,255,.54);}
+.taskBtnDone{padding:5px 16px;border:none;border-radius:999px;cursor:pointer;
+  background:rgba(255,255,255,.62);border:1.5px solid rgba(143,220,255,.30);
+  color:#7ab8d4;font-size:11px;letter-spacing:.06em;transition:.2s;}
+.taskBtnDone:hover{background:rgba(255,255,255,.90);}
+
+/* ===================== CHALLENGE SCREEN ===================== */
+#challengeScreen{position:absolute;inset:0;z-index:60;display:none;align-items:center;justify-content:center;
+  background:rgba(215,238,255,.58);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);}
+#challengeScreen.visible{display:flex;}
+#challengeBox{width:min(460px,90vw);border-radius:28px;padding:36px 28px 28px;
+  background:rgba(255,255,255,.94);border:1.5px solid rgba(143,220,255,.38);
+  box-shadow:0 30px 70px rgba(111,205,255,.24);
+  display:flex;flex-direction:column;align-items:center;gap:16px;}
+#chlTaskName{font-size:28px;font-weight:700;color:#4d7790;letter-spacing:.10em;}
+#chlTimeLabel{font-size:13px;color:#8ab8cc;letter-spacing:.06em;}
+#chlDesc{font-size:14px;color:#7aacbe;text-align:center;line-height:1.8;letter-spacing:.04em;white-space:pre-line;}
+#chlDoneBtn{width:100%;padding:16px 0;border:none;border-radius:18px;cursor:pointer;
+  background:linear-gradient(135deg,#3ab8f5,#63ccff);
+  color:white;font-size:18px;font-weight:700;letter-spacing:.14em;
+  box-shadow:0 8px 24px rgba(99,204,255,.46);transition:.2s;margin-top:8px;}
+#chlDoneBtn:hover{transform:translateY(-2px);box-shadow:0 14px 32px rgba(99,204,255,.58);}
+#chlBackBtn{padding:9px 22px;border:none;border-radius:999px;cursor:pointer;
+  background:rgba(255,255,255,.64);border:1.5px solid rgba(143,220,255,.32);
+  color:#7ab8d4;font-size:13px;letter-spacing:.06em;transition:.2s;}
+#chlBackBtn:hover{background:rgba(255,255,255,.90);}
+
+/* ===================== CALENDAR ===================== */
+#calendarPopup{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;
+  background:rgba(220,240,255,.32);backdrop-filter:blur(10px);}
+#calendarPopup.visible{display:flex;}
+#calendarBox{width:min(640px,94vw);max-height:90vh;overflow-y:auto;border-radius:28px;padding:28px;
+  background:rgba(255,255,255,.94);border:1px solid rgba(143,220,255,.36);
+  box-shadow:0 30px 70px rgba(111,205,255,.22);backdrop-filter:blur(18px);}
+#calendarHeader{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+#calendarMonth{font-size:20px;font-weight:700;color:#5c93ad;letter-spacing:.1em;}
+#calendarClose{width:34px;height:34px;border:none;border-radius:999px;background:rgba(143,220,255,.14);
+  color:#5c93ad;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+#calendarGrid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
+.calDow{text-align:center;font-size:11px;color:#8ab0c4;padding:4px 0;font-weight:700;}
+.calDow:first-child{color:#e08080;}.calDow:last-child{color:#80a8e0;}
+.calDay{display:flex;flex-direction:column;align-items:center;border-radius:14px;padding:6px 2px;min-height:72px;
+  background:rgba(255,255,255,.56);border:1px solid rgba(143,220,255,.14);}
+.calDay.empty{background:transparent;border-color:transparent;}
+.calDay.today{background:rgba(143,220,255,.20);border-color:rgba(143,220,255,.40);}
+.calDayNum{font-size:12px;color:#7aa5bc;font-weight:700;margin-bottom:4px;}
+.calDaySun .calDayNum{color:#e08080;}.calDaySat .calDayNum{color:#80a8e0;}
+.calDayStamp{width:44px;height:44px;}.calDayStamp img{width:100%;height:100%;object-fit:contain;}
+
+/* ===================== TIME GATE ===================== */
+#timeGate{position:absolute;top:14px;left:50%;transform:translateX(-50%);
+  width:min(760px,calc(100vw - 54px));min-height:84px;z-index:80;border-radius:28px;
+  padding:12px 16px;background:rgba(255,255,255,.74);border:1px solid rgba(143,220,255,.30);
+  backdrop-filter:blur(18px);display:none;align-items:center;gap:14px;}
+#timeGate.visible{display:flex;}
+#gateCardThumb{width:58px;height:58px;border-radius:14px;background:rgba(143,220,255,.10);
+  border:1px solid rgba(143,220,255,.18);overflow:hidden;flex:0 0 auto;display:flex;align-items:center;justify-content:center;}
+#gateCardThumb img{width:100%;height:100%;object-fit:cover;}
+#gateInfo{min-width:0;flex:1;display:flex;flex-direction:column;gap:8px;}
+#gateTopLine{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;}
+#gateTitle{font-size:16px;letter-spacing:.08em;color:#5f91a8;font-weight:700;white-space:nowrap;}
+#gateHours{font-size:14px;color:#79a7bc;white-space:nowrap;}
+#gateRemain{font-size:13px;color:#86aabc;white-space:nowrap;}
+#progressWrap{width:100%;height:12px;border-radius:999px;overflow:hidden;background:rgba(143,220,255,.14);position:relative;}
+#progressBar{position:absolute;inset:0 auto 0 0;width:0%;border-radius:999px;
+  background:linear-gradient(90deg,rgba(143,220,255,.55),rgba(99,204,255,.96));transition:width .5s;}
+
+/* ===================== MAIN SCREEN ===================== */
+#mainScreen{position:absolute;inset:0;z-index:10;}
+#backToSelect{position:absolute;left:20px;top:18px;z-index:13;padding:10px 16px;
+  border:none;border-radius:999px;color:#6e9db4;cursor:pointer;display:none;font-size:13px;
+  background:rgba(255,255,255,.62);border:1.5px solid rgba(143,220,255,.28);
+  backdrop-filter:blur(12px);box-shadow:0 4px 14px rgba(111,205,255,.14);transition:.2s;}
+#backToSelect:hover{background:rgba(255,255,255,.82);}
+
+/* Top-right bar: 朝夜 + download + upload */
+#uploadWrap{position:absolute;right:20px;top:18px;z-index:14;display:flex;align-items:center;gap:10px;}
+
+/* 朝夜トグルボタン (右上・ダウンロードの左) */
+#todBtn{width:48px;height:48px;border-radius:50%;border:none;outline:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,rgba(255,210,60,.90),rgba(255,160,40,.82));
+  border:2px solid rgba(255,255,255,.65);
+  box-shadow:0 6px 20px rgba(255,160,40,.30);
+  transition:background .30s,box-shadow .30s,transform .2s;}
+#todBtn:hover{transform:scale(1.10);}
+#todBtn.night{background:linear-gradient(135deg,rgba(72,50,165,.90),rgba(38,24,108,.82));
+  box-shadow:0 6px 20px rgba(72,50,165,.34);}
+#todSunSvg{display:block;}#todMoonSvg{display:none;}
+#todBtn.night #todSunSvg{display:none;}#todBtn.night #todMoonSvg{display:block;}
+
+/* Download button */
+#getCardWrap{position:relative;}
+#getCardBtn{width:56px;height:56px;border-radius:50%;border:none;outline:none;cursor:pointer;
+  background:linear-gradient(135deg,#4dc8ff,#63ccff,#8fdcff);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 22px rgba(99,204,255,.50),0 0 0 2.5px rgba(255,255,255,.7);
+  transition:background .3s,transform .2s,box-shadow .2s;}
+#getCardBtn:hover{transform:translateY(-2px) scale(1.12);}
+#getCardBtn.used{background:linear-gradient(135deg,#b0bec5,#c4cdd2,#d0d8dc);
+  box-shadow:0 4px 14px rgba(0,0,0,.10),0 0 0 2.5px rgba(255,255,255,.7);}
+#getCardBtn svg{width:24px;height:24px;}
+#newBadge{position:absolute;top:-5px;right:-6px;background:linear-gradient(135deg,#ff9ed0,#ff6faf);color:#fff;
+  font-size:9px;font-weight:700;padding:2px 7px;border-radius:999px;letter-spacing:.04em;
+  white-space:nowrap;pointer-events:none;box-shadow:0 2px 8px rgba(255,120,180,.34);}
+#getCardBtn.hidden~#newBadge{display:none!important;}
+
+/* Upload button */
+#uploadArea{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:#8fdcff;border:2.5px solid rgba(255,255,255,.6);cursor:pointer;
+  transition:background .3s,transform .2s,box-shadow .2s;
+  box-shadow:0 10px 28px rgba(111,205,255,.34);position:relative;}
+#uploadArea:hover{transform:translateY(-2px) scale(1.08);}
+#uploadArea.used{background:#a8c4cc;}
+#uploadArea input{display:none;}
+#uploadArea svg{width:30px;height:30px;}
+
+/* STAGE */
+#stageWrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  padding:100px 32px 58px;transition:filter .3s,opacity .3s;}
+#stageWrap.closed{filter:blur(8px) saturate(.92);opacity:.82;}
+#stage{position:relative;width:min(82vw,1120px);height:min(72vh,780px);
+  display:flex;align-items:center;justify-content:center;}
+#emptyHint{position:absolute;z-index:1;font-size:20px;letter-spacing:.10em;color:#87adc2;opacity:.62;pointer-events:none;}
+#imageFrame{position:relative;max-width:100%;max-height:100%;border-radius:18px;overflow:visible;touch-action:none;}
+
+/* 画像：水色の縁 */
+#cardImage{display:none;width:auto;height:auto;max-width:min(82vw,1120px);max-height:min(72vh,780px);
+  object-fit:contain;border-radius:18px;
+  box-shadow:0 28px 60px rgba(111,205,255,.15), 0 0 0 2.5px rgba(99,204,255,.55);
+  pointer-events:none;-webkit-user-drag:none;}
+
+#stampLayer{position:absolute;inset:0;overflow:hidden;border-radius:18px;pointer-events:none;}
+.stamp{position:absolute;transform:translate(-50%,-50%) rotate(var(--rot,0deg));
+  transform-origin:center;opacity:.98;pointer-events:none;filter:drop-shadow(0 6px 12px rgba(111,205,255,.12));}
+.stamp img{display:block;width:100%;height:100%;object-fit:contain;pointer-events:none;-webkit-user-drag:none;}
+.stamp-date{position:absolute;left:50%;transform:translateX(-50%);color:#63ccff;white-space:nowrap;
+  letter-spacing:.06em;text-align:center;font-weight:700;pointer-events:none;
+  text-shadow:0 1px 4px rgba(200,235,255,.7);opacity:.9;}
+#ghostStamp{position:absolute;transform:translate(-50%,-50%);pointer-events:none;opacity:.22;display:none;z-index:4;}
+#ghostStamp img{width:100%;height:100%;object-fit:contain;display:block;}
+#pressTarget{position:absolute;inset:0;border-radius:18px;background:transparent;z-index:5;cursor:crosshair;touch-action:none;}
+#cardControls{position:absolute;inset:0;pointer-events:none;z-index:8;}
+
+/* 朝参加/夜参加ラベル（画像左上） */
+#participationLabel{position:absolute;top:10px;left:12px;z-index:7;
+  color:rgba(255,255,255,.92);font-size:11px;font-weight:700;letter-spacing:.12em;
+  text-shadow:0 1px 5px rgba(0,0,0,.38);pointer-events:none;
+  opacity:0;transition:opacity .4s;white-space:nowrap;display:none;}
+#participationLabel.visible{display:block;opacity:1;}
+
+/* ↶↷↓ ボタン（画像左下）・より白い半透明 */
+#historyControls{position:absolute;bottom:12px;left:12px;display:flex;gap:8px;pointer-events:auto;align-items:center;}
+.historyBtn{width:42px;height:42px;border:none;border-radius:999px;
+  background:rgba(255,255,255,.90);border:1.5px solid rgba(255,255,255,.72);
+  backdrop-filter:blur(10px);color:rgba(75,120,145,.82);font-size:20px;cursor:pointer;
+  transition:.2s;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 14px rgba(111,205,255,.10);}
+.historyBtn:hover{background:rgba(255,255,255,.98);transform:translateY(-1px);}
+.historyBtn:disabled{opacity:.28;cursor:default;transform:none;}
+#saveBtn{width:42px;height:42px;border:none;border-radius:999px;
+  background:rgba(255,255,255,.86);border:1.5px solid rgba(143,220,255,.42);
+  backdrop-filter:blur(10px);cursor:pointer;pointer-events:auto;
+  transition:background .2s,transform .2s,box-shadow .2s;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 14px rgba(111,205,255,.10);}
+#saveBtn:hover{background:rgba(255,255,255,.98);transform:translateY(-1px);}
+#saveBtn svg{width:20px;height:20px;}
+
+/* スタンプ後 保存ボタン点滅アニメーション */
+@keyframes savePulse{
+  0%  {transform:scale(1.00);box-shadow:0 4px 14px rgba(111,205,255,.10);}
+  45% {transform:scale(1.18);box-shadow:0 8px 22px rgba(99,204,255,.42);}
+  100%{transform:scale(1.00);box-shadow:0 4px 14px rgba(111,205,255,.10);}
+}
+#saveBtn.pulsing{animation:savePulse 1.5s ease-in-out infinite;}
+
+/* Press ring */
+#pressRing{position:absolute;width:112px;height:112px;transform:translate(-50%,-50%);
+  display:none;align-items:center;justify-content:center;pointer-events:none;z-index:9;}
+#pressRing svg{width:112px;height:112px;overflow:visible;}
+.ring-bg{stroke:rgba(255,255,255,.75);stroke-width:8;fill:rgba(255,255,255,.10);}
+.ring-progress{stroke:#63ccff;stroke-width:8;fill:none;stroke-linecap:round;
+  transform:rotate(-90deg);transform-origin:50% 50%;stroke-dasharray:251.2;stroke-dashoffset:251.2;}
+.ring-center{fill:rgba(255,255,255,.50);stroke:rgba(143,220,255,.24);stroke-width:1.5;}
+
+/* Bottom left: SNS */
+#bottomLeftBar{position:absolute;left:20px;bottom:58px;z-index:14;display:flex;align-items:center;gap:10px;}
+#snsBtn{padding:10px 18px;border:none;border-radius:999px;cursor:pointer;
+  background:rgba(255,255,255,.70);border:1.5px solid rgba(143,220,255,.34);
+  backdrop-filter:blur(12px);color:#5e93ad;font-size:13px;letter-spacing:.08em;
+  box-shadow:0 6px 18px rgba(111,205,255,.16);transition:.2s;display:flex;align-items:center;gap:6px;}
+#snsBtn:hover{transform:translateY(-1px);}
+
+/* Secret zone */
+#secretTapZone{position:absolute;left:0;bottom:44px;width:110px;height:110px;z-index:90;background:transparent;}
+#passwordPopup{position:absolute;left:20px;bottom:112px;z-index:95;width:120px;padding:10px;
+  border-radius:16px;display:none;background:rgba(255,255,255,.84);
+  border:1px solid rgba(143,220,255,.24);backdrop-filter:blur(14px);}
+#passwordInput{width:100%;border:none;outline:none;border-radius:12px;padding:10px 12px;
+  text-align:center;background:rgba(255,255,255,.56);color:#5c90a8;font-size:18px;letter-spacing:.20em;}
+#passwordInput::placeholder{color:transparent;}
+
+/* BGM BAR */
+#bgmBar{position:absolute;right:0;bottom:0;
+  width:clamp(170px,26vw,310px);height:46px;z-index:92;
+  background:rgba(99,190,240,.20);backdrop-filter:blur(12px);
+  border-top:1px solid rgba(143,220,255,.28);border-left:1px solid rgba(143,220,255,.18);
+  border-radius:14px 0 0 0;
+  display:flex;align-items:center;padding:0 14px;gap:10px;}
+#bgmIcon{position:relative;font-size:16px;color:#7ab8d4;flex:0 0 auto;cursor:pointer;
+  transition:color .2s;line-height:1;display:inline-block;width:18px;text-align:center;}
+#bgmIcon:hover{color:#3ab8ee;}
+#bgmIcon::after{content:"";position:absolute;left:50%;top:50%;
+  transform:translate(-50%,-50%) rotate(-42deg);width:2px;height:140%;
+  background:rgba(210,50,50,.82);border-radius:1px;opacity:0;transition:opacity .18s;pointer-events:none;}
+#bgmIcon.muted::after{opacity:1;}
+#bgmTrack{flex:1;height:6px;border-radius:999px;background:rgba(143,220,255,.22);position:relative;cursor:pointer;touch-action:none;}
+#bgmFill{height:100%;border-radius:999px;background:linear-gradient(90deg,#8fdcff,#63ccff);width:10%;pointer-events:none;transition:width .06s;}
+#bgmThumb{position:absolute;top:50%;transform:translate(-50%,-50%);width:20px;height:20px;border-radius:50%;
+  background:linear-gradient(135deg,#8fdcff,#40c0f0);border:2.5px solid #fff;
+  box-shadow:0 2px 10px rgba(99,204,255,.42);left:10%;cursor:grab;transition:left .06s;}
+#bgmPct{font-size:11px;color:#7ab8d4;min-width:28px;text-align:right;flex:0 0 auto;}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  #selectWrap{grid-template-columns:1fr;max-width:580px;}
+  .modeCard{min-height:260px;}.modeLabel{font-size:22px;}
+  .randomTodayCircle{width:120px;height:120px;right:14px;top:14px;bottom:auto;}
+  .randomTodayLabel{right:20px;top:144px;bottom:auto;}
+}
+@media(max-width:780px){
+  #selectTitle{font-size:20px;}#uploadArea{width:56px;height:56px;}
+  #stageWrap{padding:90px 14px 58px;}#timeGate{width:calc(100vw - 28px);}
+  #bottomLeftBar{font-size:12px;left:16px;bottom:52px;}
+  #snsBtn{font-size:12px;padding:8px 14px;}
+  #secretTapZone{bottom:46px;}
+  #todBtn{width:40px;height:40px;}
+  #getCardBtn{width:48px;height:48px;}
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ===================== SELECT SCREEN ===================== -->
+<div id="selectScreen">
+  <div id="selectInner">
+    <div id="selectTitle">カードの種類を選択</div>
+    <div id="selectWrap">
+      <button class="modeCard modeDisabled" id="artModeBtn" type="button" disabled>
+        <div class="modePreview"><img src="art.png" alt=""></div>
+        <div class="modeLabel">版画スタンプ</div>
+        <div class="modeCount" id="artCountText">カード総数 0</div>
+      </button>
+      <button class="modeCard" id="randomModeBtn" type="button">
+        <div class="modePreview"><img src="randm.png" alt=""></div>
+        <div class="modeLabel">スタンプラリー</div>
+        <div class="randomTodayCircle" id="todayCircle"><img id="todayStampPreview" src="" alt=""></div>
+        <div class="randomTodayLabel" id="todayLabel">今日のスタンプ</div>
+        <div class="modeCount" id="randomCountText">スタンプ総数 0</div>
+      </button>
+    </div>
+  </div>
+  <!-- 10秒長押し解除ゾーン -->
+  <div id="selectLongPress"></div>
+</div>
+
+<!-- ===================== TASK SCREEN ===================== -->
+<div id="taskScreen">
+  <div id="taskContainer">
+    <div id="taskTitle">朝ノルマ</div>
+    <div id="taskCarouselArea">
+      <button id="taskPrevBtn" class="taskNavBtn" type="button" disabled>＜</button>
+      <div id="taskCarousel">
+        <div id="taskTrack"></div>
+      </div>
+      <button id="taskNextBtn" class="taskNavBtn" type="button">＞</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== CHALLENGE SCREEN ===================== -->
+<div id="challengeScreen">
+  <div id="challengeBox">
+    <div id="chlTaskName"></div>
+    <div id="chlTimeLabel"></div>
+    <div id="chlDesc"></div>
+    <button id="chlDoneBtn" type="button">こなした！</button>
+    <button id="chlBackBtn" type="button">もどる</button>
+  </div>
+</div>
+
+<!-- ===================== CALENDAR ===================== -->
+<div id="calendarPopup">
+  <div id="calendarBox">
+    <div id="calendarHeader">
+      <div id="calendarMonth"></div>
+      <button id="calendarClose" type="button">×</button>
+    </div>
+    <div id="calendarGrid"></div>
+  </div>
+</div>
+
+<!-- ===================== TIME GATE ===================== -->
+<div id="timeGate">
+  <div id="gateCardThumb"></div>
+  <div id="gateInfo">
+    <div id="gateTopLine">
+      <div id="gateTitle">時間外です</div>
+      <div id="gateHours">6:00〜6:30</div>
+      <div id="gateRemain">残り --時間 --分</div>
+    </div>
+    <div id="progressWrap"><div id="progressBar"></div></div>
+  </div>
+</div>
+
+<!-- ===================== MAIN SCREEN ===================== -->
+<div id="mainScreen">
+  <button id="backToSelect" class="glass" type="button">もどる</button>
+
+  <!-- 右上: 朝夜 + ダウンロード + アップロード -->
+  <div id="uploadWrap">
+    <!-- 朝夜ボタン（ダウンロードの左） -->
+    <button id="todBtn" type="button" title="朝・夜を切り替え">
+      <svg id="todSunSvg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="4.5" fill="white" opacity=".94"/>
+        <line x1="12" y1="1" x2="12" y2="5" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="12" y1="19" x2="12" y2="23" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="1" y1="12" x2="5" y2="12" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="19" y1="12" x2="23" y2="12" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="4.2" y1="4.2" x2="7.1" y2="7.1" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="16.9" y1="16.9" x2="19.8" y2="19.8" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="19.8" y1="4.2" x2="16.9" y2="7.1" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="7.1" y1="16.9" x2="4.2" y2="19.8" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <svg id="todMoonSvg" width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <path d="M16 12A7 7 0 1 1 10 5a5 5 0 0 0 6 7z" fill="white" opacity=".94"/>
+        <circle cx="16" cy="6" r=".9" fill="white" opacity=".6"/>
+        <circle cx="19" cy="9" r=".6" fill="white" opacity=".45"/>
+        <circle cx="15" cy="4" r=".5" fill="white" opacity=".4"/>
+      </svg>
+    </button>
+    <!-- ダウンロードボタン -->
+    <div id="getCardWrap">
+      <button id="getCardBtn" class="hidden" type="button" title="カードをダウンロード">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M4 17v2a1 1 0 001 1h14a1 1 0 001-1v-2" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+          <path d="M12 4v10M8 10l4 4 4-4" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div id="newBadge">新規</div>
+    </div>
+    <!-- アップロードボタン -->
+    <label id="uploadArea" for="imageInput" title="カードを入れてね">
+      <svg viewBox="0 0 32 32" fill="none">
+        <rect x="5" y="8" width="22" height="16" rx="3" stroke="white" stroke-width="2" fill="none"/>
+        <path d="M16 22v-9M12 17l4-4 4 4" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="24" cy="10" r="1.5" fill="white" opacity=".7"/>
+      </svg>
+      <input id="imageInput" type="file" accept="image/*"/>
+    </label>
+  </div>
+
+  <!-- 左下: SNS -->
+  <div id="bottomLeftBar">
+    <button id="snsBtn" type="button">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+        <circle cx="3" cy="8" r="2" fill="#8fdcff"/>
+        <circle cx="13" cy="3" r="2" fill="#8fdcff"/>
+        <circle cx="13" cy="13" r="2" fill="#8fdcff"/>
+        <line x1="5" y1="7" x2="11" y2="4" stroke="#8fdcff" stroke-width="1.4"/>
+        <line x1="5" y1="9" x2="11" y2="12" stroke="#8fdcff" stroke-width="1.4"/>
+      </svg>
+      SNS投稿◯
+    </button>
+  </div>
+
+  <div id="stageWrap">
+    <div id="stage">
+      <div id="emptyHint">CARD</div>
+      <div id="imageFrame">
+        <img id="cardImage" alt="card">
+        <div id="stampLayer"></div>
+        <div id="ghostStamp"><img id="ghostStampImg" alt=""></div>
+        <!-- 朝参加/夜参加ラベル（左上） -->
+        <div id="participationLabel">朝参加</div>
+        <div id="cardControls">
+          <!-- ↶ ↷ ↓ ボタン（画像左下） -->
+          <div id="historyControls">
+            <button id="undoBtn" class="historyBtn" type="button" title="元に戻す">↶</button>
+            <button id="redoBtn" class="historyBtn" type="button" title="やり直す">↷</button>
+            <button id="saveBtn" type="button" title="保存">
+              <svg viewBox="0 0 20 20" fill="none">
+                <path d="M3 13v3a1 1 0 001 1h12a1 1 0 001-1v-3" stroke="#7ab8d4" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M10 3v9M7 9l3 3 3-3" stroke="#7ab8d4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div id="pressTarget"></div>
+      </div>
+      <div id="pressRing" aria-hidden="true">
+        <svg viewBox="0 0 100 100">
+          <circle class="ring-bg" cx="50" cy="50" r="40"/>
+          <circle class="ring-progress" cx="50" cy="50" r="40"/>
+          <circle class="ring-center" cx="50" cy="50" r="25"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BGM -->
+<div id="bgmBar">
+  <span id="bgmIcon" title="BGM ON/OFF">♪</span>
+  <div id="bgmTrack"><div id="bgmFill"></div><div id="bgmThumb"></div></div>
+  <span id="bgmPct">10%</span>
+</div>
+
+<div id="secretTapZone"></div>
+<div id="passwordPopup">
+  <input id="passwordInput" type="password" inputmode="numeric" autocomplete="off" maxlength="4" placeholder="">
+</div>
+</div>
+
+<audio id="bgmAudio" src="bgm11.mp3" loop preload="auto" playsinline x-webkit-airplay="deny"></audio>
+<audio id="stampSound" src="stamp.mp3" preload="auto" playsinline></audio>
+<audio id="clickSound" src="click-1.mp3" preload="auto" playsinline></audio>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import{getAnalytics}from"https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
+const fbConfig={apiKey:"AIzaSyCC7KAv7V4j1Z6-o1Y8ikmb3r5htN9O_aA",authDomain:"zzgohan-280.firebaseapp.com",
+  databaseURL:"https://zzgohan-280-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"zzgohan-280",
+  storageBucket:"zzgohan-280.firebasestorage.app",messagingSenderId:"459336048542",
+  appId:"1:459336048542:web:ff6c825dec81cc7df8008f",measurementId:"G-JX4RP9LWR3"};
+initializeApp(fbConfig);getAnalytics(initializeApp(fbConfig));
+
+/* =========================================================
+   定数・設定
+   ========================================================= */
+const JST_OH=6,JST_OM=0,JST_CH=6,JST_CM=30;
+const LONG_MS=4000,OV_PW="1111",SK_OV="radio_stamp_time_override";
+const DL_KEY="radio_dl_date",UP_KEY="radio_up_date";
+const RAND_CARD="card.png";
+const POOL=["stamp100.png","stamp101.png","stamp102.png","stamp103.png","stamp104.png"];
+const ART={"card1":{card:"card1.png",stamps:["stamp001.png","stamp002.png","stamp003.png"]},
+  "card2":{card:"card2.png",stamps:["stamp011.png","stamp012.png","stamp013.png"]}};
+const CAROUSEL_GAP=12;
+
+/* タスク定義
+   stamp: null の場合は今日のスタンプを代用
+   timeLabel: "5分" など、nullで非表示
+   center: true = 早起き（中央・水色・大きめ）
+   showTime: タイムラベルを表示するかどうか（コード内で制御）
+*/
+const TASKS=[
+  {id:"asagohan",  name:"朝ごはん",  stamp:null, timeLabel:null, center:false,
+   emoji:"🍚", desc:"しっかり食べて\n一日のエネルギーをチャージ！"},
+  {id:"stretch",   name:"ストレッチ", stamp:null, timeLabel:"5分", center:false,
+   emoji:"🤸", desc:"体をほぐして\n血行と柔軟性をアップ！"},
+  {id:"hayaoki",   name:"早起き",    stamp:null, timeLabel:null,  center:true,
+   emoji:"🌅", desc:"早起きは三文の徳\n今日も気持ちよくスタート！"},
+  {id:"asashitaku",name:"朝の準備",  stamp:null, timeLabel:null,  center:false,
+   emoji:"👕", desc:"身だしなみを整えて\n気持ちも引き締まる！"},
+  {id:"dokusho",   name:"読書",      stamp:null, timeLabel:"5分", center:false,
+   emoji:"📖", desc:"毎日の読書習慣で\n知識と想像力を育てよう！"},
+  {id:"shumi",     name:"趣味",      stamp:null, timeLabel:"5分", center:false,
+   emoji:"🎨", desc:"好きなことで\n心に余裕を作ろう！"},
+];
+
+/* =========================================================
+   DOM参照
+   ========================================================= */
+const $=id=>document.getElementById(id);
+const bgmAudio=$("bgmAudio"),stampSnd=$("stampSound"),clickSnd=$("clickSound");
+const selectScreen=$("selectScreen"),randomBtn=$("randomModeBtn"),artBtn=$("artModeBtn");
+const artCnt=$("artCountText"),randCnt=$("randomCountText"),todayPrv=$("todayStampPreview");
+const todayCircle=$("todayCircle"),todayLabel=$("todayLabel");
+const calPop=$("calendarPopup"),calClose=$("calendarClose"),calMonth=$("calendarMonth"),calGrid=$("calendarGrid");
+const timeGate=$("timeGate"),gateThumb=$("gateCardThumb"),gateRemain=$("gateRemain"),progBar=$("progressBar");
+const backBtn=$("backToSelect"),dlBtn=$("getCardBtn"),uploadArea=$("uploadArea"),imgInput=$("imageInput");
+const stageWrap=$("stageWrap"),stage=$("stage"),emptyHint=$("emptyHint"),imgFrame=$("imageFrame");
+const cardImg=$("cardImage"),stampLayer=$("stampLayer"),ghost=$("ghostStamp"),ghostImg=$("ghostStampImg");
+const undoBtn=$("undoBtn"),redoBtn=$("redoBtn"),saveBtn=$("saveBtn"),pressRing=$("pressRing"),ringProg=document.querySelector(".ring-progress");
+const secZone=$("secretTapZone"),pwPopup=$("passwordPopup"),pwInput=$("passwordInput");
+const snsBtn=$("snsBtn");
+const bgmTrack=$("bgmTrack"),bgmFill=$("bgmFill"),bgmThumb=$("bgmThumb"),bgmPct=$("bgmPct"),bgmIcon=$("bgmIcon");
+const todBtn=$("todBtn");
+const participationLabel=$("participationLabel");
+const taskScreen=$("taskScreen"),taskTrack=$("taskTrack"),taskPrevBtn=$("taskPrevBtn"),taskNextBtn=$("taskNextBtn");
+const challengeScreen=$("challengeScreen");
+const selectLP=$("selectLongPress");
+
+/* =========================================================
+   状態変数
+   ========================================================= */
+let mode=null,cardPath=null,stampPath=null;
+let activeWin=false,uploaded=null,stamps=[],redo=[];
+let pDown=false,pId=null,pAnim=false,pStart=0,pPt=null,pTimer=null,rAF=null;
+let ovOpen=localStorage.getItem(SK_OV)==="true";
+let bgmVol=0.10,bgmDrag=false,bgmMuted=false,bgmStarted=false;
+let todIsNight=false;
+let savePulseTimer=null;
+let carouselOffset=0;
+let currentTask=null;
+let lpTimer=null;
+
+/* =========================================================
+   BGM（スマホ対応：複数イベントで確実にstart）
+   ========================================================= */
+function startBGM(){
+  if(bgmStarted)return;
+  bgmStarted=true;
+  bgmAudio.volume=bgmMuted?0:bgmVol;
+  bgmAudio.play().catch(()=>{});
+}
+document.addEventListener("pointerdown",startBGM,{once:true,passive:true});
+document.addEventListener("touchstart",startBGM,{once:true,passive:true});
+document.addEventListener("click",startBGM,{once:true,passive:true});
+
+function playClick(){clickSnd.currentTime=0;clickSnd.play().catch(()=>{});}
+function setBGM(v){
+  bgmVol=Math.max(0,Math.min(1,v));
+  if(!bgmMuted)bgmAudio.volume=bgmVol;
+  bgmFill.style.width=`${bgmVol*100}%`;
+  bgmThumb.style.left=`${bgmVol*100}%`;
+  bgmPct.textContent=`${Math.round(bgmVol*100)}%`;
+}
+setBGM(0.10);
+bgmIcon.addEventListener("click",()=>{
+  playClick();bgmMuted=!bgmMuted;
+  bgmAudio.volume=bgmMuted?0:bgmVol;
+  bgmIcon.classList.toggle("muted",bgmMuted);
+});
+function trkPos(e){
+  const r=bgmTrack.getBoundingClientRect(),cx=e.touches?e.touches[0].clientX:e.clientX;
+  return Math.max(0,Math.min(1,(cx-r.left)/r.width));
+}
+bgmTrack.addEventListener("pointerdown",e=>{bgmDrag=true;bgmTrack.setPointerCapture(e.pointerId);setBGM(trkPos(e));});
+bgmTrack.addEventListener("pointermove",e=>{if(bgmDrag)setBGM(trkPos(e));});
+bgmTrack.addEventListener("pointerup",()=>{bgmDrag=false;});
+
+/* =========================================================
+   JST 時刻
+   ========================================================= */
+function jstParts(){
+  const p={};
+  new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Tokyo",year:"numeric",month:"2-digit",
+    day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false})
+    .formatToParts(new Date()).filter(x=>x.type!=="literal").forEach(x=>p[x.type]=x.value);
+  return{Y:+p.year,M:+p.month,D:+p.day,h:+p.hour,m:+p.minute,s:+p.second};
+}
+function jstKey(){const p=jstParts();return`${p.Y}-${String(p.M).padStart(2,"0")}-${String(p.D).padStart(2,"0")}`;}
+function jstDisp(){const p=jstParts();return`${p.M}/${p.D}`;}
+function mod(h,m){return h*60+m;}
+function jstStatus(){
+  const p=jstParts(),now=mod(p.h,p.m),op=mod(JST_OH,JST_OM),cl=mod(JST_CH,JST_CM);
+  const bt=now>=op&&now<cl,open=bt||ovOpen;
+  let rem=0,prog=0;
+  if(bt){const el=(now-op)*60+p.s,tot=(cl-op)*60;rem=Math.max(0,(tot-el)*1000);prog=100;}
+  else{const mu=now<op?op-now:(1440-now)+op;rem=Math.max(0,(mu*60-p.s)*1000);prog=((86400000-rem)/86400000)*100;}
+  return{open,bt,rem,prog};
+}
+function fmtRem(ms){const tm=Math.ceil(ms/60000);return`残り${Math.floor(tm/60)}時間${tm%60}分`;}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+
+/* =========================================================
+   スタンプ プール
+   ========================================================= */
+function seedIdx(seed,len){const x=Math.sin(seed*9999)*10000;return Math.floor((x-Math.floor(x))*len)%len;}
+function stampForDate(dk){return POOL[seedIdx(+dk.replaceAll("-",""),POOL.length)];}
+function todayStamp(){return stampForDate(jstKey());}
+function updateCounts(){
+  randCnt.textContent=`スタンプ総数 ${POOL.length}`;
+  artCnt.textContent=`カード総数 ${Object.keys(ART).length}`;
+  todayPrv.src=todayStamp();
+}
+
+/* =========================================================
+   朝/夜 切り替え
+   ========================================================= */
+function setTimeOfDay(night){
+  todIsNight=night;
+  todBtn.classList.toggle("night",night);
+  participationLabel.textContent=night?"夜参加":"朝参加";
+}
+todBtn.addEventListener("click",()=>{playClick();setTimeOfDay(!todIsNight);});
+
+/* =========================================================
+   カレンダー
+   ========================================================= */
+function buildCal(){
+  const p=jstParts(),y=p.Y,mo=p.M;
+  calMonth.textContent=`${y}年${mo}月`;
+  const dim=new Date(y,mo,0).getDate(),fd=new Date(y,mo-1,1).getDay();
+  calGrid.innerHTML="";
+  ["日","月","火","水","木","金","土"].forEach(d=>{
+    const e=document.createElement("div");e.className="calDow";e.textContent=d;calGrid.appendChild(e);
+  });
+  for(let i=0;i<fd;i++){const e=document.createElement("div");e.className="calDay empty";calGrid.appendChild(e);}
+  for(let d=1;d<=dim;d++){
+    const dk=`${y}-${String(mo).padStart(2,"0")}-${String(d).padStart(2,"0")}`,dow=(fd+d-1)%7,it=d===p.D;
+    const el=document.createElement("div");
+    el.className="calDay"+(it?" today":"")+(dow===0?" calDaySun":dow===6?" calDaySat":"");
+    const nd=document.createElement("div");nd.className="calDayNum";nd.textContent=d;el.appendChild(nd);
+    const sd=document.createElement("div");sd.className="calDayStamp";
+    const img=document.createElement("img");img.src=stampForDate(dk);sd.appendChild(img);el.appendChild(sd);
+    calGrid.appendChild(el);
+  }
+}
+function showCal(e){e.stopPropagation();playClick();buildCal();calPop.classList.add("visible");}
+todayCircle.addEventListener("click",showCal);
+todayLabel.addEventListener("click",showCal);
+calClose.addEventListener("click",()=>{playClick();calPop.classList.remove("visible");});
+calPop.addEventListener("click",e=>{if(e.target===calPop)calPop.classList.remove("visible");});
+
+/* =========================================================
+   ボタン使用済みグレー（当日のみ）
+   ========================================================= */
+function checkButtonDates(){
+  const today=jstKey();
+  if(localStorage.getItem(DL_KEY)===today)dlBtn.classList.add("used");
+  if(localStorage.getItem(UP_KEY)===today)uploadArea.classList.add("used");
+}
+
+/* =========================================================
+   画面管理
+   ========================================================= */
+function setGateThumb(src){gateThumb.innerHTML=src?`<img src="${src}" alt="">`:"";}
+
+function showSelect(){
+  selectScreen.classList.remove("hidden");
+  backBtn.style.display="none";
+  timeGate.classList.remove("visible");
+  mode=null;
+  taskScreen.classList.remove("visible");
+  challengeScreen.classList.remove("visible");
+  participationLabel.classList.remove("visible");
+}
+function hideSelect(){
+  selectScreen.classList.add("hidden");
+  backBtn.style.display="block";
+}
+
+function updateTop(){
+  const st=jstStatus();activeWin=st.open;
+  if(!mode){timeGate.classList.remove("visible");dlBtn.classList.add("hidden");return;}
+  if(st.open)timeGate.classList.remove("visible");
+  else{
+    timeGate.classList.add("visible");
+    gateRemain.textContent=fmtRem(st.rem);
+    progBar.style.width=`${clamp(st.prog,0,100)}%`;
+  }
+  stageWrap.classList.toggle("closed",!st.open);
+  dlBtn.classList.remove("hidden");
+}
+
+/* =========================================================
+   タスクカルーセル
+   ========================================================= */
+function getVisibleCount(){return window.innerWidth<640?3:5;}
+
+function buildTaskCards(){
+  taskTrack.innerHTML="";
+  TASKS.forEach(task=>{
+    const card=document.createElement("div");
+    card.className="taskCard"+(task.center?" center":"");
+
+    // 画像 or プレースホルダー
+    const wrap=document.createElement("div");wrap.className="taskCardImgWrap";
+    if(task.stamp){
+      const img=document.createElement("img");img.src=task.stamp;img.alt=task.name;
+      wrap.appendChild(img);
+    }else{
+      const ph=document.createElement("div");ph.className="taskCardImgPh";ph.textContent=task.emoji||"⭐";
+      wrap.appendChild(ph);
+    }
+    card.appendChild(wrap);
+
+    const nm=document.createElement("div");nm.className="taskCardName";nm.textContent=task.name;
+    card.appendChild(nm);
+
+    if(task.timeLabel){
+      const tl=document.createElement("div");tl.className="taskCardTime";tl.textContent=task.timeLabel;
+      card.appendChild(tl);
+    }
+
+    const btns=document.createElement("div");btns.className="taskCardBtns";
+
+    const btnC=document.createElement("button");btnC.type="button";btnC.className="taskBtnChallenge";
+    btnC.textContent="挑戦";
+    btnC.addEventListener("pointerup",e=>{e.stopPropagation();playClick();selectTask(task,false);});
+    btnC.addEventListener("click",e=>{e.stopPropagation();});
+
+    const btnD=document.createElement("button");btnD.type="button";btnD.className="taskBtnDone";
+    btnD.textContent="やった";
+    btnD.addEventListener("pointerup",e=>{e.stopPropagation();playClick();selectTask(task,true);});
+    btnD.addEventListener("click",e=>{e.stopPropagation();});
+
+    btns.appendChild(btnC);btns.appendChild(btnD);
+    card.appendChild(btns);
+    taskTrack.appendChild(card);
+  });
+}
+
+function layoutCarousel(){
+  const cw=document.getElementById("taskCarousel").clientWidth;
+  if(!cw)return;
+  const vis=getVisibleCount();
+  const cardW=(cw-CAROUSEL_GAP*(vis-1))/vis;
+  document.querySelectorAll(".taskCard").forEach(c=>{
+    c.style.width=`${cardW}px`;
+    c.style.marginRight=`${CAROUSEL_GAP}px`;
+  });
+  applyCarouselSlide(carouselOffset,false);
+  taskPrevBtn.disabled=carouselOffset<=0;
+  taskNextBtn.disabled=carouselOffset>=TASKS.length-vis;
+}
+
+function applyCarouselSlide(offset,animate=true){
+  const cw=document.getElementById("taskCarousel").clientWidth;
+  if(!cw)return;
+  const vis=getVisibleCount();
+  const cardW=(cw-CAROUSEL_GAP*(vis-1))/vis;
+  const step=cardW+CAROUSEL_GAP;
+  carouselOffset=offset;
+  taskTrack.style.transition=animate?"transform .42s cubic-bezier(.4,0,.2,1)":"none";
+  taskTrack.style.transform=`translateX(${-offset*step}px)`;
+  taskPrevBtn.disabled=offset<=0;
+  taskNextBtn.disabled=offset>=TASKS.length-vis;
+}
+
+function showTaskScreen(){
+  taskScreen.classList.add("visible");
+  carouselOffset=0;
+  requestAnimationFrame(()=>{
+    buildTaskCards();
+    layoutCarousel();
+  });
+}
+function hideTaskScreen(){taskScreen.classList.remove("visible");}
+
+taskPrevBtn.addEventListener("click",()=>{
+  if(carouselOffset>0){playClick();applyCarouselSlide(carouselOffset-1);}
+});
+taskNextBtn.addEventListener("click",()=>{
+  const vis=getVisibleCount();
+  if(carouselOffset<TASKS.length-vis){playClick();applyCarouselSlide(carouselOffset+1);}
+});
+
+/* =========================================================
+   タスク選択
+   ========================================================= */
+function selectTask(task,done){
+  currentTask=task;
+  stampPath=task.stamp||todayStamp();
+  ghostImg.src=stampPath;
+  if(done){
+    hideTaskScreen();
+    challengeScreen.classList.remove("visible");
+  }else{
+    showChallengeScreen(task);
+  }
+}
+
+/* =========================================================
+   チャレンジ画面
+   ========================================================= */
+function showChallengeScreen(task){
+  $("chlTaskName").textContent=task.name;
+  $("chlTimeLabel").textContent=task.timeLabel?`（${task.timeLabel}）`:"";
+  $("chlDesc").textContent=task.desc||"";
+  challengeScreen.classList.add("visible");
+}
+$("chlDoneBtn").addEventListener("click",()=>{
+  playClick();
+  challengeScreen.classList.remove("visible");
+  hideTaskScreen();
+});
+$("chlBackBtn").addEventListener("click",()=>{
+  playClick();
+  challengeScreen.classList.remove("visible");
+});
+
+/* =========================================================
+   保存ボタン パルス
+   ========================================================= */
+function startSavePulse(){
+  saveBtn.classList.add("pulsing");
+  if(savePulseTimer)clearTimeout(savePulseTimer);
+  savePulseTimer=setTimeout(()=>{
+    saveBtn.classList.remove("pulsing");
+    savePulseTimer=null;
+  },5000);
+}
+
+/* =========================================================
+   カード設定
+   ========================================================= */
+async function setCard(src){
+  cardPath=src;cardImg.src=src;cardImg.style.display="block";emptyHint.style.display="none";
+  setGateThumb(src);
+  await new Promise(r=>{cardImg.onload=r;if(cardImg.complete&&cardImg.naturalWidth)r();});
+  renderStamps();
+  // 朝参加ラベルを表示
+  participationLabel.classList.add("visible");
+}
+
+function clearStamps(){stamps=[];redo=[];renderStamps();updHistory();}
+function updHistory(){undoBtn.disabled=!stamps.length;redoBtn.disabled=!redo.length;}
+function cardRect(){const r=cardImg.getBoundingClientRect();return{l:r.left,t:r.top,w:r.width,h:r.height};}
+function inCard(cx,cy){const r=cardRect();return cx>=r.l&&cx<=r.l+r.w&&cy>=r.t&&cy<=r.t+r.h;}
+function toRatio(cx,cy){const r=cardRect();return{x:clamp((cx-r.l)/r.w,0,1),y:clamp((cy-r.t)/r.h,0,1)};}
+function updateGhostSize(){const r=cardRect();if(!r.w||!stampPath)return;const sz=Math.max(38,r.w*0.17);ghost.style.width=`${sz}px`;ghost.style.height=`${sz}px`;}
+
+function renderStamps(){
+  stampLayer.innerHTML="";const rect=cardRect();if(!rect.w||!rect.h)return;
+  for(const s of stamps){
+    const el=document.createElement("div");el.className="stamp";
+    el.style.left=`${s.x*100}%`;el.style.top=`${s.y*100}%`;
+    const sz=Math.max(38,rect.w*(s.size||0.17));el.style.width=`${sz}px`;el.style.height=`${sz}px`;
+    el.style.setProperty("--rot",`${s.rot||0}deg`);
+    const img=document.createElement("img");img.src=s.src;el.appendChild(img);
+    const de=document.createElement("div");de.className="stamp-date";de.textContent=s.date||jstDisp();
+    de.style.fontSize=`${Math.max(9,sz*0.18)}px`;de.style.bottom=`${-sz*0.14}px`;el.appendChild(de);
+    stampLayer.appendChild(el);
+  }
+}
+function showGhost(cx,cy){if(!stampPath)return;const r=cardRect();if(!r.w)return;ghostImg.src=stampPath;const sz=Math.max(38,r.w*0.17);ghost.style.width=`${sz}px`;ghost.style.height=`${sz}px`;moveGhost(cx,cy);ghost.style.display="block";}
+function moveGhost(cx,cy){const r=cardRect();ghost.style.left=`${cx-r.l}px`;ghost.style.top=`${cy-r.t}px`;ghost.style.transform="translate(-50%,-50%)";}
+function hideGhost(){ghost.style.display="none";}
+
+function pushStamp(xr,yr){
+  stamps.push({x:clamp(xr,0,1),y:clamp(yr,0,1),rot:(-10+Math.random()*20).toFixed(2),size:0.17,src:stampPath,date:jstDisp()});
+  redo=[];renderStamps();updHistory();
+  stampSnd.currentTime=0;stampSnd.play().catch(()=>{});
+  startSavePulse();
+}
+function undoS(){if(!stamps.length)return;redo.push(stamps.pop());renderStamps();updHistory();}
+function redoS(){if(!redo.length)return;stamps.push(redo.pop());renderStamps();updHistory();}
+
+function showRing(cx,cy){const r=stage.getBoundingClientRect();pressRing.style.left=`${cx-r.left}px`;pressRing.style.top=`${cy-r.top}px`;pressRing.style.display="flex";ringProg.style.strokeDashoffset="251.2";}
+function moveRing(cx,cy){const r=stage.getBoundingClientRect();pressRing.style.left=`${cx-r.left}px`;pressRing.style.top=`${cy-r.top}px`;}
+function hideRing(){pressRing.style.display="none";ringProg.style.strokeDashoffset="251.2";}
+function animRing(){
+  if(!pAnim)return;const ratio=clamp((performance.now()-pStart)/LONG_MS,0,1);
+  ringProg.style.strokeDashoffset=String(251.2*(1-ratio));
+  if(ratio>=1){pAnim=false;hideRing();if(pPt)pushStamp(pPt.x,pPt.y);hideGhost();return;}
+  rAF=requestAnimationFrame(animRing);
+}
+function cancelPress(){pDown=false;pId=null;pAnim=false;pPt=null;if(pTimer){clearTimeout(pTimer);pTimer=null;}if(rAF){cancelAnimationFrame(rAF);rAF=null;}hideRing();hideGhost();}
+function startPress(cx,cy){if(!activeWin||!cardPath||!inCard(cx,cy))return;pPt=toRatio(cx,cy);showGhost(cx,cy);pStart=performance.now();pAnim=true;showRing(cx,cy);animRing();pTimer=setTimeout(()=>{pTimer=null;},LONG_MS);}
+function movePress(cx,cy){if(!pDown)return;if(!inCard(cx,cy)){cancelPress();return;}moveRing(cx,cy);pPt=toRatio(cx,cy);moveGhost(cx,cy);}
+
+async function loadImg(src){return new Promise((res,rej)=>{const i=new Image();i.crossOrigin="anonymous";i.onload=()=>res(i);i.onerror=rej;i.src=src;});}
+
+/* =========================================================
+   保存（朝参加/夜参加をcanvasに描画）
+   ========================================================= */
+async function savePNG(){
+  if(!cardPath)return;
+  const base=await loadImg(cardImg.src);
+  const oc=document.createElement("canvas");const ctx=oc.getContext("2d");
+  oc.width=base.naturalWidth||base.width;oc.height=base.naturalHeight||base.height;
+  const W=oc.width,H=oc.height;
+  ctx.imageSmoothingEnabled=false;
+  ctx.drawImage(base,0,0,W,H);
+
+  for(const s of stamps){
+    const img=await loadImg(s.src);const sz=W*(s.size||0.17),cx=s.x*W,cy=s.y*H;
+    ctx.save();ctx.translate(cx,cy);ctx.rotate(+s.rot*Math.PI/180);ctx.drawImage(img,-sz/2,-sz/2,sz,sz);
+    const fs=Math.max(9,sz*0.18);
+    ctx.font=`bold ${fs}px "Kosugi Maru","Yomogi",sans-serif`;
+    ctx.fillStyle="rgba(99,204,255,.9)";ctx.textAlign="center";ctx.textBaseline="top";
+    ctx.shadowColor="rgba(200,235,255,.7)";ctx.shadowBlur=4;
+    ctx.fillText(s.date||jstDisp(),0,sz/2+2);ctx.shadowBlur=0;ctx.restore();
+  }
+
+  /* 隠し機能: 朝参加/夜参加を左上に描画 */
+  const labelTxt=todIsNight?"夜参加":"朝参加";
+  const fs2=Math.max(12,H*0.022);
+  ctx.font=`bold ${fs2}px "Kosugi Maru","Yomogi",sans-serif`;
+  ctx.fillStyle="rgba(255,255,255,.92)";
+  ctx.shadowColor="rgba(0,0,0,.42)";ctx.shadowBlur=6;
+  ctx.textAlign="left";ctx.textBaseline="top";
+  ctx.fillText(labelTxt,Math.round(W*0.018),Math.round(H*0.018));
+  ctx.shadowBlur=0;
+
+  const today=jstKey();
+  const a=document.createElement("a");a.href=oc.toDataURL("image/png");
+  a.download=`radio-stamp-${today}.png`;document.body.appendChild(a);a.click();a.remove();
+}
+
+function dlCard(src,name){const a=document.createElement("a");a.href=src;a.download=name;document.body.appendChild(a);a.click();a.remove();}
+
+/* =========================================================
+   カード選択（時間チェック：PC・スマホ共通）
+   ========================================================= */
+function startRandomMode(){
+  mode="random";
+  stampPath=todayStamp();
+  ghostImg.src=stampPath;
+  hideSelect();
+  clearStamps();
+  uploaded=null;
+  setCard(RAND_CARD);
+  updateTop();
+  setTimeOfDay(false);
+  showTaskScreen();
+}
+
+let _cardBusy=false;
+function handleCardSelect(target){
+  if(todayCircle.contains(target)||todayLabel.contains(target))return;
+  if(_cardBusy)return;
+  _cardBusy=true;setTimeout(()=>{_cardBusy=false;},800);
+  startBGM();           /* スマホはここでBGM開始トリガー */
+  playClick();
+  const st=jstStatus();
+  if(!st.open){
+    setGateThumb(RAND_CARD);
+    timeGate.classList.add("visible");
+    gateRemain.textContent=fmtRem(st.rem);
+    progBar.style.width=`${clamp(st.prog,0,100)}%`;
+    return;
+  }
+  startRandomMode();
+}
+
+/* -------------------------------------------------------
+   カード選択イベント: スマホ最優先 = touchend
+   touchend で preventDefault() → click をキャンセル
+   マウス環境は click のみ到達
+   ------------------------------------------------------- */
+randomBtn.addEventListener("touchend",e=>{
+  if(todayCircle.contains(e.target)||todayLabel.contains(e.target))return;
+  e.preventDefault();          // 後続 click をキャンセル
+  e.stopPropagation();
+  handleCardSelect(e.target);
+},{passive:false});
+
+/* fallback: マウス／pointer環境 */
+randomBtn.addEventListener("click",e=>{
+  handleCardSelect(e.target);
+});
+artBtn.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();});
+
+/* =========================================================
+   その他ボタンイベント
+   ========================================================= */
+backBtn.addEventListener("click",()=>{
+  playClick();stamps=[];redo=[];renderStamps();hideGhost();hideRing();showSelect();updateTop();
+});
+
+dlBtn.addEventListener("click",()=>{
+  if(!activeWin)return;
+  playClick();
+  dlCard(RAND_CARD,"card.png");
+  localStorage.setItem(DL_KEY,jstKey());
+  dlBtn.classList.add("used");
+});
+
+imgInput.addEventListener("change",e=>{
+  if(!activeWin||mode!=="random")return;
+  const f=e.target.files?.[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    uploaded=r.result;clearStamps();setCard(uploaded);
+    localStorage.setItem(UP_KEY,jstKey());
+    uploadArea.classList.add("used");
+  };
+  r.readAsDataURL(f);
+});
+
+saveBtn.addEventListener("click",async()=>{if(!activeWin)return;playClick();await savePNG();});
+undoBtn.addEventListener("click",()=>{if(!activeWin)return;playClick();undoS();});
+redoBtn.addEventListener("click",()=>{if(!activeWin)return;playClick();redoS();});
+snsBtn.addEventListener("click",()=>{playClick();});
+
+/* スタンプ押印 */
+const pt=$("pressTarget");
+pt.addEventListener("contextmenu",e=>e.preventDefault());
+pt.addEventListener("pointerdown",e=>{if(!activeWin||!cardPath)return;pDown=true;pId=e.pointerId;pt.setPointerCapture(e.pointerId);startPress(e.clientX,e.clientY);});
+pt.addEventListener("pointermove",e=>{if(!pDown||e.pointerId!==pId)return;movePress(e.clientX,e.clientY);});
+pt.addEventListener("pointerup",e=>{if(e.pointerId!==pId)return;cancelPress();});
+pt.addEventListener("pointercancel",e=>{if(e.pointerId!==pId)return;cancelPress();});
+pt.addEventListener("pointerleave",()=>{if(pDown)cancelPress();});
+imgFrame.addEventListener("pointermove",e=>{if(pDown||!activeWin||!cardPath)return;if(!inCard(e.clientX,e.clientY)){hideGhost();return;}showGhost(e.clientX,e.clientY);});
+imgFrame.addEventListener("pointerleave",()=>{if(!pDown)hideGhost();});
+
+/* =========================================================
+   選択画面 左下 10秒長押しで時間制限解除
+   ========================================================= */
+selectLP.addEventListener("pointerdown",e=>{
+  selectLP.setPointerCapture(e.pointerId);
+  if(lpTimer)clearTimeout(lpTimer);
+  lpTimer=setTimeout(()=>{
+    lpTimer=null;
+    ovOpen=true;
+    localStorage.setItem(SK_OV,"true");
+    /* 微妙なフィードバック */
+    selectLP.style.transition="background .3s";
+    selectLP.style.background="rgba(143,220,255,.18)";
+    setTimeout(()=>{selectLP.style.background="transparent";},500);
+  },10000);
+});
+["pointerup","pointercancel"].forEach(ev=>{
+  selectLP.addEventListener(ev,()=>{if(lpTimer){clearTimeout(lpTimer);lpTimer=null;}});
+});
+
+/* =========================================================
+   Secret password zone (admin)
+   ========================================================= */
+function hidePW(){pwPopup.style.display="none";pwInput.value="";}
+function showPW(){pwPopup.style.display="block";pwInput.value="";pwInput.focus();}
+secZone.addEventListener("dblclick",e=>{e.preventDefault();pwPopup.style.display==="block"?hidePW():showPW();});
+let lastT=0;
+secZone.addEventListener("touchend",e=>{
+  const n=Date.now();
+  if(n-lastT<350){e.preventDefault();pwPopup.style.display==="block"?hidePW():showPW();}
+  lastT=n;
+},{passive:false});
+pwInput.addEventListener("input",()=>{
+  if(pwInput.value===OV_PW){ovOpen=true;localStorage.setItem(SK_OV,"true");hidePW();startRandomMode();}
+});
+
+/* =========================================================
+   Global pointer / resize
+   ========================================================= */
+document.addEventListener("pointerdown",e=>{
+  if(!pwPopup.contains(e.target)&&!secZone.contains(e.target))hidePW();
+  if(!calPop.contains(e.target)&&!todayCircle.contains(e.target)&&!todayLabel.contains(e.target))
+    calPop.classList.remove("visible");
+});
+window.addEventListener("resize",()=>{
+  renderStamps();updateGhostSize();
+  if(taskScreen.classList.contains("visible"))layoutCarousel();
+});
+setInterval(()=>{
+  todayPrv.src=todayStamp();
+  if(mode)updateTop();
+  else{
+    const st=jstStatus();
+    if(timeGate.classList.contains("visible")){
+      gateRemain.textContent=fmtRem(st.rem);
+      progBar.style.width=`${clamp(st.prog,0,100)}%`;
+    }
+  }
+},1000);
+
+/* =========================================================
+   初期化
+   ========================================================= */
+if(!POOL.length)throw new Error("STAMP_POOL empty");
+checkButtonDates();
+updateCounts();
+showSelect();
+updateTop();
+</script>
+</body>
+</html>

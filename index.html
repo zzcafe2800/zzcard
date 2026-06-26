@@ -215,9 +215,9 @@ button,input{font:inherit;}
 #gateCardThumb img{width:100%;height:100%;object-fit:cover;}
 #gateInfo{min-width:0;flex:1;display:flex;flex-direction:column;gap:8px;}
 #gateTopLine{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;}
-#gateTitle{font-size:16px;letter-spacing:.08em;color:#5f91a8;font-weight:700;white-space:nowrap;}
-#gateHours{font-size:14px;color:#79a7bc;white-space:nowrap;}
-#gateRemain{font-size:13px;color:#86aabc;white-space:nowrap;}
+#gateTitle{font-size:13px;letter-spacing:.08em;color:#79a7bc;font-weight:700;white-space:nowrap;}
+#gateHours{font-size:13px;color:#86aabc;white-space:nowrap;}
+#gateRemain{font-size:22px;font-weight:700;color:#4d7790;letter-spacing:.02em;white-space:nowrap;}
 #progressWrap{width:100%;height:12px;border-radius:999px;overflow:hidden;background:rgba(143,220,255,.14);position:relative;}
 #progressBar{position:absolute;inset:0 auto 0 0;width:0%;border-radius:999px;
   background:linear-gradient(90deg,rgba(143,220,255,.55),rgba(99,204,255,.96));transition:width .5s;}
@@ -488,9 +488,9 @@ button,input{font:inherit;}
   <div id="gateCardThumb"></div>
   <div id="gateInfo">
     <div id="gateTopLine">
-      <div id="gateTitle">時間外です</div>
-      <div id="gateHours">6:00〜6:30</div>
-      <div id="gateRemain">残り --時間 --分</div>
+      <div id="gateTitle">ひらくまで</div>
+      <div id="gateHours">朝 6:00〜8:00</div>
+      <div id="gateRemain">あと --</div>
     </div>
     <div id="progressWrap"><div id="progressBar"></div></div>
   </div>
@@ -638,7 +638,7 @@ const firebaseConfig={
 /* =========================================================
    定数・設定
    ========================================================= */
-const JST_OH=6,JST_OM=0,JST_CH=6,JST_CM=30;
+const JST_OH=6,JST_OM=0,JST_CH=8,JST_CM=0;
 const LONG_MS=4000,OV_PW="1111",SK_OV="radio_stamp_time_override";
 const DL_KEY="radio_dl_date",UP_KEY="radio_up_date",DONE_KEY="radio_done_dates";
 const RAND_CARD="card.png";
@@ -752,15 +752,30 @@ function jstParts(){
 function jstKey(){const p=jstParts();return`${p.Y}-${String(p.M).padStart(2,"0")}-${String(p.D).padStart(2,"0")}`;}
 function jstDisp(){const p=jstParts();return`${p.M}/${p.D}`;}
 function mod(h,m){return h*60+m;}
+function fmtHM(h,m){return`${h}:${String(m).padStart(2,"0")}`;}
 function jstStatus(){
   const p=jstParts(),now=mod(p.h,p.m),op=mod(JST_OH,JST_OM),cl=mod(JST_CH,JST_CM);
   const bt=now>=op&&now<cl,open=bt||ovOpen;
   let rem=0,prog=0;
-  if(bt){const el=(now-op)*60+p.s,tot=(cl-op)*60;rem=Math.max(0,(tot-el)*1000);prog=100;}
-  else{const mu=now<op?op-now:(1440-now)+op;rem=Math.max(0,(mu*60-p.s)*1000);prog=((86400000-rem)/86400000)*100;}
+  if(bt){
+    /* 開いてる間：残りは閉門まで、バーは満タン */
+    const el=(now-op)*60+p.s,tot=(cl-op)*60;
+    rem=Math.max(0,(tot-el)*1000);prog=100;
+  }else{
+    /* 閉まってる間：次の朝の開門までカウントダウン。
+       閉門〜翌開門の総時間に対する経過でバーを満たす＝開門が近いほどバーが伸びる */
+    const closedTotalSec=((1440-cl)+op)*60;            // 例:8:00→翌6:00=22時間
+    const remMin=now<op?(op-now):((1440-now)+op);      // 開門までの残り分
+    rem=Math.max(0,(remMin*60-p.s)*1000);
+    const elapsedSec=closedTotalSec-Math.ceil(rem/1000);
+    prog=clamp(elapsedSec/closedTotalSec*100,0,100);
+  }
   return{open,bt,rem,prog};
 }
-function fmtRem(ms){const tm=Math.ceil(ms/60000);return`残り${Math.floor(tm/60)}時間${tm%60}分`;}
+function fmtRem(ms){
+  const tm=Math.max(0,Math.ceil(ms/60000)),h=Math.floor(tm/60),m=tm%60;
+  return h>0?`あと ${h}時間 ${m}分`:`あと ${m}分`;
+}
 function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
 
 /* =========================================================
@@ -1334,6 +1349,7 @@ function toast(txt){
    初期化
    ========================================================= */
 if(!POOL.length)throw new Error("STAMP_POOL empty");
+$("gateHours").textContent=`朝 ${fmtHM(JST_OH,JST_OM)}〜${fmtHM(JST_CH,JST_CM)}`;
 checkButtonDates();
 updateCounts();
 refreshHome();

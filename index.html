@@ -67,6 +67,56 @@ button,input{font:inherit;}
   color:#7ca8bd;background:rgba(255,255,255,.52);padding:6px 10px;border-radius:999px;
   border:1px solid rgba(143,220,255,.18);cursor:pointer;}
 
+/* ===================== HOME STATS（連続記録・図鑑・今日） ===================== */
+#homeStats{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;width:min(560px,100%);margin:0 auto;}
+.homeStat{flex:1 1 150px;min-width:130px;border-radius:22px;padding:14px 12px;
+  background:rgba(255,255,255,.60);border:1px solid rgba(143,220,255,.30);
+  backdrop-filter:blur(14px);box-shadow:0 10px 26px rgba(111,205,255,.12);
+  display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;
+  appearance:none;-webkit-appearance:none;cursor:default;transition:transform .2s,box-shadow .2s;}
+.homeStatBtn{cursor:pointer;}
+.homeStatBtn:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(99,204,255,.22);}
+.homeStatIcon{font-size:24px;line-height:1;}
+.homeStatMain{font-size:22px;font-weight:700;color:#4d7790;letter-spacing:.04em;line-height:1.1;}
+.homeStatMain .homeStatUnit{font-size:13px;font-weight:700;margin-left:2px;color:#6c9fb6;}
+.homeStatSub{font-size:11px;color:#8ab0c4;letter-spacing:.04em;}
+#streakStat .homeStatMain{color:#ef8a4d;}
+#todayStat.done{background:rgba(180,235,205,.52);border-color:rgba(120,205,160,.46);}
+#todayStat.done .homeStatMain{color:#3fae78;}
+
+/* ===================== 図鑑 ===================== */
+#dexPopup{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;
+  background:rgba(220,240,255,.32);backdrop-filter:blur(10px);}
+#dexPopup.visible{display:flex;}
+#dexBox{width:min(560px,94vw);max-height:90vh;overflow-y:auto;border-radius:28px;padding:26px;
+  background:rgba(255,255,255,.94);border:1px solid rgba(143,220,255,.36);
+  box-shadow:0 30px 70px rgba(111,205,255,.22);backdrop-filter:blur(18px);}
+#dexHeader{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+#dexTitle{font-size:20px;font-weight:700;color:#5c93ad;letter-spacing:.1em;}
+#dexClose{width:34px;height:34px;border:none;border-radius:999px;background:rgba(143,220,255,.14);
+  color:#5c93ad;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+#dexProgressWrap{width:100%;height:12px;border-radius:999px;overflow:hidden;background:rgba(143,220,255,.16);margin-bottom:6px;}
+#dexProgressBar{height:100%;width:0%;border-radius:999px;
+  background:linear-gradient(90deg,rgba(143,220,255,.65),rgba(99,204,255,.98));transition:width .6s;}
+#dexProgressText{text-align:center;font-size:12px;color:#7aa5bc;font-weight:700;margin-bottom:16px;letter-spacing:.06em;}
+#dexGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:12px;}
+.dexCell{position:relative;aspect-ratio:1;border-radius:18px;display:flex;align-items:center;justify-content:center;
+  background:rgba(143,220,255,.10);border:1.5px solid rgba(143,220,255,.22);padding:10px;overflow:hidden;}
+.dexCell.got{background:rgba(195,238,255,.45);border-color:rgba(99,204,255,.42);
+  box-shadow:0 6px 16px rgba(99,204,255,.16);}
+.dexCell img{width:100%;height:100%;object-fit:contain;}
+.dexCell.locked img{filter:grayscale(1) brightness(1.7) opacity(.32);}
+.dexQ{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:30px;font-weight:700;color:rgba(120,165,188,.6);}
+
+/* ===================== TOAST ===================== */
+.toast{position:absolute;left:50%;top:64px;transform:translate(-50%,-12px);z-index:300;
+  padding:12px 22px;border-radius:999px;font-size:15px;font-weight:700;letter-spacing:.06em;color:#3f7d97;
+  background:rgba(255,255,255,.92);border:1.5px solid rgba(143,220,255,.46);
+  box-shadow:0 12px 30px rgba(99,204,255,.30);backdrop-filter:blur(14px);
+  opacity:0;transition:opacity .35s,transform .35s;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;transform:translate(-50%,0);}
+
 /* ===================== TASK SCREEN ===================== */
 #taskScreen{position:absolute;inset:0;z-index:50;display:none;flex-direction:column;
   align-items:center;justify-content:center;
@@ -353,6 +403,23 @@ button,input{font:inherit;}
 <div id="selectScreen">
   <div id="selectInner">
     <div id="selectTitle">カードの種類を選択</div>
+    <div id="homeStats">
+      <div class="homeStat" id="streakStat">
+        <div class="homeStatIcon">🔥</div>
+        <div class="homeStatMain"><span id="streakNum">0</span><span class="homeStatUnit">日連続</span></div>
+        <div class="homeStatSub" id="streakBest">最高 0日</div>
+      </div>
+      <button class="homeStat homeStatBtn" id="todexBtn" type="button">
+        <div class="homeStatIcon">📖</div>
+        <div class="homeStatMain" id="todexNum">0/0</div>
+        <div class="homeStatSub">スタンプ図鑑</div>
+      </button>
+      <div class="homeStat" id="todayStat">
+        <div class="homeStatIcon" id="todayStatIcon">🌙</div>
+        <div class="homeStatMain" id="todayStatText" style="font-size:16px">今日はまだ</div>
+        <div class="homeStatSub" id="todayStatSub">朝のスタンプを押そう</div>
+      </div>
+    </div>
     <div id="selectWrap">
       <button class="modeCard" id="randomModeBtn" type="button">
         <div class="modePreview"><img src="randm.png" alt=""></div>
@@ -400,6 +467,19 @@ button,input{font:inherit;}
       <button id="calendarClose" type="button">×</button>
     </div>
     <div id="calendarGrid"></div>
+  </div>
+</div>
+
+<!-- ===================== 図鑑 ===================== -->
+<div id="dexPopup">
+  <div id="dexBox">
+    <div id="dexHeader">
+      <div id="dexTitle">スタンプ図鑑</div>
+      <button id="dexClose" type="button">×</button>
+    </div>
+    <div id="dexProgressWrap"><div id="dexProgressBar"></div></div>
+    <div id="dexProgressText">0 / 0 コンプ</div>
+    <div id="dexGrid"></div>
   </div>
 </div>
 
@@ -530,23 +610,37 @@ button,input{font:inherit;}
 <audio id="clickSound" src="click-1.mp3" preload="auto" playsinline></audio>
 
 <script type="module">
-import{initializeApp}from"https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import{getAnalytics,isSupported}from"https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
-const fbConfig={apiKey:"AIzaSyCC7KAv7V4j1Z6-o1Y8ikmb3r5htN9O_aA",authDomain:"zzgohan-280.firebaseapp.com",
-  databaseURL:"https://zzgohan-280-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"zzgohan-280",
-  storageBucket:"zzgohan-280.firebasestorage.app",messagingSenderId:"459336048542",
-  appId:"1:459336048542:web:ff6c825dec81cc7df8008f",measurementId:"G-JX4RP9LWR3"};
-/* Firebaseは1回だけ初期化。Analyticsは対応環境のみ（スマホのアプリ内ブラウザ等で落ちないようガード） */
-let fbApp=null;
-try{fbApp=initializeApp(fbConfig);}catch(e){console.warn("firebase init skipped",e);}
-isSupported().then(ok=>{if(ok&&fbApp){try{getAnalytics(fbApp);}catch(e){}}}).catch(()=>{});
+/* ===== Firebase（card-zz） =====
+   ★「ボタン押しても始まらない」対策：
+   静的import（import ... from "...gstatic..."）はモジュール先頭でまとめて解決される。
+   そのため、CDNが一瞬詰まる/バージョンのファイル構成が違う等で「1つでも読めない」と、
+   <script type="module"> 全体が一切実行されず、リスナーが付かない＝ボタン無反応になる。
+   → 動的import（await import）に変更。Firebaseが失敗しても本体（スタンプ機能）は必ず動く。
+   AnalyticsはisSupportedで対応環境のみ・try/catchで保護（スマホのアプリ内ブラウザ対策）。 */
+const firebaseConfig={
+  apiKey:"AIzaSyD0BqEbygfWAxnpIWxjc8CeEVlIu1kRMbI",
+  authDomain:"card-zz.firebaseapp.com",
+  projectId:"card-zz",
+  storageBucket:"card-zz.firebasestorage.app",
+  messagingSenderId:"844080901066",
+  appId:"1:844080901066:web:d66ccd77a1fc581c637d33",
+  measurementId:"G-VKWXVHWCGB"
+};
+(async()=>{
+  try{
+    const{initializeApp}=await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
+    const app=initializeApp(firebaseConfig);
+    const{getAnalytics,isSupported}=await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-analytics.js");
+    if(await isSupported())getAnalytics(app);
+  }catch(e){console.warn("firebase skipped",e);}
+})();
 
 /* =========================================================
    定数・設定
    ========================================================= */
 const JST_OH=6,JST_OM=0,JST_CH=6,JST_CM=30;
 const LONG_MS=4000,OV_PW="1111",SK_OV="radio_stamp_time_override";
-const DL_KEY="radio_dl_date",UP_KEY="radio_up_date";
+const DL_KEY="radio_dl_date",UP_KEY="radio_up_date",DONE_KEY="radio_done_dates";
 const RAND_CARD="card.png";
 const POOL=["stamp100.png","stamp101.png","stamp102.png","stamp103.png","stamp104.png"];
 const CAROUSEL_GAP=12;
@@ -594,6 +688,7 @@ const participationLabel=$("participationLabel");
 const taskScreen=$("taskScreen"),taskTrack=$("taskTrack"),taskPrevBtn=$("taskPrevBtn"),taskNextBtn=$("taskNextBtn");
 const challengeScreen=$("challengeScreen");
 const selectLP=$("selectLongPress");
+const dexBtn=$("todexBtn"),dexPop=$("dexPopup"),dexCloseBtn=$("dexClose"),dexGrid=$("dexGrid");
 
 /* =========================================================
    状態変数
@@ -739,6 +834,7 @@ function showSelect(){
   taskScreen.classList.remove("visible");
   challengeScreen.classList.remove("visible");
   participationLabel.classList.remove("visible");
+  refreshHome();
 }
 function hideSelect(){
   selectScreen.classList.add("hidden");
@@ -938,6 +1034,15 @@ function pushStamp(xr,yr){
   redo=[];renderStamps();updHistory();
   stampSnd.currentTime=0;stampSnd.play().catch(()=>{});
   startSavePulse();
+  /* 今日の達成として記録 → 連続記録・図鑑に反映 */
+  const r=markTodayDone();
+  if(r.added){
+    refreshHome();
+    const{current}=calcStreak();
+    if(r.newStamp)toast("✨ あたらしいスタンプGET！");
+    else if(current>1)toast(`🔥 ${current}日連続！`);
+    else toast("今日のスタンプ、おつかれさま！");
+  }
 }
 function undoS(){if(!stamps.length)return;redo.push(stamps.pop());renderStamps();updHistory();}
 function redoS(){if(!redo.length)return;stamps.push(redo.pop());renderStamps();updHistory();}
@@ -1151,11 +1256,87 @@ setInterval(()=>{
 },1000);
 
 /* =========================================================
+   習慣化：連続記録（ストリーク）・スタンプ図鑑・今日の達成
+   ========================================================= */
+function getDoneDates(){
+  try{const v=JSON.parse(localStorage.getItem(DONE_KEY)||"[]");return Array.isArray(v)?v:[];}
+  catch(e){return[];}
+}
+function addDays(key,delta){
+  const d=new Date(key+"T00:00:00Z");d.setUTCDate(d.getUTCDate()+delta);
+  return d.toISOString().slice(0,10);
+}
+/* 今日を達成として記録。戻り値で「初記録か」「新スタンプか」を返す */
+function markTodayDone(){
+  const dates=getDoneDates(),today=jstKey();
+  if(dates.includes(today))return{added:false};
+  const before=getCollected();
+  dates.push(today);
+  localStorage.setItem(DONE_KEY,JSON.stringify(dates));
+  const st=stampForDate(today);
+  return{added:true,newStamp:!before.has(st),stamp:st};
+}
+function calcStreak(){
+  const set=new Set(getDoneDates()),today=jstKey(),y=addDays(today,-1);
+  let base=set.has(today)?today:(set.has(y)?y:null),cur=0;
+  if(base){let k=base;while(set.has(k)){cur++;k=addDays(k,-1);}}
+  const sorted=[...set].sort();
+  let best=0,run=0,prev=null;
+  for(const k of sorted){run=(prev&&addDays(prev,1)===k)?run+1:1;if(run>best)best=run;prev=k;}
+  return{current:cur,best:Math.max(best,cur)};
+}
+function getCollected(){return new Set(getDoneDates().map(stampForDate));}
+function todayDone(){return getDoneDates().includes(jstKey());}
+
+function refreshHome(){
+  const{current,best}=calcStreak();
+  $("streakNum").textContent=current;
+  $("streakBest").textContent=`最高 ${best}日`;
+  const col=getCollected().size;
+  $("todexNum").textContent=`${col}/${POOL.length}`;
+  const done=todayDone();
+  $("todayStatIcon").textContent=done?"✓":"🌙";
+  $("todayStatText").textContent=done?"今日は完了！":"今日はまだ";
+  $("todayStatSub").textContent=done?"また明日ね":"朝のスタンプを押そう";
+  $("todayStat").classList.toggle("done",done);
+}
+
+function buildDex(){
+  const col=getCollected();
+  dexGrid.innerHTML="";
+  POOL.forEach(src=>{
+    const got=col.has(src);
+    const cell=document.createElement("div");cell.className="dexCell"+(got?" got":" locked");
+    const img=document.createElement("img");img.src=src;img.alt="";cell.appendChild(img);
+    if(!got){const q=document.createElement("div");q.className="dexQ";q.textContent="？";cell.appendChild(q);}
+    dexGrid.appendChild(cell);
+  });
+  const pct=POOL.length?Math.round(col.size/POOL.length*100):0;
+  $("dexProgressBar").style.width=`${pct}%`;
+  $("dexProgressText").textContent=`${col.size} / ${POOL.length} コンプ（${pct}%）`;
+}
+dexBtn.addEventListener("click",e=>{e.stopPropagation();playClick();buildDex();dexPop.classList.add("visible");});
+dexCloseBtn.addEventListener("click",()=>{playClick();dexPop.classList.remove("visible");});
+dexPop.addEventListener("click",e=>{if(e.target===dexPop)dexPop.classList.remove("visible");});
+
+/* 達成フィードバック用トースト */
+let toastTimer=null;
+function toast(txt){
+  const old=document.querySelector(".toast");if(old)old.remove();
+  const t=document.createElement("div");t.className="toast";t.textContent=txt;
+  $("app").appendChild(t);
+  requestAnimationFrame(()=>t.classList.add("show"));
+  if(toastTimer)clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>{t.classList.remove("show");setTimeout(()=>t.remove(),420);},2000);
+}
+
+/* =========================================================
    初期化
    ========================================================= */
 if(!POOL.length)throw new Error("STAMP_POOL empty");
 checkButtonDates();
 updateCounts();
+refreshHome();
 showSelect();
 updateTop();
 </script>

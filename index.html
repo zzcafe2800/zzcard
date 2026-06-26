@@ -84,6 +84,28 @@ button,input{font:inherit;}
 #todayStat.done{background:rgba(180,235,205,.52);border-color:rgba(120,205,160,.46);}
 #todayStat.done .homeStatMain{color:#3fae78;}
 
+/* ===================== HOME GATE（最初の画面に残り時間を常時表示） ===================== */
+#homeGate{width:min(560px,100%);margin:0 auto;border-radius:22px;padding:14px 18px;
+  background:rgba(255,255,255,.62);border:1px solid rgba(143,220,255,.32);
+  backdrop-filter:blur(14px);box-shadow:0 10px 26px rgba(111,205,255,.12);
+  display:flex;flex-direction:column;gap:8px;}
+#homeGate.open{background:rgba(180,235,205,.50);border-color:rgba(120,205,160,.44);}
+#homeGateTop{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+#homeGateText{font-size:13px;font-weight:700;color:#79a7bc;letter-spacing:.04em;}
+#homeGate.open #homeGateText{color:#3fae78;}
+#homeGateRemain{font-size:22px;font-weight:700;color:#4d7790;letter-spacing:.02em;white-space:nowrap;}
+#homeGate.open #homeGateRemain{font-size:15px;color:#3fae78;}
+#homeGateBarWrap{width:100%;height:10px;border-radius:999px;overflow:hidden;background:rgba(143,220,255,.16);}
+#homeGateBar{height:100%;width:0%;border-radius:999px;
+  background:linear-gradient(90deg,rgba(143,220,255,.6),rgba(99,204,255,.98));transition:width .5s;}
+#homeGate.open #homeGateBar{background:linear-gradient(90deg,rgba(120,205,160,.7),rgba(90,200,150,.98));}
+
+/* ===================== エラー帯 ===================== */
+#fatalBar{position:fixed;left:0;right:0;bottom:0;z-index:9999;display:none;
+  padding:10px 14px;font-size:12px;line-height:1.5;color:#fff;
+  background:rgba(212,76,76,.95);font-family:var(--font);
+  max-height:42vh;overflow:auto;white-space:pre-wrap;word-break:break-all;}
+
 /* ===================== 図鑑 ===================== */
 #dexPopup{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;
   background:rgba(220,240,255,.32);backdrop-filter:blur(10px);}
@@ -403,6 +425,13 @@ button,input{font:inherit;}
 <div id="selectScreen">
   <div id="selectInner">
     <div id="selectTitle">カードの種類を選択</div>
+    <div id="homeGate">
+      <div id="homeGateTop">
+        <div id="homeGateText">朝 6:00〜8:00 にひらくよ</div>
+        <div id="homeGateRemain">あと --</div>
+      </div>
+      <div id="homeGateBarWrap"><div id="homeGateBar"></div></div>
+    </div>
     <div id="homeStats">
       <div class="homeStat" id="streakStat">
         <div class="homeStatIcon">🔥</div>
@@ -610,6 +639,18 @@ button,input{font:inherit;}
 <audio id="clickSound" src="click-1.mp3" preload="auto" playsinline></audio>
 
 <script type="module">
+/* ===== エラー可視化 =====
+   スマホだとコンソールが見れないので、何かエラーで止まったら画面下に出す。
+   「反応しない」ときはここに赤帯が出るはず → その文をそのまま伝えてもらえれば原因特定できる。 */
+function showFatal(msg){
+  let b=document.getElementById("fatalBar");
+  if(!b){b=document.createElement("div");b.id="fatalBar";(document.body||document.documentElement).appendChild(b);}
+  b.style.display="block";
+  b.textContent="⚠ エラー："+msg+"\n（この文をそのまま伝えてね）";
+}
+window.addEventListener("error",ev=>{showFatal((ev.error&&ev.error.message)||ev.message||String(ev.type));});
+window.addEventListener("unhandledrejection",ev=>{showFatal("promise: "+((ev.reason&&ev.reason.message)||String(ev.reason)));});
+
 /* ===== Firebase（card-zz） =====
    ★「ボタン押しても始まらない」対策：
    静的import（import ... from "...gstatic..."）はモジュール先頭でまとめて解決される。
@@ -1267,6 +1308,7 @@ setInterval(()=>{
       gateRemain.textContent=fmtRem(st.rem);
       progBar.style.width=`${clamp(st.prog,0,100)}%`;
     }
+    refreshHomeGate();
   }
 },1000);
 
@@ -1303,7 +1345,24 @@ function calcStreak(){
 function getCollected(){return new Set(getDoneDates().map(stampForDate));}
 function todayDone(){return getDoneDates().includes(jstKey());}
 
+function refreshHomeGate(){
+  const st=jstStatus();
+  const g=$("homeGate");
+  if(st.open){
+    g.classList.add("open");
+    $("homeGateText").textContent=ovOpen&&!st.bt?"いま ひらいてるよ！（解除中）":"いま ひらいてるよ！";
+    $("homeGateRemain").textContent="カードを押してスタート";
+    $("homeGateBar").style.width="100%";
+  }else{
+    g.classList.remove("open");
+    $("homeGateText").textContent=`朝 ${fmtHM(JST_OH,JST_OM)}〜${fmtHM(JST_CH,JST_CM)} にひらくよ`;
+    $("homeGateRemain").textContent=fmtRem(st.rem);
+    $("homeGateBar").style.width=`${clamp(st.prog,0,100)}%`;
+  }
+}
+
 function refreshHome(){
+  refreshHomeGate();
   const{current,best}=calcStreak();
   $("streakNum").textContent=current;
   $("streakBest").textContent=`最高 ${best}日`;

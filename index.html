@@ -785,9 +785,15 @@ bgmTrack.addEventListener("pointerup",()=>{bgmDrag=false;});
 /* =========================================================
    JST 時刻
    ========================================================= */
+/* =========================================================
+   時刻：端末のローカル時間（＝本人の地元の時間）で判定する。
+   timeZoneを指定しないことで、見てる人それぞれの時間になる。
+   → 日本の人は日本の朝6:00〜8:00、アメリカの人はアメリカの朝6:00〜8:00に開く。
+   （関数名にjstが残ってるけど中身はローカル時間です）
+   ========================================================= */
 function jstParts(){
   const p={};
-  new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Tokyo",year:"numeric",month:"2-digit",
+  new Intl.DateTimeFormat("en-CA",{year:"numeric",month:"2-digit",
     day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false})
     .formatToParts(new Date()).filter(x=>x.type!=="literal").forEach(x=>p[x.type]=x.value);
   return{Y:+p.year,M:+p.month,D:+p.day,h:+p.hour,m:+p.minute,s:+p.second};
@@ -1173,7 +1179,9 @@ function startRandomMode(){
   setCard(RAND_CARD);
   updateTop();
   setTimeOfDay(false);
-  showTaskScreen();
+  /* 朝ノルマ画面はスキップして、押したらすぐスタンプを押せる画面へ */
+  hideTaskScreen();
+  challengeScreen.classList.remove("visible");
 }
 
 let _cardBusy=false;

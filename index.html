@@ -1057,7 +1057,8 @@ function startSavePulse(){
 async function setCard(src){
   cardPath=src;cardImg.src=src;cardImg.style.display="block";emptyHint.style.display="none";
   setGateThumb(src);
-  await new Promise(r=>{cardImg.onload=r;if(cardImg.complete&&cardImg.naturalWidth)r();});
+  /* onloadだけ待つと404画像でPromiseが永久に止まる → onerrorでも抜ける */
+  await new Promise(r=>{cardImg.onload=r;cardImg.onerror=r;if(cardImg.complete)r();});
   renderStamps();
   // 朝参加ラベルを表示
   participationLabel.classList.add("visible");

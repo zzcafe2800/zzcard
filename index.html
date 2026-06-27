@@ -120,7 +120,7 @@ button,input{font:inherit;}
 #dexProgressText{text-align:center;font-size:12px;color:#7aa5bc;font-weight:700;margin-bottom:16px;letter-spacing:.06em;}
 #dexGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:12px;}
 .dexCell{position:relative;aspect-ratio:1;border-radius:18px;display:flex;align-items:center;justify-content:center;
-  background:rgba(143,220,255,.10);border:1.5px solid rgba(143,220,255,.22);padding:10px;overflow:hidden;}
+  background:rgba(143,220,255,.10);border:1.5px solid rgba(143,220,255,.22);padding:14px 8px 26px;overflow:hidden;}
 .dexCell.got{background:rgba(195,238,255,.45);border-color:rgba(99,204,255,.42);
   box-shadow:0 6px 16px rgba(99,204,255,.16);}
 .dexCell img{width:100%;height:100%;object-fit:contain;}
@@ -182,6 +182,36 @@ button,input{font:inherit;}
   opacity:0;transform:translateY(8px) scale(.8);transition:opacity .4s,transform .4s;
   text-shadow:0 2px 12px rgba(143,220,255,.8);}
 #rouletteResult.show{opacity:1;transform:translateY(0) scale(1);}
+#rouletteStart{margin-top:2px;padding:14px 44px;border:none;border-radius:999px;cursor:pointer;
+  background:linear-gradient(135deg,#3ab8f5,#63ccff);color:#fff;font-size:18px;font-weight:700;letter-spacing:.16em;
+  box-shadow:0 10px 28px rgba(99,204,255,.5);transition:transform .2s;animation:badgeBounce 1.2s ease-in-out infinite;}
+#rouletteStart:hover{transform:translateY(-2px);}
+#rouletteStart:active{transform:scale(.96);}
+#rouletteSkipBtn{display:none;margin-top:2px;padding:8px 22px;border:none;border-radius:999px;cursor:pointer;
+  background:rgba(255,255,255,.72);border:1.5px solid rgba(143,220,255,.4);color:#5e93ad;
+  font-size:13px;font-weight:700;letter-spacing:.08em;box-shadow:0 4px 14px rgba(111,205,255,.18);transition:transform .2s;}
+#rouletteSkipBtn:hover{transform:translateY(-1px);background:rgba(255,255,255,.92);}
+
+/* ===================== 新スタンプお披露目 ===================== */
+#newStampScreen{position:fixed;inset:0;z-index:160;display:none;align-items:center;justify-content:center;
+  background:rgba(210,238,255,.6);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:24px;}
+#newStampScreen.visible{display:flex;}
+#newStampBox{width:min(460px,94vw);max-height:88vh;overflow-y:auto;border-radius:28px;padding:28px 24px;
+  background:rgba(255,255,255,.95);border:1.5px solid rgba(143,220,255,.4);
+  box-shadow:0 30px 70px rgba(111,205,255,.26);display:flex;flex-direction:column;align-items:center;gap:8px;}
+#newStampTitle{font-size:20px;font-weight:700;color:#4d7790;letter-spacing:.08em;
+  animation:titlePulse 1.4s ease-in-out infinite;}
+#newStampSub{font-size:12px;color:#8ab0c4;letter-spacing:.04em;margin-bottom:8px;}
+#newStampGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:14px;width:100%;}
+.newStampCard{aspect-ratio:.85;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  background:linear-gradient(135deg,rgba(195,238,255,.6),rgba(143,220,255,.4));
+  border:1.5px solid rgba(99,204,255,.4);box-shadow:0 6px 18px rgba(99,204,255,.2);}
+.newStampQ{font-size:38px;font-weight:700;color:rgba(99,180,225,.8);animation:badgeBounce 1.5s ease-in-out infinite;}
+.newStampName{font-size:11px;font-weight:700;color:#4d7790;letter-spacing:.02em;text-align:center;padding:0 4px;}
+#newStampOk{margin-top:14px;padding:12px 44px;border:none;border-radius:999px;cursor:pointer;
+  background:linear-gradient(135deg,#3ab8f5,#63ccff);color:#fff;font-size:16px;font-weight:700;letter-spacing:.14em;
+  box-shadow:0 8px 22px rgba(99,204,255,.46);transition:transform .2s;}
+#newStampOk:hover{transform:translateY(-2px);}
 #rouletteScreen.reveal #wheelSvg{animation:wheelGlow 1.4s ease-in-out;}
 @keyframes wheelGlow{0%,100%{filter:drop-shadow(0 16px 40px rgba(99,204,255,.4))}
   50%{filter:drop-shadow(0 0 36px rgba(255,210,120,.95)) drop-shadow(0 16px 40px rgba(99,204,255,.6))}}
@@ -190,10 +220,12 @@ button,input{font:inherit;}
 .dexStars{position:absolute;top:4px;left:0;right:0;text-align:center;font-size:11px;
   color:#ffb24d;letter-spacing:1px;text-shadow:0 1px 2px rgba(255,160,40,.4);pointer-events:none;}
 .dexCell.locked .dexStars{color:rgba(150,180,200,.5);text-shadow:none;}
-.dexDate{position:absolute;bottom:3px;left:0;right:0;text-align:center;font-size:9px;
-  color:#7aa5bc;font-weight:700;pointer-events:none;}
-.dexName{position:absolute;bottom:3px;left:0;right:0;text-align:center;font-size:10px;
-  color:rgba(120,165,188,.7);font-weight:700;pointer-events:none;}
+.dexDate{position:absolute;bottom:14px;left:0;right:0;text-align:center;font-size:8px;
+  color:#8ab8cc;font-weight:700;pointer-events:none;}
+.dexName{position:absolute;bottom:3px;left:0;right:0;text-align:center;font-size:9.5px;
+  color:#5e93ad;font-weight:700;pointer-events:none;padding:0 3px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.dexCell.locked .dexName{color:rgba(120,165,188,.65);}
 .dexCell.got{position:relative;overflow:hidden;}
 .dexCell.got::after{content:"";position:absolute;top:-60%;left:-60%;width:60%;height:220%;
   background:linear-gradient(105deg,transparent,rgba(255,255,255,.75),transparent);
@@ -390,14 +422,13 @@ button,input{font:inherit;}
   box-shadow:0 4px 14px rgba(111,205,255,.10);}
 .historyBtn:hover{background:rgba(255,255,255,.98);transform:translateY(-1px);}
 .historyBtn:disabled{opacity:.28;cursor:default;transform:none;}
-#saveBtn{width:42px;height:42px;border:none;border-radius:999px;
-  background:rgba(255,255,255,.86);border:1.5px solid rgba(143,220,255,.42);
-  backdrop-filter:blur(10px);cursor:pointer;pointer-events:auto;
+#saveBtn{height:42px;padding:0 16px;gap:7px;border:none;border-radius:999px;
+  background:linear-gradient(135deg,#3ab8f5,#63ccff);cursor:pointer;pointer-events:auto;
   transition:background .2s,transform .2s,box-shadow .2s;
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 4px 14px rgba(111,205,255,.10);}
-#saveBtn:hover{background:rgba(255,255,255,.98);transform:translateY(-1px);}
-#saveBtn svg{width:20px;height:20px;}
+  display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:700;letter-spacing:.06em;
+  box-shadow:0 6px 18px rgba(99,204,255,.45);}
+#saveBtn:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(99,204,255,.58);}
+#saveBtn svg{width:18px;height:18px;}
 
 /* スタンプ後 保存ボタン点滅アニメーション */
 @keyframes savePulse{
@@ -424,14 +455,12 @@ button,input{font:inherit;}
   box-shadow:0 6px 18px rgba(111,205,255,.16);transition:.2s;display:flex;align-items:center;gap:6px;}
 #snsBtn:hover{transform:translateY(-1px);}
 
-/* 右下: いつでも開くボタン（選択画面のみ表示） */
-#forceOpenBtn{position:fixed;right:14px;bottom:58px;z-index:101;display:none;
-  padding:11px 20px;border:none;border-radius:999px;cursor:pointer;
-  background:rgba(255,255,255,.82);border:1.5px solid rgba(143,220,255,.50);
-  backdrop-filter:blur(12px);color:#5e93ad;font-size:14px;font-weight:700;letter-spacing:.06em;
-  box-shadow:0 8px 22px rgba(111,205,255,.28);transition:transform .2s,background .2s;}
-#forceOpenBtn:hover{transform:translateY(-2px);background:rgba(255,255,255,.96);}
-#forceOpenBtn:active{transform:translateY(0) scale(.97);}
+/* 右下: いつでも開くボタン（透明・見えないけど押せる。選択画面のみ） */
+#forceOpenBtn{position:fixed;right:6px;bottom:54px;z-index:101;display:none;
+  width:96px;height:54px;border:none;cursor:pointer;
+  background:transparent;color:transparent;box-shadow:none;font-size:0;
+  -webkit-tap-highlight-color:transparent;}
+#forceOpenBtn:hover,#forceOpenBtn:active{transform:none;background:transparent;}
 
 /* BGM BAR */
 #bgmBar{position:absolute;right:0;bottom:0;
@@ -631,9 +660,10 @@ button,input{font:inherit;}
             <button id="redoBtn" class="historyBtn" type="button" title="やり直す">↷</button>
             <button id="saveBtn" type="button" title="保存">
               <svg viewBox="0 0 20 20" fill="none">
-                <path d="M3 13v3a1 1 0 001 1h12a1 1 0 001-1v-3" stroke="#7ab8d4" stroke-width="1.8" stroke-linecap="round"/>
-                <path d="M10 3v9M7 9l3 3 3-3" stroke="#7ab8d4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M3 13v3a1 1 0 001 1h12a1 1 0 001-1v-3" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M10 3v9M7 9l3 3 3-3" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
+              <span>ほぞん</span>
             </button>
           </div>
         </div>
@@ -650,6 +680,16 @@ button,input{font:inherit;}
   </div>
 </div>
 
+<!-- ===================== 新スタンプお披露目 ===================== -->
+<div id="newStampScreen">
+  <div id="newStampBox">
+    <div id="newStampTitle">✨ あたらしいスタンプ ✨</div>
+    <div id="newStampSub">ルーレットで狙ってみてね！</div>
+    <div id="newStampGrid"></div>
+    <button id="newStampOk" type="button">OK</button>
+  </div>
+</div>
+
 <!-- ===================== ルーレット ===================== -->
 <div id="rouletteScreen">
   <div id="rouletteInner">
@@ -660,6 +700,8 @@ button,input{font:inherit;}
       <div id="wheelHub"></div>
     </div>
     <div id="rouletteResult"></div>
+    <button id="rouletteStart" type="button">スタート</button>
+    <button id="rouletteSkipBtn" type="button">スキップ ≫</button>
   </div>
 </div>
 
@@ -723,6 +765,7 @@ const LONG_MS=4000,SK_OV="radio_stamp_time_override";
 const DL_KEY="radio_dl_date",UP_KEY="radio_up_date",DONE_KEY="radio_done_dates";
 const RAND_CARD="card.png";
 const POOL=["stamp100.png","stamp101.png","stamp102.png","stamp103.png","stamp104.png"];
+const STAMP_NAMES=["スタンプA","スタンプB","スタンプC","スタンプD","スタンプE"]; // 仮の名前。好きに変えてOK（POOLと同じ並び）
 const CAROUSEL_GAP=12;
 
 /* タスク定義
@@ -781,6 +824,7 @@ let audioCtx=null;
 let savePulseTimer=null;
 let carouselOffset=0;
 let currentTask=null;
+let pendingNewStamps=null;
 
 /* =========================================================
    BGM（スマホ対応：複数イベントで確実にstart）
@@ -885,12 +929,24 @@ function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
 const STAMP_MAP_KEY="radio_stamps";
 const WEIGHTS=[1,1,1,1,1]; // POOLと同じ個数。数字が大きいほど出やすい（好きな割合に変えてOK）
 function weights(){return(WEIGHTS.length===POOL.length)?WEIGHTS:POOL.map(()=>1);}
+/* 一度出た（持ってる）スタンプは面積＝確率を半分にして、新しいのが出やすくする */
+function dynWeights(){const b=weights(),col=getCollected();return POOL.map((s,i)=>col.has(s)?b[i]*0.5:b[i]);}
+function stampName(src){const i=POOL.indexOf(src);return(i>=0&&STAMP_NAMES[i])?STAMP_NAMES[i]:"スタンプ";}
+/* 新スタンプお披露目用：見たスタンプを記録。初回は今あるPOOLを全部「既知」にして、後から追加された分だけ告知 */
+const SEEN_KEY="radio_seen_stamps";
+function getSeen(){try{const v=JSON.parse(localStorage.getItem(SEEN_KEY)||"null");return Array.isArray(v)?v:null;}catch(e){return null;}}
+function addSeen(srcs){const s=new Set(getSeen()||[]);srcs.forEach(x=>s.add(x));localStorage.setItem(SEEN_KEY,JSON.stringify([...s]));}
+function unseenStamps(){
+  const seen=getSeen();
+  if(seen===null){localStorage.setItem(SEEN_KEY,JSON.stringify(POOL.slice()));return[];}
+  return POOL.filter(s=>!seen.includes(s));
+}
 function getStampMap(){try{const v=JSON.parse(localStorage.getItem(STAMP_MAP_KEY)||"{}");return(v&&typeof v==="object")?v:{};}catch(e){return{};}}
 function saveStampMap(m){localStorage.setItem(STAMP_MAP_KEY,JSON.stringify(m));}
 function stampForDate(dk){const m=getStampMap();return m[dk]||null;}   /* その日のスタンプ（無ければnull） */
 function todayStamp(){return stampForDate(jstKey());}
 function pickStampIdx(){
-  const w=weights(),total=w.reduce((a,b)=>a+b,0);let r=Math.random()*total;
+  const w=dynWeights(),total=w.reduce((a,b)=>a+b,0);let r=Math.random()*total;
   for(let i=0;i<w.length;i++){r-=w[i];if(r<=0)return i;}
   return w.length-1;
 }
@@ -970,6 +1026,7 @@ function showSelect(){
   participationLabel.classList.remove("visible");
   forceOpenBtn.style.display="block";
   refreshHome();
+  checkNewStamps();
 }
 function hideSelect(){
   selectScreen.classList.add("hidden");
@@ -1195,7 +1252,11 @@ function animRing(){
   rAF=requestAnimationFrame(animRing);
 }
 function cancelPress(){pDown=false;pId=null;pAnim=false;pPt=null;if(pTimer){clearTimeout(pTimer);pTimer=null;}if(rAF){cancelAnimationFrame(rAF);rAF=null;}hideRing();hideGhost();}
-function startPress(cx,cy){if(!activeWin||!cardPath||!stampPath||!inCard(cx,cy))return;pPt=toRatio(cx,cy);showGhost(cx,cy);pStart=performance.now();pAnim=true;showRing(cx,cy);animRing();pTimer=setTimeout(()=>{pTimer=null;},LONG_MS);}
+function startPress(cx,cy){
+  if(!activeWin||!cardPath||!stampPath||!inCard(cx,cy))return;
+  if(stamps.length>=1){buzz();return;}   /* 1日1個まで。2回目はブブー。↶で戻せばまた押せる */
+  pPt=toRatio(cx,cy);showGhost(cx,cy);pStart=performance.now();pAnim=true;showRing(cx,cy);animRing();pTimer=setTimeout(()=>{pTimer=null;},LONG_MS);
+}
 function movePress(cx,cy){if(!pDown)return;if(!inCard(cx,cy)){cancelPress();return;}moveRing(cx,cy);pPt=toRatio(cx,cy);moveGhost(cx,cy);}
 
 async function loadImg(src){return new Promise((res,rej)=>{const i=new Image();i.crossOrigin="anonymous";i.onload=()=>res(i);i.onerror=rej;i.src=src;});}
@@ -1253,18 +1314,17 @@ function startRandomMode(){
   /* 朝ノルマ画面はスキップして、押したらすぐスタンプを押せる画面へ */
   hideTaskScreen();
   challengeScreen.classList.remove("visible");
-  /* 今日のスタンプ：決定済みならそれ、未決定ならルーレットで抽選 */
-  const s=todayStamp();
-  if(s){stampPath=s;ghostImg.src=s;}
-  else{
-    stampPath=null;                 /* 決まるまでは押せない */
-    const idx=pickStampIdx();
-    openRoulette(idx,picked=>{
-      assignTodayStamp(idx);
-      stampPath=picked;ghostImg.src=picked;
-      refreshTodayPreview();
-    });
-  }
+  /* 毎回ルーレットを回せる。ただし2回目以降は1回目と同じ結果（引き直し不可） */
+  const decided=todayStamp();
+  let idx;
+  if(decided){idx=POOL.indexOf(decided);if(idx<0)idx=pickStampIdx();}
+  else idx=pickStampIdx();
+  stampPath=null;
+  openRoulette(idx,picked=>{
+    if(!decided)assignTodayStamp(idx);   /* 初回だけ保存 */
+    stampPath=picked;ghostImg.src=picked;
+    refreshTodayPreview();
+  });
 }
 
 let _cardBusy=false;
@@ -1344,7 +1404,7 @@ pt.addEventListener("pointermove",e=>{if(!pDown||e.pointerId!==pId)return;movePr
 pt.addEventListener("pointerup",e=>{if(e.pointerId!==pId)return;cancelPress();});
 pt.addEventListener("pointercancel",e=>{if(e.pointerId!==pId)return;cancelPress();});
 pt.addEventListener("pointerleave",()=>{if(pDown)cancelPress();});
-imgFrame.addEventListener("pointermove",e=>{if(pDown||!activeWin||!cardPath)return;if(!inCard(e.clientX,e.clientY)){hideGhost();return;}showGhost(e.clientX,e.clientY);});
+imgFrame.addEventListener("pointermove",e=>{if(pDown||!activeWin||!cardPath||stamps.length>=1){hideGhost();return;}if(!inCard(e.clientX,e.clientY)){hideGhost();return;}showGhost(e.clientX,e.clientY);});
 imgFrame.addEventListener("pointerleave",()=>{if(!pDown)hideGhost();});
 
 /* =========================================================
@@ -1381,6 +1441,30 @@ setInterval(()=>{
 },1000);
 
 /* =========================================================
+   新スタンプお披露目（？＋名前、見たら以後出ない）
+   ========================================================= */
+function showNewStampScreen(list){
+  const grid=$("newStampGrid");grid.innerHTML="";
+  list.forEach(src=>{
+    const c=document.createElement("div");c.className="newStampCard";
+    const q=document.createElement("div");q.className="newStampQ";q.textContent="？";c.appendChild(q);
+    const n=document.createElement("div");n.className="newStampName";n.textContent=stampName(src);c.appendChild(n);
+    grid.appendChild(c);
+  });
+  pendingNewStamps=list;
+  $("newStampScreen").classList.add("visible");
+}
+function checkNewStamps(){
+  const ns=unseenStamps();
+  if(ns.length)showNewStampScreen(ns);
+}
+$("newStampOk").addEventListener("click",()=>{
+  playClick();
+  if(pendingNewStamps){addSeen(pendingNewStamps);pendingNewStamps=null;}
+  $("newStampScreen").classList.remove("visible");
+});
+
+/* =========================================================
    ルーレット：その日のスタンプを抽選で決める演出
    ========================================================= */
 const SVGNS="http://www.w3.org/2000/svg";
@@ -1390,8 +1474,21 @@ function arcPath(cx,cy,r,a0,a1){
   return`M${cx} ${cy} L${x0} ${y0} A${r} ${r} 0 ${lg} 1 ${x1} ${y1} Z`;
 }
 let wheelSegs=[];
+/* セグメントの向きに沿わせて文字を配置。下半分は自動で180度反転＝逆さま防止 */
+function addSegText(g,cx,cy,radius,mid,txt,fontSize,fill,id){
+  const t=document.createElementNS(SVGNS,"text");
+  let rot=mid,n=((mid%360)+360)%360;
+  if(n>90&&n<270)rot=mid+180;            // 下半分は反転して読みやすく
+  t.setAttribute("x",cx);t.setAttribute("y",cy-radius);
+  t.setAttribute("text-anchor","middle");t.setAttribute("dominant-baseline","central");
+  t.setAttribute("font-size",fontSize);t.setAttribute("font-weight","700");t.setAttribute("fill",fill);
+  t.setAttribute("transform",`rotate(${rot} ${cx} ${cy})`);
+  if(id)t.setAttribute("id",id);
+  t.textContent=txt;g.appendChild(t);
+  return t;
+}
 function buildWheel(winnerIdx){
-  const w=weights(),total=w.reduce((a,b)=>a+b,0);
+  const w=dynWeights(),total=w.reduce((a,b)=>a+b,0);
   const g=$("wheelG");g.innerHTML="";wheelSegs=[];
   const cx=100,cy=100,r=96;let acc=0;
   const fills=["rgba(143,220,255,.55)","rgba(99,204,255,.8)","rgba(180,235,255,.62)","rgba(120,210,250,.72)","rgba(160,228,255,.5)","rgba(110,196,245,.66)"];
@@ -1403,44 +1500,62 @@ function buildWheel(winnerIdx){
     p.setAttribute("fill",fills[i%fills.length]);
     p.setAttribute("stroke","rgba(255,255,255,.75)");p.setAttribute("stroke-width","1.5");
     g.appendChild(p);
-    const[qx,qy]=polTop(cx,cy,r*0.62,mid);
+    /* 当選スタンプ画像（reveal用、画像は傾けない） */
     if(i===winnerIdx){
+      const[ix,iy]=polTop(cx,cy,r*0.56,mid);
       const im=document.createElementNS(SVGNS,"image");
       im.setAttribute("href",src);im.setAttributeNS("http://www.w3.org/1999/xlink","href",src);
-      const sz=r*0.44;im.setAttribute("x",qx-sz/2);im.setAttribute("y",qy-sz/2);
+      const sz=r*0.4;im.setAttribute("x",ix-sz/2);im.setAttribute("y",iy-sz/2);
       im.setAttribute("width",sz);im.setAttribute("height",sz);im.setAttribute("id","wheelWinImg");
       im.style.opacity="0";g.appendChild(im);
     }
-    const t=document.createElementNS(SVGNS,"text");
-    t.setAttribute("x",qx);t.setAttribute("y",qy);t.setAttribute("text-anchor","middle");
-    t.setAttribute("dominant-baseline","central");t.setAttribute("font-size","26");
-    t.setAttribute("font-weight","700");t.setAttribute("fill","rgba(255,255,255,.95)");
-    t.textContent="？";if(i===winnerIdx)t.setAttribute("id","wheelWinQ");
-    g.appendChild(t);
+    /* ？（中心寄り）と 名前（外側）を、セグメントの向きに合わせて配置 */
+    addSegText(g,cx,cy,r*0.56,mid,"？",24,"rgba(255,255,255,.95)",i===winnerIdx?"wheelWinQ":null);
+    addSegText(g,cx,cy,r*0.84,mid,stampName(src),8.5,"rgba(60,120,150,.92)",null);
   });
 }
+let rouletteSkip=null;
 function openRoulette(winnerIdx,onDone){
+  rouletteSkip=null;
   buildWheel(winnerIdx);
   const rs=$("rouletteScreen");rs.classList.remove("reveal");rs.classList.add("visible");
+  $("rouletteTitle").textContent="今日のスタンプは…？";
   const rr=$("rouletteResult");rr.textContent="";rr.classList.remove("show");
-  const g=$("wheelG");
-  g.style.transition="none";g.style.transform="rotate(0deg)";void g.offsetWidth;
-  const winner=wheelSegs[winnerIdx],finalRot=360*5-winner.mid;  /* winnerを上(ポインタ)へ */
+  const g=$("wheelG");g.style.transition="none";g.style.transform="rotate(0deg)";
+  $("rouletteSkipBtn").style.display="none";
+  const sb=$("rouletteStart");sb.style.display="";sb.disabled=false;
+  sb.onclick=(e)=>{e.stopPropagation();sb.style.display="none";spinWheel(winnerIdx,onDone);};
+}
+function spinWheel(winnerIdx,onDone){
+  const g=$("wheelG"),rs=$("rouletteScreen"),rr=$("rouletteResult");
+  void g.offsetWidth;
+  const winner=wheelSegs[winnerIdx],finalRot=360*6-winner.mid;
   requestAnimationFrame(()=>{
-    g.style.transition="transform 4.4s cubic-bezier(.12,.78,.2,1)";
+    g.style.transition="transform 5.4s cubic-bezier(.1,.74,.16,1)";
     g.style.transform=`rotate(${finalRot}deg)`;
   });
-  setTimeout(()=>{
+  $("rouletteSkipBtn").style.display="";
+  let done=false,revealTimer=null;
+  const finish=()=>{
+    if(done)return;done=true;rouletteSkip=null;
+    if(revealTimer){clearTimeout(revealTimer);revealTimer=null;}
+    $("rouletteSkipBtn").style.display="none";
+    g.style.transition="none";g.style.transform=`rotate(${finalRot}deg)`;   /* スキップ時は即最終位置へ */
     const wq=$("wheelWinQ"),wi=$("wheelWinImg");
-    if(wq){wq.style.transition="opacity .35s";wq.style.opacity="0";}   /* はてなが外れる */
-    if(wi){wi.style.transition="opacity .55s";wi.style.opacity="1";}
+    if(wq){wq.style.transition="opacity .25s";wq.style.opacity="0";}
+    if(wi){wi.style.transition="opacity .3s";wi.style.opacity="1";}
     rs.classList.add("reveal");
-    rr.textContent="✨ GET！";rr.classList.add("show");
+    rr.textContent=`✨ ${stampName(POOL[winnerIdx])} GET！`;rr.classList.add("show");
     stampSnd.currentTime=0;stampSnd.play().catch(()=>{});
     if(typeof onDone==="function")onDone(POOL[winnerIdx]);
-    setTimeout(()=>{rs.classList.remove("visible","reveal");},1700);
-  },4650);
+    setTimeout(()=>{rs.classList.remove("visible","reveal");},1400);
+  };
+  rouletteSkip=finish;
+  revealTimer=setTimeout(finish,5650);
 }
+/* クリック or スキップボタンで演出を飛ばす（回転中のみ有効） */
+$("rouletteSkipBtn").addEventListener("click",()=>{if(rouletteSkip)rouletteSkip();});
+$("rouletteScreen").addEventListener("click",()=>{if(rouletteSkip)rouletteSkip();});
 
 /* =========================================================
    習慣化：連続記録（ストリーク）・スタンプ図鑑・今日の達成
@@ -1524,8 +1639,8 @@ function buildDex(){
       if(fd){const d=document.createElement("div");d.className="dexDate";d.textContent=fd.slice(5).replace("-","/");cell.appendChild(d);}
     }else{
       const q=document.createElement("div");q.className="dexQ";q.textContent="？";cell.appendChild(q);
-      const n=document.createElement("div");n.className="dexName";n.textContent="???";cell.appendChild(n);
     }
+    const nm=document.createElement("div");nm.className="dexName";nm.textContent=stampName(src);cell.appendChild(nm);
     dexGrid.appendChild(cell);
   });
   const pct=POOL.length?Math.round(col.size/POOL.length*100):0;

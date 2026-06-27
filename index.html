@@ -1474,15 +1474,14 @@ function arcPath(cx,cy,r,a0,a1){
   return`M${cx} ${cy} L${x0} ${y0} A${r} ${r} 0 ${lg} 1 ${x1} ${y1} Z`;
 }
 let wheelSegs=[];
-/* セグメントの向きに沿わせて文字を配置。下半分は自動で180度反転＝逆さま防止 */
+/* 文字をセグメント基準で配置。回転して当選が上で止まったとき水平＆正立になる。
+   dominant-baselineはスマホで効かないことがあるので dy で縦中央寄せ */
 function addSegText(g,cx,cy,radius,mid,txt,fontSize,fill,id){
   const t=document.createElementNS(SVGNS,"text");
-  let rot=mid,n=((mid%360)+360)%360;
-  if(n>90&&n<270)rot=mid+180;            // 下半分は反転して読みやすく
   t.setAttribute("x",cx);t.setAttribute("y",cy-radius);
-  t.setAttribute("text-anchor","middle");t.setAttribute("dominant-baseline","central");
+  t.setAttribute("text-anchor","middle");t.setAttribute("dy","0.35em");
   t.setAttribute("font-size",fontSize);t.setAttribute("font-weight","700");t.setAttribute("fill",fill);
-  t.setAttribute("transform",`rotate(${rot} ${cx} ${cy})`);
+  t.setAttribute("transform",`rotate(${mid} ${cx} ${cy})`);
   if(id)t.setAttribute("id",id);
   t.textContent=txt;g.appendChild(t);
   return t;
@@ -1500,18 +1499,19 @@ function buildWheel(winnerIdx){
     p.setAttribute("fill",fills[i%fills.length]);
     p.setAttribute("stroke","rgba(255,255,255,.75)");p.setAttribute("stroke-width","1.5");
     g.appendChild(p);
-    /* 当選スタンプ画像（reveal用、画像は傾けない） */
+    /* 当選スタンプ画像（？と同じ位置・同じ回転基準＝上で止まったとき正立） */
     if(i===winnerIdx){
-      const[ix,iy]=polTop(cx,cy,r*0.56,mid);
+      const sz=r*0.4;
       const im=document.createElementNS(SVGNS,"image");
       im.setAttribute("href",src);im.setAttributeNS("http://www.w3.org/1999/xlink","href",src);
-      const sz=r*0.4;im.setAttribute("x",ix-sz/2);im.setAttribute("y",iy-sz/2);
-      im.setAttribute("width",sz);im.setAttribute("height",sz);im.setAttribute("id","wheelWinImg");
-      im.style.opacity="0";g.appendChild(im);
+      im.setAttribute("x",cx-sz/2);im.setAttribute("y",(cy-r*0.5)-sz/2);
+      im.setAttribute("width",sz);im.setAttribute("height",sz);
+      im.setAttribute("transform",`rotate(${mid} ${cx} ${cy})`);
+      im.setAttribute("id","wheelWinImg");im.style.opacity="0";g.appendChild(im);
     }
-    /* ？（中心寄り）と 名前（外側）を、セグメントの向きに合わせて配置 */
-    addSegText(g,cx,cy,r*0.56,mid,"？",24,"rgba(255,255,255,.95)",i===winnerIdx?"wheelWinQ":null);
-    addSegText(g,cx,cy,r*0.84,mid,stampName(src),8.5,"rgba(60,120,150,.92)",null);
+    /* ？（中心寄り）と 名前（その外）を扇の中におさめる */
+    addSegText(g,cx,cy,r*0.5,mid,"？",22,"rgba(255,255,255,.95)",i===winnerIdx?"wheelWinQ":null);
+    addSegText(g,cx,cy,r*0.74,mid,stampName(src),8.5,"rgba(60,120,150,.92)",null);
   });
 }
 let rouletteSkip=null;

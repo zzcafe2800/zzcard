@@ -354,30 +354,40 @@ button,input{font:inherit;}
 
 /* Download button */
 #getCardWrap{position:relative;}
-#getCardBtn{width:56px;height:56px;border-radius:50%;border:none;outline:none;cursor:pointer;
-  background:linear-gradient(135deg,#4dc8ff,#63ccff,#8fdcff);
+#getCardBtn{height:46px;padding:0 16px;gap:7px;border-radius:999px;border:none;outline:none;cursor:pointer;
+  background:linear-gradient(135deg,#4dc8ff,#63ccff,#8fdcff);color:#fff;font-size:13px;font-weight:700;letter-spacing:.04em;
   display:flex;align-items:center;justify-content:center;
   box-shadow:0 6px 22px rgba(99,204,255,.50),0 0 0 2.5px rgba(255,255,255,.7);
   transition:background .3s,transform .2s,box-shadow .2s;}
-#getCardBtn:hover{transform:translateY(-2px) scale(1.12);}
+#getCardBtn:hover{transform:translateY(-2px) scale(1.05);}
 #getCardBtn.used{background:linear-gradient(135deg,#b0bec5,#c4cdd2,#d0d8dc);
   box-shadow:0 4px 14px rgba(0,0,0,.10),0 0 0 2.5px rgba(255,255,255,.7);}
-#getCardBtn svg{width:24px;height:24px;}
+#getCardBtn span{white-space:nowrap;}
+#getCardBtn svg{width:20px;height:20px;flex:0 0 auto;}
+#dlBubble{position:absolute;top:54px;right:0;z-index:16;width:128px;
+  background:rgba(255,255,255,.97);border:1.5px solid rgba(143,220,255,.42);border-radius:16px;padding:8px;
+  box-shadow:0 10px 26px rgba(111,205,255,.28);display:flex;flex-direction:column;align-items:center;gap:5px;
+  animation:badgeBounce 1.8s ease-in-out infinite;}
+#dlBubble::before{content:"";position:absolute;top:-7px;right:26px;
+  border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:7px solid rgba(255,255,255,.97);}
+#dlBubbleImg{width:100%;height:70px;object-fit:contain;border-radius:9px;background:rgba(143,220,255,.12);}
+#dlBubble span{font-size:10px;color:#7aa5bc;font-weight:700;text-align:center;letter-spacing:.02em;}
 #newBadge{position:absolute;top:-7px;right:-8px;background:linear-gradient(135deg,#ff9ed0,#ff6faf);color:#fff;
   font-size:10px;font-weight:700;padding:3px 9px;border-radius:999px;letter-spacing:.04em;
   white-space:nowrap;pointer-events:none;box-shadow:0 3px 12px rgba(255,120,180,.55);
   animation:badgeBounce 1.1s ease-in-out infinite;}
-#getCardBtn.hidden~#newBadge{display:none!important;}
+#getCardBtn.hidden~#newBadge,#getCardBtn.hidden~#dlBubble{display:none!important;}
 
 /* Upload button */
-#uploadArea{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  background:#8fdcff;border:2.5px solid rgba(255,255,255,.6);cursor:pointer;
+#uploadArea{height:46px;padding:0 16px;gap:7px;border-radius:999px;display:flex;align-items:center;justify-content:center;
+  background:#8fdcff;border:2.5px solid rgba(255,255,255,.6);cursor:pointer;color:#fff;font-size:13px;font-weight:700;letter-spacing:.04em;
   transition:background .3s,transform .2s,box-shadow .2s;
   box-shadow:0 10px 28px rgba(111,205,255,.34);position:relative;}
-#uploadArea:hover{transform:translateY(-2px) scale(1.08);}
+#uploadArea:hover{transform:translateY(-2px) scale(1.04);}
 #uploadArea.used{background:#a8c4cc;}
 #uploadArea input{display:none;}
-#uploadArea svg{width:30px;height:30px;}
+#uploadArea span{white-space:nowrap;}
+#uploadArea svg{width:22px;height:22px;flex:0 0 auto;}
 
 /* STAGE */
 #stageWrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
@@ -490,11 +500,10 @@ button,input{font:inherit;}
   .randomTodayLabel{right:20px;top:144px;bottom:auto;}
 }
 @media(max-width:780px){
-  #selectTitle{font-size:20px;}#uploadArea{width:56px;height:56px;}
+  #selectTitle{font-size:20px;}
   #stageWrap{padding:90px 14px 58px;}#timeGate{width:calc(100vw - 28px);}
   #bottomLeftBar{font-size:12px;left:16px;bottom:52px;}
   #snsBtn{font-size:12px;padding:8px 14px;}
-  #getCardBtn{width:48px;height:48px;}
 }
 </style>
 </head>
@@ -616,8 +625,13 @@ button,input{font:inherit;}
           <path d="M4 17v2a1 1 0 001 1h14a1 1 0 001-1v-2" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
           <path d="M12 4v10M8 10l4 4 4-4" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
+        <span>カードをDL</span>
       </button>
       <div id="newBadge">新規</div>
+      <div id="dlBubble">
+        <img id="dlBubbleImg" src="card.png" alt="">
+        <span>これがDLされる画像だよ</span>
+      </div>
     </div>
     <!-- アップロードボタン -->
     <label id="uploadArea" for="imageInput" title="カードを入れてね">
@@ -626,6 +640,7 @@ button,input{font:inherit;}
         <path d="M16 22v-9M12 17l4-4 4 4" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         <circle cx="24" cy="10" r="1.5" fill="white" opacity=".7"/>
       </svg>
+      <span>マイカード読込</span>
       <input id="imageInput" type="file" accept="image/*"/>
     </label>
   </div>
@@ -817,10 +832,11 @@ const dexBtn=$("todexBtn"),dexPop=$("dexPopup"),dexCloseBtn=$("dexClose"),dexGri
 let mode=null,cardPath=null,stampPath=null;
 let activeWin=false,uploaded=null,stamps=[],redo=[];
 let pDown=false,pId=null,pAnim=false,pStart=0,pPt=null,pTimer=null,rAF=null;
-let ovOpen=localStorage.getItem(SK_OV)==="true";
+let ovOpen=false;
 let bgmVol=0.10,bgmDrag=false,bgmMuted=false,bgmStarted=false;
 let todIsNight=false;
 let audioCtx=null;
+let tickTimers=[];
 let savePulseTimer=null;
 let carouselOffset=0;
 let currentTask=null;
@@ -840,21 +856,59 @@ document.addEventListener("touchstart",startBGM,{once:true,passive:true});
 document.addEventListener("click",startBGM,{once:true,passive:true});
 
 function playClick(){clickSnd.currentTime=0;clickSnd.play().catch(()=>{});}
-/* 時間外などの拒否音「ブブー」。ファイル不要でその場で生成 */
+/* Web Audioで効果音を生成（ファイル不要） */
+function ensureCtx(){
+  if(!audioCtx){try{audioCtx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){return null;}}
+  if(audioCtx.state==="suspended")audioCtx.resume().catch(()=>{});
+  return audioCtx;
+}
+/* 時間外などの拒否音「ブブー」 */
 function buzz(){
-  try{
-    audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
-    const now=audioCtx.currentTime;
-    [0,0.17].forEach(t=>{
-      const o=audioCtx.createOscillator(),g=audioCtx.createGain();
-      o.type="square";o.frequency.value=150;
-      g.gain.setValueAtTime(0.0001,now+t);
-      g.gain.exponentialRampToValueAtTime(0.20,now+t+0.012);
-      g.gain.exponentialRampToValueAtTime(0.0001,now+t+0.14);
-      o.connect(g);g.connect(audioCtx.destination);
-      o.start(now+t);o.stop(now+t+0.16);
-    });
-  }catch(e){}
+  const ctx=ensureCtx();if(!ctx)return;
+  const now=ctx.currentTime;
+  [0,0.17].forEach(t=>{
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    o.type="square";o.frequency.value=150;
+    g.gain.setValueAtTime(0.0001,now+t);
+    g.gain.exponentialRampToValueAtTime(0.20,now+t+0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001,now+t+0.14);
+    o.connect(g);g.connect(ctx.destination);
+    o.start(now+t);o.stop(now+t+0.16);
+  });
+}
+/* ルーレットが回る「カチ」音 */
+function rouletteTick(){
+  const ctx=ensureCtx();if(!ctx)return;
+  const o=ctx.createOscillator(),g=ctx.createGain(),t=ctx.currentTime;
+  o.type="square";o.frequency.value=880;
+  g.gain.setValueAtTime(0.06,t);
+  g.gain.exponentialRampToValueAtTime(0.0001,t+0.03);
+  o.connect(g);g.connect(ctx.destination);
+  o.start(t);o.stop(t+0.04);
+}
+/* 回転中、減速に合わせてカチ音の間隔を広げながら鳴らす */
+function startSpinSound(duration){
+  clearSpinSound();
+  let t=0,iv=0.05;
+  while(t<duration-0.05){
+    tickTimers.push(setTimeout(rouletteTick,t*1000));
+    iv=Math.min(0.42,iv*1.09);t+=iv;
+  }
+}
+function clearSpinSound(){tickTimers.forEach(clearTimeout);tickTimers=[];}
+/* 当たり音（ド・ミ・ソ・ドの上昇ファンファーレ） */
+function winSound(){
+  const ctx=ensureCtx();if(!ctx)return;
+  const t=ctx.currentTime,notes=[523.25,659.25,783.99,1046.5];
+  notes.forEach((f,i)=>{
+    const o=ctx.createOscillator(),g=ctx.createGain(),st=t+i*0.09;
+    o.type="triangle";o.frequency.value=f;
+    g.gain.setValueAtTime(0.0001,st);
+    g.gain.exponentialRampToValueAtTime(0.18,st+0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001,st+0.32);
+    o.connect(g);g.connect(ctx.destination);
+    o.start(st);o.stop(st+0.34);
+  });
 }
 function setBGM(v){
   bgmVol=Math.max(0,Math.min(1,v));
@@ -1024,6 +1078,7 @@ function showSelect(){
   taskScreen.classList.remove("visible");
   challengeScreen.classList.remove("visible");
   participationLabel.classList.remove("visible");
+  ovOpen=false;   /* 選択画面に戻ったら時間制限を元に戻す */
   forceOpenBtn.style.display="block";
   refreshHome();
   checkNewStamps();
@@ -1412,7 +1467,7 @@ imgFrame.addEventListener("pointerleave",()=>{if(!pDown)hideGhost();});
    ========================================================= */
 forceOpenBtn.addEventListener("click",()=>{
   playClick();
-  ovOpen=true;localStorage.setItem(SK_OV,"true");
+  ovOpen=true;   /* この回だけ開く（保存しない） */
   startRandomMode();
 });
 
@@ -1533,11 +1588,13 @@ function spinWheel(winnerIdx,onDone){
   requestAnimationFrame(()=>{
     g.style.transition="transform 5.4s cubic-bezier(.1,.74,.16,1)";
     g.style.transform=`rotate(${finalRot}deg)`;
+    startSpinSound(5.4);
   });
   $("rouletteSkipBtn").style.display="";
   let done=false,revealTimer=null;
   const finish=()=>{
     if(done)return;done=true;rouletteSkip=null;
+    clearSpinSound();
     if(revealTimer){clearTimeout(revealTimer);revealTimer=null;}
     $("rouletteSkipBtn").style.display="none";
     g.style.transition="none";g.style.transform=`rotate(${finalRot}deg)`;   /* スキップ時は即最終位置へ */
@@ -1546,7 +1603,7 @@ function spinWheel(winnerIdx,onDone){
     if(wi){wi.style.transition="opacity .3s";wi.style.opacity="1";}
     rs.classList.add("reveal");
     rr.textContent=`✨ ${stampName(POOL[winnerIdx])} GET！`;rr.classList.add("show");
-    stampSnd.currentTime=0;stampSnd.play().catch(()=>{});
+    winSound();
     if(typeof onDone==="function")onDone(POOL[winnerIdx]);
     setTimeout(()=>{rs.classList.remove("visible","reveal");},1400);
   };
@@ -1668,6 +1725,8 @@ function toast(txt){
    初期化
    ========================================================= */
 if(!POOL.length)throw new Error("STAMP_POOL empty");
+localStorage.removeItem(SK_OV);   /* 過去に保存された永続解除を消す */
+(()=>{const b=$("dlBubbleImg");if(b)b.onerror=()=>{b.style.display="none";};})();
 $("gateHours").textContent=`朝 ${fmtHM(JST_OH,JST_OM)}〜${fmtHM(JST_CH,JST_CM)}`;
 checkButtonDates();
 updateCounts();

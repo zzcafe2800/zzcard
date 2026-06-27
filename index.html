@@ -352,7 +352,28 @@ button,input{font:inherit;}
 /* Top-right bar: 朝夜 + download + upload */
 #uploadWrap{position:absolute;right:20px;top:18px;z-index:14;display:flex;align-items:center;gap:10px;}
 
-/* Download button */
+/* 右上: カードメニューを開くボタン */
+#cardMenuBtn{height:44px;padding:0 16px;gap:7px;border:none;border-radius:999px;cursor:pointer;
+  background:rgba(255,255,255,.82);border:1.5px solid rgba(143,220,255,.5);backdrop-filter:blur(12px);
+  color:#5e93ad;font-size:13px;font-weight:700;letter-spacing:.04em;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 18px rgba(111,205,255,.22);transition:transform .2s,background .2s;}
+#cardMenuBtn:hover{transform:translateY(-1px);background:rgba(255,255,255,.96);}
+#cardMenuBtn svg{width:20px;height:20px;flex:0 0 auto;}
+
+/* カードメニュー画面 */
+#cardMenuScreen{position:fixed;inset:0;z-index:170;display:none;align-items:center;justify-content:center;
+  background:rgba(210,238,255,.5);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:24px;}
+#cardMenuScreen.visible{display:flex;}
+#cardMenuBox{width:min(380px,94vw);border-radius:28px;padding:24px;
+  background:rgba(255,255,255,.96);border:1.5px solid rgba(143,220,255,.4);
+  box-shadow:0 30px 70px rgba(111,205,255,.26);display:flex;flex-direction:column;align-items:center;gap:14px;}
+#cardMenuHeader{display:flex;align-items:center;justify-content:space-between;width:100%;}
+#cardMenuTitle{font-size:18px;font-weight:700;color:#5c93ad;letter-spacing:.1em;}
+#cardMenuClose{width:34px;height:34px;border:none;border-radius:999px;background:rgba(143,220,255,.14);
+  color:#5c93ad;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+#cardMenuRow{position:relative;width:100%;}
+#cardMenuRow #getCardBtn,#cardMenuBox #uploadArea{width:100%;}
 #getCardWrap{position:relative;}
 #getCardBtn{height:46px;padding:0 16px;gap:7px;border-radius:999px;border:none;outline:none;cursor:pointer;
   background:linear-gradient(135deg,#4dc8ff,#63ccff,#8fdcff);color:#fff;font-size:13px;font-weight:700;letter-spacing:.04em;
@@ -364,19 +385,15 @@ button,input{font:inherit;}
   box-shadow:0 4px 14px rgba(0,0,0,.10),0 0 0 2.5px rgba(255,255,255,.7);}
 #getCardBtn span{white-space:nowrap;}
 #getCardBtn svg{width:20px;height:20px;flex:0 0 auto;}
-#dlBubble{position:absolute;top:54px;right:0;z-index:16;width:128px;
-  background:rgba(255,255,255,.97);border:1.5px solid rgba(143,220,255,.42);border-radius:16px;padding:8px;
-  box-shadow:0 10px 26px rgba(111,205,255,.28);display:flex;flex-direction:column;align-items:center;gap:5px;
-  animation:badgeBounce 1.8s ease-in-out infinite;}
-#dlBubble::before{content:"";position:absolute;top:-7px;right:26px;
-  border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:7px solid rgba(255,255,255,.97);}
-#dlBubbleImg{width:100%;height:70px;object-fit:contain;border-radius:9px;background:rgba(143,220,255,.12);}
-#dlBubble span{font-size:10px;color:#7aa5bc;font-weight:700;text-align:center;letter-spacing:.02em;}
+#dlBubble{position:relative;width:160px;
+  background:rgba(245,251,255,.9);border:1.5px solid rgba(143,220,255,.42);border-radius:16px;padding:10px;
+  box-shadow:0 6px 18px rgba(111,205,255,.16);display:flex;flex-direction:column;align-items:center;gap:6px;}
+#dlBubbleImg{width:100%;height:88px;object-fit:contain;border-radius:9px;background:rgba(143,220,255,.12);}
+#dlBubble span{font-size:11px;color:#7aa5bc;font-weight:700;text-align:center;letter-spacing:.02em;}
 #newBadge{position:absolute;top:-7px;right:-8px;background:linear-gradient(135deg,#ff9ed0,#ff6faf);color:#fff;
   font-size:10px;font-weight:700;padding:3px 9px;border-radius:999px;letter-spacing:.04em;
   white-space:nowrap;pointer-events:none;box-shadow:0 3px 12px rgba(255,120,180,.55);
   animation:badgeBounce 1.1s ease-in-out infinite;}
-#getCardBtn.hidden~#newBadge,#getCardBtn.hidden~#dlBubble{display:none!important;}
 
 /* Upload button */
 #uploadArea{height:46px;padding:0 16px;gap:7px;border-radius:999px;display:flex;align-items:center;justify-content:center;
@@ -616,33 +633,15 @@ button,input{font:inherit;}
 <div id="mainScreen">
   <button id="backToSelect" class="glass" type="button">もどる</button>
 
-  <!-- 右上: ダウンロード + アップロード -->
+  <!-- 右上: カードメニューを開くボタン1つ -->
   <div id="uploadWrap">
-    <!-- ダウンロードボタン -->
-    <div id="getCardWrap">
-      <button id="getCardBtn" class="hidden" type="button" title="カードをダウンロード">
-        <svg viewBox="0 0 24 24" fill="none">
-          <path d="M4 17v2a1 1 0 001 1h14a1 1 0 001-1v-2" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
-          <path d="M12 4v10M8 10l4 4 4-4" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <span>カードをDL</span>
-      </button>
-      <div id="newBadge">新規</div>
-      <div id="dlBubble">
-        <img id="dlBubbleImg" src="card.png" alt="">
-        <span>これがDLされる画像だよ</span>
-      </div>
-    </div>
-    <!-- アップロードボタン -->
-    <label id="uploadArea" for="imageInput" title="カードを入れてね">
-      <svg viewBox="0 0 32 32" fill="none">
-        <rect x="5" y="8" width="22" height="16" rx="3" stroke="white" stroke-width="2" fill="none"/>
-        <path d="M16 22v-9M12 17l4-4 4 4" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="24" cy="10" r="1.5" fill="white" opacity=".7"/>
+    <button id="cardMenuBtn" type="button" title="カード">
+      <svg viewBox="0 0 24 24" fill="none">
+        <rect x="3" y="6" width="18" height="13" rx="2.5" stroke="#5e93ad" stroke-width="2"/>
+        <path d="M3 10.5h18" stroke="#5e93ad" stroke-width="2"/>
       </svg>
-      <span>マイカード読込</span>
-      <input id="imageInput" type="file" accept="image/*"/>
-    </label>
+      <span>カード</span>
+    </button>
   </div>
 
   <!-- 左下: SNS -->
@@ -692,6 +691,39 @@ button,input{font:inherit;}
         </svg>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- ===================== カードメニュー ===================== -->
+<div id="cardMenuScreen">
+  <div id="cardMenuBox">
+    <div id="cardMenuHeader">
+      <div id="cardMenuTitle">カード</div>
+      <button id="cardMenuClose" type="button">×</button>
+    </div>
+    <div id="cardMenuRow">
+      <button id="getCardBtn" type="button" title="カードをダウンロード">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M4 17v2a1 1 0 001 1h14a1 1 0 001-1v-2" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+          <path d="M12 4v10M8 10l4 4 4-4" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>白紙カードをDL</span>
+      </button>
+      <div id="newBadge">新規</div>
+    </div>
+    <div id="dlBubble">
+      <img id="dlBubbleImg" src="card.png" alt="">
+      <span>これがDLされる画像だよ</span>
+    </div>
+    <label id="uploadArea" for="imageInput" title="カードを入れてね">
+      <svg viewBox="0 0 32 32" fill="none">
+        <rect x="5" y="8" width="22" height="16" rx="3" stroke="white" stroke-width="2" fill="none"/>
+        <path d="M16 22v-9M12 17l4-4 4 4" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="24" cy="10" r="1.5" fill="white" opacity=".7"/>
+      </svg>
+      <span>マイカード読込</span>
+      <input id="imageInput" type="file" accept="image/*"/>
+    </label>
   </div>
 </div>
 
@@ -1080,6 +1112,8 @@ function showSelect(){
   participationLabel.classList.remove("visible");
   ovOpen=false;   /* 選択画面に戻ったら時間制限を元に戻す */
   forceOpenBtn.style.display="block";
+  $("uploadWrap").style.display="none";
+  closeCardMenu();
   refreshHome();
   checkNewStamps();
 }
@@ -1087,11 +1121,12 @@ function hideSelect(){
   selectScreen.classList.add("hidden");
   backBtn.style.display="block";
   forceOpenBtn.style.display="none";
+  $("uploadWrap").style.display="flex";
 }
 
 function updateTop(){
   const st=jstStatus();activeWin=st.open;
-  if(!mode){timeGate.classList.remove("visible");dlBtn.classList.add("hidden");return;}
+  if(!mode){timeGate.classList.remove("visible");return;}
   if(st.open)timeGate.classList.remove("visible");
   else{
     timeGate.classList.add("visible");
@@ -1099,7 +1134,6 @@ function updateTop(){
     progBar.style.width=`${clamp(st.prog,0,100)}%`;
   }
   stageWrap.classList.toggle("closed",!st.open);
-  dlBtn.classList.remove("hidden");
 }
 
 /* =========================================================
@@ -1442,9 +1476,18 @@ imgInput.addEventListener("change",e=>{
     localStorage.setItem(UP_KEY,jstKey());
     uploadArea.classList.add("used");
     uploadArea.classList.remove("hl");
+    closeCardMenu();
   };
   r.readAsDataURL(f);
 });
+
+/* カードメニュー開閉 */
+const cardMenuScreen=$("cardMenuScreen");
+function openCardMenu(){playClick();cardMenuScreen.classList.add("visible");}
+function closeCardMenu(){cardMenuScreen.classList.remove("visible");}
+$("cardMenuBtn").addEventListener("click",openCardMenu);
+$("cardMenuClose").addEventListener("click",()=>{playClick();closeCardMenu();});
+cardMenuScreen.addEventListener("click",e=>{if(e.target===cardMenuScreen)closeCardMenu();});
 
 saveBtn.addEventListener("click",async()=>{if(!activeWin)return;playClick();await savePNG();});
 undoBtn.addEventListener("click",()=>{if(!activeWin)return;playClick();undoS();});

@@ -158,6 +158,55 @@ button,input{font:inherit;}
 .homeStat:nth-child(2){animation-delay:.08s;}
 .homeStat:nth-child(3){animation-delay:.16s;}
 
+/* ===================== 今日のスタンプ ？ ===================== */
+#todayQ{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:54px;font-weight:700;color:rgba(99,180,225,.6);pointer-events:none;
+  animation:badgeBounce 1.6s ease-in-out infinite;}
+
+/* ===================== ルーレット ===================== */
+#rouletteScreen{position:fixed;inset:0;z-index:150;display:none;align-items:center;justify-content:center;
+  background:rgba(210,238,255,.62);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);}
+#rouletteScreen.visible{display:flex;}
+#rouletteInner{display:flex;flex-direction:column;align-items:center;gap:18px;padding:24px;}
+#rouletteTitle{font-size:20px;font-weight:700;color:#4d7790;letter-spacing:.12em;
+  text-shadow:0 1px 10px rgba(255,255,255,.7);animation:titlePulse 1.4s ease-in-out infinite;}
+@keyframes titlePulse{0%,100%{transform:scale(1);opacity:.85}50%{transform:scale(1.06);opacity:1}}
+#wheelWrap{position:relative;width:min(78vw,360px);height:min(78vw,360px);}
+#wheelSvg{width:100%;height:100%;filter:drop-shadow(0 16px 40px rgba(99,204,255,.4));
+  border-radius:50%;background:rgba(255,255,255,.5);}
+#wheelG{transform-origin:50% 50%;}
+#wheelPointer{position:absolute;top:-6px;left:50%;transform:translateX(-50%);z-index:3;
+  width:0;height:0;border-left:15px solid transparent;border-right:15px solid transparent;
+  border-top:26px solid #ff6faf;filter:drop-shadow(0 3px 5px rgba(255,120,180,.5));}
+#wheelHub{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2;
+  width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.92);
+  border:3px solid rgba(99,204,255,.6);box-shadow:0 4px 14px rgba(99,204,255,.4);}
+#rouletteResult{font-size:26px;font-weight:700;color:#3ab8ee;letter-spacing:.1em;min-height:34px;
+  opacity:0;transform:translateY(8px) scale(.8);transition:opacity .4s,transform .4s;
+  text-shadow:0 2px 12px rgba(143,220,255,.8);}
+#rouletteResult.show{opacity:1;transform:translateY(0) scale(1);}
+#rouletteScreen.reveal #wheelSvg{animation:wheelGlow 1.4s ease-in-out;}
+@keyframes wheelGlow{0%,100%{filter:drop-shadow(0 16px 40px rgba(99,204,255,.4))}
+  50%{filter:drop-shadow(0 0 36px rgba(255,210,120,.95)) drop-shadow(0 16px 40px rgba(99,204,255,.6))}}
+
+/* ===================== 図鑑（ワクワク強化） ===================== */
+.dexStars{position:absolute;top:4px;left:0;right:0;text-align:center;font-size:11px;
+  color:#ffb24d;letter-spacing:1px;text-shadow:0 1px 2px rgba(255,160,40,.4);pointer-events:none;}
+.dexCell.locked .dexStars{color:rgba(150,180,200,.5);text-shadow:none;}
+.dexDate{position:absolute;bottom:3px;left:0;right:0;text-align:center;font-size:9px;
+  color:#7aa5bc;font-weight:700;pointer-events:none;}
+.dexName{position:absolute;bottom:3px;left:0;right:0;text-align:center;font-size:10px;
+  color:rgba(120,165,188,.7);font-weight:700;pointer-events:none;}
+.dexCell.got{position:relative;overflow:hidden;}
+.dexCell.got::after{content:"";position:absolute;top:-60%;left:-60%;width:60%;height:220%;
+  background:linear-gradient(105deg,transparent,rgba(255,255,255,.75),transparent);
+  transform:rotate(18deg);animation:dexShine 3.2s ease-in-out infinite;pointer-events:none;}
+@keyframes dexShine{0%,72%{left:-60%}88%,100%{left:160%}}
+.dexCell.rare{border-color:rgba(255,190,90,.7);
+  background:linear-gradient(135deg,rgba(255,236,200,.6),rgba(255,210,150,.45));
+  box-shadow:0 6px 20px rgba(255,180,80,.32);}
+.dexCell.rare .dexStars{color:#ff9a3d;}
+
 /* ===================== TASK SCREEN ===================== */
 #taskScreen{position:absolute;inset:0;z-index:50;display:none;flex-direction:column;
   align-items:center;justify-content:center;
@@ -380,7 +429,7 @@ button,input{font:inherit;}
 
 /* Secret zone */
 #secretTapZone{position:absolute;left:0;bottom:44px;width:110px;height:110px;z-index:90;background:transparent;}
-#secretTapZoneR{position:fixed;right:0;bottom:50px;width:96px;height:96px;z-index:300;background:transparent;}
+#secretTapZoneR{position:fixed;right:0;bottom:46px;width:132px;height:132px;z-index:300;background:transparent;}
 #passwordPopup{position:absolute;left:20px;bottom:112px;z-index:95;width:120px;padding:10px;
   border-radius:16px;display:none;background:rgba(255,255,255,.84);
   border:1px solid rgba(143,220,255,.24);backdrop-filter:blur(14px);}
@@ -460,7 +509,7 @@ button,input{font:inherit;}
       <button class="modeCard" id="randomModeBtn" type="button">
         <div class="modePreview"><img src="randm.png" alt=""></div>
         <div class="modeLabel">スタンプラリー</div>
-        <div class="randomTodayCircle" id="todayCircle"><img id="todayStampPreview" src="" alt=""></div>
+        <div class="randomTodayCircle" id="todayCircle"><img id="todayStampPreview" src="" alt=""><div id="todayQ">？</div></div>
         <div class="randomTodayLabel" id="todayLabel">今日のスタンプ</div>
         <div class="modeCount" id="randomCountText">スタンプ総数 0</div>
       </button>
@@ -605,6 +654,19 @@ button,input{font:inherit;}
         </svg>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- ===================== ルーレット ===================== -->
+<div id="rouletteScreen">
+  <div id="rouletteInner">
+    <div id="rouletteTitle">今日のスタンプは…？</div>
+    <div id="wheelWrap">
+      <div id="wheelPointer"></div>
+      <svg id="wheelSvg" viewBox="0 0 200 200"><g id="wheelG"></g></svg>
+      <div id="wheelHub"></div>
+    </div>
+    <div id="rouletteResult"></div>
   </div>
 </div>
 
@@ -830,14 +892,30 @@ function fmtRem(ms){
 function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
 
 /* =========================================================
-   スタンプ プール
+   スタンプ：各ユーザーごとに「ルーレット」で割り当て（みんな違う）。
+   その日の結果は radio_stamps に保存して固定。WEIGHTSで出やすさ＝割合を調整できる。
    ========================================================= */
-function seedIdx(seed,len){const x=Math.sin(seed*9999)*10000;return Math.floor((x-Math.floor(x))*len)%len;}
-function stampForDate(dk){return POOL[seedIdx(+dk.replaceAll("-",""),POOL.length)];}
+const STAMP_MAP_KEY="radio_stamps";
+const WEIGHTS=[1,1,1,1,1]; // POOLと同じ個数。数字が大きいほど出やすい（好きな割合に変えてOK）
+function weights(){return(WEIGHTS.length===POOL.length)?WEIGHTS:POOL.map(()=>1);}
+function getStampMap(){try{const v=JSON.parse(localStorage.getItem(STAMP_MAP_KEY)||"{}");return(v&&typeof v==="object")?v:{};}catch(e){return{};}}
+function saveStampMap(m){localStorage.setItem(STAMP_MAP_KEY,JSON.stringify(m));}
+function stampForDate(dk){const m=getStampMap();return m[dk]||null;}   /* その日のスタンプ（無ければnull） */
 function todayStamp(){return stampForDate(jstKey());}
+function pickStampIdx(){
+  const w=weights(),total=w.reduce((a,b)=>a+b,0);let r=Math.random()*total;
+  for(let i=0;i<w.length;i++){r-=w[i];if(r<=0)return i;}
+  return w.length-1;
+}
+function assignTodayStamp(idx){const m=getStampMap();m[jstKey()]=POOL[idx];saveStampMap(m);return POOL[idx];}
+function refreshTodayPreview(){
+  const s=todayStamp(),q=$("todayQ");
+  if(s){todayPrv.style.display="";todayPrv.src=s;if(q)q.style.display="none";}
+  else{todayPrv.style.display="none";if(q)q.style.display="";}
+}
 function updateCounts(){
   randCnt.textContent=`スタンプ総数 ${POOL.length}`;
-  todayPrv.src=todayStamp();
+  refreshTodayPreview();
 }
 
 /* =========================================================
@@ -855,6 +933,7 @@ function buildCal(){
   const p=jstParts(),y=p.Y,mo=p.M;
   calMonth.textContent=`${y}年${mo}月`;
   const dim=new Date(y,mo,0).getDate(),fd=new Date(y,mo-1,1).getDay();
+  const doneSet=new Set(getDoneDates());
   calGrid.innerHTML="";
   ["日","月","火","水","木","金","土"].forEach(d=>{
     const e=document.createElement("div");e.className="calDow";e.textContent=d;calGrid.appendChild(e);
@@ -865,8 +944,12 @@ function buildCal(){
     const el=document.createElement("div");
     el.className="calDay"+(it?" today":"")+(dow===0?" calDaySun":dow===6?" calDaySat":"");
     const nd=document.createElement("div");nd.className="calDayNum";nd.textContent=d;el.appendChild(nd);
-    const sd=document.createElement("div");sd.className="calDayStamp";
-    const img=document.createElement("img");img.src=stampForDate(dk);sd.appendChild(img);el.appendChild(sd);
+    /* 自分が達成した日にだけ、その日のスタンプを表示（未来や未達成日は空） */
+    const s=doneSet.has(dk)?stampForDate(dk):null;
+    if(s){
+      const sd=document.createElement("div");sd.className="calDayStamp";
+      const img=document.createElement("img");img.src=s;sd.appendChild(img);el.appendChild(sd);
+    }
     calGrid.appendChild(el);
   }
 }
@@ -1123,7 +1206,7 @@ function animRing(){
   rAF=requestAnimationFrame(animRing);
 }
 function cancelPress(){pDown=false;pId=null;pAnim=false;pPt=null;if(pTimer){clearTimeout(pTimer);pTimer=null;}if(rAF){cancelAnimationFrame(rAF);rAF=null;}hideRing();hideGhost();}
-function startPress(cx,cy){if(!activeWin||!cardPath||!inCard(cx,cy))return;pPt=toRatio(cx,cy);showGhost(cx,cy);pStart=performance.now();pAnim=true;showRing(cx,cy);animRing();pTimer=setTimeout(()=>{pTimer=null;},LONG_MS);}
+function startPress(cx,cy){if(!activeWin||!cardPath||!stampPath||!inCard(cx,cy))return;pPt=toRatio(cx,cy);showGhost(cx,cy);pStart=performance.now();pAnim=true;showRing(cx,cy);animRing();pTimer=setTimeout(()=>{pTimer=null;},LONG_MS);}
 function movePress(cx,cy){if(!pDown)return;if(!inCard(cx,cy)){cancelPress();return;}moveRing(cx,cy);pPt=toRatio(cx,cy);moveGhost(cx,cy);}
 
 async function loadImg(src){return new Promise((res,rej)=>{const i=new Image();i.crossOrigin="anonymous";i.onload=()=>res(i);i.onerror=rej;i.src=src;});}
@@ -1172,8 +1255,6 @@ function dlCard(src,name){const a=document.createElement("a");a.href=src;a.downl
    ========================================================= */
 function startRandomMode(){
   mode="random";
-  stampPath=todayStamp();
-  ghostImg.src=stampPath;
   hideSelect();
   clearStamps();
   uploaded=null;
@@ -1183,6 +1264,18 @@ function startRandomMode(){
   /* 朝ノルマ画面はスキップして、押したらすぐスタンプを押せる画面へ */
   hideTaskScreen();
   challengeScreen.classList.remove("visible");
+  /* 今日のスタンプ：決定済みならそれ、未決定ならルーレットで抽選 */
+  const s=todayStamp();
+  if(s){stampPath=s;ghostImg.src=s;}
+  else{
+    stampPath=null;                 /* 決まるまでは押せない */
+    const idx=pickStampIdx();
+    openRoulette(idx,picked=>{
+      assignTodayStamp(idx);
+      stampPath=picked;ghostImg.src=picked;
+      refreshTodayPreview();
+    });
+  }
 }
 
 let _cardBusy=false;
@@ -1305,9 +1398,10 @@ const secZoneR=$("secretTapZoneR");
 let rTaps=0,rLast=0;
 secZoneR.addEventListener("pointerup",()=>{
   const n=Date.now();
-  rTaps=(n-rLast<600)?rTaps+1:1;rLast=n;
-  if(rTaps>=7){
+  rTaps=(n-rLast<800)?rTaps+1:1;rLast=n;
+  if(rTaps>=5){
     rTaps=0;ovOpen=true;localStorage.setItem(SK_OV,"true");
+    refreshHomeGate();
     if(!selectScreen.classList.contains("hidden"))startRandomMode();
     else updateTop();
   }
@@ -1326,7 +1420,7 @@ window.addEventListener("resize",()=>{
   if(taskScreen.classList.contains("visible"))layoutCarousel();
 });
 setInterval(()=>{
-  todayPrv.src=todayStamp();
+  refreshTodayPreview();
   if(mode)updateTop();
   else{
     const st=jstStatus();
@@ -1337,6 +1431,68 @@ setInterval(()=>{
     refreshHomeGate();
   }
 },1000);
+
+/* =========================================================
+   ルーレット：その日のスタンプを抽選で決める演出
+   ========================================================= */
+const SVGNS="http://www.w3.org/2000/svg";
+function polTop(cx,cy,r,degTop){const a=(degTop-90)*Math.PI/180;return[cx+r*Math.cos(a),cy+r*Math.sin(a)];}
+function arcPath(cx,cy,r,a0,a1){
+  const[x0,y0]=polTop(cx,cy,r,a0),[x1,y1]=polTop(cx,cy,r,a1),lg=(a1-a0)>180?1:0;
+  return`M${cx} ${cy} L${x0} ${y0} A${r} ${r} 0 ${lg} 1 ${x1} ${y1} Z`;
+}
+let wheelSegs=[];
+function buildWheel(winnerIdx){
+  const w=weights(),total=w.reduce((a,b)=>a+b,0);
+  const g=$("wheelG");g.innerHTML="";wheelSegs=[];
+  const cx=100,cy=100,r=96;let acc=0;
+  const fills=["rgba(143,220,255,.55)","rgba(99,204,255,.8)","rgba(180,235,255,.62)","rgba(120,210,250,.72)","rgba(160,228,255,.5)","rgba(110,196,245,.66)"];
+  POOL.forEach((src,i)=>{
+    const frac=w[i]/total,a0=acc*360,a1=(acc+frac)*360,mid=(a0+a1)/2;acc+=frac;
+    wheelSegs.push({i,src,mid});
+    const p=document.createElementNS(SVGNS,"path");
+    p.setAttribute("d",arcPath(cx,cy,r,a0,a1));
+    p.setAttribute("fill",fills[i%fills.length]);
+    p.setAttribute("stroke","rgba(255,255,255,.75)");p.setAttribute("stroke-width","1.5");
+    g.appendChild(p);
+    const[qx,qy]=polTop(cx,cy,r*0.62,mid);
+    if(i===winnerIdx){
+      const im=document.createElementNS(SVGNS,"image");
+      im.setAttribute("href",src);im.setAttributeNS("http://www.w3.org/1999/xlink","href",src);
+      const sz=r*0.44;im.setAttribute("x",qx-sz/2);im.setAttribute("y",qy-sz/2);
+      im.setAttribute("width",sz);im.setAttribute("height",sz);im.setAttribute("id","wheelWinImg");
+      im.style.opacity="0";g.appendChild(im);
+    }
+    const t=document.createElementNS(SVGNS,"text");
+    t.setAttribute("x",qx);t.setAttribute("y",qy);t.setAttribute("text-anchor","middle");
+    t.setAttribute("dominant-baseline","central");t.setAttribute("font-size","26");
+    t.setAttribute("font-weight","700");t.setAttribute("fill","rgba(255,255,255,.95)");
+    t.textContent="？";if(i===winnerIdx)t.setAttribute("id","wheelWinQ");
+    g.appendChild(t);
+  });
+}
+function openRoulette(winnerIdx,onDone){
+  buildWheel(winnerIdx);
+  const rs=$("rouletteScreen");rs.classList.remove("reveal");rs.classList.add("visible");
+  const rr=$("rouletteResult");rr.textContent="";rr.classList.remove("show");
+  const g=$("wheelG");
+  g.style.transition="none";g.style.transform="rotate(0deg)";void g.offsetWidth;
+  const winner=wheelSegs[winnerIdx],finalRot=360*5-winner.mid;  /* winnerを上(ポインタ)へ */
+  requestAnimationFrame(()=>{
+    g.style.transition="transform 4.4s cubic-bezier(.12,.78,.2,1)";
+    g.style.transform=`rotate(${finalRot}deg)`;
+  });
+  setTimeout(()=>{
+    const wq=$("wheelWinQ"),wi=$("wheelWinImg");
+    if(wq){wq.style.transition="opacity .35s";wq.style.opacity="0";}   /* はてなが外れる */
+    if(wi){wi.style.transition="opacity .55s";wi.style.opacity="1";}
+    rs.classList.add("reveal");
+    rr.textContent="✨ GET！";rr.classList.add("show");
+    stampSnd.currentTime=0;stampSnd.play().catch(()=>{});
+    if(typeof onDone==="function")onDone(POOL[winnerIdx]);
+    setTimeout(()=>{rs.classList.remove("visible","reveal");},1700);
+  },4650);
+}
 
 /* =========================================================
    習慣化：連続記録（ストリーク）・スタンプ図鑑・今日の達成
@@ -1368,7 +1524,7 @@ function calcStreak(){
   for(const k of sorted){run=(prev&&addDays(prev,1)===k)?run+1:1;if(run>best)best=run;prev=k;}
   return{current:cur,best:Math.max(best,cur)};
 }
-function getCollected(){return new Set(getDoneDates().map(stampForDate));}
+function getCollected(){return new Set(getDoneDates().map(stampForDate).filter(Boolean));}
 function todayDone(){return getDoneDates().includes(jstKey());}
 
 function refreshHomeGate(){
@@ -1401,19 +1557,34 @@ function refreshHome(){
   $("todayStat").classList.toggle("done",done);
 }
 
+function stampFirstDate(src){
+  const m=getStampMap(),done=new Set(getDoneDates());
+  const days=Object.keys(m).filter(d=>m[d]===src&&done.has(d)).sort();
+  return days[0]||null;
+}
 function buildDex(){
-  const col=getCollected();
+  const col=getCollected(),w=weights(),total=w.reduce((a,b)=>a+b,0);
   dexGrid.innerHTML="";
-  POOL.forEach(src=>{
-    const got=col.has(src);
-    const cell=document.createElement("div");cell.className="dexCell"+(got?" got":" locked");
+  POOL.forEach((src,i)=>{
+    const got=col.has(src),p=w[i]/total,stars=p<0.12?3:p<0.22?2:1;
+    const cell=document.createElement("div");
+    cell.className="dexCell"+(got?" got":" locked")+(got&&stars>=3?" rare":"");
+    const sc=document.createElement("div");sc.className="dexStars";sc.textContent="★".repeat(stars);cell.appendChild(sc);
     const img=document.createElement("img");img.src=src;img.alt="";cell.appendChild(img);
-    if(!got){const q=document.createElement("div");q.className="dexQ";q.textContent="？";cell.appendChild(q);}
+    if(got){
+      const fd=stampFirstDate(src);
+      if(fd){const d=document.createElement("div");d.className="dexDate";d.textContent=fd.slice(5).replace("-","/");cell.appendChild(d);}
+    }else{
+      const q=document.createElement("div");q.className="dexQ";q.textContent="？";cell.appendChild(q);
+      const n=document.createElement("div");n.className="dexName";n.textContent="???";cell.appendChild(n);
+    }
     dexGrid.appendChild(cell);
   });
   const pct=POOL.length?Math.round(col.size/POOL.length*100):0;
   $("dexProgressBar").style.width=`${pct}%`;
-  $("dexProgressText").textContent=`${col.size} / ${POOL.length} コンプ（${pct}%）`;
+  $("dexProgressText").textContent=col.size>=POOL.length
+    ?`★ コンプリート！ ${col.size}/${POOL.length} ★`
+    :`${col.size} / ${POOL.length} コンプ（${pct}%）`;
 }
 dexBtn.addEventListener("click",e=>{e.stopPropagation();playClick();buildDex();dexPop.classList.add("visible");});
 dexCloseBtn.addEventListener("click",()=>{playClick();dexPop.classList.remove("visible");});

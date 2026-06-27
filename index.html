@@ -30,9 +30,6 @@ button,input{font:inherit;}
 #selectInner{width:min(1180px,100%);display:flex;flex-direction:column;gap:22px;}
 #selectTitle{text-align:center;color:#5c93ad;font-size:28px;letter-spacing:.1em;font-weight:700;}
 #selectWrap{display:flex;justify-content:center;}
-/* 長押し解除ゾーン（選択画面左下、非表示） */
-#selectLongPress{position:absolute;left:0;bottom:0;width:80px;height:80px;z-index:200;
-  background:transparent;touch-action:none;cursor:default;}
 
 .modeCard{position:relative;width:min(560px,100%);min-height:470px;border-radius:30px;overflow:hidden;cursor:pointer;
   background:rgba(255,255,255,.58);border:1px solid rgba(143,220,255,.28);
@@ -427,15 +424,14 @@ button,input{font:inherit;}
   box-shadow:0 6px 18px rgba(111,205,255,.16);transition:.2s;display:flex;align-items:center;gap:6px;}
 #snsBtn:hover{transform:translateY(-1px);}
 
-/* Secret zone */
-#secretTapZone{position:absolute;left:0;bottom:44px;width:110px;height:110px;z-index:90;background:transparent;}
-#secretTapZoneR{position:fixed;right:0;bottom:46px;width:132px;height:132px;z-index:300;background:transparent;}
-#passwordPopup{position:absolute;left:20px;bottom:112px;z-index:95;width:120px;padding:10px;
-  border-radius:16px;display:none;background:rgba(255,255,255,.84);
-  border:1px solid rgba(143,220,255,.24);backdrop-filter:blur(14px);}
-#passwordInput{width:100%;border:none;outline:none;border-radius:12px;padding:10px 12px;
-  text-align:center;background:rgba(255,255,255,.56);color:#5c90a8;font-size:18px;letter-spacing:.20em;}
-#passwordInput::placeholder{color:transparent;}
+/* 右下: いつでも開くボタン（選択画面のみ表示） */
+#forceOpenBtn{position:fixed;right:14px;bottom:58px;z-index:101;display:none;
+  padding:11px 20px;border:none;border-radius:999px;cursor:pointer;
+  background:rgba(255,255,255,.82);border:1.5px solid rgba(143,220,255,.50);
+  backdrop-filter:blur(12px);color:#5e93ad;font-size:14px;font-weight:700;letter-spacing:.06em;
+  box-shadow:0 8px 22px rgba(111,205,255,.28);transition:transform .2s,background .2s;}
+#forceOpenBtn:hover{transform:translateY(-2px);background:rgba(255,255,255,.96);}
+#forceOpenBtn:active{transform:translateY(0) scale(.97);}
 
 /* BGM BAR */
 #bgmBar{position:absolute;right:0;bottom:0;
@@ -469,7 +465,6 @@ button,input{font:inherit;}
   #stageWrap{padding:90px 14px 58px;}#timeGate{width:calc(100vw - 28px);}
   #bottomLeftBar{font-size:12px;left:16px;bottom:52px;}
   #snsBtn{font-size:12px;padding:8px 14px;}
-  #secretTapZone{bottom:46px;}
   #getCardBtn{width:48px;height:48px;}
 }
 </style>
@@ -515,8 +510,6 @@ button,input{font:inherit;}
       </button>
     </div>
   </div>
-  <!-- 10秒長押し解除ゾーン -->
-  <div id="selectLongPress"></div>
 </div>
 
 <!-- ===================== TASK SCREEN ===================== -->
@@ -677,11 +670,7 @@ button,input{font:inherit;}
   <span id="bgmPct">10%</span>
 </div>
 
-<div id="secretTapZone"></div>
-<div id="secretTapZoneR"></div>
-<div id="passwordPopup">
-  <input id="passwordInput" type="password" inputmode="numeric" autocomplete="off" maxlength="4" placeholder="">
-</div>
+<button id="forceOpenBtn" type="button">いつでも開く</button>
 </div>
 
 <audio id="bgmAudio" src="bgm11.mp3" loop preload="auto" playsinline x-webkit-airplay="deny"></audio>
@@ -730,7 +719,7 @@ const firebaseConfig={
    定数・設定
    ========================================================= */
 const JST_OH=6,JST_OM=0,JST_CH=8,JST_CM=0;
-const LONG_MS=4000,OV_PW="1111",SK_OV="radio_stamp_time_override";
+const LONG_MS=4000,SK_OV="radio_stamp_time_override";
 const DL_KEY="radio_dl_date",UP_KEY="radio_up_date",DONE_KEY="radio_done_dates";
 const RAND_CARD="card.png";
 const POOL=["stamp100.png","stamp101.png","stamp102.png","stamp103.png","stamp104.png"];
@@ -771,13 +760,12 @@ const backBtn=$("backToSelect"),dlBtn=$("getCardBtn"),uploadArea=$("uploadArea")
 const stageWrap=$("stageWrap"),stage=$("stage"),emptyHint=$("emptyHint"),imgFrame=$("imageFrame");
 const cardImg=$("cardImage"),stampLayer=$("stampLayer"),ghost=$("ghostStamp"),ghostImg=$("ghostStampImg");
 const undoBtn=$("undoBtn"),redoBtn=$("redoBtn"),saveBtn=$("saveBtn"),pressRing=$("pressRing"),ringProg=document.querySelector(".ring-progress");
-const secZone=$("secretTapZone"),pwPopup=$("passwordPopup"),pwInput=$("passwordInput");
 const snsBtn=$("snsBtn");
+const forceOpenBtn=$("forceOpenBtn");
 const bgmTrack=$("bgmTrack"),bgmFill=$("bgmFill"),bgmThumb=$("bgmThumb"),bgmPct=$("bgmPct"),bgmIcon=$("bgmIcon");
 const participationLabel=$("participationLabel");
 const taskScreen=$("taskScreen"),taskTrack=$("taskTrack"),taskPrevBtn=$("taskPrevBtn"),taskNextBtn=$("taskNextBtn");
 const challengeScreen=$("challengeScreen");
-const selectLP=$("selectLongPress");
 const dexBtn=$("todexBtn"),dexPop=$("dexPopup"),dexCloseBtn=$("dexClose"),dexGrid=$("dexGrid");
 
 /* =========================================================
@@ -793,7 +781,6 @@ let audioCtx=null;
 let savePulseTimer=null;
 let carouselOffset=0;
 let currentTask=null;
-let lpTimer=null;
 
 /* =========================================================
    BGM（スマホ対応：複数イベントで確実にstart）
@@ -981,11 +968,13 @@ function showSelect(){
   taskScreen.classList.remove("visible");
   challengeScreen.classList.remove("visible");
   participationLabel.classList.remove("visible");
+  forceOpenBtn.style.display="block";
   refreshHome();
 }
 function hideSelect(){
   selectScreen.classList.add("hidden");
   backBtn.style.display="block";
+  forceOpenBtn.style.display="none";
 }
 
 function updateTop(){
@@ -1359,59 +1348,18 @@ imgFrame.addEventListener("pointermove",e=>{if(pDown||!activeWin||!cardPath)retu
 imgFrame.addEventListener("pointerleave",()=>{if(!pDown)hideGhost();});
 
 /* =========================================================
-   選択画面 左下 10秒長押しで時間制限解除
+   いつでも開くボタン（時間外でも開く）
    ========================================================= */
-selectLP.addEventListener("pointerdown",e=>{
-  selectLP.setPointerCapture(e.pointerId);
-  if(lpTimer)clearTimeout(lpTimer);
-  lpTimer=setTimeout(()=>{
-    lpTimer=null;
-    ovOpen=true;
-    localStorage.setItem(SK_OV,"true");
-    /* 微妙なフィードバック */
-    selectLP.style.transition="background .3s";
-    selectLP.style.background="rgba(143,220,255,.18)";
-    setTimeout(()=>{selectLP.style.background="transparent";},500);
-  },10000);
-});
-["pointerup","pointercancel"].forEach(ev=>{
-  selectLP.addEventListener(ev,()=>{if(lpTimer){clearTimeout(lpTimer);lpTimer=null;}});
-});
-
-/* =========================================================
-   Secret password zone (admin)
-   ========================================================= */
-function hidePW(){pwPopup.style.display="none";pwInput.value="";}
-function showPW(){pwPopup.style.display="block";pwInput.value="";pwInput.focus();}
-secZone.addEventListener("dblclick",e=>{e.preventDefault();pwPopup.style.display==="block"?hidePW():showPW();});
-let lastT=0;
-secZone.addEventListener("touchend",e=>{
-  const n=Date.now();
-  if(n-lastT<350){e.preventDefault();pwPopup.style.display==="block"?hidePW():showPW();}
-  lastT=n;
-},{passive:false});
-pwInput.addEventListener("input",()=>{
-  if(pwInput.value===OV_PW){ovOpen=true;localStorage.setItem(SK_OV,"true");hidePW();startRandomMode();}
-});
-
-const secZoneR=$("secretTapZoneR");
-let rTaps=0,rLast=0;
-secZoneR.addEventListener("pointerup",()=>{
-  const n=Date.now();
-  rTaps=(n-rLast<800)?rTaps+1:1;rLast=n;
-  if(rTaps>=5){
-    rTaps=0;ovOpen=true;localStorage.setItem(SK_OV,"true");
-    refreshHomeGate();
-    if(!selectScreen.classList.contains("hidden"))startRandomMode();
-    else updateTop();
-  }
+forceOpenBtn.addEventListener("click",()=>{
+  playClick();
+  ovOpen=true;localStorage.setItem(SK_OV,"true");
+  startRandomMode();
 });
 
 /* =========================================================
    Global pointer / resize
    ========================================================= */
 document.addEventListener("pointerdown",e=>{
-  if(!pwPopup.contains(e.target)&&!secZone.contains(e.target))hidePW();
   if(!calPop.contains(e.target)&&!todayCircle.contains(e.target)&&!todayLabel.contains(e.target))
     calPop.classList.remove("visible");
 });

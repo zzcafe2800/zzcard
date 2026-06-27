@@ -93,8 +93,6 @@ button,input{font:inherit;}
   background:linear-gradient(135deg,#ffa6c8,#ff86b4);border:2.5px solid rgba(255,255,255,.8);
   box-shadow:0 12px 26px rgba(255,140,180,.42);transition:transform .22s;}
 .modeCard:hover .modeLabel{transform:translateX(-50%) translateY(-2px);}
-.modeCount{position:absolute;left:12px;bottom:12px;z-index:5;padding:4px 11px;border-radius:999px;
-  color:#6f9fb6;font-size:10px;background:rgba(255,255,255,.8);box-shadow:0 3px 9px rgba(120,180,220,.2);white-space:nowrap;}
 .randomTodayCircle{position:absolute;top:-16px;right:-12px;width:86px;height:86px;border-radius:50%;
   background:rgba(255,255,255,.96);border:3px solid #fff;padding:11px;z-index:6;overflow:hidden;cursor:pointer;
   display:flex;align-items:center;justify-content:center;box-shadow:0 10px 22px rgba(120,180,220,.32);
@@ -114,10 +112,8 @@ button,input{font:inherit;}
 .homeStatBtn{cursor:pointer;}
 .homeStatBtn:hover{transform:translateY(-2px);box-shadow:0 11px 24px rgba(120,180,220,.26);}
 .homeStatIcon{font-size:19px;line-height:1;}
-.homeStatText{display:flex;flex-direction:column;line-height:1.06;text-align:left;}
 .homeStatMain{font-size:15px;font-weight:700;color:#4d7790;letter-spacing:.02em;}
 .homeStatMain .homeStatUnit{font-size:11px;font-weight:700;margin-left:1px;color:#6c9fb6;}
-.homeStatSub{font-size:10px;color:#9ab8c8;letter-spacing:.02em;margin-top:1px;}
 #streakStat .homeStatMain{color:#ef8a4d;}
 #todayStat.done{background:rgba(186,238,210,.72);border-color:rgba(150,220,185,.85);}
 #todayStat.done .homeStatMain{color:#34a672;}
@@ -403,6 +399,7 @@ button,input{font:inherit;}
 .topIconBtn svg{width:22px;height:22px;}
 .topIconBtn.used{opacity:.45;}
 .topIconBtn input{display:none;}
+#imageInput{display:none;}
 
 /* カード準備画面 */
 #cardMenuScreen{position:fixed;inset:0;z-index:170;display:none;align-items:center;justify-content:center;
@@ -433,17 +430,11 @@ button,input{font:inherit;}
   box-shadow:0 6px 18px rgba(99,204,255,.42),0 0 0 2px rgba(255,255,255,.7);}
 #getCardBtn:hover{transform:translateY(-2px) scale(1.03);}
 #getCardBtn.used{background:linear-gradient(135deg,#b0bec5,#c4cdd2,#d0d8dc);box-shadow:0 4px 12px rgba(0,0,0,.1),0 0 0 2px rgba(255,255,255,.7);}
-#uploadArea{background:linear-gradient(135deg,#ffa6c8,#ff86b4);border:2px solid rgba(255,255,255,.7);
-  box-shadow:0 8px 20px rgba(255,140,180,.36);}
+#uploadArea{background:#ff9ec2;box-shadow:0 4px 12px rgba(255,150,185,.26);}
 #uploadArea:hover{transform:translateY(-2px) scale(1.03);}
-#uploadArea.used{background:linear-gradient(135deg,#c9b6c2,#c4b2bc);}
+#uploadArea.used{background:#c9bcc4;box-shadow:0 3px 9px rgba(0,0,0,.08);}
 #getCardBtn span,#uploadArea span{white-space:nowrap;}
 #getCardBtn svg,#uploadArea svg{width:20px;height:20px;flex:0 0 auto;}
-
-#cardGoBtn{width:100%;height:50px;margin-top:2px;border:none;border-radius:999px;cursor:pointer;
-  background:linear-gradient(135deg,#7fd8b0,#5ec79a);color:#fff;font-size:15px;font-weight:700;letter-spacing:.06em;
-  box-shadow:0 10px 24px rgba(94,199,154,.4);transition:transform .2s;}
-#cardGoBtn:hover{transform:translateY(-2px);}
 
 /* STAGE */
 #stageWrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
@@ -587,7 +578,7 @@ button,input{font:inherit;}
   <div id="selectInner">
     <div id="lobbyHead">
       <div id="selectTitle">おはよう</div>
-      <div id="lobbySub">けさもラジオ体操、いこう</div>
+      <div id="lobbySub">ラジオ体操にいこう</div>
     </div>
     <div id="homeGate">
       <div id="homeGateTop">
@@ -601,29 +592,19 @@ button,input{font:inherit;}
       <div class="modeLabel">はじめる</div>
       <div class="randomTodayCircle" id="todayCircle"><img id="todayStampPreview" src="" alt=""><div id="todayQ">？</div></div>
       <div class="randomTodayLabel" id="todayLabel">今日のスタンプ</div>
-      <div class="modeCount" id="randomCountText">スタンプ総数 0</div>
     </button>
     <div id="homeStats">
       <div class="homeStat" id="streakStat">
         <div class="homeStatIcon">🔥</div>
-        <div class="homeStatText">
-          <div class="homeStatMain"><span id="streakNum">0</span><span class="homeStatUnit">日連続</span></div>
-          <div class="homeStatSub" id="streakBest">最高 0日</div>
-        </div>
+        <div class="homeStatMain"><span id="streakNum">0</span><span class="homeStatUnit">日連続</span></div>
       </div>
       <button class="homeStat homeStatBtn" id="todexBtn" type="button">
         <div class="homeStatIcon">📖</div>
-        <div class="homeStatText">
-          <div class="homeStatMain" id="todexNum">0/0</div>
-          <div class="homeStatSub">スタンプ図鑑</div>
-        </div>
+        <div class="homeStatMain" id="todexNum">0/0</div>
       </button>
       <div class="homeStat" id="todayStat">
         <div class="homeStatIcon" id="todayStatIcon">🌙</div>
-        <div class="homeStatText">
-          <div class="homeStatMain" id="todayStatText">今日はまだ</div>
-          <div class="homeStatSub" id="todayStatSub">朝のスタンプを押そう</div>
-        </div>
+        <div class="homeStatMain" id="todayStatText">今日はまだ</div>
       </div>
     </div>
   </div>
@@ -770,7 +751,7 @@ button,input{font:inherit;}
     </div>
 
     <div class="cardStep">
-      <div class="cardStepLabel">① 白紙カードを使う</div>
+      <div class="cardStepLabel">① 新しく作る</div>
       <div id="dlBubble">
         <img id="dlBubbleImg" src="card.png" alt="">
         <span>これがDLされるカード</span>
@@ -794,12 +775,10 @@ button,input{font:inherit;}
           <path d="M16 22v-9M12 17l4-4 4 4" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
           <circle cx="24" cy="10" r="1.5" fill="white" opacity=".7"/>
         </svg>
-        <span>マイカードを読み込む</span>
+        <span>カード読み込み</span>
         <input id="imageInput" type="file" accept="image/*"/>
       </label>
     </div>
-
-    <button id="cardGoBtn" type="button">このカードでスタンプを押す →</button>
   </div>
 </div>
 
@@ -918,7 +897,7 @@ const TASKS=[
 const $=id=>document.getElementById(id);
 const bgmAudio=$("bgmAudio"),stampSnd=$("stampSound"),clickSnd=$("clickSound");
 const selectScreen=$("selectScreen"),randomBtn=$("randomModeBtn");
-const randCnt=$("randomCountText"),todayPrv=$("todayStampPreview");
+const todayPrv=$("todayStampPreview");
 const todayCircle=$("todayCircle"),todayLabel=$("todayLabel");
 const calPop=$("calendarPopup"),calClose=$("calendarClose"),calMonth=$("calendarMonth"),calGrid=$("calendarGrid");
 const timeGate=$("timeGate"),gateThumb=$("gateCardThumb"),gateRemain=$("gateRemain"),progBar=$("progressBar");
@@ -1119,7 +1098,6 @@ function refreshTodayPreview(){
   else{todayPrv.style.display="none";if(q)q.style.display="";}
 }
 function updateCounts(){
-  randCnt.textContent=`スタンプ総数 ${POOL.length}`;
   refreshTodayPreview();
 }
 
@@ -1557,6 +1535,7 @@ imgInput.addEventListener("change",e=>{
     localStorage.setItem(UP_KEY,jstKey());
     uploadArea.classList.add("used");
     uploadArea.classList.remove("hl");
+    closeCardMenu();   /* 読み込んだらスタンプを押す画面へ */
   };
   r.readAsDataURL(f);
 });
@@ -1566,7 +1545,6 @@ const cardMenuScreen=$("cardMenuScreen");
 function openCardMenu(){cardMenuScreen.classList.add("visible");}
 function closeCardMenu(){cardMenuScreen.classList.remove("visible");}
 $("cardMenuClose").addEventListener("click",()=>{playClick();closeCardMenu();});
-$("cardGoBtn").addEventListener("click",()=>{playClick();closeCardMenu();});
 
 saveBtn.addEventListener("click",async()=>{if(!activeWin)return;playClick();await savePNG();});
 undoBtn.addEventListener("click",()=>{if(!activeWin)return;playClick();undoS();});
@@ -1787,15 +1765,13 @@ function refreshHomeGate(){
 
 function refreshHome(){
   refreshHomeGate();
-  const{current,best}=calcStreak();
+  const{current}=calcStreak();
   $("streakNum").textContent=current;
-  $("streakBest").textContent=`最高 ${best}日`;
   const col=getCollected().size;
   $("todexNum").textContent=`${col}/${POOL.length}`;
   const done=todayDone();
   $("todayStatIcon").textContent=done?"✓":"🌙";
-  $("todayStatText").textContent=done?"今日は完了！":"今日はまだ";
-  $("todayStatSub").textContent=done?"また明日ね":"朝のスタンプを押そう";
+  $("todayStatText").textContent=done?"完了！":"今日はまだ";
   $("todayStat").classList.toggle("done",done);
 }
 

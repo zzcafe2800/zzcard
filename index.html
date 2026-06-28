@@ -3,7 +3,16 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>ラジオ体操スタンプ</title>
+<title>ズズラジオ体操部</title>
+<meta name="description" content="ズズラジオ体操部 — 目標の時間に起きてスタンプを集める、朝のラジオ体操習慣アプリ。起きた時間をみんなと共有して続けよう（非公開・匿名もOK）。"/>
+<meta name="robots" content="index,follow"/>
+<meta name="theme-color" content="#bfe6ff"/>
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="ズズラジオ体操部"/>
+<meta property="og:description" content="目標の時間に起きてスタンプを集める、朝のラジオ体操習慣アプリ。起きた時間をみんなと共有して続けよう。"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="ズズラジオ体操部"/>
+<meta name="twitter:description" content="目標の時間に起きてスタンプを集める、朝のラジオ体操習慣アプリ。"/>
 <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=Yomogi&display=swap" rel="stylesheet"/>
 <style>
 :root{
@@ -31,7 +40,7 @@ button,input{font:inherit;}
 #selectScreen.sky-day{background:linear-gradient(180deg,#8fd0ff 0%,#aadcff 36%,#d6efff 64%,#eef9ff 100%);}
 #selectScreen.sky-evening{background:linear-gradient(180deg,#5d6bb4 0%,#b984c0 38%,#ef9c9c 70%,#ffce97 100%);}
 #selectScreen.sky-night{background:linear-gradient(180deg,#0e1640 0%,#1f2a5c 40%,#3a4279 72%,#585c93 100%);}
-.sky-evening #sun{background:radial-gradient(circle at 50% 50%,#fff1d6 0%,#ff9e6a 48%,rgba(255,150,90,0) 74%);}
+.sky-evening #sun{top:80%;width:108px;height:108px;background:radial-gradient(circle at 50% 50%,#fff1d6 0%,#ff9e6a 48%,rgba(255,150,90,0) 74%);}
 .sky-night #sun{top:9%;background:radial-gradient(circle at 50% 50%,#ffffff 0%,#e6ecff 46%,rgba(220,230,255,0) 72%);}
 .sky-night .twinkle{opacity:.9;}
 #selectScreen:not(.sky-night) .twinkle{opacity:.22;}
@@ -101,10 +110,17 @@ button,input{font:inherit;}
 .modeCard:hover .modePreview{transform:scale(1.02);}
 .modePreview img{display:block;width:100%;max-height:46vh;object-fit:contain;border-radius:14px;}
 .radioSvg{display:block;width:100%;height:auto;filter:drop-shadow(0 16px 26px rgba(120,180,220,.34));}
+.note{position:absolute;top:34%;z-index:6;pointer-events:none;color:#7cc3e6;opacity:0;font-weight:700;
+  animation:noteFloat 3.6s ease-in infinite;}
+@keyframes noteFloat{0%{opacity:0;transform:translateY(0) rotate(-8deg) scale(.6);}
+  18%{opacity:.85;}70%{opacity:.55;}100%{opacity:0;transform:translateY(-92px) rotate(10deg) scale(1.05);}}
+.note.n1{left:40%;font-size:19px;animation-delay:0s;}
+.note.n2{left:53%;font-size:15px;color:#9ec9e0;animation-delay:1.2s;}
+.note.n3{left:46%;font-size:22px;animation-delay:2.4s;}
 .modeLabel{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);z-index:5;white-space:nowrap;
-  padding:13px 30px;border-radius:999px;color:#fff;font-size:17px;font-weight:700;letter-spacing:.08em;
-  background:linear-gradient(135deg,#ffa6c8,#ff86b4);border:2.5px solid rgba(255,255,255,.8);
-  box-shadow:0 10px 24px rgba(255,140,180,.42);transition:transform .22s;}
+  padding:11px 26px;border-radius:999px;color:#fff;font-size:16px;font-weight:700;letter-spacing:.1em;
+  background:linear-gradient(135deg,#69bfe6,#4aa9da);border:2px solid rgba(255,255,255,.65);
+  box-shadow:0 5px 13px rgba(80,165,210,.34);transition:transform .22s;}
 .modeCard:hover .modeLabel{transform:translateX(-50%) translateY(-2px);}
 .randomTodayCircle{position:absolute;top:-16px;right:-12px;width:86px;height:86px;border-radius:50%;
   background:rgba(255,255,255,.96);border:3px solid #fff;padding:11px;z-index:6;overflow:hidden;cursor:pointer;
@@ -555,6 +571,27 @@ button,input{font:inherit;}
 #bgmPct{font-size:11px;color:#7ab8d4;min-width:28px;text-align:right;flex:0 0 auto;}
 
 /* ===================== プロフィール ===================== */
+#tutorial{position:fixed;inset:0;z-index:215;display:none;flex-direction:column;align-items:center;justify-content:center;
+  padding:40px 26px;text-align:center;
+  background:linear-gradient(180deg,#bfe6ff 0%,#d8f0ff 36%,#ecf6ff 62%,#fff1e2 100%);}
+#tutorial.visible{display:flex;}
+#tutPages{width:min(360px,90vw);}
+.tutPage{display:flex;flex-direction:column;align-items:center;gap:16px;}
+.tutPage[hidden]{display:none;}
+.tutArt{width:200px;max-width:66vw;}
+.tutArt svg{width:100%;height:auto;}
+.tutTitle{font-family:"Yomogi","Kosugi Maru",cursive;font-size:22px;font-weight:700;color:#4d7790;line-height:1.45;}
+.tutDesc{font-size:13px;color:#6f9fb6;line-height:1.8;font-weight:600;}
+.tutArrow{position:fixed;top:50%;transform:translateY(-50%);width:46px;height:46px;border:none;border-radius:50%;
+  background:rgba(255,255,255,.82);color:#5c93ad;font-size:24px;cursor:pointer;box-shadow:0 6px 16px rgba(111,205,255,.22);z-index:2;}
+#tutPrev{left:12px;}#tutNext{right:12px;}
+.tutArrow:disabled{opacity:.3;cursor:default;}
+#tutDots{display:flex;gap:8px;margin-top:24px;}
+.tutDot{width:9px;height:9px;border-radius:50%;background:rgba(120,170,200,.35);transition:background .2s;}
+.tutDot.active{background:#5c93ad;}
+#tutStart{margin-top:22px;height:52px;padding:0 42px;border:none;border-radius:999px;cursor:pointer;
+  font-size:16px;font-weight:700;letter-spacing:.1em;color:#fff;
+  background:linear-gradient(135deg,#7fd8b0,#5ec79a);box-shadow:0 10px 24px rgba(94,199,154,.38);}
 #topProfileBar{position:fixed;top:14px;left:16px;z-index:120;display:flex;align-items:center;gap:8px;
   height:40px;padding:0 12px 0 6px;border:none;border-radius:999px;cursor:pointer;
   background:rgba(255,255,255,.82);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
@@ -601,15 +638,16 @@ button,input{font:inherit;}
 #ppHead{display:flex;align-items:center;gap:12px;}
 #ppAvatar{width:52px;height:52px;border-radius:50%;background:#8fdcff;box-shadow:inset 0 0 0 3px rgba(255,255,255,.85);flex:0 0 auto;}
 #ppName{font-size:17px;font-weight:700;color:#4d7790;}
-#ppComment{font-size:12px;color:#86abc0;margin-top:2px;}
-#ppStreak{font-size:13px;color:#6f9fb6;font-weight:700;text-align:center;background:rgba(238,248,255,.7);
-  border-radius:14px;padding:9px;border:1.5px solid rgba(143,220,255,.28);}
-#ppStreak b{color:#ef8a4d;font-size:16px;}
+#ppStreakInline{font-size:12px;font-weight:700;color:#ef8a4d;margin-left:4px;white-space:nowrap;}
+#ppComment{font-size:13px;color:#6f9fb6;font-weight:600;padding:11px 13px;border-radius:13px;
+  background:rgba(238,248,255,.6);border:1.5px solid rgba(143,220,255,.24);line-height:1.5;}
+#ppProfBtns{display:flex;flex-direction:column;gap:10px;margin-top:14px;}
 #ppTabs{position:absolute;top:-25px;left:18px;display:flex;gap:5px;background:none;padding:0;}
 .ppTab{flex:0 0 auto;height:29px;padding:0 14px;border:none;border-radius:13px 13px 0 0;cursor:pointer;
   background:rgba(255,255,255,.72);color:#7aa5bc;font-size:12px;font-weight:700;box-shadow:0 -3px 9px rgba(111,205,255,.12);}
 .ppTab.active{background:rgba(255,255,255,.97);color:#4d7790;}
 .ppTabBody{display:flex;flex-direction:column;gap:10px;}
+.ppTabBody[hidden]{display:none;}
 /* パネル内カレンダー（小さめ） */
 #ppCalGrid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
 #ppCalGrid .calDow{font-size:9px;padding:2px 0;}
@@ -698,7 +736,7 @@ button,input{font:inherit;}
 .notifMsg{text-align:center;font-size:12px;color:#9bbacb;padding:18px 8px;}
 
 @media(prefers-reduced-motion:reduce){
-  #sun,.cloud,.twinkle,.modeCard,.randomTodayCircle img{animation:none!important;}
+  #sun,.cloud,.twinkle,.note,.modeCard,.randomTodayCircle img{animation:none!important;}
 }
 @media(max-width:780px){
   #selectScreen{padding:24px 16px;}
@@ -744,6 +782,9 @@ button,input{font:inherit;}
       <div id="homeGateBarWrap"><div id="homeGateBar"><div id="homeGateSun"></div></div></div>
     </div>
     <button class="modeCard" id="randomModeBtn" type="button">
+      <span class="note n1">♪</span>
+      <span class="note n2">♫</span>
+      <span class="note n3">♬</span>
       <div class="modePreview"><svg class="radioSvg" viewBox="0 0 220 152" xmlns="http://www.w3.org/2000/svg">
         <line x1="168" y1="40" x2="202" y2="8" stroke="#7cc3e6" stroke-width="5" stroke-linecap="round"/>
         <circle cx="202" cy="8" r="6" fill="#7cc3e6"/>
@@ -962,6 +1003,44 @@ button,input{font:inherit;}
   <span id="tpbBell">🔔<span id="tpbCount">0</span></span>
 </button>
 
+<div id="tutorial">
+  <button id="tutPrev" class="tutArrow" type="button">‹</button>
+  <button id="tutNext" class="tutArrow" type="button">›</button>
+  <div id="tutPages">
+    <div class="tutPage" data-i="0">
+      <div class="tutArt"><svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="64" cy="40" r="13" fill="#ffd27a"/><circle cx="136" cy="40" r="13" fill="#ffd27a"/>
+        <line x1="58" y1="30" x2="44" y2="18" stroke="#7cc3e6" stroke-width="5" stroke-linecap="round"/>
+        <line x1="142" y1="30" x2="156" y2="18" stroke="#7cc3e6" stroke-width="5" stroke-linecap="round"/>
+        <circle cx="100" cy="90" r="54" fill="#d6f0ff" stroke="#7cc3e6" stroke-width="6"/>
+        <line x1="100" y1="90" x2="100" y2="56" stroke="#4d7790" stroke-width="6" stroke-linecap="round"/>
+        <line x1="100" y1="90" x2="126" y2="100" stroke="#4d7790" stroke-width="6" stroke-linecap="round"/>
+        <circle cx="100" cy="90" r="7" fill="#4d7790"/>
+        <text x="150" y="56" font-size="30">✨</text>
+      </svg></div>
+      <div class="tutTitle">目標の時間に起きると<br>いいスタンプが押せる！</div>
+      <div class="tutDesc">自分で決めた起きる時間にアプリを開いてスタンプを押そう。<br>早すぎ・遅すぎると「はずれ」が増えるよ。</div>
+    </div>
+    <div class="tutPage" data-i="1" hidden>
+      <div class="tutArt"><svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg">
+        <line x1="140" y1="74" x2="162" y2="46" stroke="#7cc3e6" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="162" cy="46" r="5" fill="#7cc3e6"/>
+        <rect x="40" y="72" width="120" height="64" rx="14" fill="#8fd2ef"/>
+        <circle cx="74" cy="104" r="19" fill="#eaf7ff"/>
+        <rect x="104" y="86" width="44" height="16" rx="4" fill="#eaf7ff"/>
+        <circle cx="116" cy="118" r="7" fill="#eaf7ff"/><circle cx="140" cy="118" r="7" fill="#eaf7ff"/>
+        <text x="54" y="46" font-size="22" fill="#7cc3e6">♪</text>
+        <text x="86" y="32" font-size="18" fill="#9ec9e0">♫</text>
+        <text x="118" y="44" font-size="20">💛</text>
+      </svg></div>
+      <div class="tutTitle">起きた時間を<br>みんなと共有できる</div>
+      <div class="tutDesc">保存すると自動で投稿されて、みんなの「投稿」に流れるよ。<br>※ 非公開・匿名でもOK</div>
+    </div>
+  </div>
+  <div id="tutDots"><span class="tutDot active"></span><span class="tutDot"></span></div>
+  <button id="tutStart" type="button">はじめる</button>
+</div>
+
 <div id="profileSetup">
   <div id="psBox">
     <div id="psTitle">プロフィールを作ろう</div>
@@ -991,37 +1070,34 @@ button,input{font:inherit;}
     <div id="ppHead">
       <span id="ppAvatar"></span>
       <div id="ppHeadText">
-        <div id="ppName">匿名さん</div>
-        <div id="ppComment"></div>
+        <div id="ppName">匿名さん <span id="ppStreakInline">🔥0</span></div>
       </div>
     </div>
-    <div id="ppStreak">🔥 <b id="ppStreakNum">0</b> 日連続</div>
     <div id="ppTabs">
-      <button class="ppTab" data-tab="list" type="button">一覧</button>
       <button class="ppTab" data-tab="feed" type="button">投稿</button>
       <button class="ppTab" data-tab="cal" type="button">カレンダー</button>
       <button class="ppTab active" data-tab="prof" type="button">プロフィール</button>
     </div>
     <div id="ppTabProf" class="ppTabBody">
-      <button id="ppPublicBtn" type="button">公開／非公開</button>
-      <button id="ppEditBtn" type="button">編集する</button>
-      <details id="ppRestore">
-        <summary>復元ID設定</summary>
-        <div class="psRestoreInner">
-          <label class="psField"><span>復元ID（英字6文字）</span><input id="ppId" type="text" maxlength="6" placeholder="abcdef"></label>
-          <label class="psField"><span>パスワード（数字4桁）</span><input id="ppPw" type="text" inputmode="numeric" maxlength="4" placeholder="0000"></label>
-          <button id="ppRestoreSave" type="button">保存</button>
-          <button id="ppRestoreOpen" type="button">別の端末から復元する</button>
-          <div class="psNote">データが消えたときの復元用。前のIDとパスワードで記録を取り戻せるよ</div>
-        </div>
-      </details>
+      <div id="ppComment"></div>
+      <div id="ppProfBtns">
+        <button id="ppPublicBtn" type="button">公開／非公開</button>
+        <button id="ppEditBtn" type="button">編集する</button>
+        <details id="ppRestore">
+          <summary>復元ID設定</summary>
+          <div class="psRestoreInner">
+            <label class="psField"><span>復元ID（英字6文字）</span><input id="ppId" type="text" maxlength="6" placeholder="abcdef"></label>
+            <label class="psField"><span>パスワード（数字4桁）</span><input id="ppPw" type="text" inputmode="numeric" maxlength="4" placeholder="0000"></label>
+            <button id="ppRestoreSave" type="button">保存</button>
+            <button id="ppRestoreOpen" type="button">別の端末から復元する</button>
+            <div class="psNote">データが消えたときの復元用。前のIDとパスワードで記録を取り戻せるよ</div>
+          </div>
+        </details>
+      </div>
     </div>
     <div id="ppTabCal" class="ppTabBody" hidden>
       <div id="ppCalMonth"></div>
       <div id="ppCalGrid" class="calGrid"></div>
-    </div>
-    <div id="ppTabList" class="ppTabBody" hidden>
-      <div id="ppListBox"></div>
     </div>
     <div id="ppTabFeed" class="ppTabBody" hidden>
       <div id="ppFeedBox"></div>
@@ -1187,44 +1263,18 @@ async function publishProfile(){
     }
   }catch(e){console.warn("publish failed",e);}
 }
-async function loadProfiles(){
-  const db=await getDB();if(!db)return null;
-  try{
-    const{ref,get}=await import(FB_DB);
-    const snap=await get(ref(db,"profiles"));
-    return snap.exists()?snap.val():{};
-  }catch(e){console.warn("load failed",e);return null;}
-}
-async function renderList(){
-  const box=$("ppListBox");
-  box.innerHTML='<div class="ppListMsg">読み込み中…</div>';
-  const data=await loadProfiles();
-  if(data===null){box.innerHTML='<div class="ppListMsg">みんなの一覧は<br>Firebaseの設定（Realtime Database）後に表示されるよ</div>';return;}
-  const rows=Object.values(data).filter(x=>x&&x.public);
-  if(!rows.length){box.innerHTML='<div class="ppListMsg">まだ公開している人がいないよ</div>';return;}
-  rows.sort((a,b)=>(b.streak||0)-(a.streak||0));
-  box.innerHTML="";
-  rows.forEach(x=>{
-    const row=document.createElement("div");row.className="ppListRow";
-    row.innerHTML=`<span class="ppListAvatar" style="background:${escHtml(x.color||"#8fdcff")}"></span>`+
-      `<span class="ppListName">${escHtml(x.name||"匿名さん")}</span>`+
-      `<span class="ppListStreak">🔥${(x.streak||0)}</span>`;
-    box.appendChild(row);
-  });
-}
-
 /* ===== 投稿・いいね・通知 ===== */
 async function renderFeed(){
   const box=$("ppFeedBox");
   box.innerHTML='<div class="ppListMsg">読み込み中…</div>';
   const db=await getDB();
-  if(!db){box.innerHTML='<div class="ppListMsg">投稿はFirebaseの設定後に表示されるよ</div>';return;}
+  if(!db){box.innerHTML='<div class="ppListMsg">なし</div>';return;}
   try{
     const{ref,get}=await import(FB_DB);
     const snap=await get(ref(db,"posts"));
     const data=snap.exists()?snap.val():{};
     const posts=Object.values(data).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,30);
-    if(!posts.length){box.innerHTML='<div class="ppListMsg">まだ投稿が無いよ</div>';return;}
+    if(!posts.length){box.innerHTML='<div class="ppListMsg">なし</div>';return;}
     box.innerHTML="";
     posts.forEach(po=>{
       const row=document.createElement("div");row.className="feedRow";
@@ -1234,7 +1284,7 @@ async function renderFeed(){
         `<span class="feedDate">${escHtml(po.date||"")}</span>`;
       box.appendChild(row);
     });
-  }catch(e){box.innerHTML='<div class="ppListMsg">読み込めなかったよ</div>';console.warn(e);}
+  }catch(e){box.innerHTML='<div class="ppListMsg">なし</div>';console.warn(e);}
 }
 async function postToday(){
   const p=getProfile();if(!p||!p.isPublic)return;
@@ -2300,15 +2350,11 @@ function refreshHomeGate(){
   const inWindow=now>=wake&&now<wake+1;
   g.classList.toggle("open",inWindow);
   $("homeGateText").textContent=`目標 ${wake}:00〜${(wake+1)%24}:00`;
-  if(inWindow){
-    $("homeGateRemain").textContent="いまがチャンス！";
-    $("homeGateBar").style.width="100%";
-  }else{
-    let until=wake-now;if(until<=0)until+=24;          /* 次の目標時刻まで（時間） */
-    const tm=Math.round(until*60),hh=Math.floor(tm/60),mm=tm%60;
-    $("homeGateRemain").textContent=hh>0?`目標まで あと${hh}時間${mm}分`:`目標まで あと${mm}分`;
-    $("homeGateBar").style.width=`${clamp((23-until)/23*100,0,100)}%`;   /* 目標に近いほど満ちる */
-  }
+  let rem;
+  if(inWindow){rem=(wake+1)-now;$("homeGateBar").style.width="100%";}
+  else{let u=wake-now;if(u<=0)u+=24;rem=u;$("homeGateBar").style.width=`${clamp((23-u)/23*100,0,100)}%`;}
+  const tm=Math.max(0,Math.round(rem*60)),hh=Math.floor(tm/60),mm=tm%60;
+  $("homeGateRemain").textContent=`残り ${hh}:${String(mm).padStart(2,"0")}`;
 }
 
 function refreshHome(){
@@ -2394,7 +2440,7 @@ function openProfileSetup(edit){
   $("psName").value=p.name||"";
   $("psWake").value=Number.isFinite(p.wakeHour)?p.wakeHour:6;
   $("psComment").value=p.comment||"";
-  $("psPublic").checked=!!p.isPublic;
+  $("psPublic").checked=(p.isPublic!==undefined)?!!p.isPublic:true;
   $("psId").value=p.id||"";
   $("psPw").value=p.pw||"";
   psColor=p.color||AVATAR_COLORS[1];
@@ -2410,7 +2456,7 @@ function saveFromSetup(skip){
   const id=($("psId").value||"").toLowerCase().replace(/[^a-z]/g,"").slice(0,6);
   const pw=($("psPw").value||"").replace(/[^0-9]/g,"").slice(0,4);
   const p=skip?{
-    name:"匿名さん",color:AVATAR_COLORS[1],comment:"",wakeHour:DEFAULT_WAKE,isPublic:false,
+    name:"匿名さん",color:AVATAR_COLORS[1],comment:"",wakeHour:DEFAULT_WAKE,isPublic:true,
     id:prev.id||"",pw:prev.pw||""
   }:{
     name:($("psName").value||"").trim()||"匿名さん",
@@ -2424,9 +2470,9 @@ function saveFromSetup(skip){
 function openProfilePanel(){
   const p=getProfile()||{};
   $("ppAvatar").style.background=profileColor();
-  $("ppName").textContent=p.name||"匿名さん";
-  $("ppComment").textContent=p.comment||"";
-  $("ppStreakNum").textContent=calcStreak().current;
+  $("ppName").firstChild.textContent=(p.name||"匿名さん")+" ";
+  $("ppStreakInline").textContent="🔥"+calcStreak().current;
+  $("ppComment").textContent=p.comment||"（コメントなし）";
   $("ppPublicBtn").classList.toggle("pub",!!p.isPublic);
   $("ppPublicBtn").textContent=p.isPublic?"公開中（タップで非公開）":"非公開（タップで公開）";
   $("ppId").value=p.id||"";$("ppPw").value=p.pw||"";
@@ -2437,10 +2483,8 @@ function switchPpTab(t){
   document.querySelectorAll(".ppTab").forEach(b=>b.classList.toggle("active",b.dataset.tab===t));
   $("ppTabProf").hidden=t!=="prof";
   $("ppTabCal").hidden=t!=="cal";
-  $("ppTabList").hidden=t!=="list";
   $("ppTabFeed").hidden=t!=="feed";
   if(t==="cal")renderCalInto($("ppCalMonth"),$("ppCalGrid"));
-  if(t==="list")renderList();
   if(t==="feed")renderFeed();
 }
 $("topProfileBar").addEventListener("click",()=>{playClick();openProfilePanel();});
@@ -2526,10 +2570,22 @@ $("restoreDo").addEventListener("click",async()=>{
 $("psSubmit").addEventListener("click",()=>{playClick();saveFromSetup(false);});
 $("psSkip").addEventListener("click",()=>{playClick();saveFromSetup(true);});
 $("psWake").addEventListener("input",updateWakeHint);
+let _tutPage=0;
+function tutGo(i){
+  _tutPage=Math.max(0,Math.min(1,i));
+  document.querySelectorAll(".tutPage").forEach(p=>{p.hidden=(+p.dataset.i)!==_tutPage;});
+  document.querySelectorAll(".tutDot").forEach((d,idx)=>d.classList.toggle("active",idx===_tutPage));
+  $("tutPrev").disabled=_tutPage===0;
+  $("tutNext").disabled=_tutPage===1;
+}
+function showTutorial(){tutGo(0);$("tutorial").classList.add("visible");}
+$("tutPrev").addEventListener("click",()=>{playClick();tutGo(_tutPage-1);});
+$("tutNext").addEventListener("click",()=>{playClick();tutGo(_tutPage+1);});
+$("tutStart").addEventListener("click",()=>{playClick();$("tutorial").classList.remove("visible");openProfileSetup(false);});
 function profileBoot(){
   renderProfileBar();
   subscribeNotif();
-  if(!getProfile())openProfileSetup(false);
+  if(!getProfile())showTutorial();
 }
 
 /* =========================================================

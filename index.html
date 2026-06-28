@@ -541,7 +541,80 @@ button,input{font:inherit;}
   box-shadow:0 2px 10px rgba(99,204,255,.42);left:10%;cursor:grab;transition:left .06s;}
 #bgmPct{font-size:11px;color:#7ab8d4;min-width:28px;text-align:right;flex:0 0 auto;}
 
-/* RESPONSIVE */
+/* ===================== プロフィール ===================== */
+#topProfileBar{position:fixed;top:14px;left:16px;z-index:120;display:flex;align-items:center;gap:8px;
+  height:40px;padding:0 12px 0 6px;border:none;border-radius:999px;cursor:pointer;
+  background:rgba(255,255,255,.82);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  box-shadow:0 6px 16px rgba(111,205,255,.22);transition:transform .18s,background .2s;}
+#topProfileBar:hover{transform:translateY(-1px);background:rgba(255,255,255,.96);}
+#tpbAvatar{width:30px;height:30px;border-radius:50%;background:#8fdcff;box-shadow:inset 0 0 0 2px rgba(255,255,255,.8);flex:0 0 auto;}
+#tpbName{font-size:13px;font-weight:700;color:#4d7790;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+#tpbBell{position:relative;font-size:15px;margin-left:2px;}
+#tpbCount{position:absolute;top:-7px;right:-9px;min-width:16px;height:16px;padding:0 4px;border-radius:999px;
+  background:#ff6faf;color:#fff;font-size:10px;font-weight:700;display:none;align-items:center;justify-content:center;line-height:16px;text-align:center;}
+#tpbCount.show{display:inline-flex;}
+#backToSelect{top:64px;}   /* プロフィールバーの下にずらす */
+#forceOpenBtn{display:none!important;}
+
+#profileSetup,#profilePanel{position:fixed;inset:0;z-index:210;display:none;align-items:center;justify-content:center;
+  background:rgba(200,234,255,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:22px;overflow-y:auto;}
+#profileSetup.visible,#profilePanel.visible{display:flex;}
+#psBox,#ppBox{width:min(360px,94vw);margin:auto;border-radius:26px;padding:22px;position:relative;
+  background:rgba(255,255,255,.97);border:1.5px solid rgba(143,220,255,.4);box-shadow:0 30px 70px rgba(111,205,255,.26);
+  display:flex;flex-direction:column;gap:13px;}
+#psTitle{font-size:18px;font-weight:700;color:#5c93ad;text-align:center;letter-spacing:.06em;}
+.psField{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:700;color:#6f9fb6;}
+.psField.psRow{flex-direction:row;align-items:center;justify-content:space-between;}
+.psField input[type=text],.psField input[type=number]{height:42px;border-radius:12px;border:1.5px solid rgba(143,220,255,.4);
+  background:#fff;padding:0 13px;font-size:14px;color:#3f6b84;font-weight:600;outline:none;}
+.psWakeRow{display:flex;align-items:center;gap:10px;}
+.psWakeRow input{width:80px;}
+#psWakeHint{font-size:13px;color:#7aa5bc;font-weight:700;}
+#psColors{display:flex;flex-wrap:wrap;gap:9px;}
+.psColor{width:30px;height:30px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:transform .15s;}
+.psColor:hover{transform:scale(1.1);}
+.psColor.sel{border-color:#4d7790;}
+#psSubmit,#psSkip{height:48px;border:none;border-radius:999px;cursor:pointer;font-size:15px;font-weight:700;letter-spacing:.04em;}
+#psSubmit{background:linear-gradient(135deg,#7fd8b0,#5ec79a);color:#fff;box-shadow:0 10px 24px rgba(94,199,154,.38);}
+#psSkip{background:rgba(143,220,255,.16);color:#5c93ad;}
+#psRestore,#ppRestore{margin-top:2px;}
+#psRestore summary,#ppRestore summary{font-size:11px;color:#9bbacb;cursor:pointer;list-style:none;text-align:center;}
+#psRestore summary::-webkit-details-marker,#ppRestore summary::-webkit-details-marker{display:none;}
+.psRestoreInner{display:flex;flex-direction:column;gap:10px;margin-top:10px;padding-top:10px;border-top:1px dashed rgba(143,220,255,.4);}
+.psNote{font-size:10px;color:#9bbacb;line-height:1.5;}
+
+#ppClose{position:absolute;top:14px;right:14px;width:30px;height:30px;border:none;border-radius:999px;
+  background:rgba(143,220,255,.16);color:#5c93ad;font-size:18px;cursor:pointer;}
+#ppHead{display:flex;align-items:center;gap:12px;}
+#ppAvatar{width:52px;height:52px;border-radius:50%;background:#8fdcff;box-shadow:inset 0 0 0 3px rgba(255,255,255,.85);flex:0 0 auto;}
+#ppName{font-size:17px;font-weight:700;color:#4d7790;}
+#ppComment{font-size:12px;color:#86abc0;margin-top:2px;}
+#ppStreak{font-size:13px;color:#6f9fb6;font-weight:700;text-align:center;background:rgba(238,248,255,.7);
+  border-radius:14px;padding:9px;border:1.5px solid rgba(143,220,255,.28);}
+#ppStreak b{color:#ef8a4d;font-size:16px;}
+#ppTabs{display:flex;gap:6px;background:rgba(143,220,255,.12);border-radius:999px;padding:4px;}
+.ppTab{flex:1;height:34px;border:none;border-radius:999px;background:transparent;color:#7aa5bc;font-size:13px;font-weight:700;cursor:pointer;}
+.ppTab.active{background:#fff;color:#4d7790;box-shadow:0 3px 10px rgba(111,205,255,.2);}
+.ppTabBody{display:flex;flex-direction:column;gap:10px;}
+#ppPublicBtn,#ppEditBtn,#ppRestoreSave{height:44px;border:none;border-radius:999px;cursor:pointer;font-size:13px;font-weight:700;}
+#ppPublicBtn{background:rgba(143,220,255,.18);color:#4d7790;}
+#ppPublicBtn.pub{background:linear-gradient(135deg,#7fd8b0,#5ec79a);color:#fff;}
+#ppEditBtn{background:linear-gradient(135deg,#8fdcff,#63ccff);color:#fff;}
+#ppRestoreSave{background:rgba(143,220,255,.18);color:#4d7790;}
+#ppCalMonth{text-align:center;font-size:13px;font-weight:700;color:#5c93ad;margin-bottom:6px;}
+
+/* 目標時間外の確認カード */
+#confirmStart{position:fixed;inset:0;z-index:205;display:none;align-items:center;justify-content:center;
+  background:rgba(200,234,255,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding:24px;}
+#confirmStart.visible{display:flex;}
+#confirmStartBox{width:min(320px,92vw);border-radius:24px;padding:26px 22px;text-align:center;
+  background:rgba(255,255,255,.97);border:1.5px solid rgba(143,220,255,.4);box-shadow:0 24px 60px rgba(111,205,255,.26);}
+#confirmStartText{font-size:15px;font-weight:700;color:#4d7790;line-height:1.75;margin-bottom:18px;}
+#confirmStartBtns{display:flex;gap:10px;}
+#confirmStartBtns button{flex:1;height:46px;border:none;border-radius:999px;font-size:14px;font-weight:700;cursor:pointer;}
+#confirmNo{background:rgba(143,220,255,.18);color:#5c93ad;}
+#confirmYes{background:linear-gradient(135deg,#ffa6c8,#ff86b4);color:#fff;}
+
 @media(prefers-reduced-motion:reduce){
   #sun,.cloud,.twinkle,.modeCard,.randomTodayCircle img{animation:none!important;}
 }
@@ -783,6 +856,81 @@ button,input{font:inherit;}
   </div>
 </div>
 
+<!-- ===================== プロフィール ===================== -->
+<button id="topProfileBar" type="button">
+  <span id="tpbAvatar"></span>
+  <span id="tpbName">匿名さん</span>
+  <span id="tpbBell">🔔<span id="tpbCount">0</span></span>
+</button>
+
+<div id="profileSetup">
+  <div id="psBox">
+    <div id="psTitle">プロフィールを作ろう</div>
+    <label class="psField"><span>名前</span><input id="psName" type="text" maxlength="12" placeholder="なまえ"></label>
+    <label class="psField"><span>目標の起きる時間</span>
+      <span class="psWakeRow"><input id="psWake" type="number" min="0" max="23" value="6"><span id="psWakeHint">6:00〜7:00</span></span>
+    </label>
+    <div class="psField"><span>アイコンの色</span><div id="psColors"></div></div>
+    <label class="psField"><span>ひとことコメント</span><input id="psComment" type="text" maxlength="40" placeholder="よろしくね"></label>
+    <label class="psField psRow"><span>みんなに公開する</span><input id="psPublic" type="checkbox"></label>
+    <button id="psSubmit" type="button">これで はじめる</button>
+    <button id="psSkip" type="button">スキップ（匿名ではじめる）</button>
+    <details id="psRestore">
+      <summary>復元ID設定（ふだんは触らなくてOK）</summary>
+      <div class="psRestoreInner">
+        <label class="psField"><span>復元ID（英字6文字まで）</span><input id="psId" type="text" maxlength="6" placeholder="abcdef"></label>
+        <label class="psField"><span>パスワード（数字4桁）</span><input id="psPw" type="text" inputmode="numeric" maxlength="4" placeholder="0000"></label>
+        <div class="psNote">スマホのデータが消えても、この2つで記録を取り戻せるよ</div>
+      </div>
+    </details>
+  </div>
+</div>
+
+<div id="profilePanel">
+  <div id="ppBox">
+    <button id="ppClose" type="button">×</button>
+    <div id="ppHead">
+      <span id="ppAvatar"></span>
+      <div id="ppHeadText">
+        <div id="ppName">匿名さん</div>
+        <div id="ppComment"></div>
+      </div>
+    </div>
+    <div id="ppStreak">🔥 <b id="ppStreakNum">0</b> 日連続</div>
+    <div id="ppTabs">
+      <button class="ppTab active" data-tab="prof" type="button">プロフィール</button>
+      <button class="ppTab" data-tab="cal" type="button">カレンダー</button>
+    </div>
+    <div id="ppTabProf" class="ppTabBody">
+      <button id="ppPublicBtn" type="button">公開／非公開</button>
+      <button id="ppEditBtn" type="button">編集する</button>
+      <details id="ppRestore">
+        <summary>復元ID設定</summary>
+        <div class="psRestoreInner">
+          <label class="psField"><span>復元ID（英字6文字）</span><input id="ppId" type="text" maxlength="6" placeholder="abcdef"></label>
+          <label class="psField"><span>パスワード（数字4桁）</span><input id="ppPw" type="text" inputmode="numeric" maxlength="4" placeholder="0000"></label>
+          <button id="ppRestoreSave" type="button">保存</button>
+          <div class="psNote">データが消えたときの復元用。Firebase連携後に有効になるよ</div>
+        </div>
+      </details>
+    </div>
+    <div id="ppTabCal" class="ppTabBody" hidden>
+      <div id="ppCalMonth"></div>
+      <div id="ppCalGrid" class="calGrid"></div>
+    </div>
+  </div>
+</div>
+
+<div id="confirmStart">
+  <div id="confirmStartBox">
+    <div id="confirmStartText"></div>
+    <div id="confirmStartBtns">
+      <button id="confirmNo" type="button">いいえ</button>
+      <button id="confirmYes" type="button">はい</button>
+    </div>
+  </div>
+</div>
+
 <!-- ===================== 新スタンプお披露目 ===================== -->
 <div id="newStampScreen">
   <div id="newStampBox">
@@ -799,7 +947,7 @@ button,input{font:inherit;}
     <div id="rouletteTitle">今日のスタンプは…？</div>
     <div id="wheelWrap">
       <div id="wheelPointer"></div>
-      <svg id="wheelSvg" viewBox="0 0 200 200"><g id="wheelG"></g></svg>
+      <svg id="wheelSvg" viewBox="0 0 200 200"><defs><filter id="wheelGray"><feColorMatrix type="saturate" values="0"/></filter></defs><g id="wheelG"></g></svg>
       <div id="wheelHub"></div>
     </div>
     <div id="rouletteResult"></div>
@@ -1041,8 +1189,8 @@ function mod(h,m){return h*60+m;}
 function fmtHM(h,m){return`${h}:${String(m).padStart(2,"0")}`;}
 function jstStatus(){
   const p=jstParts(),now=mod(p.h,p.m),op=mod(JST_OH,JST_OM),cl=mod(JST_CH,JST_CM);
-  const bt=now>=op&&now<cl,open=bt||ovOpen;
-  let rem=0,prog=0;
+  const bt=now>=op&&now<cl,open=true;   /* いつでも開く */
+  let rem=0,prog=100;
   if(bt){
     /* 開いてる間：残りは閉門まで、バーは満タン */
     const el=(now-op)*60+p.s,tot=(cl-op)*60;
@@ -1093,6 +1241,36 @@ function pickStampIdx(){
   return w.length-1;
 }
 function assignTodayStamp(idx){const m=getStampMap();m[jstKey()]=POOL[idx];saveStampMap(m);return POOL[idx];}
+
+/* =========================================================
+   プロフィール（ローカル）：名前 / アイコン色 / コメント / 公開 /
+   目標起床時間（その時刻〜+1時間の枠）/ 復元ID・パスワード
+   ========================================================= */
+const PROF_KEY="radio_profile";
+const DEFAULT_WAKE=6;
+const AVATAR_COLORS=["#ff9ec2","#8fdcff","#ffd27a","#a6e3b8","#c3b1f0","#ffb38a","#7fd0c8","#f6a8c0"];
+function getProfile(){try{const v=JSON.parse(localStorage.getItem(PROF_KEY)||"null");return(v&&typeof v==="object")?v:null;}catch(e){return null;}}
+function saveProfile(p){localStorage.setItem(PROF_KEY,JSON.stringify(p));}
+function profileWake(){const p=getProfile();return(p&&Number.isFinite(p.wakeHour))?p.wakeHour:DEFAULT_WAKE;}
+function profileName(){const p=getProfile();return(p&&p.name)?p.name:"匿名さん";}
+function profileColor(){const p=getProfile();return(p&&p.color)?p.color:AVATAR_COLORS[1];}
+function profileIsPublic(){const p=getProfile();return!!(p&&p.isPublic);}
+
+/* いまの時刻（小数の「時」） */
+function nowHourFloat(){const p=jstParts();return p.h+p.m/60+p.s/3600;}
+/* 目標枠（wake〜wake+1）からのズレでハズレ率を決める
+   ・枠内：0  ・寝坊：1hで5割→どんどん上げて上限9割
+   ・早起き：1hで3割→5hまで緩やかに増やして上限6割（やさしい） */
+function missRate(){
+  const wake=profileWake(),now=nowHourFloat();
+  if(now>=wake&&now<wake+1)return 0;
+  if(now>=wake+1){
+    const late=now-(wake+1);
+    return late<=1?late*0.5:Math.min(0.5+(late-1)*0.2,0.9);
+  }
+  const early=wake-now;
+  return early<=1?early*0.3:Math.min(0.3+(early-1)*0.075,0.6);
+}
 function refreshTodayPreview(){
   const s=todayStamp(),q=$("todayQ");
   if(s){todayPrv.style.display="";todayPrv.src=s;if(q)q.style.display="none";}
@@ -1113,30 +1291,30 @@ function setTimeOfDay(night){
 /* =========================================================
    カレンダー
    ========================================================= */
-function buildCal(){
+function renderCalInto(monthEl,gridEl){
   const p=jstParts(),y=p.Y,mo=p.M;
-  calMonth.textContent=`${y}年${mo}月`;
+  monthEl.textContent=`${y}年${mo}月`;
   const dim=new Date(y,mo,0).getDate(),fd=new Date(y,mo-1,1).getDay();
   const doneSet=new Set(getDoneDates());
-  calGrid.innerHTML="";
+  gridEl.innerHTML="";
   ["日","月","火","水","木","金","土"].forEach(d=>{
-    const e=document.createElement("div");e.className="calDow";e.textContent=d;calGrid.appendChild(e);
+    const e=document.createElement("div");e.className="calDow";e.textContent=d;gridEl.appendChild(e);
   });
-  for(let i=0;i<fd;i++){const e=document.createElement("div");e.className="calDay empty";calGrid.appendChild(e);}
+  for(let i=0;i<fd;i++){const e=document.createElement("div");e.className="calDay empty";gridEl.appendChild(e);}
   for(let d=1;d<=dim;d++){
     const dk=`${y}-${String(mo).padStart(2,"0")}-${String(d).padStart(2,"0")}`,dow=(fd+d-1)%7,it=d===p.D;
     const el=document.createElement("div");
     el.className="calDay"+(it?" today":"")+(dow===0?" calDaySun":dow===6?" calDaySat":"");
     const nd=document.createElement("div");nd.className="calDayNum";nd.textContent=d;el.appendChild(nd);
-    /* 自分が達成した日にだけ、その日のスタンプを表示（未来や未達成日は空） */
     const s=doneSet.has(dk)?stampForDate(dk):null;
     if(s){
       const sd=document.createElement("div");sd.className="calDayStamp";
       const img=document.createElement("img");img.src=s;sd.appendChild(img);el.appendChild(sd);
     }
-    calGrid.appendChild(el);
+    gridEl.appendChild(el);
   }
 }
+function buildCal(){renderCalInto(calMonth,calGrid);}
 function showCal(e){e.stopPropagation();playClick();buildCal();calPop.classList.add("visible");}
 todayCircle.addEventListener("click",showCal);
 todayLabel.addEventListener("click",showCal);
@@ -1458,18 +1636,26 @@ function startRandomMode(){
   /* 朝ノルマ画面はスキップして、押したらすぐスタンプを押せる画面へ */
   hideTaskScreen();
   challengeScreen.classList.remove("visible");
-  /* 毎回ルーレットを回せる。ただし2回目以降は1回目と同じ結果（引き直し不可） */
+  /* 毎回ルーレットを回せる。当たった日は固定（引き直し不可）。
+     目標時間から離れるほど「はずれ」の割合が増える。はずれは保存せず、また回せる。 */
   const decided=todayStamp();
-  let idx;
-  if(decided){idx=POOL.indexOf(decided);if(idx<0)idx=pickStampIdx();}
-  else idx=pickStampIdx();
+  let idx,mFrac;
+  if(decided){idx=POOL.indexOf(decided);if(idx<0)idx=pickStampIdx();mFrac=0;}
+  else{
+    mFrac=missRate();
+    idx=(Math.random()<mFrac)?-1:pickStampIdx();
+  }
   stampPath=null;
   openRoulette(idx,picked=>{
+    if(picked===null){            /* はずれ：保存しない・カード準備に進まない */
+      refreshTodayPreview();
+      return;
+    }
     if(!decided)assignTodayStamp(idx);   /* 初回だけ保存 */
     stampPath=picked;ghostImg.src=picked;
     refreshTodayPreview();
     openCardMenu();   /* ★ ルーレットの後にカード準備画面を表示 */
-  });
+  },mFrac);
 }
 
 let _cardBusy=false;
@@ -1477,17 +1663,21 @@ function handleCardSelect(target){
   if(todayCircle.contains(target)||todayLabel.contains(target))return;
   if(_cardBusy)return;
   _cardBusy=true;setTimeout(()=>{_cardBusy=false;},800);
-  startBGM();           /* スマホはここでBGM開始トリガー */
+  startBGM();
   playClick();
-  const st=jstStatus();
-  if(!st.open){
-    buzz();
-    refreshHomeGate();
-    const g=$("homeGate");
-    g.classList.remove("shake");void g.offsetWidth;g.classList.add("shake");
-    return;
+  const wake=profileWake(),now=nowHourFloat();
+  if(now>=wake&&now<wake+1){startRandomMode();return;}   /* 目標枠内：そのまま */
+  /* 枠外：確認カードを出す */
+  let msg;
+  if(now<wake){
+    const tm=Math.round((wake-now)*60),hh=Math.floor(tm/60),mm=tm%60;
+    msg=`目標の ${hh>0?hh+"時間":""}${mm}分前です。<br>本当に始めますか？`;
+  }else{
+    const tm=Math.round((now-(wake+1))*60),hh=Math.floor(tm/60),mm=tm%60;
+    msg=`目標から ${hh>0?hh+"時間":""}${mm}分 過ぎています。<br>本当に始めますか？`;
   }
-  startRandomMode();
+  $("confirmStartText").innerHTML=msg;
+  $("confirmStart").classList.add("visible");
 }
 
 /* -------------------------------------------------------
@@ -1506,6 +1696,9 @@ randomBtn.addEventListener("touchend",e=>{
 randomBtn.addEventListener("click",e=>{
   handleCardSelect(e.target);
 });
+$("confirmYes").addEventListener("click",()=>{playClick();$("confirmStart").classList.remove("visible");startRandomMode();});
+$("confirmNo").addEventListener("click",()=>{playClick();$("confirmStart").classList.remove("visible");});
+$("confirmStart").addEventListener("click",e=>{if(e.target===$("confirmStart"))$("confirmStart").classList.remove("visible");});
 
 /* =========================================================
    その他ボタンイベント
@@ -1642,20 +1835,21 @@ function addSegText(g,cx,cy,radius,mid,txt,fontSize,fill,id){
   t.textContent=txt;g.appendChild(t);
   return t;
 }
-function buildWheel(winnerIdx){
+function buildWheel(winnerIdx,missFrac){
+  missFrac=Math.max(0,Math.min(0.85,missFrac||0));
   const w=dynWeights(),total=w.reduce((a,b)=>a+b,0);
   const g=$("wheelG");g.innerHTML="";wheelSegs=[];
   const cx=100,cy=100,r=96;let acc=0;
+  const poolSpan=1-missFrac;
   const fills=["rgba(143,220,255,.55)","rgba(99,204,255,.8)","rgba(180,235,255,.62)","rgba(120,210,250,.72)","rgba(160,228,255,.5)","rgba(110,196,245,.66)"];
   POOL.forEach((src,i)=>{
-    const frac=w[i]/total,a0=acc*360,a1=(acc+frac)*360,mid=(a0+a1)/2;acc+=frac;
-    wheelSegs.push({i,src,mid});
+    const frac=(w[i]/total)*poolSpan,a0=acc*360,a1=(acc+frac)*360,mid=(a0+a1)/2;acc+=frac;
+    wheelSegs.push({idx:i,src,mid,miss:false});
     const p=document.createElementNS(SVGNS,"path");
     p.setAttribute("d",arcPath(cx,cy,r,a0,a1));
     p.setAttribute("fill",fills[i%fills.length]);
     p.setAttribute("stroke","rgba(255,255,255,.75)");p.setAttribute("stroke-width","1.5");
     g.appendChild(p);
-    /* 当選スタンプ画像（？と同じ位置・同じ回転基準＝上で止まったとき正立） */
     if(i===winnerIdx){
       const sz=r*0.4;
       const im=document.createElementNS(SVGNS,"image");
@@ -1665,15 +1859,34 @@ function buildWheel(winnerIdx){
       im.setAttribute("transform",`rotate(${mid} ${cx} ${cy})`);
       im.setAttribute("id","wheelWinImg");im.style.opacity="0";g.appendChild(im);
     }
-    /* ？（中心寄り）と 名前（その外）を扇の中におさめる */
     addSegText(g,cx,cy,r*0.5,mid,"？",22,"rgba(255,255,255,.95)",i===winnerIdx?"wheelWinQ":null);
     addSegText(g,cx,cy,r*0.74,mid,stampName(src),8.5,"rgba(60,120,150,.92)",null);
   });
+  if(missFrac>0.001){
+    const frac=missFrac,a0=acc*360,a1=(acc+frac)*360,mid=(a0+a1)/2;acc+=frac;
+    wheelSegs.push({idx:-1,mid,miss:true});
+    const p=document.createElementNS(SVGNS,"path");
+    p.setAttribute("d",arcPath(cx,cy,r,a0,a1));
+    p.setAttribute("fill","rgba(150,170,185,.5)");
+    p.setAttribute("stroke","rgba(255,255,255,.75)");p.setAttribute("stroke-width","1.5");
+    g.appendChild(p);
+    /* はずれは「今あるスタンプのどれか」を白黒にして見せる（未獲得でもOK） */
+    const gsrc=POOL[Math.floor(Math.random()*POOL.length)];
+    const sz=r*0.34;
+    const im=document.createElementNS(SVGNS,"image");
+    im.setAttribute("href",gsrc);im.setAttributeNS("http://www.w3.org/1999/xlink","href",gsrc);
+    im.setAttribute("x",cx-sz/2);im.setAttribute("y",(cy-r*0.55)-sz/2);
+    im.setAttribute("width",sz);im.setAttribute("height",sz);
+    im.setAttribute("transform",`rotate(${mid} ${cx} ${cy})`);
+    im.setAttribute("filter","url(#wheelGray)");im.style.opacity=".6";
+    g.appendChild(im);
+    addSegText(g,cx,cy,r*0.72,mid,"はずれ",9,"rgba(90,110,125,.95)",null);
+  }
 }
 let rouletteSkip=null;
-function openRoulette(winnerIdx,onDone){
+function openRoulette(winnerIdx,onDone,missFrac){
   rouletteSkip=null;
-  buildWheel(winnerIdx);
+  buildWheel(winnerIdx,missFrac);
   const rs=$("rouletteScreen");rs.classList.remove("reveal");rs.classList.add("visible");
   $("rouletteTitle").textContent="今日のスタンプは…？";
   const rr=$("rouletteResult");rr.textContent="";rr.classList.remove("show");
@@ -1685,7 +1898,9 @@ function openRoulette(winnerIdx,onDone){
 function spinWheel(winnerIdx,onDone){
   const g=$("wheelG"),rs=$("rouletteScreen"),rr=$("rouletteResult");
   void g.offsetWidth;
-  const winner=wheelSegs[winnerIdx],finalRot=360*6-winner.mid;
+  const isMiss=winnerIdx===-1;
+  const winner=isMiss?wheelSegs.find(s=>s.miss):wheelSegs.find(s=>s.idx===winnerIdx);
+  const finalRot=360*6-(winner?winner.mid:0);
   requestAnimationFrame(()=>{
     g.style.transition="transform 5.4s cubic-bezier(.1,.74,.16,1)";
     g.style.transform=`rotate(${finalRot}deg)`;
@@ -1698,14 +1913,19 @@ function spinWheel(winnerIdx,onDone){
     clearSpinSound();
     if(revealTimer){clearTimeout(revealTimer);revealTimer=null;}
     $("rouletteSkipBtn").style.display="none";
-    g.style.transition="none";g.style.transform=`rotate(${finalRot}deg)`;   /* スキップ時は即最終位置へ */
+    g.style.transition="none";g.style.transform=`rotate(${finalRot}deg)`;
     const wq=$("wheelWinQ"),wi=$("wheelWinImg");
     if(wq){wq.style.transition="opacity .25s";wq.style.opacity="0";}
     if(wi){wi.style.transition="opacity .3s";wi.style.opacity="1";}
     rs.classList.add("reveal");
-    rr.textContent=`✨ ${stampName(POOL[winnerIdx])} GET！`;rr.classList.add("show");
-    winSound();
-    if(typeof onDone==="function")onDone(POOL[winnerIdx]);
+    if(isMiss){
+      rr.textContent="ざんねん… はずれ";rr.classList.add("show");
+      buzz();
+    }else{
+      rr.textContent=`✨ ${stampName(POOL[winnerIdx])} GET！`;rr.classList.add("show");
+      winSound();
+    }
+    if(typeof onDone==="function")onDone(isMiss?null:POOL[winnerIdx]);
     setTimeout(()=>{rs.classList.remove("visible","reveal");},1400);
   };
   rouletteSkip=finish;
@@ -1749,25 +1969,19 @@ function getCollected(){return new Set(getDoneDates().map(stampForDate).filter(B
 function todayDone(){return getDoneDates().includes(jstKey());}
 
 function refreshHomeGate(){
-  const st=jstStatus();
+  const wake=profileWake(),now=nowHourFloat();
   const g=$("homeGate");
-  if(st.open){
-    g.classList.add("open");
-    if(st.bt){
-      $("homeGateText").textContent="いまひらいてるよ";
-      const closeLabel=JST_CM===0?`${JST_CH}時`:fmtHM(JST_CH,JST_CM);
-      const remMin=Math.max(0,Math.ceil(st.rem/60000));
-      $("homeGateRemain").textContent=`${closeLabel}(あと${remMin}分)まで`;
-    }else{
-      $("homeGateText").textContent="いまひらいてるよ（解除中）";
-      $("homeGateRemain").textContent="カードを押してスタート";
-    }
+  const inWindow=now>=wake&&now<wake+1;
+  g.classList.toggle("open",inWindow);
+  $("homeGateText").textContent=`目標 ${wake}:00〜${(wake+1)%24}:00`;
+  if(inWindow){
+    $("homeGateRemain").textContent="いまがチャンス！";
     $("homeGateBar").style.width="100%";
   }else{
-    g.classList.remove("open");
-    $("homeGateText").textContent=`朝 ${fmtHM(JST_OH,JST_OM)}〜${fmtHM(JST_CH,JST_CM)} にひらくよ`;
-    $("homeGateRemain").textContent=fmtRem(st.rem);
-    $("homeGateBar").style.width=`${clamp(st.prog,0,100)}%`;
+    let until=wake-now;if(until<=0)until+=24;          /* 次の目標時刻まで（時間） */
+    const tm=Math.round(until*60),hh=Math.floor(tm/60),mm=tm%60;
+    $("homeGateRemain").textContent=hh>0?`目標まで あと${hh}時間${mm}分`:`目標まで あと${mm}分`;
+    $("homeGateBar").style.width=`${clamp((23-until)/23*100,0,100)}%`;   /* 目標に近いほど満ちる */
   }
 }
 
@@ -1828,6 +2042,102 @@ function toast(txt){
 }
 
 /* =========================================================
+   プロフィールUI
+   ========================================================= */
+let psColor=AVATAR_COLORS[1];
+function buildColorPicker(container,current){
+  container.innerHTML="";
+  AVATAR_COLORS.forEach(c=>{
+    const d=document.createElement("div");d.className="psColor"+(c===current?" sel":"");
+    d.style.background=c;d.onclick=()=>{psColor=c;[...container.children].forEach(x=>x.classList.remove("sel"));d.classList.add("sel");};
+    container.appendChild(d);
+  });
+}
+function updateWakeHint(){
+  let h=parseInt($("psWake").value,10);if(!Number.isFinite(h)||h<0)h=0;if(h>23)h=23;
+  $("psWakeHint").textContent=`${h}:00〜${(h+1)%24}:00`;
+}
+function renderProfileBar(){
+  const p=getProfile();
+  $("tpbName").textContent=p&&p.name?p.name:"匿名さん";
+  $("tpbAvatar").style.background=profileColor();
+}
+function openProfileSetup(edit){
+  const p=getProfile()||{};
+  $("psTitle").textContent=edit?"プロフィールを編集":"プロフィールを作ろう";
+  $("psName").value=p.name||"";
+  $("psWake").value=Number.isFinite(p.wakeHour)?p.wakeHour:6;
+  $("psComment").value=p.comment||"";
+  $("psPublic").checked=!!p.isPublic;
+  $("psId").value=p.id||"";
+  $("psPw").value=p.pw||"";
+  psColor=p.color||AVATAR_COLORS[1];
+  buildColorPicker($("psColors"),psColor);
+  updateWakeHint();
+  $("psSkip").style.display=edit?"none":"";
+  $("profileSetup").classList.add("visible");
+}
+function closeProfileSetup(){$("profileSetup").classList.remove("visible");}
+function saveFromSetup(skip){
+  const prev=getProfile()||{};
+  let wake=parseInt($("psWake").value,10);if(!Number.isFinite(wake)||wake<0)wake=0;if(wake>23)wake=23;
+  const id=($("psId").value||"").toLowerCase().replace(/[^a-z]/g,"").slice(0,6);
+  const pw=($("psPw").value||"").replace(/[^0-9]/g,"").slice(0,4);
+  const p=skip?{
+    name:"匿名さん",color:AVATAR_COLORS[1],comment:"",wakeHour:DEFAULT_WAKE,isPublic:false,
+    id:prev.id||"",pw:prev.pw||""
+  }:{
+    name:($("psName").value||"").trim()||"匿名さん",
+    color:psColor,comment:($("psComment").value||"").trim(),
+    wakeHour:wake,isPublic:$("psPublic").checked,id,pw
+  };
+  saveProfile(p);
+  closeProfileSetup();
+  renderProfileBar();refreshHome();
+}
+function openProfilePanel(){
+  const p=getProfile()||{};
+  $("ppAvatar").style.background=profileColor();
+  $("ppName").textContent=p.name||"匿名さん";
+  $("ppComment").textContent=p.comment||"";
+  $("ppStreakNum").textContent=calcStreak().current;
+  $("ppPublicBtn").classList.toggle("pub",!!p.isPublic);
+  $("ppPublicBtn").textContent=p.isPublic?"公開中（タップで非公開）":"非公開（タップで公開）";
+  $("ppId").value=p.id||"";$("ppPw").value=p.pw||"";
+  switchPpTab("prof");
+  $("profilePanel").classList.add("visible");
+}
+function switchPpTab(t){
+  document.querySelectorAll(".ppTab").forEach(b=>b.classList.toggle("active",b.dataset.tab===t));
+  $("ppTabProf").hidden=t!=="prof";
+  $("ppTabCal").hidden=t!=="cal";
+  if(t==="cal")renderCalInto($("ppCalMonth"),$("ppCalGrid"));
+}
+$("topProfileBar").addEventListener("click",()=>{playClick();openProfilePanel();});
+$("ppClose").addEventListener("click",()=>{playClick();$("profilePanel").classList.remove("visible");});
+$("profilePanel").addEventListener("click",e=>{if(e.target===$("profilePanel"))$("profilePanel").classList.remove("visible");});
+document.querySelectorAll(".ppTab").forEach(b=>b.addEventListener("click",()=>{playClick();switchPpTab(b.dataset.tab);}));
+$("ppPublicBtn").addEventListener("click",()=>{
+  const p=getProfile()||{};p.isPublic=!p.isPublic;saveProfile(p);
+  $("ppPublicBtn").classList.toggle("pub",p.isPublic);
+  $("ppPublicBtn").textContent=p.isPublic?"公開中（タップで非公開）":"非公開（タップで公開）";
+});
+$("ppEditBtn").addEventListener("click",()=>{playClick();$("profilePanel").classList.remove("visible");openProfileSetup(true);});
+$("ppRestoreSave").addEventListener("click",()=>{
+  const p=getProfile()||{};
+  p.id=($("ppId").value||"").toLowerCase().replace(/[^a-z]/g,"").slice(0,6);
+  p.pw=($("ppPw").value||"").replace(/[^0-9]/g,"").slice(0,4);
+  saveProfile(p);toast("復元ID設定を保存したよ");
+});
+$("psSubmit").addEventListener("click",()=>{playClick();saveFromSetup(false);});
+$("psSkip").addEventListener("click",()=>{playClick();saveFromSetup(true);});
+$("psWake").addEventListener("input",updateWakeHint);
+function profileBoot(){
+  renderProfileBar();
+  if(!getProfile())openProfileSetup(false);
+}
+
+/* =========================================================
    初期化
    ========================================================= */
 if(!POOL.length)throw new Error("STAMP_POOL empty");
@@ -1839,6 +2149,7 @@ updateCounts();
 refreshHome();
 showSelect();
 updateTop();
+profileBoot();
 </script>
 </body>
 </html>

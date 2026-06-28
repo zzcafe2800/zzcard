@@ -44,8 +44,8 @@ button,input{font:inherit;}
 .sky-night #sun{top:9%;background:radial-gradient(circle at 50% 50%,#ffffff 0%,#e6ecff 46%,rgba(220,230,255,0) 72%);}
 .sky-night .twinkle{opacity:.9;}
 #selectScreen:not(.sky-night) .twinkle{opacity:.22;}
-.sky-evening .hillBack,.sky-night .hillBack{background:rgba(60,72,120,.45);}
-.sky-evening .hillFront,.sky-night .hillFront{background:rgba(44,54,98,.6);}
+.sky-evening .hillBack,.sky-night .hillBack{background:#5a6a8e;}
+.sky-evening .hillFront,.sky-night .hillFront{background:#46506a;}
 .sky-night #selectTitle{color:#eef2ff;text-shadow:0 2px 10px rgba(0,0,0,.35);}
 .sky-night #lobbySub{color:#c4ccec;}
 .sky-evening #selectTitle{color:#fff;text-shadow:0 2px 8px rgba(120,70,90,.4);}
@@ -73,8 +73,70 @@ button,input{font:inherit;}
 
 /* 朝の野原（地平線の丘） */
 .hill{position:absolute;left:50%;transform:translateX(-50%);border-radius:50%;z-index:0;}
-.hillBack{width:180vw;height:280px;bottom:-160px;background:rgba(196,228,180,.5);}
-.hillFront{width:155vw;height:240px;bottom:-130px;background:rgba(176,217,156,.62);}
+#hillCats{position:absolute;left:0;right:0;bottom:86px;z-index:0;pointer-events:none;
+  display:flex;justify-content:center;align-items:flex-end;gap:8px;padding:0 10px;flex-wrap:nowrap;}
+.hillCat{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;pointer-events:auto;
+  width:74px;flex:0 0 auto;}
+.catLabel{display:flex;flex-direction:column;align-items:center;line-height:1.15;text-align:center;
+  background:rgba(255,255,255,.82);border:1px solid rgba(143,220,255,.4);border-radius:10px;padding:3px 7px;
+  box-shadow:0 4px 10px rgba(111,205,255,.18);max-width:80px;}
+.catName{font-size:10px;font-weight:700;color:#4d7790;max-width:66px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.catTime{font-size:9px;font-weight:700;color:#7796a8;display:flex;align-items:center;gap:2px;}
+.catMark{font-weight:800;font-size:10px;}
+.catMark.mOk{color:#3bb273;}
+.catMark.mNg{color:#e8923c;}
+.catMark.mNeutral{color:#9bbacb;}
+.wEarly{font-size:8px;font-weight:800;color:#4aa9da;}
+.wTime{font-size:inherit;}
+.catStreak{font-size:8.5px;font-weight:800;color:#fff;background:linear-gradient(135deg,#ffb37a,#ff8f5e);
+  border-radius:999px;padding:1px 6px;margin-top:2px;box-shadow:0 2px 5px rgba(255,140,90,.3);}
+.catLike{border:none;border-radius:999px;padding:3px 9px;font-size:10px;font-weight:700;cursor:pointer;
+  background:linear-gradient(135deg,#ffa6c8,#ff86b4);color:#fff;box-shadow:0 4px 10px rgba(255,140,180,.34);white-space:nowrap;}
+.catLike.done{background:rgba(143,220,255,.5);color:#fff;cursor:default;box-shadow:none;}
+.catFig{position:relative;transition:opacity .5s;will-change:opacity;}
+@keyframes catHop{0%,100%{transform:translateY(0);}30%{transform:translateY(-9px);}55%{transform:translateY(0);}}
+.catFig.hop{animation:catHop .62s ease-in-out infinite;}
+@media (prefers-reduced-motion:reduce){.catFig.hop{animation:none;}}
+.catPose{display:block;transition:opacity .5s;transform-origin:50% 92%;animation:catIdle 4.6s ease-in-out infinite;}
+@keyframes catIdle{0%,100%{transform:translateY(0) rotate(0deg);}25%{transform:translateY(-1px) rotate(-1.1deg);}50%{transform:translateY(0.5px) rotate(0deg);}75%{transform:translateY(-1px) rotate(1.1deg);}}
+@media (prefers-reduced-motion:reduce){.catPose{animation:none;}}
+.catSvg{width:76px;height:auto;display:block;filter:drop-shadow(0 6px 8px rgba(40,50,70,.22));}
+.catZ{position:absolute;top:-6px;right:0;display:none;pointer-events:none;color:#7aa7c4;font-weight:800;
+  text-shadow:0 1px 3px rgba(255,255,255,.6);}
+.catZ b{font-size:14px;}.catZ .z2{font-size:10px;}.catZ .note{font-size:12px;color:#9ec9e0;margin-left:1px;}
+.sky-night .catName{color:#4d7790;}
+.catBubble{background:#fff;border:1.5px solid rgba(143,220,255,.45);border-radius:14px;padding:7px 13px;
+  font-size:12px;font-weight:700;color:#5c93ad;box-shadow:0 6px 16px rgba(111,205,255,.2);position:relative;white-space:nowrap;}
+.catBubble::after{content:"";position:absolute;left:50%;bottom:-7px;transform:translateX(-50%);
+  border-left:7px solid transparent;border-right:7px solid transparent;border-top:7px solid #fff;}
+#hillCats.empty{bottom:96px;}
+#nyanShot{position:absolute;bottom:18px;right:16px;z-index:106;width:50px;height:50px;border:none;border-radius:50%;
+  background:rgba(255,255,255,.8);cursor:pointer;box-shadow:0 8px 20px rgba(111,205,255,.28);
+  display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
+#nyanShot .nyanCam svg{width:26px;height:26px;}
+#nyanShot .nyanCat{display:none;}
+#nyanShot .nyanCat svg{width:30px;height:30px;}
+#nyanShot.capmode .nyanCam{display:none;}
+#nyanShot.capmode .nyanCat{display:block;}
+#nyanShot.capmode{background:rgba(255,255,255,.85);}
+.sky-night #nyanShot{background:rgba(70,82,130,.6);}
+#catShutter{position:absolute;bottom:26px;left:50%;transform:translateX(-50%) scale(.6);opacity:0;pointer-events:none;
+  z-index:108;width:70px;height:70px;border-radius:50%;border:5px solid #fff;background:rgba(255,255,255,.45);cursor:pointer;
+  box-shadow:0 10px 30px rgba(111,205,255,.45);display:flex;align-items:center;justify-content:center;
+  transition:opacity .25s,transform .25s;}
+#catShutter::after{content:"";width:50px;height:50px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.12);}
+#catShutter.show{opacity:1;transform:translateX(-50%) scale(1);pointer-events:auto;}
+#catShutter:active.show{transform:translateX(-50%) scale(.92);}
+#recentLabel{position:absolute;left:14px;bottom:18px;z-index:104;display:flex;align-items:center;gap:5px;pointer-events:auto;cursor:pointer;
+  background:rgba(255,255,255,.72);border-radius:999px;padding:5px 12px 5px 6px;box-shadow:0 4px 12px rgba(111,205,255,.2);
+  font-size:11px;font-weight:700;color:#5c93ad;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);}
+#recentLabel:active{transform:scale(.94);}
+#recentLabel .recentCat{width:22px;height:22px;}
+.sky-night #recentLabel{background:rgba(70,82,130,.62);color:#eef2ff;}
+#selectInner{pointer-events:none;}
+#selectInner .modeCard,#selectInner #homeStats{pointer-events:auto;}
+.hillBack{width:180vw;height:280px;bottom:-160px;background:#c7e3b8;}
+.hillFront{width:155vw;height:240px;bottom:-130px;background:#aecf99;}
 .cloud{position:absolute;background:rgba(255,255,255,.9);border-radius:999px;
   box-shadow:0 10px 26px rgba(150,200,235,.16);opacity:.9;}
 .cloud::before,.cloud::after{content:"";position:absolute;background:inherit;border-radius:50%;}
@@ -235,6 +297,10 @@ button,input{font:inherit;}
 #rouletteTitle{font-size:20px;font-weight:700;color:#4d7790;letter-spacing:.12em;
   text-shadow:0 1px 10px rgba(255,255,255,.7);animation:titlePulse 1.4s ease-in-out infinite;}
 @keyframes titlePulse{0%,100%{transform:scale(1);opacity:.85}50%{transform:scale(1.06);opacity:1}}
+#rouletteReset{font-size:13px;font-weight:700;color:#6f9fb6;background:rgba(255,255,255,.72);
+  border:1.5px solid rgba(143,220,255,.4);border-radius:999px;padding:7px 16px;margin-bottom:12px;
+  box-shadow:0 6px 16px rgba(111,205,255,.18);}
+#rouletteReset[hidden]{display:none;}
 #wheelWrap{position:relative;width:min(78vw,360px);height:min(78vw,360px);}
 #wheelSvg{width:100%;height:100%;filter:drop-shadow(0 16px 40px rgba(99,204,255,.4));
   border-radius:50%;background:rgba(255,255,255,.5);}
@@ -575,6 +641,10 @@ button,input{font:inherit;}
   padding:40px 26px;text-align:center;
   background:linear-gradient(180deg,#bfe6ff 0%,#d8f0ff 36%,#ecf6ff 62%,#fff1e2 100%);}
 #tutorial.visible{display:flex;}
+#helpBtn{position:absolute;top:16px;right:16px;z-index:106;width:38px;height:38px;border:none;border-radius:50%;
+  background:rgba(255,255,255,.7);color:#5c93ad;font-size:19px;font-weight:700;cursor:pointer;
+  box-shadow:0 6px 16px rgba(111,205,255,.22);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
+.sky-night #helpBtn{background:rgba(70,82,130,.55);color:#eef2ff;}
 #tutPages{width:min(360px,90vw);}
 .tutPage{display:flex;flex-direction:column;align-items:center;gap:16px;}
 .tutPage[hidden]{display:none;}
@@ -597,7 +667,8 @@ button,input{font:inherit;}
   background:rgba(255,255,255,.82);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
   box-shadow:0 6px 16px rgba(111,205,255,.22);transition:transform .18s,background .2s;}
 #topProfileBar:hover{transform:translateY(-1px);background:rgba(255,255,255,.96);}
-#tpbAvatar{width:30px;height:30px;border-radius:50%;background:#8fdcff;box-shadow:inset 0 0 0 2px rgba(255,255,255,.8);flex:0 0 auto;}
+#tpbAvatar{width:32px;height:32px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;}
+.avatarCat{width:100%;height:100%;display:block;overflow:visible;}
 #tpbName{font-size:13px;font-weight:700;color:#4d7790;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 #tpbBell{position:relative;font-size:15px;margin-left:2px;}
 #tpbCount{position:absolute;top:-7px;right:-9px;min-width:16px;height:16px;padding:0 4px;border-radius:999px;
@@ -612,6 +683,8 @@ button,input{font:inherit;}
 #psBox,#ppBox{width:min(360px,94vw);margin:auto;border-radius:26px;padding:22px;position:relative;
   background:rgba(255,255,255,.97);border:1.5px solid rgba(143,220,255,.4);box-shadow:0 30px 70px rgba(111,205,255,.26);
   display:flex;flex-direction:column;gap:13px;}
+#ppBox{min-height:420px;}
+.ppTabBody{flex:1;}
 #psTitle{font-size:18px;font-weight:700;color:#5c93ad;text-align:center;letter-spacing:.06em;}
 .psField{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:700;color:#6f9fb6;}
 .psField.psRow{flex-direction:row;align-items:center;justify-content:space-between;}
@@ -620,13 +693,21 @@ button,input{font:inherit;}
 .psWakeRow{display:flex;align-items:center;gap:10px;}
 .psWakeRow input{width:80px;}
 #psWakeHint{font-size:13px;color:#7aa5bc;font-weight:700;}
-#psColors{display:flex;flex-wrap:wrap;gap:9px;}
-.psColor{width:30px;height:30px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:transform .15s;}
-.psColor:hover{transform:scale(1.1);}
-.psColor.sel{border-color:#4d7790;}
-#psSubmit,#psSkip{height:48px;border:none;border-radius:999px;cursor:pointer;font-size:15px;font-weight:700;letter-spacing:.04em;}
-#psSubmit{background:linear-gradient(135deg,#7fd8b0,#5ec79a);color:#fff;box-shadow:0 10px 24px rgba(94,199,154,.38);}
-#psSkip{background:rgba(143,220,255,.16);color:#5c93ad;}
+#psCatPreview{align-self:center;width:96px;height:96px;}
+#psCatPreview .avatarCat{filter:drop-shadow(0 8px 14px rgba(40,50,70,.18));}
+#psSwatchRow{display:flex;gap:12px;}
+.psSwatch{flex:1;display:flex;align-items:center;justify-content:center;gap:9px;height:46px;border:1.5px solid rgba(143,220,255,.4);
+  border-radius:14px;background:rgba(238,248,255,.6);cursor:pointer;font-size:13px;font-weight:700;color:#5c93ad;}
+.psSwDot{width:24px;height:24px;border-radius:50%;box-shadow:inset 0 0 0 2px rgba(255,255,255,.8),0 2px 5px rgba(0,0,0,.12);flex:0 0 auto;}
+.psHiddenColor{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;}
+#psNext,#psSubmit,#psBack{height:48px;border:none;border-radius:999px;cursor:pointer;font-size:15px;font-weight:700;letter-spacing:.04em;}
+#psNext{margin-top:10px;}
+#psSubmit{margin-top:14px;}
+#psNext,#psSubmit{background:linear-gradient(135deg,#7fd8b0,#5ec79a);color:#fff;box-shadow:0 10px 24px rgba(94,199,154,.38);}
+#psBack{background:rgba(143,220,255,.16);color:#5c93ad;}
+#psStep1,#psStep2{display:flex;flex-direction:column;gap:13px;}
+#psStep1[hidden],#psStep2[hidden]{display:none;}
+#psTitle2{font-size:18px;font-weight:700;color:#4d7790;text-align:center;letter-spacing:.04em;}
 #psRestore,#ppRestore{margin-top:2px;}
 #psRestore summary,#ppRestore summary{font-size:11px;color:#9bbacb;cursor:pointer;list-style:none;text-align:center;}
 #psRestore summary::-webkit-details-marker,#ppRestore summary::-webkit-details-marker{display:none;}
@@ -636,7 +717,7 @@ button,input{font:inherit;}
 #ppClose{position:absolute;top:14px;right:14px;width:30px;height:30px;border:none;border-radius:999px;
   background:rgba(143,220,255,.16);color:#5c93ad;font-size:18px;cursor:pointer;}
 #ppHead{display:flex;align-items:center;gap:12px;}
-#ppAvatar{width:52px;height:52px;border-radius:50%;background:#8fdcff;box-shadow:inset 0 0 0 3px rgba(255,255,255,.85);flex:0 0 auto;}
+#ppAvatar{width:54px;height:54px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;}
 #ppName{font-size:17px;font-weight:700;color:#4d7790;}
 #ppStreakInline{font-size:12px;font-weight:700;color:#ef8a4d;margin-left:4px;white-space:nowrap;}
 #ppComment{font-size:13px;color:#6f9fb6;font-weight:600;padding:11px 13px;border-radius:13px;
@@ -665,7 +746,7 @@ button,input{font:inherit;}
 #ppFeedBox{display:flex;flex-direction:column;gap:7px;max-height:48vh;overflow-y:auto;}
 .feedRow{display:flex;align-items:center;gap:9px;padding:8px 11px;border-radius:13px;
   background:rgba(238,248,255,.7);border:1.5px solid rgba(143,220,255,.24);}
-.feedAvatar{width:26px;height:26px;border-radius:50%;flex:0 0 auto;box-shadow:inset 0 0 0 2px rgba(255,255,255,.85);}
+.feedAvatar{width:30px;height:30px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;}
 .feedName{flex:1;font-size:13px;font-weight:700;color:#4d7790;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .feedStamp{width:24px;height:24px;flex:0 0 auto;}.feedStamp img{width:100%;height:100%;object-fit:contain;}
 .feedDate{font-size:10px;color:#9bbacb;font-weight:700;}
@@ -691,7 +772,8 @@ button,input{font:inherit;}
 .restoreIdRow{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:12px;cursor:pointer;
   background:rgba(238,248,255,.7);border:1.5px solid rgba(143,220,255,.24);}
 .restoreIdRow.sel{border-color:#7fd0a0;background:rgba(186,238,210,.5);}
-.restoreIdRow .ra{width:24px;height:24px;border-radius:50%;flex:0 0 auto;}
+.restoreIdRow .ra{width:28px;height:28px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;}
+.restoreIdRow .rNo{width:20px;text-align:center;font-size:12px;font-weight:800;color:#9bbacb;flex:0 0 auto;}
 .restoreIdRow .rn{flex:1;font-size:13px;font-weight:700;color:#4d7790;}
 .restoreIdRow .ri{font-size:11px;color:#9bbacb;font-weight:700;}
 #restoreDo{height:48px;border:none;border-radius:999px;cursor:pointer;font-size:15px;font-weight:700;
@@ -721,13 +803,27 @@ button,input{font:inherit;}
 #likeList,#notifList{display:flex;flex-direction:column;gap:8px;max-height:50vh;overflow-y:auto;}
 .likeRow{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:14px;
   background:rgba(238,248,255,.7);border:1.5px solid rgba(143,220,255,.24);}
-.likeRowAvatar{width:30px;height:30px;border-radius:50%;flex:0 0 auto;box-shadow:inset 0 0 0 2px rgba(255,255,255,.85);}
+.likeRowAvatar{width:34px;height:34px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;}
 .likeRowName{flex:1;font-size:13px;font-weight:700;color:#4d7790;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .likeRowStamp{width:26px;height:26px;flex:0 0 auto;}.likeRowStamp img{width:100%;height:100%;object-fit:contain;}
 .likeBtn{border:none;border-radius:999px;padding:7px 13px;font-size:13px;font-weight:700;cursor:pointer;
   background:linear-gradient(135deg,#ffa6c8,#ff86b4);color:#fff;flex:0 0 auto;}
 .likeBtn.done{background:rgba(143,220,255,.2);color:#7aa5bc;cursor:default;}
 #likeClose{height:44px;border:none;border-radius:999px;background:rgba(143,220,255,.16);color:#5c93ad;font-size:14px;font-weight:700;cursor:pointer;}
+.likeEmpty{text-align:center;font-size:14px;color:#86abc0;font-weight:700;padding:26px 8px;}
+#postConfirm{position:fixed;inset:0;z-index:209;display:none;align-items:center;justify-content:center;
+  background:rgba(200,234,255,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding:24px;}
+#postConfirm.visible{display:flex;}
+#postConfirmBox{width:min(330px,92vw);border-radius:24px;padding:24px;
+  background:rgba(255,255,255,.98);border:1.5px solid rgba(143,220,255,.4);box-shadow:0 24px 60px rgba(111,205,255,.26);
+  display:flex;flex-direction:column;gap:16px;text-align:center;}
+#postConfirmTitle{font-size:16px;font-weight:700;color:#4d7790;letter-spacing:.03em;}
+#postAnonRow{display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;font-weight:700;color:#6f9fb6;cursor:pointer;}
+#postAnonRow input{width:17px;height:17px;accent-color:#7fd8b0;}
+#postConfirmBtns{display:flex;gap:10px;}
+#postYes,#postNo{flex:1;height:48px;border:none;border-radius:999px;cursor:pointer;font-size:15px;font-weight:700;}
+#postYes{background:linear-gradient(135deg,#7fd8b0,#5ec79a);color:#fff;box-shadow:0 8px 20px rgba(94,199,154,.34);}
+#postNo{background:rgba(143,220,255,.16);color:#5c93ad;}
 #notifHead{display:flex;align-items:center;justify-content:space-between;}
 #notifTitle{font-size:16px;font-weight:700;color:#5c93ad;letter-spacing:.06em;}
 #notifClose{width:30px;height:30px;border:none;border-radius:999px;background:rgba(143,220,255,.16);color:#5c93ad;font-size:18px;cursor:pointer;}
@@ -758,6 +854,10 @@ button,input{font:inherit;}
 
 <!-- ===================== SELECT SCREEN ===================== -->
 <div id="selectScreen">
+  <button id="helpBtn" type="button" aria-label="使い方">？</button>
+  <button id="nyanShot" type="button" aria-label="カメラ"><span class="nyanCam"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M11 7 L13 4 L19 4 L21 7 L27 7 Q29 7 29 9 L29 24 Q29 26 27 26 L5 26 Q3 26 3 24 L3 9 Q3 7 5 7 Z" fill="none" stroke="#5c93ad" stroke-width="2.4" stroke-linejoin="round"/><circle cx="16" cy="16" r="6" fill="none" stroke="#5c93ad" stroke-width="2.4"/></svg></span><span class="nyanCat"><svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg"><circle cx="40" cy="45" r="22" fill="#1c1c1c"/><path d="M24 33 L20 14 L39 28 Z" fill="#1c1c1c" stroke="#1c1c1c" stroke-width="5" stroke-linejoin="round"/><path d="M56 33 L60 14 L41 28 Z" fill="#1c1c1c" stroke="#1c1c1c" stroke-width="5" stroke-linejoin="round"/><circle cx="33" cy="46" r="6.5" fill="#fff"/><circle cx="47" cy="46" r="6.5" fill="#fff"/><circle cx="33" cy="47" r="5" fill="#1c1c1c"/><circle cx="47" cy="47" r="5" fill="#1c1c1c"/></svg></span></button>
+  <button id="catShutter" type="button" aria-label="撮影"></button>
+  <div id="recentLabel"><svg class="recentCat" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg"><circle cx="40" cy="45" r="24" fill="#1c1c1c"/><path d="M24 31 L19 11 L40 27 Z" fill="#1c1c1c" stroke="#1c1c1c" stroke-width="6" stroke-linejoin="round"/><path d="M56 31 L61 11 L40 27 Z" fill="#1c1c1c" stroke="#1c1c1c" stroke-width="6" stroke-linejoin="round"/><path d="M27 27 L25 18 L36 26 Z" fill="#8fdcff"/><path d="M53 27 L55 18 L44 26 Z" fill="#8fdcff"/><circle cx="32" cy="45" r="7.5" fill="#fff"/><circle cx="48" cy="45" r="7.5" fill="#fff"/><circle cx="32" cy="46" r="5.6" fill="#1c1c1c"/><circle cx="48" cy="46" r="5.6" fill="#1c1c1c"/></svg><span id="recentLabelText">直近3日</span></div>
   <div id="skyDecor" aria-hidden="true">
     <div id="sun"></div>
     <span class="twinkle t1"></span>
@@ -767,6 +867,7 @@ button,input{font:inherit;}
     <div class="cloud cloud2"></div>
     <div class="cloud cloud3"></div>
     <div class="hill hillBack"></div>
+    <div id="hillCats"></div>
     <div class="hill hillFront"></div>
   </div>
   <div id="selectInner">
@@ -804,8 +905,6 @@ button,input{font:inherit;}
         <circle cx="166" cy="108" r="11" fill="#eaf7ff"/><circle cx="166" cy="108" r="4" fill="#9fd4ef"/>
       </svg></div>
       <div class="modeLabel">はじめる</div>
-      <div class="randomTodayCircle" id="todayCircle"><img id="todayStampPreview" src="" alt=""><div id="todayQ">？</div></div>
-      <div class="randomTodayLabel" id="todayLabel">今日のスタンプ</div>
     </button>
     <div id="homeStats">
       <div class="homeStat" id="streakStat">
@@ -1008,33 +1107,50 @@ button,input{font:inherit;}
   <button id="tutNext" class="tutArrow" type="button">›</button>
   <div id="tutPages">
     <div class="tutPage" data-i="0">
-      <div class="tutArt"><svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="64" cy="40" r="13" fill="#ffd27a"/><circle cx="136" cy="40" r="13" fill="#ffd27a"/>
-        <line x1="58" y1="30" x2="44" y2="18" stroke="#7cc3e6" stroke-width="5" stroke-linecap="round"/>
-        <line x1="142" y1="30" x2="156" y2="18" stroke="#7cc3e6" stroke-width="5" stroke-linecap="round"/>
-        <circle cx="100" cy="90" r="54" fill="#d6f0ff" stroke="#7cc3e6" stroke-width="6"/>
-        <line x1="100" y1="90" x2="100" y2="56" stroke="#4d7790" stroke-width="6" stroke-linecap="round"/>
-        <line x1="100" y1="90" x2="126" y2="100" stroke="#4d7790" stroke-width="6" stroke-linecap="round"/>
-        <circle cx="100" cy="90" r="7" fill="#4d7790"/>
-        <text x="150" y="56" font-size="30">✨</text>
+      <div class="tutArt"><svg viewBox="0 0 200 204" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="tClockFace" cx="40%" cy="34%" r="76%">
+            <stop offset="0%" stop-color="#eef9ff"/><stop offset="100%" stop-color="#cfecfb"/>
+          </radialGradient>
+          <linearGradient id="tBell" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#ffe0a0"/><stop offset="100%" stop-color="#ffc861"/>
+          </linearGradient>
+          <linearGradient id="tSeal" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#ef8576"/><stop offset="100%" stop-color="#d4574e"/>
+          </linearGradient>
+        </defs>
+        <rect x="30" y="100" width="140" height="104" rx="14" fill="#ffffff" stroke="#e4eef5" stroke-width="3"/>
+        <line x1="44" y1="120" x2="156" y2="120" stroke="#eef4f9" stroke-width="2"/>
+        <circle cx="60" cy="140" r="17" fill="none" stroke="#e3eef5" stroke-width="2"/><circle cx="60" cy="140" r="14" fill="#5bb8e0" stroke="#4aa9da" stroke-width="2.2"/><path d="M60.0 131.6 L62.3 136.9 L68.0 137.4 L63.7 141.2 L64.9 146.8 L60.0 143.9 L55.1 146.8 L56.3 141.2 L52.0 137.4 L57.7 136.9 Z" fill="#eaf7ff"/><circle cx="100" cy="140" r="17" fill="none" stroke="#e3eef5" stroke-width="2"/><circle cx="100" cy="140" r="14" fill="#5bb8e0" stroke="#4aa9da" stroke-width="2.2"/><path d="M100.0 131.6 L102.3 136.9 L108.0 137.4 L103.7 141.2 L104.9 146.8 L100.0 143.9 L95.1 146.8 L96.3 141.2 L92.0 137.4 L97.7 136.9 Z" fill="#eaf7ff"/><circle cx="140" cy="140" r="17" fill="none" stroke="#e3eef5" stroke-width="2"/><circle cx="140" cy="140" r="14" fill="#5bb8e0" stroke="#4aa9da" stroke-width="2.2"/><path d="M140.0 131.6 L142.3 136.9 L148.0 137.4 L143.7 141.2 L144.9 146.8 L140.0 143.9 L135.1 146.8 L136.3 141.2 L132.0 137.4 L137.7 136.9 Z" fill="#eaf7ff"/><circle cx="60" cy="176" r="17" fill="none" stroke="#e3eef5" stroke-width="2"/><circle cx="60" cy="176" r="14" fill="#5bb8e0" stroke="#4aa9da" stroke-width="2.2"/><path d="M60.0 167.6 L62.3 172.9 L68.0 173.4 L63.7 177.2 L64.9 182.8 L60.0 179.9 L55.1 182.8 L56.3 177.2 L52.0 173.4 L57.7 172.9 Z" fill="#eaf7ff"/><circle cx="100" cy="176" r="17" fill="none" stroke="#e3eef5" stroke-width="2"/><circle cx="100" cy="176" r="14" fill="#5bb8e0" stroke="#4aa9da" stroke-width="2.2"/><path d="M100.0 167.6 L102.3 172.9 L108.0 173.4 L103.7 177.2 L104.9 182.8 L100.0 179.9 L95.1 182.8 L96.3 177.2 L92.0 173.4 L97.7 172.9 Z" fill="#eaf7ff"/><circle cx="140" cy="176" r="17" fill="none" stroke="#e3eef5" stroke-width="2"/><circle cx="140" cy="176" r="14" fill="none" stroke="#9fc6dd" stroke-width="2.2" stroke-dasharray="4 4"/>
+        <ellipse cx="66" cy="28" rx="13" ry="12" fill="url(#tBell)"/>
+        <ellipse cx="134" cy="28" rx="13" ry="12" fill="url(#tBell)"/>
+        <circle cx="62" cy="24" r="3" fill="#fff2d4" opacity=".8"/><circle cx="130" cy="24" r="3" fill="#fff2d4" opacity=".8"/>
+        <line x1="60" y1="20" x2="46" y2="9" stroke="#7cc3e6" stroke-width="5" stroke-linecap="round"/>
+        <line x1="140" y1="20" x2="154" y2="9" stroke="#7cc3e6" stroke-width="5" stroke-linecap="round"/>
+        <circle cx="100" cy="72" r="50" fill="#a9dcf3"/>
+        <circle cx="100" cy="72" r="46" fill="url(#tClockFace)"/>
+        <g stroke="#9cc6dd" stroke-width="2.6" stroke-linecap="round">
+          <line x1="100" y1="32" x2="100" y2="39"/><line x1="140" y1="72" x2="133" y2="72"/>
+          <line x1="100" y1="112" x2="100" y2="105"/><line x1="60" y1="72" x2="67" y2="72"/>
+        </g>
+        <line x1="100" y1="72" x2="100" y2="48" stroke="#4d7790" stroke-width="5.5" stroke-linecap="round"/>
+        <line x1="100" y1="72" x2="120" y2="81" stroke="#4d7790" stroke-width="5.5" stroke-linecap="round"/>
+        <circle cx="100" cy="72" r="5.5" fill="#4d7790"/>
+        <ellipse cx="84" cy="56" rx="14" ry="9" fill="#ffffff" opacity=".42"/>
       </svg></div>
-      <div class="tutTitle">目標の時間に起きると<br>いいスタンプが押せる！</div>
-      <div class="tutDesc">自分で決めた起きる時間にアプリを開いてスタンプを押そう。<br>早すぎ・遅すぎると「はずれ」が増えるよ。</div>
+      <div class="tutTitle">目標の時間に起きて<br>スタンプラリーを進めよう！！</div>
+      <div class="tutDesc">自分で決めた起きる時間にアプリを開いてスタンプを押そう。<br>早起き（目標の6時間前まで）はレアが出やすく、遅すぎると「はずれ」が増えるよ。</div>
     </div>
     <div class="tutPage" data-i="1" hidden>
-      <div class="tutArt"><svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg">
-        <line x1="140" y1="74" x2="162" y2="46" stroke="#7cc3e6" stroke-width="4" stroke-linecap="round"/>
-        <circle cx="162" cy="46" r="5" fill="#7cc3e6"/>
-        <rect x="40" y="72" width="120" height="64" rx="14" fill="#8fd2ef"/>
-        <circle cx="74" cy="104" r="19" fill="#eaf7ff"/>
-        <rect x="104" y="86" width="44" height="16" rx="4" fill="#eaf7ff"/>
-        <circle cx="116" cy="118" r="7" fill="#eaf7ff"/><circle cx="140" cy="118" r="7" fill="#eaf7ff"/>
-        <text x="54" y="46" font-size="22" fill="#7cc3e6">♪</text>
-        <text x="86" y="32" font-size="18" fill="#9ec9e0">♫</text>
-        <text x="118" y="44" font-size="20">💛</text>
+      <div class="tutArt"><svg viewBox="0 0 230 124" xmlns="http://www.w3.org/2000/svg">
+        <text x="43" y="50" font-size="14" font-weight="700" fill="#5c93ad" text-anchor="middle">5:58</text>
+        <text x="91" y="50" font-size="14" font-weight="700" fill="#5c93ad" text-anchor="middle">6:05</text>
+        <text x="139" y="50" font-size="14" font-weight="700" fill="#5c93ad" text-anchor="middle">6:20</text>
+        <text x="187" y="50" font-size="14" font-weight="700" fill="#5c93ad" text-anchor="middle">6:32</text>
+        <svg x="20" y="64" width="46" height="48" viewBox="0 0 120 124"><path d="M74 112 C102 112 108 72 94 58" fill="none" stroke="#1c1c1c" stroke-width="13" stroke-linecap="round"/><path d="M60 118 C32 118 26 90 31 66 C35 46 44 41 60 41 C76 41 85 46 89 66 C94 90 88 118 60 118 Z" fill="#1c1c1c"/><circle cx="60" cy="46" r="27" fill="#1c1c1c"/><path d="M37.3 34.1 L45.4 15.8 L55.1 29.8 Z" fill="#1c1c1c" stroke="#1c1c1c" stroke-width="6.5" stroke-linejoin="round"/><path d="M41.6 30.5 L45.7 20.9 L50.5 28.2 Z" fill="#ff9ec4"/><path d="M82.7 34.1 L74.6 15.8 L64.9 29.8 Z" fill="#1c1c1c" stroke="#1c1c1c" stroke-width="6.5" stroke-linejoin="round"/><path d="M78.4 30.5 L74.3 20.9 L69.5 28.2 Z" fill="#ff9ec4"/><circle cx="51" cy="47" r="9" fill="#fff"/><circle cx="69" cy="47" r="9" fill="#fff"/><circle cx="53" cy="47.7" r="6.7" fill="#1c1c1c"/><circle cx="71" cy="47.7" r="6.7" fill="#1c1c1c"/></svg><svg x="68" y="64" width="46" height="48" viewBox="0 0 120 124"><path d="M74 112 C102 112 108 72 94 58" fill="none" stroke="#5b8def" stroke-width="13" stroke-linecap="round"/><path d="M60 118 C32 118 26 90 31 66 C35 46 44 41 60 41 C76 41 85 46 89 66 C94 90 88 118 60 118 Z" fill="#5b8def"/><circle cx="60" cy="46" r="27" fill="#5b8def"/><path d="M37.3 34.1 L45.4 15.8 L55.1 29.8 Z" fill="#5b8def" stroke="#5b8def" stroke-width="6.5" stroke-linejoin="round"/><path d="M41.6 30.5 L45.7 20.9 L50.5 28.2 Z" fill="#ffffff"/><path d="M82.7 34.1 L74.6 15.8 L64.9 29.8 Z" fill="#5b8def" stroke="#5b8def" stroke-width="6.5" stroke-linejoin="round"/><path d="M78.4 30.5 L74.3 20.9 L69.5 28.2 Z" fill="#ffffff"/><circle cx="51" cy="47" r="9" fill="#fff"/><circle cx="69" cy="47" r="9" fill="#fff"/><circle cx="51" cy="47.7" r="6.7" fill="#1c1c1c"/><circle cx="69" cy="47.7" r="6.7" fill="#1c1c1c"/></svg><svg x="116" y="64" width="46" height="48" viewBox="0 0 120 124"><path d="M74 112 C102 112 108 72 94 58" fill="none" stroke="#e0954a" stroke-width="13" stroke-linecap="round"/><path d="M60 118 C32 118 26 90 31 66 C35 46 44 41 60 41 C76 41 85 46 89 66 C94 90 88 118 60 118 Z" fill="#e0954a"/><circle cx="60" cy="46" r="27" fill="#e0954a"/><path d="M37.3 34.1 L45.4 15.8 L55.1 29.8 Z" fill="#e0954a" stroke="#e0954a" stroke-width="6.5" stroke-linejoin="round"/><path d="M41.6 30.5 L45.7 20.9 L50.5 28.2 Z" fill="#fff2c2"/><path d="M82.7 34.1 L74.6 15.8 L64.9 29.8 Z" fill="#e0954a" stroke="#e0954a" stroke-width="6.5" stroke-linejoin="round"/><path d="M78.4 30.5 L74.3 20.9 L69.5 28.2 Z" fill="#fff2c2"/><circle cx="51" cy="47" r="9" fill="#fff"/><circle cx="69" cy="47" r="9" fill="#fff"/><circle cx="49" cy="47.7" r="6.7" fill="#1c1c1c"/><circle cx="67" cy="47.7" r="6.7" fill="#1c1c1c"/></svg><svg x="164" y="64" width="46" height="48" viewBox="0 0 120 124"><path d="M74 112 C102 112 108 72 94 58" fill="none" stroke="#7bce8a" stroke-width="13" stroke-linecap="round"/><path d="M60 118 C32 118 26 90 31 66 C35 46 44 41 60 41 C76 41 85 46 89 66 C94 90 88 118 60 118 Z" fill="#7bce8a"/><circle cx="60" cy="46" r="27" fill="#7bce8a"/><path d="M37.3 34.1 L45.4 15.8 L55.1 29.8 Z" fill="#7bce8a" stroke="#7bce8a" stroke-width="6.5" stroke-linejoin="round"/><path d="M41.6 30.5 L45.7 20.9 L50.5 28.2 Z" fill="#ffffff"/><path d="M82.7 34.1 L74.6 15.8 L64.9 29.8 Z" fill="#7bce8a" stroke="#7bce8a" stroke-width="6.5" stroke-linejoin="round"/><path d="M78.4 30.5 L74.3 20.9 L69.5 28.2 Z" fill="#ffffff"/><circle cx="51" cy="47" r="9" fill="#fff"/><circle cx="69" cy="47" r="9" fill="#fff"/><circle cx="51" cy="47.7" r="6.7" fill="#1c1c1c"/><circle cx="69" cy="47.7" r="6.7" fill="#1c1c1c"/></svg>
       </svg></div>
-      <div class="tutTitle">起きた時間を<br>みんなと共有できる</div>
-      <div class="tutDesc">保存すると自動で投稿されて、みんなの「投稿」に流れるよ。<br>※ 非公開・匿名でもOK</div>
+      <div class="tutTitle">起きた時間を<br>みんなにシェアしよう！！</div>
+      <div class="tutDesc">保存したあと「投稿する」を選ぶと、みんなの投稿に流れるよ。<br>※ 非公開・匿名でもOK</div>
     </div>
   </div>
   <div id="tutDots"><span class="tutDot active"></span><span class="tutDot"></span></div>
@@ -1043,24 +1159,28 @@ button,input{font:inherit;}
 
 <div id="profileSetup">
   <div id="psBox">
-    <div id="psTitle">プロフィールを作ろう</div>
-    <label class="psField"><span>名前</span><input id="psName" type="text" maxlength="12" placeholder="なまえ"></label>
-    <label class="psField"><span>目標の起きる時間</span>
-      <span class="psWakeRow"><input id="psWake" type="number" min="0" max="23" value="6"><span id="psWakeHint">6:00〜7:00</span></span>
-    </label>
-    <div class="psField"><span>アイコンの色</span><div id="psColors"></div></div>
-    <label class="psField"><span>ひとことコメント</span><input id="psComment" type="text" maxlength="40" placeholder="よろしくね"></label>
-    <label class="psField psRow"><span>みんなに公開する</span><input id="psPublic" type="checkbox"></label>
-    <button id="psSubmit" type="button">これで はじめる</button>
-    <button id="psSkip" type="button">スキップ（匿名ではじめる）</button>
-    <details id="psRestore">
-      <summary>復元ID設定（ふだんは触らなくてOK）</summary>
-      <div class="psRestoreInner">
-        <label class="psField"><span>復元ID（英字6文字まで）</span><input id="psId" type="text" maxlength="6" placeholder="abcdef"></label>
-        <label class="psField"><span>パスワード（数字4桁）</span><input id="psPw" type="text" inputmode="numeric" maxlength="4" placeholder="0000"></label>
-        <div class="psNote">スマホのデータが消えても、この2つで記録を取り戻せるよ</div>
+    <div id="psStep1">
+      <div id="psTitle">MY猫をつくろう</div>
+      <div id="psCatPreview"></div>
+      <div id="psSwatchRow">
+        <button class="psSwatch" id="psBodySw" type="button"><span class="psSwDot" id="psBodyDot"></span><span class="psSwLbl">体の色</span></button>
+        <button class="psSwatch" id="psEarSw" type="button"><span class="psSwDot" id="psEarDot"></span><span class="psSwLbl">耳の色</span></button>
       </div>
-    </details>
+      <input type="color" id="psBodyInput" class="psHiddenColor" value="#1c1c1c">
+      <input type="color" id="psEarInput" class="psHiddenColor" value="#8fdcff">
+      <label class="psField"><span>名前</span><input id="psName" type="text" maxlength="12" placeholder="匿名さん"></label>
+      <button id="psNext" type="button">次へ ▶</button>
+    </div>
+    <div id="psStep2" hidden>
+      <div id="psTitle2">もうすこし設定</div>
+      <label class="psField"><span>目標の起きる時間</span>
+        <span class="psWakeRow"><input id="psWake" type="number" min="0" max="23" value="6"><span id="psWakeHint">6:00〜7:00</span></span>
+      </label>
+      <label class="psField"><span>ひとことコメント</span><input id="psComment" type="text" maxlength="40" placeholder="よろしくね"></label>
+      <label class="psField psRow"><span>プロフィール非公開</span><input id="psPrivate" type="checkbox"></label>
+      <button id="psSubmit" type="button">これで はじめる</button>
+      <button id="psBack" type="button">◀ もどる</button>
+    </div>
   </div>
 </div>
 
@@ -1115,6 +1235,17 @@ button,input{font:inherit;}
   </div>
 </div>
 
+<div id="postConfirm">
+  <div id="postConfirmBox">
+    <div id="postConfirmTitle">今日のカードを投稿しますか？</div>
+    <label id="postAnonRow"><input type="checkbox" id="postAnon"/> 匿名で投稿する</label>
+    <div id="postConfirmBtns">
+      <button id="postYes" type="button">はい</button>
+      <button id="postNo" type="button">いいえ</button>
+    </div>
+  </div>
+</div>
+
 <div id="likeCard">
   <div id="likeCardBox">
     <div id="likeCardTitle">最近がんばった人にいいね👍</div>
@@ -1160,6 +1291,7 @@ button,input{font:inherit;}
 <!-- ===================== ルーレット ===================== -->
 <div id="rouletteScreen">
   <div id="rouletteInner">
+    <div id="rouletteReset" hidden></div>
     <div id="rouletteTitle">今日のスタンプは…？</div>
     <div id="wheelWrap">
       <div id="wheelPointer"></div>
@@ -1254,7 +1386,7 @@ async function publishProfile(){
     const{ref,set,remove}=await import(FB_DB);
     if(p.isPublic){
       await set(ref(db,"profiles/"+getUid()),{
-        name:p.name||"匿名さん",color:p.color||"#8fdcff",comment:p.comment||"",
+        name:p.name||"匿名さん",color:p.color||"#8fdcff",catBody:p.catBody||"#1c1c1c",comment:p.comment||"",
         wakeHour:Number.isFinite(p.wakeHour)?p.wakeHour:6,streak:calcStreak().current,
         public:true,updatedAt:Date.now()
       });
@@ -1273,28 +1405,29 @@ async function renderFeed(){
     const{ref,get}=await import(FB_DB);
     const snap=await get(ref(db,"posts"));
     const data=snap.exists()?snap.val():{};
-    const posts=Object.values(data).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,30);
+    const me=getUid();
+    const posts=Object.values(data).filter(p=>p&&p.uid!==me).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,30);
     if(!posts.length){box.innerHTML='<div class="ppListMsg">なし</div>';return;}
     box.innerHTML="";
     posts.forEach(po=>{
       const row=document.createElement("div");row.className="feedRow";
-      row.innerHTML=`<span class="feedAvatar" style="background:${escHtml(po.color||"#8fdcff")}"></span>`+
+      row.innerHTML=`<span class="feedAvatar">${catFaceSvg(po.catBody||"#1c1c1c",po.color||"#8fdcff")}</span>`+
         `<span class="feedName">${escHtml(po.name||"匿名さん")}</span>`+
         `<span class="feedStamp"><img src="${escHtml(po.stamp||"")}" alt=""></span>`+
-        `<span class="feedDate">${escHtml(po.date||"")}</span>`;
+        `<span class="feedDate">${wakeStatusHTML(po)}</span>`;
       box.appendChild(row);
     });
   }catch(e){box.innerHTML='<div class="ppListMsg">なし</div>';console.warn(e);}
 }
-async function postToday(){
-  const p=getProfile();if(!p||!p.isPublic)return;
+async function postToday(anon){
+  const p=getProfile()||{};
   const stamp=todayStamp();if(!stamp)return;
   const db=await getDB();if(!db)return;
   try{
     const{ref,set}=await import(FB_DB);
     const date=jstKey();
     await set(ref(db,"posts/"+getUid()+"_"+date),{
-      uid:getUid(),name:p.name||"匿名さん",color:p.color||"#8fdcff",date,stamp,createdAt:Date.now()
+      uid:getUid(),name:anon?"匿名さん":(p.name||"匿名さん"),color:p.color||"#8fdcff",catBody:p.catBody||"#1c1c1c",date,stamp,createdAt:Date.now(),wakeHour:Number.isFinite(p.wakeHour)?p.wakeHour:null,streak:calcStreak().current
     });
   }catch(e){console.warn("post failed",e);}
 }
@@ -1311,11 +1444,19 @@ async function fetchRecentPosts(){
 }
 async function showLikeCard(){
   const posts=await fetchRecentPosts();
-  if(posts===null||posts.length===0)return;
   const list=$("likeList");list.innerHTML="";
+  if(posts===null||posts.length===0){
+    $("likeCardTitle").textContent="投稿";
+    list.innerHTML='<div class="likeEmpty">投稿はありません</div>';
+    $("likeClose").textContent="戻る";
+    $("likeCard").classList.add("visible");
+    return;
+  }
+  $("likeCardTitle").textContent="最近がんばった人にいいね👍";
+  $("likeClose").textContent="とじる";
   posts.forEach(po=>{
     const row=document.createElement("div");row.className="likeRow";
-    row.innerHTML=`<span class="likeRowAvatar" style="background:${escHtml(po.color||"#8fdcff")}"></span>`+
+    row.innerHTML=`<span class="likeRowAvatar">${catFaceSvg(po.catBody||"#1c1c1c",po.color||"#8fdcff")}</span>`+
       `<span class="likeRowName">${escHtml(po.name||"匿名さん")}</span>`+
       `<span class="likeRowStamp"><img src="${escHtml(po.stamp||"")}" alt=""></span>`;
     const btn=document.createElement("button");btn.className="likeBtn";btn.textContent="いいね";
@@ -1323,6 +1464,10 @@ async function showLikeCard(){
     row.appendChild(btn);list.appendChild(row);
   });
   $("likeCard").classList.add("visible");
+}
+function showPostConfirm(){
+  $("postAnon").checked=false;
+  $("postConfirm").classList.add("visible");
 }
 async function likePost(po,btn){
   btn.classList.add("done");btn.textContent="ありがとう♡";btn.onclick=null;
@@ -1337,6 +1482,404 @@ async function likePost(po,btn){
   }catch(e){console.warn("like failed",e);}
 }
 let _notifData={};
+const _catReduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+let _hillCatsData=[],_catTimer=null,_eyeTimer=null,_catFigs=[];
+const _CATBK="#1c1c1c";
+let _eyeWhite="#fff",_eyeBar="#fff",_eyeBody="#1c1c1c",_eyeExpr="normal";
+function _lum(hex){
+  let h=(hex||"").replace("#","");
+  if(h.length===3)h=h.split("").map(c=>c+c).join("");
+  if(h.length<6)return 0.1;
+  const r=parseInt(h.slice(0,2),16)/255,g=parseInt(h.slice(2,4),16)/255,b=parseInt(h.slice(4,6),16)/255;
+  return 0.2126*r+0.7152*g+0.0722*b;
+}
+function _setEyeColors(body){
+  const light=_lum(body)>0.7;
+  _eyeWhite=light?"#ffd23f":"#fff";
+  _eyeBar=light?"#1c1c1c":"#fff";
+  _eyeBody=body;
+}
+const EXPRESSIONS=["normal","normal","normal","normal","half","angry","content"];
+function catEyeBars(lx,rx,y,w){
+  return `<line x1="${lx-w/2}" y1="${y}" x2="${lx+w/2}" y2="${y}" stroke="${_eyeBar}" stroke-width="5.4" stroke-linecap="round"/>`+
+    `<line x1="${rx-w/2}" y1="${y}" x2="${rx+w/2}" y2="${y}" stroke="${_eyeBar}" stroke-width="5.4" stroke-linecap="round"/>`;
+}
+const EYE_DIRS=[[0,0],[0,0],[1,0],[-1,0],[1,-0.6],[-1,-0.6],[0,-0.7],[0.6,0.5]];
+function catEyesRound(lx,rx,y,r,dir){
+  dir=dir||[0,0];const W=_eyeWhite,b=_eyeBody,ex=_eyeExpr;
+  if(ex==="content"){
+    return `<path d="M${lx-r} ${y} Q${lx} ${(y+r*1.1).toFixed(1)} ${lx+r} ${y}" fill="none" stroke="${W}" stroke-width="3.4" stroke-linecap="round"/>`+
+      `<path d="M${rx-r} ${y} Q${rx} ${(y+r*1.1).toFixed(1)} ${rx+r} ${y}" fill="none" stroke="${W}" stroke-width="3.4" stroke-linecap="round"/>`;
+  }
+  if(ex==="line"){
+    return `<line x1="${(lx-r*0.8).toFixed(1)}" y1="${y}" x2="${(lx+r*0.8).toFixed(1)}" y2="${y}" stroke="${W}" stroke-width="3.6" stroke-linecap="round"/>`+
+      `<line x1="${(rx-r*0.8).toFixed(1)}" y1="${y}" x2="${(rx+r*0.8).toFixed(1)}" y2="${y}" stroke="${W}" stroke-width="3.6" stroke-linecap="round"/>`;
+  }
+  const R=ex==="wide"?r*1.14:r,pr=(ex==="wide"?R*0.72:R*0.85),mx=(R-pr),dx=dir[0]*mx,dy=dir[1]*mx*0.85;
+  let s=`<circle cx="${lx}" cy="${y}" r="${R.toFixed(1)}" fill="${W}"/><circle cx="${rx}" cy="${y}" r="${R.toFixed(1)}" fill="${W}"/>`+
+    `<circle cx="${(lx+dx).toFixed(1)}" cy="${(y+dy).toFixed(1)}" r="${pr.toFixed(1)}" fill="#1c1c1c"/>`+
+    `<circle cx="${(rx+dx).toFixed(1)}" cy="${(y+dy).toFixed(1)}" r="${pr.toFixed(1)}" fill="#1c1c1c"/>`;
+  if(ex==="half"){
+    s+=`<rect x="${(lx-R-1).toFixed(1)}" y="${(y-R-1).toFixed(1)}" width="${(2*R+2).toFixed(1)}" height="${(R*0.82).toFixed(1)}" fill="${b}"/>`+
+      `<rect x="${(rx-R-1).toFixed(1)}" y="${(y-R-1).toFixed(1)}" width="${(2*R+2).toFixed(1)}" height="${(R*0.82).toFixed(1)}" fill="${b}"/>`;
+  }
+  if(ex==="angry"){
+    s+=`<path d="M${(lx-R-1).toFixed(1)} ${(y-R*0.2).toFixed(1)} L${(lx+R+1).toFixed(1)} ${(y-R*1.1).toFixed(1)} L${(lx+R+1).toFixed(1)} ${(y-R-2).toFixed(1)} L${(lx-R-1).toFixed(1)} ${(y-R-2).toFixed(1)} Z" fill="${b}"/>`+
+      `<path d="M${(rx+R+1).toFixed(1)} ${(y-R*0.2).toFixed(1)} L${(rx-R-1).toFixed(1)} ${(y-R*1.1).toFixed(1)} L${(rx-R-1).toFixed(1)} ${(y-R-2).toFixed(1)} L${(rx+R+1).toFixed(1)} ${(y-R-2).toFixed(1)} Z" fill="${b}"/>`;
+  }
+  return s;
+}
+function tailSway(pathStr,px,py,amp){
+  return `<g>${pathStr}<animateTransform attributeName="transform" type="rotate" dur="3.4s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" values="${-amp} ${px} ${py};${amp} ${px} ${py};${-amp} ${px} ${py}"/></g>`;
+}
+function catEars2(hx,hy,hr,body,ear){
+  const ow=hr*0.24;
+  function tri(sign){
+    const ob=[hx+sign*0.84*hr,hy-0.44*hr],ib=[hx+sign*0.18*hr,hy-0.60*hr],pk=[hx+sign*0.54*hr,hy-1.12*hr];
+    const outer=`<path d="M${ob[0]} ${ob[1]} L${pk[0]} ${pk[1]} L${ib[0]} ${ib[1]} Z" fill="${body}" stroke="${body}" stroke-width="${ow}" stroke-linejoin="round"/>`;
+    const cx=(ob[0]+ib[0]+pk[0])/3,cy=(ob[1]+ib[1]+pk[1])/3,sh=p=>[cx+(p[0]-cx)*0.5,cy+(p[1]-cy)*0.52];
+    const o2=sh(ob),i2=sh(ib),p2=sh(pk);
+    return outer+`<path d="M${o2[0]} ${o2[1]} L${p2[0]} ${p2[1]} L${i2[0]} ${i2[1]} Z" fill="${ear}"/>`;
+  }
+  return tri(-1)+tri(1);
+}
+function poseSit(b,e,d){return tailSway(`<path d="M74 112 C102 112 108 72 94 58" fill="none" stroke="${b}" stroke-width="13" stroke-linecap="round"/>`,82,108,3.5)+
+  `<path d="M60 118 C32 118 26 90 31 66 C35 46 44 41 60 41 C76 41 85 46 89 66 C94 90 88 118 60 118 Z" fill="${b}"/>`+
+  `<circle cx="60" cy="46" r="27" fill="${b}"/>`+catEars2(60,46,27,b,e)+catEyesRound(51,69,47,9,d);}
+function poseLoaf(b,e){return `<ellipse cx="60" cy="92" rx="48" ry="28" fill="${b}"/>`+
+  `<path d="M10 94 Q38 116 82 104" fill="none" stroke="${b}" stroke-width="13" stroke-linecap="round"/>`+
+  catEars2(60,71,17,b,e)+catEyeBars(50,70,84,11);}
+function poseStand(b,e,d){let s='';[40,56,72,88].forEach(x=>{s+=`<rect x="${x-4}" y="96" width="8" height="20" rx="4" fill="${b}"/>`;});
+  s+=`<ellipse cx="64" cy="86" rx="38" ry="20" fill="${b}"/>`+
+  tailSway(`<path d="M96 84 C112 76 112 36 100 30" fill="none" stroke="${b}" stroke-width="12" stroke-linecap="round"/>`,96,84,3.2)+
+  `<circle cx="36" cy="64" r="22" fill="${b}"/>`+catEars2(36,64,22,b,e)+catEyesRound(30,42,64,6,d);return s;}
+function poseLie(b,e,d){let s=`<ellipse cx="62" cy="98" rx="44" ry="17" fill="${b}"/>`+
+  `<path d="M30 110 q3 -12 12 -12 q9 0 9 12 z" fill="${b}"/><path d="M50 110 q3 -12 12 -12 q9 0 9 12 z" fill="${b}"/>`+
+  tailSway(`<path d="M98 100 C114 96 114 80 104 78" fill="none" stroke="${b}" stroke-width="11" stroke-linecap="round"/>`,98,100,3.4)+
+  `<path d="M30 96 C24 80 30 64 46 64 C58 64 64 74 64 88 Z" fill="${b}"/>`+
+  `<circle cx="40" cy="70" r="21" fill="${b}"/>`+catEars2(40,70,21,b,e)+catEyesRound(34,46,71,6.5,d);return s;}
+function poseBow(b,e,d){let s=tailSway(`<path d="M100 66 C116 58 116 26 103 24" fill="none" stroke="${b}" stroke-width="12" stroke-linecap="round"/>`,100,66,3.2)+
+  `<ellipse cx="84" cy="78" rx="22" ry="24" fill="${b}"/>`+
+  `<path d="M30 104 C20 102 18 88 28 82 C44 72 62 70 80 72 C92 73 96 84 92 96 C88 106 78 106 70 102 C62 98 54 98 46 102 C40 105 34 106 30 104 Z" fill="${b}"/>`+
+  `<rect x="34" y="98" width="8" height="16" rx="4" fill="${b}"/><rect x="52" y="100" width="8" height="14" rx="4" fill="${b}"/>`+
+  `<circle cx="30" cy="90" r="19" fill="${b}"/>`+catEars2(30,90,19,b,e)+catEyesRound(24,36,90,6,d);return s;}
+function poseBox(b,e,d){const C="#d6ab73",D="#bd8b50";let s='';
+  s+=`<path d="M60 116 C40 116 33 100 36 86 C40 76 50 72 60 72 C70 72 80 76 84 86 C87 100 80 116 60 116 Z" fill="${b}"/>`;
+  s+=`<circle cx="60" cy="52" r="22" fill="${b}"/>`+catEars2(60,52,22,b,e)+catEyesRound(51,69,53,7.5,d);
+  s+=`<rect x="26" y="84" width="68" height="34" rx="3" fill="${C}"/><rect x="26" y="84" width="68" height="6" fill="${D}" opacity=".5"/>`;
+  s+=`<path d="M26 84 L10 74 L24 70 L34 80 Z" fill="${C}" stroke="${D}" stroke-width="1.5" stroke-linejoin="round"/>`;
+  s+=`<path d="M94 84 L110 74 L96 70 L86 80 Z" fill="${C}" stroke="${D}" stroke-width="1.5" stroke-linejoin="round"/>`;
+  s+=`<ellipse cx="40" cy="84" rx="6" ry="4" fill="${b}"/><ellipse cx="80" cy="84" rx="6" ry="4" fill="${b}"/>`;return s;}
+function poseBoxOpen(b,e,d){const C="#d6ab73",D="#bd8b50",I="#a87c46";let s='';
+  s+=`<path d="M30 78 L20 56 L40 64 L46 82 Z" fill="${C}" stroke="${D}" stroke-width="1.5" stroke-linejoin="round"/>`;
+  s+=`<path d="M90 78 L100 56 L80 64 L74 82 Z" fill="${C}" stroke="${D}" stroke-width="1.5" stroke-linejoin="round"/>`;
+  s+=`<path d="M30 82 L90 82 L84 110 L36 110 Z" fill="${I}"/>`;
+  s+=`<circle cx="60" cy="70" r="20" fill="${b}"/>`+catEars2(60,70,20,b,e)+catEyesRound(51,69,71,7,d);
+  s+=`<path d="M28 88 L92 88 L96 118 L24 118 Z" fill="${C}"/><path d="M28 88 L92 88 L91 95 L29 95 Z" fill="${D}" opacity=".4"/>`;
+  s+=`<ellipse cx="46" cy="89" rx="6" ry="4" fill="${b}"/><ellipse cx="74" cy="89" rx="6" ry="4" fill="${b}"/>`;return s;}
+function _blob(b){return `<path d="M60 120 C32 120 26 98 31 80 C35 66 46 60 60 60 C74 60 86 66 90 80 C95 98 88 120 60 120 Z" fill="${b}"/>`;}
+function poseBag(b,e,d){const P="#e6d6a8",PD="#c9b87e";let s=_blob(b);
+  s+=`<path d="M38 30 L36 64 Q36 70 42 70 L78 70 Q84 70 84 64 L82 30 Z" fill="${P}" stroke="${PD}" stroke-width="2"/>`;
+  s+=`<path d="M36 31 L42 22 L50 30 L58 21 L64 30 L72 22 L84 31 Z" fill="${P}" stroke="${PD}" stroke-width="2" stroke-linejoin="round"/>`;
+  s+=`<line x1="60" y1="32" x2="60" y2="68" stroke="${PD}" stroke-width="1.2" opacity=".5"/>`;
+  s+=catEyesRound(51,69,50,7,d);return s;}
+function poseJar(b,e,d){let s=_blob(b);
+  s+=`<circle cx="60" cy="46" r="21" fill="${b}"/>`+catEars2(60,46,21,b,e)+catEyesRound(51,69,47,7.5,d);
+  s+=`<rect x="36" y="20" width="48" height="50" rx="9" fill="#cfeaf6" opacity=".42" stroke="#9fcfe6" stroke-width="2"/>`;
+  s+=`<rect x="44" y="14" width="32" height="10" rx="4" fill="#bfe1f0" stroke="#9fcfe6" stroke-width="2"/>`;
+  s+=`<rect x="43" y="26" width="6" height="40" rx="3" fill="#ffffff" opacity=".5"/>`;return s;}
+function poseSack(b,e,d){let s=_blob(b);
+  s+=`<circle cx="60" cy="46" r="21" fill="${b}"/>`+catEars2(60,46,21,b,e)+catEyesRound(51,69,47,7.5,d);
+  s+=`<path d="M28 60 Q24 92 40 108 Q60 116 80 108 Q96 92 92 60 Q60 52 28 60 Z" fill="#e8f0f4" opacity=".42" stroke="#c2d2dc" stroke-width="1.6"/>`;
+  s+=`<path d="M31 60 Q27 46 37 46 Q45 46 43 60" fill="none" stroke="#c2d2dc" stroke-width="2"/>`;
+  s+=`<path d="M89 60 Q93 46 83 46 Q75 46 77 60" fill="none" stroke="#c2d2dc" stroke-width="2"/>`;return s;}
+function poseBowl(b,e,d){let s='';
+  s+=`<ellipse cx="60" cy="80" rx="42" ry="11" fill="#eaf6fb" stroke="#bfe0ef" stroke-width="2"/>`;
+  s+=`<path d="M60 112 C40 112 33 98 36 86 C40 74 50 70 60 70 C70 70 80 74 84 86 C87 98 80 112 60 112 Z" fill="${b}"/>`;
+  s+=`<circle cx="60" cy="50" r="22" fill="${b}"/>`+catEars2(60,50,22,b,e)+catEyesRound(51,69,50,8,d);
+  s+=`<path d="M22 82 Q26 120 60 120 Q94 120 98 82 Z" fill="#cfeaf6" opacity=".34" stroke="#9fcfe6" stroke-width="2.4"/>`;
+  s+=`<path d="M22 82 Q60 92 98 82" fill="none" stroke="#bfe3f2" stroke-width="2.4"/>`;
+  s+=`<path d="M34 90 Q30 104 40 114" fill="none" stroke="#ffffff" stroke-width="3.4" stroke-linecap="round" opacity=".6"/>`;
+  s+=`<circle cx="78" cy="92" r="3" fill="#ffffff" opacity=".5"/>`;return s;}
+function poseTurn(b,e,d){let s='';
+  s+=`<path d="M46 100 C20 96 12 70 20 52" fill="none" stroke="${b}" stroke-width="17" stroke-linecap="round"/>`;
+  s+=`<path d="M58 120 C40 120 36 98 40 82 C44 68 54 62 64 64 C76 66 84 78 84 94 C84 112 72 120 58 120 Z" fill="${b}"/>`;
+  s+=`<ellipse cx="50" cy="117" rx="8" ry="5" fill="${b}"/><ellipse cx="70" cy="117" rx="8" ry="5" fill="${b}"/>`;
+  s+=`<g transform="rotate(-24 64 42)"><circle cx="64" cy="42" r="21" fill="${b}"/>`+catEars2(64,42,21,b,e)+catEyesRound(55,73,43,7.5,d)+`</g>`;return s;}
+function poseSitFluffy(b,e,d){let s='';
+  s+=`<path d="M86 108 C102 106 104 90 94 86" fill="none" stroke="${b}" stroke-width="13" stroke-linecap="round"/>`;
+  s+=`<path d="M60 120 C34 120 28 96 30 78 Q26 74 30 70 Q34 72 34 70 Q38 60 50 58 Q56 50 60 56 Q64 50 70 58 Q82 60 86 70 Q86 72 90 70 Q94 74 90 78 C92 96 86 120 60 120 Z" fill="${b}"/>`;
+  s+=`<ellipse cx="50" cy="116" rx="8" ry="6" fill="${b}"/><ellipse cx="70" cy="116" rx="8" ry="6" fill="${b}"/>`;
+  s+=`<circle cx="60" cy="58" r="23" fill="${b}"/>`+catEars2(60,58,23,b,e)+catEyesRound(51,69,59,8,d);return s;}
+function poseHiss(b,e,d){let s='';
+  s+=`<path d="M94 98 C112 92 120 66 112 46" fill="none" stroke="${b}" stroke-width="18" stroke-linecap="round"/>`;
+  s+=`<path d="M24 112 C22 64 30 48 50 48 C72 48 92 66 96 110 L88 110 C84 78 74 62 56 62 C40 62 34 84 36 112 Z" fill="${b}"/>`;
+  s+=`<path d="M40 56 l-3 -8 6 4 2 -9 4 8 5 -9 3 9 6 -6 1 8 z" fill="${b}"/>`;
+  s+=`<rect x="30" y="104" width="7" height="16" rx="3" fill="${b}"/><rect x="46" y="106" width="7" height="14" rx="3" fill="${b}"/><rect x="74" y="106" width="7" height="14" rx="3" fill="${b}"/><rect x="86" y="104" width="7" height="16" rx="3" fill="${b}"/>`;
+  s+=`<circle cx="34" cy="80" r="17" fill="${b}"/>`+catEars2(34,80,17,b,e)+catEyesRound(28,42,80,5.5,d);return s;}
+function poseStare(b,e,d){let s='';
+  s+=`<path d="M78 110 C94 106 94 86 84 82" fill="none" stroke="${b}" stroke-width="11" stroke-linecap="round"/>`;
+  s+=`<path d="M60 120 C42 120 38 100 40 80 C42 62 50 54 60 54 C70 54 78 62 80 80 C82 100 78 120 60 120 Z" fill="${b}"/>`;
+  s+=`<ellipse cx="54" cy="116" rx="7" ry="6" fill="${b}"/><ellipse cx="66" cy="116" rx="7" ry="6" fill="${b}"/>`;
+  s+=`<circle cx="60" cy="44" r="24" fill="${b}"/>`+catEars2(60,44,24,b,e)+catEyesRound(50,70,45,9.5,[0,0]);return s;}
+function poseStand4(b,e,d){let s='';
+  s+=`<path d="M92 90 C112 88 114 68 102 64" fill="none" stroke="${b}" stroke-width="12" stroke-linecap="round"/>`;
+  s+=`<ellipse cx="62" cy="84" rx="34" ry="20" fill="${b}"/>`;
+  s+=`<rect x="36" y="96" width="9" height="22" rx="4" fill="${b}"/><rect x="52" y="98" width="9" height="20" rx="4" fill="${b}"/><rect x="70" y="98" width="9" height="20" rx="4" fill="${b}"/><rect x="84" y="96" width="9" height="22" rx="4" fill="${b}"/>`;
+  s+=`<circle cx="40" cy="56" r="21" fill="${b}"/>`+catEars2(40,56,21,b,e)+catEyesRound(31,49,57,7,d);return s;}
+function poseSurprise(b,e,d){let s='';
+  s+=`<path d="M84 74 C104 66 116 44 110 26" fill="none" stroke="${b}" stroke-width="19" stroke-linecap="round"/>`;
+  s+=`<path d="M60 70 C40 70 32 84 34 98 C36 110 46 112 52 104 C56 99 64 99 68 104 C74 112 84 110 86 98 C88 84 80 70 60 70 Z" fill="${b}"/>`;
+  s+=`<path d="M40 100 q-14 8 -16 18 q10 -4 14 -2 q-2 -8 6 -10 z" fill="${b}"/>`;
+  s+=`<path d="M80 100 q14 8 16 18 q-10 -4 -14 -2 q2 -8 -6 -10 z" fill="${b}"/>`;
+  s+=`<rect x="50" y="100" width="8" height="20" rx="4" fill="${b}"/><rect x="62" y="100" width="8" height="20" rx="4" fill="${b}"/>`;
+  const pe=_eyeExpr;_eyeExpr="wide";
+  s+=`<circle cx="60" cy="48" r="25" fill="${b}"/>`+catEars2(60,48,25,b,e)+catEyesRound(50,70,49,8.5,[0,0]);_eyeExpr=pe;return s;}
+function poseFish(b,e,d){let s='';
+  s+=`<path d="M74 112 C102 112 108 72 94 58" fill="none" stroke="${b}" stroke-width="13" stroke-linecap="round"/>`;
+  s+=`<path d="M60 118 C32 118 26 90 31 66 C35 46 44 41 60 41 C76 41 85 46 89 66 C94 90 88 118 60 118 Z" fill="${b}"/>`;
+  s+=`<circle cx="60" cy="46" r="27" fill="${b}"/>`+catEars2(60,46,27,b,e);
+  const pe=_eyeExpr;_eyeExpr="line";s+=catEyesRound(51,69,44,8,[0,0]);_eyeExpr=pe;
+  s+=`<g transform="rotate(-8 60 60)"><ellipse cx="60" cy="60" rx="20" ry="8" fill="#dfe6ea" stroke="#b9c4cb" stroke-width="1.5"/><path d="M80 60 l12 -7 0 14 z" fill="#dfe6ea" stroke="#b9c4cb" stroke-width="1.5" stroke-linejoin="round"/><circle cx="48" cy="58" r="1.8" fill="#7a8890"/><path d="M52 60 q6 4 14 0" fill="none" stroke="#b9c4cb" stroke-width="1.2"/></g>`;return s;}
+const CAT_POSES=["sit","stand","bow","lie","sleep","box","boxOpen","bag","jar","sack","bowl","turn","sitFluffy","hiss","stare","stand4","surprise","fish"];
+function catInner(body,ear,pose,dir,expr){
+  _setEyeColors(body);
+  _eyeExpr=(pose==="sleep")?"normal":(expr||"normal");
+  switch(pose){
+    case "sleep":return poseLoaf(body,ear);
+    case "stand":return poseStand(body,ear,dir);
+    case "bow":return poseBow(body,ear,dir);
+    case "lie":return poseLie(body,ear,dir);
+    case "box":return poseBox(body,ear,dir);
+    case "boxOpen":return poseBoxOpen(body,ear,dir);
+    case "bag":return poseBag(body,ear,dir);
+    case "jar":return poseJar(body,ear,dir);
+    case "sack":return poseSack(body,ear,dir);
+    case "bowl":return poseBowl(body,ear,dir);
+    case "turn":return poseTurn(body,ear,dir);
+    case "sitFluffy":return poseSitFluffy(body,ear,dir);
+    case "hiss":return poseHiss(body,ear,dir);
+    case "stare":return poseStare(body,ear,dir);
+    case "stand4":return poseStand4(body,ear,dir);
+    case "surprise":return poseSurprise(body,ear,dir);
+    case "fish":return poseFish(body,ear,dir);
+    default:return poseSit(body,ear,dir);
+  }
+}
+function catFaceSvg(body,ear){
+  _setEyeColors(body);
+  return `<svg class="avatarCat" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">`+
+    `<circle cx="40" cy="45" r="24" fill="${body}"/>`+catEars2(40,45,24,body,ear)+
+    `<circle cx="32" cy="46" r="8" fill="${_eyeWhite}"/><circle cx="48" cy="46" r="8" fill="${_eyeWhite}"/>`+
+    `<circle cx="32" cy="47" r="6.4" fill="#1c1c1c"/><circle cx="48" cy="47" r="6.4" fill="#1c1c1c"/></svg>`;
+}
+function catFigureHTML(body,ear,pose,dir,expr){
+  return `<svg class="catSvg" viewBox="0 0 120 124" xmlns="http://www.w3.org/2000/svg">${catInner(body,ear,pose,dir,expr)}</svg>`;
+}
+function catTimeLabel(ts){
+  if(!ts)return "";
+  const d=new Date(ts);
+  return `${d.getHours()}:${String(d.getMinutes()).padStart(2,"0")}`;
+}
+function wakeMark(po){
+  if(po.wakeHour==null||po.wakeHour===undefined||!po.createdAt)return {sym:"○",cls:"mNeutral"};
+  const h=new Date(po.createdAt).getHours();
+  return (h===po.wakeHour)?{sym:"✓",cls:"mOk"}:{sym:"△",cls:"mNg"};
+}
+function postHoursEarly(po){
+  if(po.wakeHour==null||po.wakeHour===undefined||!po.createdAt)return 0;
+  const h=new Date(po.createdAt).getHours();
+  return (po.wakeHour-h);
+}
+function wakeStatusHTML(po){
+  const e=postHoursEarly(po);
+  if(e>=1)return `<span class="wEarly">${e}時間早く起きたよ</span>`;
+  const wm=wakeMark(po);
+  return `<span class="catMark ${wm.cls}">${wm.sym}</span><span class="wTime">${escHtml(catTimeLabel(po.createdAt))}</span>`;
+}
+let _recentRange=3;
+async function loadHillCats(){
+  const cont=$("hillCats");if(!cont)return;
+  const db=await getDB();
+  if(!db){renderEmptyCat();return;}
+  try{
+    const{ref,get}=await import(FB_DB);
+    const snap=await get(ref(db,"posts"));
+    if(!snap.exists()){renderEmptyCat();return;}
+    const me=getUid();
+    const dayMs=24*3600*1000,now=Date.now();
+    const minDate=addDays(jstKey(),-2);
+    const byUid={};
+    Object.entries(snap.val()).forEach(([pid,v])=>{
+      if(!v||v.uid===me)return;
+      if(_recentRange===1){ if(!(v.createdAt&&(now-v.createdAt)<=dayMs))return; }
+      else { if((v.date||"")<minDate)return; }
+      if(!byUid[v.uid]||(v.createdAt||0)>(byUid[v.uid].createdAt||0))byUid[v.uid]=Object.assign({pid},v);
+    });
+    const cats=Object.values(byUid).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,6);
+    if(!cats.length){renderEmptyCat();return;}
+    renderCats(cats);
+  }catch(e){renderEmptyCat();console.warn(e);}
+}
+function buildCatFig(body,ear){
+  const fig=document.createElement("div");fig.className="catFig";
+  fig.innerHTML=`<span class="catZ"><b>Z</b><span class="z2">z</span><span class="note">♬</span></span><span class="catPose">${catFigureHTML(body,ear,"sit")}</span>`;
+  return fig;
+}
+function renderCats(cats){
+  const cont=$("hillCats");cont.className="";cont.innerHTML="";
+  _hillCatsData=cats.map(c=>({body:c.catBody||"#1c1c1c",ear:c.color||"#8fdcff",name:c.name||"匿名さん"}));
+  const n=cats.length,center=(n-1)/2;
+  const figs=[];
+  cats.forEach((po,i)=>{
+    const el=document.createElement("div");el.className="hillCat";
+    const lab=document.createElement("div");lab.className="catLabel";
+    const streakHtml=(po.streak>=2)?`<span class="catStreak">連続${po.streak}日</span>`:"";
+    lab.innerHTML=`<span class="catName">${escHtml(po.name||"匿名さん")}</span><span class="catTime">${wakeStatusHTML(po)}</span>${streakHtml}`;
+    const btn=document.createElement("button");btn.className="catLike";btn.type="button";btn.textContent="♡ いいね";
+    btn.addEventListener("click",e=>{e.stopPropagation();playClick();likePost(po,btn);btn.textContent="ありがとう♡";});
+    const body=po.catBody||"#1c1c1c",ear=po.color||"#8fdcff";
+    const fig=buildCatFig(body,ear);
+    fig.querySelector(".catPose").style.animationDelay=(-Math.random()*4.6).toFixed(2)+"s";
+    const rot=Math.max(-7,Math.min(7,(i-center)*2.6));
+    fig.style.transform=`rotate(${rot}deg)`;
+    el.appendChild(lab);el.appendChild(btn);el.appendChild(fig);
+    cont.appendChild(el);
+    figs.push({pose:fig.querySelector(".catPose"),z:fig.querySelector(".catZ"),body,ear,cur:"sit",dir:0,name:po.name||"匿名さん",time:catTimeLabel(po.createdAt)});
+  });
+  _catFigs=figs;
+  startCatLife(figs);
+}
+function renderEmptyCat(){
+  const cont=$("hillCats");cont.className="empty";cont.innerHTML="";
+  _hillCatsData=[];
+  const body=profileBody(),ear=profileColor();
+  const el=document.createElement("div");el.className="hillCat";
+  const bub=document.createElement("div");bub.className="catBubble";bub.textContent="だれもいないにゃ…";
+  const fig=buildCatFig(body,ear);
+  el.appendChild(bub);el.appendChild(fig);cont.appendChild(el);
+  const figs=[{pose:fig.querySelector(".catPose"),z:fig.querySelector(".catZ"),body,ear,cur:"sit",dir:0,bubble:bub,name:"",time:"",solo:true,fig}];
+  _catFigs=figs;
+  startCatLife(figs);
+}
+function setCatPose(f,pose){
+  if(!f.eyeDir)f.eyeDir=EYE_DIRS[Math.floor(Math.random()*EYE_DIRS.length)];
+  f.expr=EXPRESSIONS[Math.floor(Math.random()*EXPRESSIONS.length)];
+  f.pose.innerHTML=catFigureHTML(f.body,f.ear,pose,f.eyeDir,f.expr);
+  f.z.style.display=pose==="sleep"?"":"none";
+  if(f.bubble)f.bubble.style.display=pose==="sleep"?"none":"";
+  if(f.solo&&f.fig)f.fig.classList.toggle("hop",pose==="stand"||pose==="stand4");
+  f.cur=pose;
+}
+function fadeCatPose(f,pose){
+  if(f.cur===pose)return;
+  f.pose.style.transition="opacity .6s";f.pose.style.opacity="0";
+  setTimeout(()=>{setCatPose(f,pose);f.pose.style.opacity="1";},320);
+}
+function updateCatEyes(f){
+  if(f.cur==="sleep")return;
+  f.eyeDir=EYE_DIRS[Math.floor(Math.random()*EYE_DIRS.length)];
+  if(Math.random()<0.4)f.expr=EXPRESSIONS[Math.floor(Math.random()*EXPRESSIONS.length)];
+  f.pose.innerHTML=catFigureHTML(f.body,f.ear,f.cur,f.eyeDir,f.expr);
+}
+let _photoMode=false;
+function pickPose(f,figs,allowSleep){
+  const used={};(figs||[]).forEach(g=>{if(g!==f)used[g.cur]=1;});
+  const pool=CAT_POSES.filter(p=>(allowSleep||p!=="sleep")&&p!==f.cur);
+  const fresh=pool.filter(p=>!used[p]);
+  const src=fresh.length?fresh:pool;
+  return src[Math.floor(Math.random()*src.length)];
+}
+function rePosePhoto(){
+  _catFigs.forEach(f=>{if(f.bubble)f.bubble.style.display="none";fadeCatPose(f,pickPose(f,_catFigs,true));});
+}
+function startCatLife(figs){
+  if(_catTimer){clearInterval(_catTimer);_catTimer=null;}
+  if(_eyeTimer){clearInterval(_eyeTimer);_eyeTimer=null;}
+  figs.forEach(f=>{if(!f.eyeDir)f.eyeDir=EYE_DIRS[Math.floor(Math.random()*EYE_DIRS.length)];if(f.cur!=="sit")setCatPose(f,"sit");});
+  if(_catReduce)return;
+  _catTimer=setInterval(()=>{
+    figs.forEach(f=>{
+      if(f.cur==="sleep"){ if(Math.random()<0.2)fadeCatPose(f,pickPose(f,figs,false)); return; }
+      if(Math.random()<0.45)return;
+      fadeCatPose(f,pickPose(f,figs,true));
+    });
+  },4600);
+  _eyeTimer=setInterval(()=>{
+    figs.forEach(f=>{ if(f.cur!=="sleep"&&Math.random()<0.55)updateCatEyes(f); });
+  },2600);
+}
+function enterPhotoMode(){
+  if(!_catFigs.length)return;
+  _photoMode=true;
+  if(_catTimer){clearInterval(_catTimer);_catTimer=null;}
+  rePosePhoto();
+  $("catShutter").classList.add("show");
+  $("nyanShot").classList.add("capmode");
+}
+function exitPhotoMode(){
+  _photoMode=false;
+  $("catShutter").classList.remove("show");
+  $("nyanShot").classList.remove("capmode");
+  startCatLife(_catFigs);
+}
+const SKY_PHOTO={
+  "sky-morning":{g:["#bfe6ff","#d8f0ff","#ecf6ff","#fff1e2"],hb:"#c7e3b8",hf:"#aecf99",t:"#4d7790"},
+  "sky-day":{g:["#8fd0ff","#aadcff","#d6efff","#eef9ff"],hb:"#bfe0b0",hf:"#a6cd92",t:"#4d7790"},
+  "sky-evening":{g:["#5d6bb4","#b984c0","#ef9c9c","#ffce97"],hb:"#5a6a8e",hf:"#46506a",t:"#fff"},
+  "sky-night":{g:["#0e1640","#1f2a5c","#3a4279","#585c93"],hb:"#3a4470",hf:"#2c3656",t:"#eef2ff"}
+};
+function currentSkyKey(){
+  const s=$("selectScreen");
+  return ["sky-morning","sky-day","sky-evening","sky-night"].find(c=>s.classList.contains(c))||"sky-morning";
+}
+function nyanCapture(){
+  playShutter();
+  const W=1080,H=720;
+  const sk=SKY_PHOTO[currentSkyKey()];
+  const cats=_catFigs.length?_catFigs.map(f=>({body:f.body,ear:f.ear,pose:f.cur,dir:f.eyeDir||[0,0],expr:f.expr||"normal",name:f.name||"",time:f.time||""})):[{body:"#1c1c1c",ear:"#7fd0ff",pose:"sleep",dir:[0,0],expr:"normal",name:"",time:""}];
+  const n=cats.length,center=(n-1)/2;
+  const span=Math.min(940,n*168),step=n>1?span/(n-1):0,startX=W/2-span/2;
+  let nodes="";
+  cats.forEach((c,i)=>{
+    const cw=176,ch=cw*124/120;
+    const x=(n>1?startX+step*i:W/2)-cw/2;
+    const y=H-150-ch*0.6;
+    const rot=Math.max(-7,Math.min(7,(i-center)*2.6));
+    const cx=x+cw/2,cy=y+ch/2;
+    nodes+=`<g transform="rotate(${rot} ${cx} ${cy})"><svg x="${x}" y="${y}" width="${cw}" height="${ch}" viewBox="0 0 120 124">${catInner(c.body,c.ear,c.pose||"sit",c.dir,c.expr)}</svg></g>`;
+    if(c.name){
+      const cap=c.time?`${c.name}  ${c.time}`:c.name;
+      nodes+=`<text x="${cx}" y="${H-104}" font-family="sans-serif" font-size="19" text-anchor="middle" fill="${sk.t}" opacity=".5">${escHtml(cap)}</text>`;
+    }
+  });
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">`+
+    `<defs><linearGradient id="sk" x1="0" y1="0" x2="0" y2="1">`+
+    `<stop offset="0%" stop-color="${sk.g[0]}"/><stop offset="36%" stop-color="${sk.g[1]}"/>`+
+    `<stop offset="64%" stop-color="${sk.g[2]}"/><stop offset="100%" stop-color="${sk.g[3]}"/></linearGradient></defs>`+
+    `<rect width="${W}" height="${H}" fill="url(#sk)"/>`+
+    `<ellipse cx="${W/2}" cy="${H+120}" rx="${W*0.92}" ry="240" fill="${sk.hb}"/>`+
+    `<ellipse cx="${W/2}" cy="${H+60}" rx="${W*0.8}" ry="210" fill="${sk.hf}"/>`+
+    nodes+
+    `<text x="${W-28}" y="${H-26}" font-family="sans-serif" font-size="30" font-weight="700" text-anchor="end" fill="${sk.t}" opacity=".75">ズズラジオ体操部 🐾</text>`+
+    `</svg>`;
+  const img=new Image();
+  img.onload=()=>{
+    const cv=document.createElement("canvas");cv.width=W;cv.height=H;
+    cv.getContext("2d").drawImage(img,0,0);
+    try{
+      cv.toBlob(b=>{
+        if(!b)return;
+        const a=document.createElement("a");a.href=URL.createObjectURL(b);
+        a.download=`nyan-${jstKey()}.png`;document.body.appendChild(a);a.click();a.remove();
+        setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+      },"image/png");
+      toast("にゃんを撮ったよ📸");
+    }catch(e){console.warn(e);toast("撮影に失敗したよ");}
+  };
+  img.onerror=()=>toast("撮影に失敗したよ");
+  img.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg);
+}
 async function subscribeNotif(){
   const db=await getDB();if(!db)return;
   try{
@@ -1384,6 +1927,13 @@ const DL_KEY="radio_dl_date",UP_KEY="radio_up_date",DONE_KEY="radio_done_dates";
 const RAND_CARD="card.png";
 const POOL=["stamp100.png","stamp101.png","stamp102.png","stamp103.png","stamp104.png"];
 const STAMP_NAMES=["スタンプA","スタンプB","スタンプC","スタンプD","スタンプE"]; // 仮の名前。好きに変えてOK（POOLと同じ並び）
+/* ★レアスタンプの追加場所★
+   レアにしたいスタンプは、(1) POOL と STAMP_NAMES に普通に追加し、
+   (2) そのファイル名を RARE_SET に入れるだけ。まだ無いので空。
+   例: POOL に "stamp200.png" を足して → const RARE_SET=new Set(["stamp200.png"]); */
+const RARE_SET=new Set([]);
+const RARE_BASE=0.15;     // レアの基本の出やすさ（普通スタンプ=1 に対して低め）
+const RARE_BOOST_MULT=6;  // 目標の6時間前までに早起きすると、レアがどれだけ出やすくなるか
 const CAROUSEL_GAP=12;
 
 /* タスク定義
@@ -1414,7 +1964,7 @@ const $=id=>document.getElementById(id);
 const bgmAudio=$("bgmAudio"),stampSnd=$("stampSound"),clickSnd=$("clickSound");
 const selectScreen=$("selectScreen"),randomBtn=$("randomModeBtn");
 const todayPrv=$("todayStampPreview");
-const todayCircle=$("todayCircle"),todayLabel=$("todayLabel");
+const todayCircle=$("todayCircle")||{contains:()=>false,addEventListener:()=>{}},todayLabel=$("todayLabel")||{contains:()=>false,addEventListener:()=>{}};
 const calPop=$("calendarPopup"),calClose=$("calendarClose"),calMonth=$("calendarMonth"),calGrid=$("calendarGrid");
 const timeGate=$("timeGate"),gateThumb=$("gateCardThumb"),gateRemain=$("gateRemain"),progBar=$("progressBar");
 const backBtn=$("backToSelect"),dlBtn=$("getCardBtn"),uploadArea=$("uploadArea"),imgInput=$("imageInput");
@@ -1477,6 +2027,23 @@ function buzz(){
     g.gain.exponentialRampToValueAtTime(0.0001,now+t+0.14);
     o.connect(g);g.connect(ctx.destination);
     o.start(now+t);o.stop(now+t+0.16);
+  });
+}
+/* カメラのシャッター音「パシャッ」 */
+function playShutter(){
+  const ctx=ensureCtx();if(!ctx)return;
+  const now=ctx.currentTime,sr=ctx.sampleRate;
+  const buf=ctx.createBuffer(1,Math.floor(sr*0.18),sr),ch=buf.getChannelData(0);
+  for(let i=0;i<ch.length;i++)ch[i]=Math.random()*2-1;
+  [[0,3400,0.40,0.05],[0.07,2500,0.30,0.09]].forEach(([t,fr,pk,dec])=>{
+    const src=ctx.createBufferSource();src.buffer=buf;
+    const bp=ctx.createBiquadFilter();bp.type="bandpass";bp.frequency.value=fr;bp.Q.value=0.9;
+    const g=ctx.createGain();
+    g.gain.setValueAtTime(0.0001,now+t);
+    g.gain.exponentialRampToValueAtTime(pk,now+t+0.004);
+    g.gain.exponentialRampToValueAtTime(0.0001,now+t+dec);
+    src.connect(bp);bp.connect(g);g.connect(ctx.destination);
+    src.start(now+t);src.stop(now+t+0.18);
   });
 }
 /* ルーレットが回る「カチ」音 */
@@ -1587,7 +2154,14 @@ const STAMP_MAP_KEY="radio_stamps";
 const WEIGHTS=[1,1,1,1,1]; // POOLと同じ個数。数字が大きいほど出やすい（好きな割合に変えてOK）
 function weights(){return(WEIGHTS.length===POOL.length)?WEIGHTS:POOL.map(()=>1);}
 /* 一度出た（持ってる）スタンプは面積＝確率を半分にして、新しいのが出やすくする */
-function dynWeights(){const b=weights(),col=getCollected();return POOL.map((s,i)=>col.has(s)?b[i]*0.5:b[i]);}
+function dynWeights(){
+  const b=weights(),col=getCollected(),boost=rareBoost();
+  return POOL.map((s,i)=>{
+    let w=col.has(s)?b[i]*0.5:b[i];
+    if(RARE_SET.has(s))w=RARE_BASE*(1+boost*RARE_BOOST_MULT)*(col.has(s)?0.5:1); /* 早起きでレア↑ */
+    return w;
+  });
+}
 function stampName(src){const i=POOL.indexOf(src);return(i>=0&&STAMP_NAMES[i])?STAMP_NAMES[i]:"スタンプ";}
 /* 新スタンプお披露目用：見たスタンプを記録。初回は今あるPOOLを全部「既知」にして、後から追加された分だけ告知 */
 const SEEN_KEY="radio_seen_stamps";
@@ -1621,6 +2195,7 @@ function saveProfile(p){localStorage.setItem(PROF_KEY,JSON.stringify(p));}
 function profileWake(){const p=getProfile();return(p&&Number.isFinite(p.wakeHour))?p.wakeHour:DEFAULT_WAKE;}
 function profileName(){const p=getProfile();return(p&&p.name)?p.name:"匿名さん";}
 function profileColor(){const p=getProfile();return(p&&p.color)?p.color:AVATAR_COLORS[1];}
+function profileBody(){const p=getProfile();return(p&&p.catBody)?p.catBody:"#1c1c1c";}
 function profileIsPublic(){const p=getProfile();return!!(p&&p.isPublic);}
 
 /* いまの時刻（小数の「時」） */
@@ -1628,17 +2203,28 @@ function nowHourFloat(){const p=jstParts();return p.h+p.m/60+p.s/3600;}
 /* 目標枠（wake〜wake+1）からのズレでハズレ率を決める
    ・枠内：0  ・寝坊：1hで5割→どんどん上げて上限9割
    ・早起き：1hで3割→5hまで緩やかに増やして上限6割（やさしい） */
+function rareBoost(){      /* 0〜1：目標の6時間前までに早く起きるほど大きい */
+  const wake=profileWake(),now=nowHourFloat();
+  if(now>=wake)return 0;
+  return Math.min((wake-now)/6,1);
+}
+function hoursEarly(){     /* 目標より何時間早く起きたか（早くなければ0） */
+  const wake=profileWake(),now=nowHourFloat();
+  return now<wake?(wake-now):0;
+}
 function missRate(){
   const wake=profileWake(),now=nowHourFloat();
-  if(now>=wake&&now<wake+1)return 0;
-  if(now>=wake+1){
+  if(now>=wake&&now<wake+1)return 0;            /* 目標枠内 */
+  if(now>=wake+1){                              /* 遅い → はずれ増 */
     const late=now-(wake+1);
     return late<=1?late*0.5:Math.min(0.5+(late-1)*0.2,0.9);
   }
-  const early=wake-now;
-  return early<=1?early*0.3:Math.min(0.3+(early-1)*0.075,0.6);
+  const early=wake-now;                          /* 早起き */
+  if(early<=6)return 0;                          /* 6時間前まではむしろ「はずれ」なし＆レア↑ */
+  return Math.min((early-6)*0.12,0.6);           /* それより極端に早いと少し増える */
 }
 function refreshTodayPreview(){
+  if(!todayPrv)return;
   const s=todayStamp(),q=$("todayQ");
   if(s){todayPrv.style.display="";todayPrv.src=s;if(q)q.style.display="none";}
   else{todayPrv.style.display="none";if(q)q.style.display="";}
@@ -1715,6 +2301,7 @@ function showSelect(){
   $("uploadWrap").style.display="none";
   closeCardMenu();
   refreshHome();
+  loadHillCats();
   checkNewStamps();
 }
 function hideSelect(){
@@ -2006,6 +2593,12 @@ function startRandomMode(){
   /* 毎回ルーレットを回せる。当たった日は固定（引き直し不可）。
      目標時間から離れるほど「はずれ」の割合が増える。はずれは保存せず、また回せる。 */
   const decided=todayStamp();
+  const rb=$("rouletteReset");
+  if(decided){
+    const mins=Math.max(0,Math.ceil((24-nowHourFloat())*60));
+    rb.textContent=`更新まで残り ${mins}分（同じスタンプ）`;
+    rb.hidden=false;
+  }else rb.hidden=true;
   let idx,mFrac;
   if(decided){idx=POOL.indexOf(decided);if(idx<0)idx=pickStampIdx();mFrac=0;}
   else{
@@ -2107,7 +2700,10 @@ function openCardMenu(){cardMenuScreen.classList.add("visible");}
 function closeCardMenu(){cardMenuScreen.classList.remove("visible");}
 $("cardMenuClose").addEventListener("click",()=>{playClick();closeCardMenu();});
 
-saveBtn.addEventListener("click",async()=>{if(!activeWin)return;playClick();await savePNG();await postToday();showLikeCard();});
+saveBtn.addEventListener("click",async()=>{if(!activeWin)return;playClick();await savePNG();showPostConfirm();});
+$("postYes").addEventListener("click",async()=>{playClick();$("postConfirm").classList.remove("visible");await postToday($("postAnon").checked);showLikeCard();});
+$("postNo").addEventListener("click",()=>{playClick();$("postConfirm").classList.remove("visible");showLikeCard();});
+$("postConfirm").addEventListener("click",e=>{if(e.target===$("postConfirm"))$("postConfirm").classList.remove("visible");});
 undoBtn.addEventListener("click",()=>{if(!activeWin)return;playClick();undoS();});
 redoBtn.addEventListener("click",()=>{if(!activeWin)return;playClick();redoS();});
 snsBtn.addEventListener("click",()=>{playClick();});
@@ -2247,7 +2843,7 @@ function buildWheel(winnerIdx,missFrac){
     im.setAttribute("transform",`rotate(${mid} ${cx} ${cy})`);
     im.setAttribute("filter","url(#wheelGray)");im.style.opacity=".6";
     g.appendChild(im);
-    addSegText(g,cx,cy,r*0.72,mid,"はずれ",9,"rgba(90,110,125,.95)",null);
+    addSegText(g,cx,cy,r*0.74,mid,"はずれスタンプ",7,"rgba(90,110,125,.95)",null);
   }
 }
 let rouletteSkip=null;
@@ -2286,7 +2882,7 @@ function spinWheel(winnerIdx,onDone){
     if(wi){wi.style.transition="opacity .3s";wi.style.opacity="1";}
     rs.classList.add("reveal");
     if(isMiss){
-      rr.textContent="ざんねん… はずれ";rr.classList.add("show");
+      rr.textContent="はずれスタンプ…";rr.classList.add("show");
       buzz();
     }else{
       rr.textContent=`✨ ${stampName(POOL[winnerIdx])} GET！`;rr.classList.add("show");
@@ -2353,8 +2949,8 @@ function refreshHomeGate(){
   let rem;
   if(inWindow){rem=(wake+1)-now;$("homeGateBar").style.width="100%";}
   else{let u=wake-now;if(u<=0)u+=24;rem=u;$("homeGateBar").style.width=`${clamp((23-u)/23*100,0,100)}%`;}
-  const tm=Math.max(0,Math.round(rem*60)),hh=Math.floor(tm/60),mm=tm%60;
-  $("homeGateRemain").textContent=`残り ${hh}:${String(mm).padStart(2,"0")}`;
+  const tm=Math.max(0,Math.round(rem*60));
+  $("homeGateRemain").textContent=`残り ${tm}分`;
 }
 
 function refreshHome(){
@@ -2416,60 +3012,54 @@ function toast(txt){
 /* =========================================================
    プロフィールUI
    ========================================================= */
-let psColor=AVATAR_COLORS[1];
-function buildColorPicker(container,current){
-  container.innerHTML="";
-  AVATAR_COLORS.forEach(c=>{
-    const d=document.createElement("div");d.className="psColor"+(c===current?" sel":"");
-    d.style.background=c;d.onclick=()=>{psColor=c;[...container.children].forEach(x=>x.classList.remove("sel"));d.classList.add("sel");};
-    container.appendChild(d);
-  });
+let psBody="#1c1c1c",psEar="#8fdcff";
+function psUpdatePreview(){
+  $("psCatPreview").innerHTML=catFaceSvg(psBody,psEar);
+  $("psBodyDot").style.background=psBody;
+  $("psEarDot").style.background=psEar;
 }
 function updateWakeHint(){
   let h=parseInt($("psWake").value,10);if(!Number.isFinite(h)||h<0)h=0;if(h>23)h=23;
   $("psWakeHint").textContent=`${h}:00〜${(h+1)%24}:00`;
 }
+function psGoStep(n){
+  $("psStep1").hidden=n!==1;
+  $("psStep2").hidden=n!==2;
+}
 function renderProfileBar(){
   const p=getProfile();
   $("tpbName").textContent=p&&p.name?p.name:"匿名さん";
-  $("tpbAvatar").style.background=profileColor();
+  $("tpbAvatar").innerHTML=catFaceSvg(profileBody(),profileColor());
 }
 function openProfileSetup(edit){
   const p=getProfile()||{};
-  $("psTitle").textContent=edit?"プロフィールを編集":"プロフィールを作ろう";
+  $("psTitle").textContent=edit?"MY猫を編集":"MY猫をつくろう";
   $("psName").value=p.name||"";
   $("psWake").value=Number.isFinite(p.wakeHour)?p.wakeHour:6;
   $("psComment").value=p.comment||"";
-  $("psPublic").checked=(p.isPublic!==undefined)?!!p.isPublic:true;
-  $("psId").value=p.id||"";
-  $("psPw").value=p.pw||"";
-  psColor=p.color||AVATAR_COLORS[1];
-  buildColorPicker($("psColors"),psColor);
-  updateWakeHint();
-  $("psSkip").style.display=edit?"none":"";
+  $("psPrivate").checked=(p.isPublic!==undefined)?!p.isPublic:false;
+  psBody=p.catBody||"#1c1c1c";psEar=p.color||"#8fdcff";
+  $("psBodyInput").value=psBody;$("psEarInput").value=psEar;
+  psUpdatePreview();updateWakeHint();psGoStep(1);
   $("profileSetup").classList.add("visible");
 }
 function closeProfileSetup(){$("profileSetup").classList.remove("visible");}
-function saveFromSetup(skip){
+function saveFromSetup(){
   const prev=getProfile()||{};
   let wake=parseInt($("psWake").value,10);if(!Number.isFinite(wake)||wake<0)wake=0;if(wake>23)wake=23;
-  const id=($("psId").value||"").toLowerCase().replace(/[^a-z]/g,"").slice(0,6);
-  const pw=($("psPw").value||"").replace(/[^0-9]/g,"").slice(0,4);
-  const p=skip?{
-    name:"匿名さん",color:AVATAR_COLORS[1],comment:"",wakeHour:DEFAULT_WAKE,isPublic:true,
-    id:prev.id||"",pw:prev.pw||""
-  }:{
+  const id=prev.id||"",pw=prev.pw||"";
+  const p={
     name:($("psName").value||"").trim()||"匿名さん",
-    color:psColor,comment:($("psComment").value||"").trim(),
-    wakeHour:wake,isPublic:$("psPublic").checked,id,pw
+    color:psEar,catBody:psBody,comment:($("psComment").value||"").trim(),
+    wakeHour:wake,isPublic:!$("psPrivate").checked,id,pw
   };
   saveProfile(p);
   closeProfileSetup();
-  renderProfileBar();refreshHome();publishProfile();
+  renderProfileBar();refreshHome();loadHillCats();publishProfile();
 }
 function openProfilePanel(){
   const p=getProfile()||{};
-  $("ppAvatar").style.background=profileColor();
+  $("ppAvatar").innerHTML=catFaceSvg(profileBody(),profileColor());
   $("ppName").firstChild.textContent=(p.name||"匿名さん")+" ";
   $("ppStreakInline").textContent="🔥"+calcStreak().current;
   $("ppComment").textContent=p.comment||"（コメントなし）";
@@ -2517,7 +3107,7 @@ async function saveRestoreId(p){
   try{
     const{ref,set}=await import(FB_DB);
     await set(ref(db,"ids/"+p.id),{
-      uid:getUid(),pw:p.pw,name:p.name||"匿名さん",color:p.color||"#8fdcff",
+      uid:getUid(),pw:p.pw,name:p.name||"匿名さん",color:p.color||"#8fdcff",catBody:p.catBody||"#1c1c1c",
       comment:p.comment||"",wakeHour:Number.isFinite(p.wakeHour)?p.wakeHour:6,isPublic:!!p.isPublic
     });
   }catch(e){console.warn("saveRestoreId failed",e);}
@@ -2539,10 +3129,10 @@ async function openRestore(){
     const ids=Object.keys(data);
     if(!ids.length){list.innerHTML='<div class="restoreNote">まだ登録された復元IDが無いよ</div>';return;}
     list.innerHTML="";
-    ids.forEach(id=>{
+    ids.forEach((id,i)=>{
       const v=data[id]||{};
       const row=document.createElement("div");row.className="restoreIdRow";
-      row.innerHTML=`<span class="ra" style="background:${escHtml(v.color||"#8fdcff")}"></span>`+
+      row.innerHTML=`<span class="rNo">${i+1}</span><span class="ra">${catFaceSvg(v.catBody||"#1c1c1c",v.color||"#8fdcff")}</span>`+
         `<span class="rn">${escHtml(v.name||"匿名さん")}</span><span class="ri">${escHtml(id)}</span>`;
       row.onclick=()=>{_restoreSel=id;$("restoreId").value=id;[...list.children].forEach(c=>c.classList.remove("sel"));row.classList.add("sel");};
       list.appendChild(row);
@@ -2561,31 +3151,51 @@ $("restoreDo").addEventListener("click",async()=>{
     const d=snap.val();
     if(String(d.pw)!==pw){toast("パスワードが違うよ");return;}
     localStorage.setItem(UID_KEY,d.uid);
-    saveProfile({name:d.name||"匿名さん",color:d.color||"#8fdcff",comment:d.comment||"",
+    saveProfile({name:d.name||"匿名さん",color:d.color||"#8fdcff",catBody:d.catBody||"#1c1c1c",comment:d.comment||"",
       wakeHour:Number.isFinite(d.wakeHour)?d.wakeHour:6,isPublic:!!d.isPublic,id,pw});
     toast("リンクできた！記録を取り戻したよ");
     setTimeout(()=>location.reload(),900);
   }catch(e){toast("復元に失敗したよ");console.warn(e);}
 });
-$("psSubmit").addEventListener("click",()=>{playClick();saveFromSetup(false);});
-$("psSkip").addEventListener("click",()=>{playClick();saveFromSetup(true);});
+$("psSubmit").addEventListener("click",()=>{playClick();saveFromSetup();});
+$("psNext").addEventListener("click",()=>{playClick();psGoStep(2);});
+$("psBack").addEventListener("click",()=>{playClick();psGoStep(1);});
+$("psBodySw").addEventListener("click",()=>$("psBodyInput").click());
+$("psEarSw").addEventListener("click",()=>$("psEarInput").click());
+$("psBodyInput").addEventListener("input",e=>{psBody=e.target.value;psUpdatePreview();});
+$("psEarInput").addEventListener("input",e=>{psEar=e.target.value;psUpdatePreview();});
 $("psWake").addEventListener("input",updateWakeHint);
-let _tutPage=0;
+let _tutPage=0,_tutMode="first";
 function tutGo(i){
   _tutPage=Math.max(0,Math.min(1,i));
   document.querySelectorAll(".tutPage").forEach(p=>{p.hidden=(+p.dataset.i)!==_tutPage;});
   document.querySelectorAll(".tutDot").forEach((d,idx)=>d.classList.toggle("active",idx===_tutPage));
   $("tutPrev").disabled=_tutPage===0;
   $("tutNext").disabled=_tutPage===1;
+  $("tutStart").style.display=_tutPage===1?"":"none";
 }
-function showTutorial(){tutGo(0);$("tutorial").classList.add("visible");}
+function showTutorial(mode){_tutMode=mode||"first";tutGo(0);$("tutorial").classList.add("visible");}
 $("tutPrev").addEventListener("click",()=>{playClick();tutGo(_tutPage-1);});
 $("tutNext").addEventListener("click",()=>{playClick();tutGo(_tutPage+1);});
-$("tutStart").addEventListener("click",()=>{playClick();$("tutorial").classList.remove("visible");openProfileSetup(false);});
+$("tutStart").addEventListener("click",()=>{
+  playClick();
+  $("tutorial").classList.remove("visible");
+  if(_tutMode!=="help")openProfileSetup(false);
+});
+$("helpBtn").addEventListener("click",()=>{playClick();showTutorial("help");});
+$("nyanShot").addEventListener("click",()=>{playClick();if(_photoMode)rePosePhoto();else enterPhotoMode();});
+$("catShutter").addEventListener("click",()=>{playClick();nyanCapture();exitPhotoMode();});
+$("recentLabel").addEventListener("click",()=>{
+  if(_photoMode)return;
+  playClick();
+  _recentRange=(_recentRange===3)?1:3;
+  $("recentLabelText").textContent=_recentRange===3?"直近3日":"直近1日";
+  loadHillCats();
+});
 function profileBoot(){
   renderProfileBar();
   subscribeNotif();
-  if(!getProfile())showTutorial();
+  if(!getProfile())showTutorial("first");
 }
 
 /* =========================================================

@@ -96,11 +96,12 @@ button,input{font:inherit;}
   display:flex;justify-content:center;align-items:flex-end;gap:8px;padding:0 10px;flex-wrap:nowrap;}
 .hillCat{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;pointer-events:auto;
   width:74px;flex:0 0 auto;}
-.catLabel{display:flex;flex-direction:column;align-items:center;line-height:1.15;text-align:center;
-  background:rgba(255,255,255,.82);border:1px solid rgba(143,220,255,.4);border-radius:10px;padding:3px 7px;
-  box-shadow:0 4px 10px rgba(111,205,255,.18);max-width:80px;}
-.catName{font-size:10px;font-weight:700;color:#4d7790;max-width:66px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.catTime{font-size:9px;font-weight:700;color:#7796a8;display:flex;align-items:center;gap:2px;}
+.catLabel{display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1.2;text-align:center;
+  background:rgba(255,255,255,.92);border:1.5px solid rgba(143,220,255,.5);border-radius:13px;padding:5px 9px;
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);box-shadow:0 6px 16px rgba(111,205,255,.24);max-width:88px;}
+.catName{font-size:11px;font-weight:800;color:#43718c;max-width:74px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.catTime{font-size:9.5px;font-weight:700;color:#7796a8;display:flex;align-items:center;gap:3px;
+  background:rgba(143,220,255,.16);border-radius:999px;padding:1px 7px;}
 .catMark{font-weight:800;font-size:10px;}
 .catMark.mOk{color:#3bb273;}
 .catMark.mNg{color:#e8923c;}
@@ -750,8 +751,9 @@ button,input{font:inherit;}
 #closetPreview{display:flex;align-items:center;justify-content:center;height:150px;
   background:linear-gradient(180deg,#eaf7ff,#f4fbff);border-radius:18px;border:1.5px solid rgba(143,220,255,.4);}
 #closetPreview .catSvg{width:130px;height:135px;}
-#closetBar{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-height:188px;overflow-y:auto;padding:2px;}
-.closetItem{position:relative;aspect-ratio:1;border:2px solid rgba(143,220,255,.4);border-radius:14px;background:#fff;cursor:pointer;
+#closetBar{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-height:188px;overflow-y:auto;padding:2px;align-content:start;}
+.closetEmpty{grid-column:1/-1;text-align:center;font-size:12px;font-weight:700;color:#9bbacb;padding:14px 0;}
+.closetItem{position:relative;aspect-ratio:1;border:2px solid rgba(143,220,255,.4);border-radius:14px;background:#f8fcff;cursor:pointer;
   display:flex;align-items:center;justify-content:center;padding:4px;}
 .closetItem.equipped{border-color:#5ec79a;background:#eefcf5;box-shadow:0 0 0 2px rgba(94,199,154,.3);}
 .closetItem.none{font-size:12px;font-weight:800;color:#9bbacb;}
@@ -815,10 +817,10 @@ button,input{font:inherit;}
 #ppComment{font-size:13px;color:#6f9fb6;font-weight:600;padding:11px 13px;border-radius:13px;
   background:rgba(238,248,255,.6);border:1.5px solid rgba(143,220,255,.24);line-height:1.5;}
 #ppProfBtns{display:flex;flex-direction:column;gap:10px;margin-top:14px;}
-#ppTabs{position:absolute;top:-25px;left:18px;right:10px;display:flex;gap:4px;background:none;padding:0;overflow-x:auto;scrollbar-width:none;}
+#ppTabs{position:absolute;top:-25px;left:14px;right:8px;display:flex;gap:3px;background:none;padding:0;overflow-x:auto;scrollbar-width:none;}
 #ppTabs::-webkit-scrollbar{display:none;}
-.ppTab{flex:0 0 auto;height:29px;padding:0 11px;border:none;border-radius:13px 13px 0 0;cursor:pointer;white-space:nowrap;
-  background:rgba(255,255,255,.72);color:#7aa5bc;font-size:12px;font-weight:700;box-shadow:0 -3px 9px rgba(111,205,255,.12);}
+.ppTab{flex:0 0 auto;height:28px;padding:0 8px;border:none;border-radius:12px 12px 0 0;cursor:pointer;white-space:nowrap;
+  background:rgba(255,255,255,.72);color:#7aa5bc;font-size:11px;font-weight:700;box-shadow:0 -3px 9px rgba(111,205,255,.12);}
 .ppTab.active{background:rgba(255,255,255,.97);color:#4d7790;}
 .ppTabBody{display:flex;flex-direction:column;gap:10px;}
 .ppTabBody[hidden]{display:none;}
@@ -984,8 +986,8 @@ button,input{font:inherit;}
   #todayStat .homeStatMain{font-size:0;}            /* テキストは隠してアイコンだけ＝省スペース */
   #todayStat.done .homeStatMain::after{content:"✓";font-size:11.5px;color:#34a672;}
   #topProfileBar{top:13px;padding:5px 9px;}
-  #topProfileBar #tpbName{max-width:64px;font-size:12px;}
-  #tpbBell{display:none;}
+  #topProfileBar #tpbName{max-width:58px;font-size:12px;}
+  #tpbBell{display:inline-block;font-size:14px;}
   #helpBtn{top:13px;width:34px;height:34px;}
 }
 </style>
@@ -1361,12 +1363,12 @@ button,input{font:inherit;}
       <button class="ppTab" data-tab="closet" type="button">衣装</button>
       <button class="ppTab" data-tab="feed" type="button">投稿</button>
       <button class="ppTab" data-tab="cal" type="button">カレンダー</button>
-      <button class="ppTab active" data-tab="prof" type="button">プロフィール</button>
+      <button class="ppTab active" data-tab="prof" type="button">プロフ</button>
     </div>
     <div id="ppTabGacha" class="ppTabBody" hidden>
       <div id="gachaMachine"></div>
       <button id="gachaSpin" type="button">まわす ×0回</button>
-      <div id="gachaNote">※ 目標の時間に「はじめる」と1日1回もらえるよ。<br>同じ日に何度始めてもコインはもらえません。</div>
+      <div id="gachaNote">※ 目標の6時間前〜目標の時間に「はじめる」と1日1回もらえるよ。<br>同じ日に何度始めてもコインはもらえません。</div>
       <div id="gachaReveal" hidden><div id="gachaRevealInner"></div><div id="gachaRevealName"></div><button id="gachaRevealOk" type="button">やったー！</button></div>
     </div>
     <div id="ppTabCloset" class="ppTabBody" hidden>
@@ -2893,7 +2895,7 @@ function dlCard(src,name){const a=document.createElement("a");a.href=src;a.downl
    ========================================================= */
 function startRandomMode(){
   mode="random";
-  creditGachaDay();   /* 目標の時間にはじめると1日1回ガチャがもらえる */
+  if(hoursEarly()<=6)creditGachaDay();   /* 目標の6時間前〜目標時間に始めると1日1回ガチャがもらえる */
   hideSelect();
   clearStamps();
   uploaded=null;
@@ -3489,14 +3491,21 @@ async function doGachaSpin(){
   const it=ITEMS[Math.floor(Math.random()*ITEMS.length)];
   addItem(it.id);useGachaSpin();
   playGachaSound();gachaSparkle();
-  const cos={};cos[it.slot]={id:it.id,col:itemColor(it.id)};
-  $("gachaRevealInner").innerHTML=catFigureHTML(profileBody(),profileColor(),"sit",null,null,cos);
+  $("gachaRevealInner").innerHTML=itemAloneSVG(it.id);
   $("gachaRevealName").textContent=it.name+(itemCount(it.id)>=2?"（2個目！色変更OK）":"");
   $("gachaReveal").classList.add("show");
   renderGacha();
 }
 /* ===== 衣装 ロジック ===== */
 function itemIconSVG(id){const cos={};const it=itemById(id);cos[it.slot]={id,col:itemColor(id)};return catFigureHTML(profileBody(),profileColor(),"sit",null,null,cos);}
+function itemAloneSVG(id){const col=itemColor(id);let inner="";
+  if(id==="knit")inner=drawKnit(40,54,19,col);
+  else if(id==="straw")inner=drawStraw(40,54,19,col);
+  else if(id==="neckribbon")inner=drawNeckRibbon(40,42,14,col);
+  else if(id==="scarf")inner=drawScarf(40,38,13,col);
+  else if(id==="tailribbon")inner=drawTailRibbon(40,42,15,col);
+  return `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`;
+}
 function refreshCostumeEverywhere(){
   renderProfileBar();
   if(!$("selectScreen").classList.contains("hidden"))loadHillCats();
@@ -3512,12 +3521,12 @@ function renderCloset(){
   const none=document.createElement("div");none.className="closetItem none";none.textContent="なし";
   none.onclick=()=>{playClick();setEquip({});renderCloset();refreshCostumeEverywhere();};
   bar.appendChild(none);
-  if(owned.length===0){const m=document.createElement("div");m.className="closetItem none";m.style.gridColumn="span 3";m.textContent="ガチャでGETしよう";bar.appendChild(m);return;}
+  if(owned.length===0){const m=document.createElement("div");m.className="closetEmpty";m.textContent="ガチャでアイテムをGETしよう！";bar.appendChild(m);return;}
   owned.forEach(it=>{
     const cnt=items[it.id]||0;
     const tile=document.createElement("div");tile.className="closetItem";
     if(eq[it.slot]===it.id)tile.classList.add("equipped");
-    tile.innerHTML=itemIconSVG(it.id);
+    tile.innerHTML=itemAloneSVG(it.id);
     tile.onclick=()=>{playClick();const e=getEquip();if(e[it.slot]===it.id)delete e[it.slot];else e[it.slot]=it.id;setEquip(e);renderCloset();refreshCostumeEverywhere();};
     if(cnt>=2){
       /* 色変更スウォッチ */

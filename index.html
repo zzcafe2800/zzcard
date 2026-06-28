@@ -828,13 +828,13 @@ button,input{font:inherit;}
   padding:9px 6px;font-size:18px;font-weight:800;color:#4d7790;text-align:center;font-family:inherit;cursor:pointer;
   -webkit-appearance:none;appearance:none;text-align-last:center;}
 .wpColon{font-size:20px;font-weight:800;color:#9bbacb;}
-#psWakeHint{font-size:13px;color:#7aa5bc;font-weight:700;}
+#psWakeHint{font-size:13px;color:#4d8fb0;font-weight:800;background:rgba(143,220,255,.18);border-radius:999px;padding:3px 11px;white-space:nowrap;}
+.psWakeHead{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;}
 #psWakeLimit{font-size:11px;font-weight:700;color:#a9c6d6;min-height:14px;}
 #psWakeLimit.warn{color:#ef8a4d;}
 #psWakePicker.locked .wpControls{opacity:.5;pointer-events:none;}
 #psWakePicker.locked #psWakeHint{text-decoration:line-through;color:#bbb;}
 #psWakePicker.locked #psWakeLimit{color:#c98a8a;}
-#psWakeHint{font-size:13px;color:#7aa5bc;font-weight:700;}
 #psCatPreview{align-self:center;width:96px;height:96px;}
 #psCatPreview .avatarCat{filter:drop-shadow(0 8px 14px rgba(40,50,70,.18));}
 #psSwatchRow{display:flex;gap:12px;}
@@ -1384,7 +1384,7 @@ button,input{font:inherit;}
     </div>
     <div id="psStep2" hidden>
       <div id="psTitle2">もうすこし設定</div>
-      <label class="psField"><span>目標の起きる時間</span>
+      <label class="psField"><span class="psWakeHead">目標の起きる時間<span id="psWakeHint">6:00〜7:00</span></span>
         <div id="psWakePicker">
           <div class="wpControls">
             <button id="wpAmpm" type="button">午前</button>
@@ -1392,7 +1392,6 @@ button,input{font:inherit;}
             <span class="wpColon">:</span>
             <select id="wpMin" aria-label="分"></select>
           </div>
-          <div id="psWakeHint">6:00〜7:00</div>
           <div id="psWakeLimit"></div>
         </div>
         <input id="psWake" type="hidden" value="6">
@@ -1425,7 +1424,7 @@ button,input{font:inherit;}
     <div id="ppTabGacha" class="ppTabBody" hidden>
       <div id="gachaMachine"></div>
       <button id="gachaSpin" type="button">まわす ×0回</button>
-      <div id="gachaNote">※ 目標の6時間前〜目標の時間に「はじめる」と1日1回もらえるよ。<br>同じ日に何度始めてもコインはもらえません。</div>
+      <div id="gachaNote">目標にした時間内にカードを保存するとコインがもらえるよ　※一日一コインまで</div>
       <div id="gachaReveal" hidden><div id="gachaRevealInner"></div><div id="gachaRevealName"></div><button id="gachaRevealOk" type="button">やったー！</button></div>
     </div>
     <div id="ppTabCloset" class="ppTabBody" hidden>
@@ -1783,15 +1782,16 @@ async function likePost(po,btn){
   const db=await getDB();if(!db)return;
   const me=getProfile()||{};
   const fromName=me.isPublic?(me.name||"匿名"):"匿名";
-  const postLabel=postDateLabel(po.createdAt);
   try{
-    const{ref,set,push}=await import(FB_DB);
-    /* 通知ともいいね数は別々に書く（片方が失敗してももう片方は届くように） */
-    if(po.uid){try{await push(ref(db,"notif/"+po.uid),{fromName,post:postLabel,read:false,createdAt:Date.now()});}catch(e){console.warn("notif push failed",e);}}
-    if(po.pid){try{await set(ref(db,"likes/"+po.pid+"/"+getUid()),true);}catch(e){console.warn("like set failed",e);}}
+    const{ref,set}=await import(FB_DB);
+    /* いいねは likes/{投稿}/{自分uid} に名前と時刻ごと保存（相手への書き込み不要＝ルールに弾かれない）。
+       通知は各自が likes を読んで自前で生成する。 */
+    if(po.pid)await set(ref(db,"likes/"+po.pid+"/"+getUid()),{name:fromName,at:Date.now()});
   }catch(e){console.warn("like failed",e);}
 }
-let _notifData={};
+let _allPosts={},_allLikes={},_notifList=[];
+const NOTIF_SEEN_KEY="radio_notif_seen";
+function notifLastSeen(){return parseInt(localStorage.getItem(NOTIF_SEEN_KEY)||"0",10)||0;}
 const _catReduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 let _hillCatsData=[],_catTimer=null,_eyeTimer=null,_catFigs=[],_commentTimer=null;
 const _CATBK="#1c1c1c";
@@ -2334,43 +2334,54 @@ function nyanCapture(){
   img.onerror=()=>toast("撮影に失敗したよ");
   img.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg);
 }
+function recomputeNotifs(){
+  const me=getUid();
+  const myPosts={};
+  Object.entries(_allPosts).forEach(([pid,p])=>{if(p&&p.uid===me)myPosts[pid]=p;});
+  const list=[];
+  Object.entries(_allLikes).forEach(([pid,likers])=>{
+    const post=myPosts[pid];if(!post||!likers||typeof likers!=="object")return;
+    const label=postDateLabel(post.createdAt);
+    Object.entries(likers).forEach(([uid,v])=>{
+      if(uid===me)return;
+      const name=(v&&typeof v==="object"&&v.name)?v.name:"匿名";
+      const at=(v&&typeof v==="object"&&v.at)?v.at:0;
+      list.push({id:pid+":"+uid,fromName:name,post:label,at});
+    });
+  });
+  list.sort((a,b)=>(b.at||0)-(a.at||0));   /* 最近のが一番上 */
+  _notifList=list;
+  const seen=notifLastSeen();
+  const unread=list.filter(n=>(n.at||0)>seen).length;
+  const c=$("tpbCount");if(c){c.textContent=unread;c.classList.toggle("show",unread>0);}
+}
 async function subscribeNotif(){
   const db=await getDB();if(!db)return;
   try{
     const{ref,onValue}=await import(FB_DB);
-    onValue(ref(db,"notif/"+getUid()),snap=>{
-      _notifData=snap.exists()?snap.val():{};
-      const unread=Object.values(_notifData).filter(n=>n&&!n.read).length;
-      const c=$("tpbCount");c.textContent=unread;c.classList.toggle("show",unread>0);
-    });
+    onValue(ref(db,"posts"),s=>{_allPosts=s.exists()?s.val():{};recomputeNotifs();});
+    onValue(ref(db,"likes"),s=>{_allLikes=s.exists()?s.val():{};recomputeNotifs();});
   }catch(e){console.warn("notif sub failed",e);}
 }
 function openNotif(){
   const list=$("notifList");
-  const items=Object.entries(_notifData).map(([k,v])=>Object.assign({nid:k},v)).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
-  if(!items.length)list.innerHTML='<div class="notifMsg">まだ通知はないよ</div>';
+  const seen=notifLastSeen();
+  if(!_notifList.length)list.innerHTML='<div class="notifMsg">まだ通知はないよ</div>';
   else{
     list.innerHTML="";
-    items.forEach(n=>{
-      const d=document.createElement("div");d.className="notifRow"+(n.read?"":" unread");
+    _notifList.forEach(n=>{
+      const d=document.createElement("div");d.className="notifRow"+((n.at||0)>seen?" unread":"");
       d.textContent=n.post?`${escHtml(n.post)}の投稿に ${escHtml(n.fromName||"匿名")}さんがいいね♡`:`${escHtml(n.fromName||"匿名")}さんがいいねしました`;
       list.appendChild(d);
     });
   }
   $("notifPanel").classList.add("visible");
-  markNotifRead();
+  /* 既読：今より前のいいねは全部既読に（通知自体は消えず残る） */
+  const maxAt=_notifList.reduce((m,n)=>Math.max(m,n.at||0),0);
+  localStorage.setItem(NOTIF_SEEN_KEY,String(Math.max(maxAt,Date.now())));
+  const c=$("tpbCount");if(c)c.classList.remove("show");
 }
-async function markNotifRead(){
-  const db=await getDB();if(!db)return;
-  const keys=Object.keys(_notifData).filter(k=>_notifData[k]&&!_notifData[k].read);
-  if(!keys.length)return;
-  try{
-    const{ref,update}=await import(FB_DB);
-    const upd={};keys.forEach(k=>{upd["notif/"+getUid()+"/"+k+"/read"]=true;});
-    await update(ref(db),upd);
-    $("tpbCount").classList.remove("show");
-  }catch(e){console.warn(e);}
-}
+function markNotifRead(){ /* 通知はlikes由来に変更したため不要（互換のため空に） */ }
 
 /* =========================================================
    定数・設定
@@ -2693,6 +2704,7 @@ function profileIsPublic(){const p=getProfile();return!!(p&&p.isPublic);}
 
 /* いまの時刻（小数の「時」） */
 function nowHourFloat(){const p=jstParts();return p.h+p.m/60+p.s/3600;}
+function inWakeWindow(){const wake=profileWake(),now=nowHourFloat();return now>=wake&&now<wake+1;}  /* 目標時間〜+1時間の枠内か */
 /* 目標枠（wake〜wake+1）からのズレでハズレ率を決める
    ・枠内：0  ・寝坊：1hで5割→どんどん上げて上限9割
    ・早起き：1hで3割→5hまで緩やかに増やして上限6割（やさしい） */
@@ -3074,7 +3086,6 @@ function dlCard(src,name){const a=document.createElement("a");a.href=src;a.downl
    ========================================================= */
 function startRandomMode(){
   mode="random";
-  if(hoursEarly()<=6)creditGachaDay();   /* 目標の6時間前〜目標時間に始めると1日1回ガチャがもらえる */
   hideSelect();
   clearStamps();
   uploaded=null;
@@ -3199,6 +3210,7 @@ saveBtn.addEventListener("click",async()=>{
   if(savedRecently()&&!postedToday()){ showPostConfirm(false); return; }  /* 6時間内：保存ボタンが投稿ボタンに */
   await savePNG();
   markSaved();refreshSaveBtn();refreshGroundPost();
+  if(inWakeWindow()){creditGachaDay();refreshGachaBadge();}   /* 目標の時間内に保存したらコイン（1日1回） */
   showPostConfirm(true);
 });
 $("postYes").addEventListener("click",async()=>{

@@ -52,8 +52,8 @@ button,input{font:inherit;}
 .hidden{display:none!important;}
 
 /* ===================== SELECT (朝の空ロビー) ===================== */
-#selectScreen{position:absolute;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;
-  padding:30px 22px;overflow-y:auto;overflow-x:hidden;touch-action:manipulation;
+#selectScreen{position:absolute;inset:0;z-index:100;display:flex;align-items:flex-start;justify-content:center;
+  padding:30px 22px 240px;overflow-y:auto;overflow-x:hidden;touch-action:manipulation;
   background:linear-gradient(180deg,#bfe6ff 0%,#d8f0ff 34%,#ecf6ff 58%,#fff1e2 100%);}
 #selectScreen.sky-morning{background:linear-gradient(180deg,#bfe6ff 0%,#d8f0ff 34%,#ecf6ff 58%,#fff1e2 100%);}
 #selectScreen.sky-day{background:linear-gradient(180deg,#8fd0ff 0%,#aadcff 36%,#d6efff 64%,#eef9ff 100%);}
@@ -175,7 +175,7 @@ button,input{font:inherit;}
 .cloud3::after{width:52px;height:52px;right:18px;top:-21px;}
 @keyframes drift{0%{transform:translateX(0)}100%{transform:translateX(calc(100vw + 360px))}}
 
-#selectInner{position:relative;z-index:2;width:min(500px,100%);margin:auto;
+#selectInner{position:relative;z-index:2;width:min(500px,100%);margin:0 auto;
   display:flex;flex-direction:column;align-items:center;gap:18px;}
 
 /* 挨拶 */
@@ -560,13 +560,13 @@ button,input{font:inherit;}
 #stageWrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   padding:100px 32px 58px;transition:filter .3s,opacity .3s;}
 #stageWrap.closed{filter:blur(8px) saturate(.92);opacity:.82;}
-#stage{position:relative;width:min(82vw,1120px);height:min(72vh,780px);
+#stage{position:relative;width:min(86vw,1120px);height:min(66vh,720px);
   display:flex;align-items:center;justify-content:center;}
 #emptyHint{position:absolute;z-index:1;font-size:20px;letter-spacing:.10em;color:#87adc2;opacity:.62;pointer-events:none;}
 #imageFrame{position:relative;max-width:100%;max-height:100%;border-radius:18px;overflow:visible;touch-action:none;}
 
 /* 画像：水色の縁 */
-#cardImage{display:none;width:auto;height:auto;max-width:min(82vw,1120px);max-height:min(72vh,780px);
+#cardImage{display:none;width:auto;height:auto;max-width:min(86vw,1120px);max-height:min(66vh,720px);
   object-fit:contain;border-radius:18px;
   box-shadow:0 28px 60px rgba(111,205,255,.15), 0 0 0 2.5px rgba(99,204,255,.55);
   pointer-events:none;-webkit-user-drag:none;}
@@ -681,14 +681,15 @@ button,input{font:inherit;}
 #titlePlay{border:none;border-radius:999px;padding:15px 52px;font-family:inherit;font-size:19px;font-weight:800;cursor:pointer;
   background:linear-gradient(135deg,#7fd8b0,#5ec79a);color:#fff;box-shadow:0 10px 26px rgba(94,199,154,.45);letter-spacing:1px;}
 #titlePlay:active{transform:scale(.95);}
-.tutPage{display:flex;flex-direction:column;align-items:center;gap:12px;}
+.tutPage{display:flex;flex-direction:column;align-items:center;gap:11px;}
 .tutPage[hidden]{display:none;}
-.tutSub{font-size:12px;font-weight:800;color:#a9c6d6;letter-spacing:.14em;order:0;}
-.tutArt{width:210px;max-width:70vw;background:#fff;border-radius:22px;padding:16px;
-  box-shadow:0 12px 30px rgba(111,205,255,.2);order:2;}
+.tutIcon{font-size:40px;line-height:1;order:0;filter:drop-shadow(0 6px 10px rgba(111,205,255,.3));}
+.tutSub{font-size:13px;font-weight:700;color:#9bbacb;letter-spacing:.04em;order:1;}
+.tutTitle{font-family:"Yomogi","Kosugi Maru",cursive;font-size:26px;font-weight:800;color:#3d6f8c;line-height:1.3;letter-spacing:.01em;order:2;}
+.tutArt{width:206px;max-width:68vw;background:#fff;border-radius:22px;padding:16px;
+  box-shadow:0 14px 34px rgba(111,205,255,.24);order:3;margin-top:2px;}
 .tutArt svg{width:100%;height:auto;display:block;}
-.tutTitle{font-family:"Yomogi","Kosugi Maru",cursive;font-size:25px;font-weight:800;color:#3d6f8c;line-height:1.35;letter-spacing:.01em;order:1;}
-.tutDesc{font-size:13px;color:#7aa5bc;line-height:1.7;font-weight:600;order:3;}
+.tutDesc{font-size:13px;color:#7aa5bc;line-height:1.7;font-weight:600;order:4;}
 .tutArrow{position:fixed;top:50%;transform:translateY(-50%);width:46px;height:46px;border:none;border-radius:50%;
   background:rgba(255,255,255,.82);color:#5c93ad;font-size:24px;cursor:pointer;box-shadow:0 6px 16px rgba(111,205,255,.22);z-index:2;}
 #tutPrev{left:12px;}#tutNext{right:12px;}
@@ -723,7 +724,7 @@ button,input{font:inherit;}
 #ppBox{min-height:420px;}
 .ppTabBody{flex:1;}
 /* ===== ガチャ ===== */
-#ppTabGacha{display:flex;flex-direction:column;align-items:center;gap:12px;padding:6px 0 4px;}
+#ppTabGacha:not([hidden]){display:flex;flex-direction:column;align-items:center;gap:12px;padding:6px 0 4px;}
 #gachaMachine{width:170px;height:190px;}
 #gachaMachine svg{width:100%;height:100%;}
 #gachaSpin{border:none;border-radius:999px;padding:13px 30px;font-family:inherit;font-size:16px;font-weight:800;cursor:pointer;
@@ -745,7 +746,7 @@ button,input{font:inherit;}
 .gachaSparkle{position:fixed;font-size:26px;pointer-events:none;z-index:201;animation:gSpark 1s ease-out forwards;}
 @keyframes gSpark{0%{transform:scale(0) rotate(0);opacity:1;}100%{transform:scale(1.6) rotate(40deg);opacity:0;}}
 /* ===== 衣装 ===== */
-#ppTabCloset{display:flex;flex-direction:column;gap:12px;padding:4px 0;}
+#ppTabCloset:not([hidden]){display:flex;flex-direction:column;gap:12px;padding:4px 0;}
 #closetPreview{display:flex;align-items:center;justify-content:center;height:150px;
   background:linear-gradient(180deg,#eaf7ff,#f4fbff);border-radius:18px;border:1.5px solid rgba(143,220,255,.4);}
 #closetPreview .catSvg{width:130px;height:135px;}
@@ -1207,7 +1208,6 @@ button,input{font:inherit;}
   <div id="cardMenuBox">
     <div id="cardMenuHeader">
       <div id="cardMenuTitle">きょうのカードを準備</div>
-      <button id="cardMenuClose" type="button">スキップ</button>
     </div>
 
     <div class="cardStep">
@@ -1254,7 +1254,8 @@ button,input{font:inherit;}
   <button id="tutNext" class="tutArrow" type="button">›</button>
   <div id="tutPages">
     <div class="tutPage" data-i="0">
-      <div class="tutSub">STEP 1 ・ あさのルール</div>
+      <div class="tutIcon">☀️</div>
+      <div class="tutSub">きめた時間におきよう</div>
       <div class="tutArt"><svg viewBox="0 0 200 204" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <radialGradient id="tClockFace" cx="40%" cy="34%" r="76%">
@@ -1290,7 +1291,8 @@ button,input{font:inherit;}
       <div class="tutDesc">決めた時間に起きてスタンプをGET。<br>早起きするほどレアが出やすいよ。</div>
     </div>
     <div class="tutPage" data-i="1" hidden>
-      <div class="tutSub">STEP 2 ・ シェア</div>
+      <div class="tutIcon">📣</div>
+      <div class="tutSub">みんなとつながろう</div>
       <div class="tutArt"><svg viewBox="0 0 230 124" xmlns="http://www.w3.org/2000/svg">
         <text x="43" y="50" font-size="14" font-weight="700" fill="#5c93ad" text-anchor="middle">5:58</text>
         <text x="91" y="50" font-size="14" font-weight="700" fill="#5c93ad" text-anchor="middle">6:05</text>
@@ -2988,7 +2990,7 @@ function doDownloadCard(){
   stampDlBtn.classList.add("used");
   uploadArea.classList.add("hl");   /* DL後はアップロードを強調 */
 }
-dlBtn.addEventListener("click",doDownloadCard);
+dlBtn.addEventListener("click",()=>{playClick();closeCardMenu();});
 stampDlBtn.addEventListener("click",doDownloadCard);
 
 imgInput.addEventListener("change",e=>{
@@ -3009,7 +3011,7 @@ imgInput.addEventListener("change",e=>{
 const cardMenuScreen=$("cardMenuScreen");
 function openCardMenu(){cardMenuScreen.classList.add("visible");}
 function closeCardMenu(){cardMenuScreen.classList.remove("visible");refreshSaveBtn();}
-$("cardMenuClose").addEventListener("click",()=>{playClick();closeCardMenu();});
+
 
 saveBtn.addEventListener("click",async()=>{
   if(!activeWin)return;playClick();

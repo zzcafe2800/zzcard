@@ -7,6 +7,12 @@
 <meta name="description" content="ズズラジオ体操部 — 目標の時間に起きてスタンプを集める、朝のラジオ体操習慣アプリ。起きた時間をみんなと共有して続けよう（非公開・匿名もOK）。"/>
 <meta name="robots" content="index,follow"/>
 <meta name="theme-color" content="#bfe6ff"/>
+<link rel="manifest" href="manifest.json"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="ラジオ体操部"/>
+<link rel="apple-touch-icon" href="data:image/png;base64,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"/>
 <meta property="og:type" content="website"/>
 <meta property="og:title" content="ズズラジオ体操部"/>
 <meta property="og:description" content="目標の時間に起きてスタンプを集める、朝のラジオ体操習慣アプリ。起きた時間をみんなと共有して続けよう。"/>
@@ -15,6 +21,20 @@
 <meta name="twitter:description" content="目標の時間に起きてスタンプを集める、朝のラジオ体操習慣アプリ。"/>
 <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=Yomogi&display=swap" rel="stylesheet"/>
 <style>
+#installBar{position:fixed;top:0;left:0;right:0;z-index:3000;display:flex;align-items:center;gap:9px;
+  padding:9px 12px;padding-top:max(9px,env(safe-area-inset-top));
+  background:rgba(255,255,255,.96);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  box-shadow:0 6px 18px rgba(111,205,255,.28);transform:translateY(-110%);transition:transform .42s cubic-bezier(.2,.9,.3,1);
+  font-family:"Yomogi","Kosugi Maru",system-ui,sans-serif;}
+#installBar.show{transform:translateY(0);}
+#installBar[hidden]{display:none;}
+#installBar .ibIcon{width:30px;height:30px;flex:0 0 auto;}
+#installBar .ibIcon svg{width:100%;height:100%;}
+#ibText{flex:1;font-size:13px;font-weight:700;color:#4d7790;line-height:1.3;}
+#ibInstall{flex:0 0 auto;border:none;border-radius:999px;padding:8px 16px;font-size:13px;font-weight:800;cursor:pointer;
+  background:linear-gradient(135deg,#7fd8b0,#5ec79a);color:#fff;box-shadow:0 6px 14px rgba(94,199,154,.4);white-space:nowrap;}
+#ibInstall:active{transform:scale(.95);}
+#ibClose{flex:0 0 auto;border:none;background:transparent;color:#9bbacb;font-size:16px;font-weight:800;cursor:pointer;padding:4px 6px;}
 :root{
   --blue:#8fdcff;--blue-s:#63ccff;--text:#55839a;--text-d:#4d7790;
   --glass:rgba(255,255,255,.58);--shadow:0 10px 24px rgba(111,205,255,.12);
@@ -850,6 +870,12 @@ button,input{font:inherit;}
 </style>
 </head>
 <body>
+<div id="installBar" hidden>
+  <span class="ibIcon" aria-hidden="true"><svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg"><circle cx="40" cy="45" r="22" fill="#1c1c1c"/><path d="M24 33 L20 14 L39 28 Z" fill="#1c1c1c" stroke="#1c1c1c" stroke-width="5" stroke-linejoin="round"/><path d="M56 33 L60 14 L41 28 Z" fill="#1c1c1c" stroke="#1c1c1c" stroke-width="5" stroke-linejoin="round"/><circle cx="33" cy="46" r="6.5" fill="#fff"/><circle cx="47" cy="46" r="6.5" fill="#fff"/><circle cx="33" cy="47" r="5" fill="#1c1c1c"/><circle cx="47" cy="47" r="5" fill="#1c1c1c"/></svg></span>
+  <span id="ibText">アプリとしてインストールできます</span>
+  <button id="ibInstall" type="button">インストール</button>
+  <button id="ibClose" type="button" aria-label="閉じる">✕</button>
+</div>
 <div id="app">
 
 <!-- ===================== SELECT SCREEN ===================== -->
@@ -3211,6 +3237,60 @@ refreshHome();
 showSelect();
 updateTop();
 profileBoot();
+
+/* ===== PWA：インストール（デスクトップ化）バー ===== */
+(function(){
+  const bar=document.getElementById("installBar"),
+        btn=document.getElementById("ibInstall"),
+        txt=document.getElementById("ibText"),
+        cls=document.getElementById("ibClose");
+  if(!bar)return;
+  const isStandalone=window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches||window.navigator.standalone===true;
+  let deferred=null,hideTimer=null,shown=false;
+  function showBar(autoHideMs){
+    if(isStandalone||shown)return;
+    shown=true;bar.hidden=false;
+    requestAnimationFrame(()=>bar.classList.add("show"));
+    if(autoHideMs){clearTimeout(hideTimer);hideTimer=setTimeout(hideBar,autoHideMs);}
+  }
+  function hideBar(){
+    clearTimeout(hideTimer);
+    bar.classList.remove("show");
+    setTimeout(()=>{bar.hidden=true;},450);
+  }
+  /* Service Worker 登録（インストール条件に必要） */
+  if("serviceWorker" in navigator){
+    window.addEventListener("load",()=>{
+      navigator.serviceWorker.register("sw.js").catch(()=>{});
+    });
+  }
+  /* Chrome/Edge/Android：公式インストールプロンプト */
+  window.addEventListener("beforeinstallprompt",(e)=>{
+    e.preventDefault();
+    deferred=e;
+    txt.textContent="アプリとしてインストールできます";
+    btn.style.display="";
+    showBar(9000);                 /* 一定時間だけ上に表示 */
+  });
+  btn.addEventListener("click",async()=>{
+    if(!deferred){hideBar();return;}
+    hideBar();
+    deferred.prompt();
+    try{await deferred.userChoice;}catch(_){}
+    deferred=null;
+  });
+  cls.addEventListener("click",hideBar);
+  window.addEventListener("appinstalled",()=>{deferred=null;hideBar();});
+  /* iOS Safari は beforeinstallprompt 非対応 → 手動手順を案内（少し長めに表示） */
+  const ua=navigator.userAgent||"";
+  const isIOS=/iphone|ipad|ipod/i.test(ua);
+  const isiOSSafari=isIOS&&/safari/i.test(ua)&&!/crios|fxios|edgios/i.test(ua);
+  if(isiOSSafari&&!isStandalone){
+    txt.textContent="共有ボタン →「ホーム画面に追加」でアプリ化できます";
+    btn.style.display="none";
+    setTimeout(()=>showBar(12000),1200);
+  }
+})();
 </script>
 </body>
 </html>

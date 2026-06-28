@@ -732,10 +732,6 @@ button,input{font:inherit;}
   background:linear-gradient(135deg,#7fd8b0,#5ec79a);color:#fff;box-shadow:0 10px 26px rgba(94,199,154,.45);letter-spacing:1px;}
 #titlePlay:active{transform:scale(.95);}
 #titlePlay[hidden]{display:none;}
-#autoPlayRow{display:inline-flex;align-items:center;gap:6px;margin-top:12px;cursor:pointer;
-  font-size:12px;font-weight:700;color:#9bbacb;opacity:.85;user-select:none;}
-#autoPlayRow input{width:15px;height:15px;accent-color:#7fc8e8;cursor:pointer;}
-#autoPlayRow[hidden]{display:none;}
 #autoPlayBar{position:relative;width:min(220px,68vw);height:42px;margin-top:12px;border-radius:999px;
   overflow:hidden;background:rgba(143,220,255,.22);box-shadow:inset 0 1px 4px rgba(80,150,190,.18);cursor:pointer;}
 #autoPlayBar[hidden]{display:none;}
@@ -771,6 +767,8 @@ button,input{font:inherit;}
 .avatarCat{width:100%;height:100%;display:block;overflow:visible;}
 #tpbName{font-size:13px;font-weight:700;color:#4d7790;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 #tpbBell{position:relative;font-size:15px;margin-left:2px;}
+#tpbBell.ring{animation:bellRing .6s ease;}
+@keyframes bellRing{0%,100%{transform:rotate(0)}20%{transform:rotate(16deg)}40%{transform:rotate(-13deg)}60%{transform:rotate(9deg)}80%{transform:rotate(-5deg)}}
 #tpbCount{position:absolute;top:-7px;right:-9px;min-width:16px;height:16px;padding:0 4px;border-radius:999px;
   background:#ff6faf;color:#fff;font-size:10px;font-weight:700;display:none;align-items:center;justify-content:center;line-height:16px;text-align:center;}
 #tpbCount.show{display:inline-flex;}
@@ -1318,7 +1316,6 @@ button,input{font:inherit;}
     <div id="titleName">ズズ<br>ラジオ体操部</div>
     <div id="titleThumb"></div>
     <button id="titlePlay" type="button">▶ プレイ</button>
-    <label id="autoPlayRow"><input type="checkbox" id="autoPlayChk"><span>次回から自動</span></label>
     <div id="autoPlayBar" hidden><div id="autoPlayFill"></div><span id="autoPlayText">ロード中…</span></div>
   </div>
 </div>
@@ -1804,10 +1801,10 @@ async function likePost(po,btn){
     if(po.pid)await set(ref(db,"likes/"+po.pid+"/"+getUid()),{name:fromName,at:Date.now()});
   }catch(e){console.warn("like failed",e);}
 }
-let _allPosts={},_allLikes={},_notifList=[];
+let _allPosts={},_allLikes={},_notifList=[],_notifSeenSet=null,_prevLikeTotal=-1;
 const NOTIF_SEEN_KEY="radio_notif_seen";
-function notifSeenMap(){try{const v=JSON.parse(localStorage.getItem(NOTIF_SEEN_KEY)||"{}");return(v&&typeof v==="object"&&!Array.isArray(v))?v:{};}catch(e){return{};}}
-function setNotifSeenMap(m){try{localStorage.setItem(NOTIF_SEEN_KEY,JSON.stringify(m));}catch(e){}}
+function loadSeenSet(){try{const a=JSON.parse(localStorage.getItem(NOTIF_SEEN_KEY)||"[]");return new Set(Array.isArray(a)?a:[]);}catch(e){return new Set();}}
+function saveSeenSet(s){try{localStorage.setItem(NOTIF_SEEN_KEY,JSON.stringify([...s]));}catch(e){}}
 const _catReduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 let _hillCatsData=[],_catTimer=null,_eyeTimer=null,_catFigs=[],_commentTimer=null;
 const _CATBK="#1c1c1c";
@@ -2352,45 +2349,60 @@ function nyanCapture(){
 }
 function recomputeNotifs(){
   const me=getUid();
-  const seen=notifSeenMap();
-  const list=[];let unread=0;
+  if(!_notifSeenSet)_notifSeenSet=loadSeenSet();
+  const list=[];let total=0;
   Object.entries(_allPosts).forEach(([pid,p])=>{
     if(!p||p.uid!==me)return;
     const likers=_allLikes[pid];
-    const cur=(likers&&typeof likers==="object")?Object.keys(likers).length:0;
-    if(cur<=0)return;
-    const s=seen[pid]||0;
-    unread+=Math.max(0,cur-s);   /* 新しく増えたハートの数 */
-    list.push({pid,post:postDateLabel(p.createdAt),count:cur,at:p.createdAt||0,isNew:cur>s});
+    if(!likers||typeof likers!=="object")return;
+    const label=postDateLabel(p.createdAt);
+    Object.entries(likers).forEach(([uid,v])=>{
+      if(uid===me)return;
+      total++;
+      const name=(v&&typeof v==="object"&&v.name)?v.name:"匿名";
+      const at=(v&&typeof v==="object"&&v.at)?v.at:0;
+      list.push({id:pid+":"+uid,fromName:name,post:label,at});
+    });
   });
-  list.sort((a,b)=>(b.at||0)-(a.at||0));   /* 最近の投稿が一番上 */
+  list.sort((a,b)=>(b.at||0)-(a.at||0));   /* 最近のいいねが一番上 */
   _notifList=list;
+  const unread=list.filter(n=>!_notifSeenSet.has(n.id)).length;
   const c=$("tpbCount");if(c){c.textContent=unread;c.classList.toggle("show",unread>0);}
+  if(_prevLikeTotal>=0&&total>_prevLikeTotal){playNotifSound();flashBell();}   /* 開いてる最中に新しいいいねが来たら音 */
+  _prevLikeTotal=total;
 }
+function flashBell(){const b=$("tpbBell");if(!b)return;b.classList.remove("ring");void b.offsetWidth;b.classList.add("ring");}
 async function subscribeNotif(){
   const db=await getDB();if(!db)return;
   try{
-    const{ref,onValue}=await import(FB_DB);
+    const{ref,onValue,get}=await import(FB_DB);
     onValue(ref(db,"posts"),s=>{_allPosts=s.exists()?s.val():{};recomputeNotifs();});
     onValue(ref(db,"likes"),s=>{_allLikes=s.exists()?s.val():{};recomputeNotifs();});
+    /* 保険：リアルタイムが届かない環境でも20秒ごとに取り直して反映 */
+    setInterval(async()=>{
+      try{
+        const[ps,ls]=await Promise.all([get(ref(db,"posts")),get(ref(db,"likes"))]);
+        _allPosts=ps.exists()?ps.val():{};_allLikes=ls.exists()?ls.val():{};recomputeNotifs();
+      }catch(e){}
+    },20000);
   }catch(e){console.warn("notif sub failed",e);}
 }
 function openNotif(){
   const list=$("notifList");
+  if(!_notifSeenSet)_notifSeenSet=loadSeenSet();
   if(!_notifList.length)list.innerHTML='<div class="notifMsg">まだ通知はないよ</div>';
   else{
     list.innerHTML="";
     _notifList.forEach(n=>{
-      const d=document.createElement("div");d.className="notifRow"+(n.isNew?" unread":"");
-      d.textContent=`${escHtml(n.post)}の投稿に ${n.count}件のいいねがつきました♡`;
+      const d=document.createElement("div");d.className="notifRow"+(_notifSeenSet.has(n.id)?"":" unread");
+      d.textContent=`${escHtml(n.post)}の投稿に ${escHtml(n.fromName||"匿名")}さんがいいね♡`;
       list.appendChild(d);
     });
   }
   $("notifPanel").classList.add("visible");
-  /* 既読：各投稿の今のいいね数を保存（通知一覧は消えず残る） */
-  const seen=notifSeenMap();
-  _notifList.forEach(n=>{seen[n.pid]=n.count;});
-  setNotifSeenMap(seen);
+  /* 全部既読に（通知一覧は消えず残る） */
+  _notifList.forEach(n=>_notifSeenSet.add(n.id));
+  saveSeenSet(_notifSeenSet);
   const c=$("tpbCount");if(c){c.textContent="0";c.classList.remove("show");}
 }
 function markNotifRead(){ /* 通知はlikes由来に変更したため不要（互換のため空に） */ }
@@ -3722,6 +3734,14 @@ function playGachaTurnSound(){   /* カプセルを回す「ガチャガチャ�
     w.connect(wg);wg.connect(ctx.destination);w.start(now);w.stop(now+0.64);
   }catch(e){}
 }
+function playNotifSound(){   /* 新着いいねの通知音（やさしい2音） */
+  try{const ctx=ensureCtx();if(!ctx)return;const now=ctx.currentTime;
+    [880,1174.7].forEach((f,i)=>{const o=ctx.createOscillator(),g=ctx.createGain(),t=now+i*0.13;
+      o.type="sine";o.frequency.value=f;
+      g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.16,t+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t+0.3);
+      o.connect(g);g.connect(ctx.destination);o.start(t);o.stop(t+0.32);});
+  }catch(e){}
+}
 function playGachaWinSound(){   /* 当たり！の華やかなファンファーレ */
   try{const ctx=ensureCtx();if(!ctx)return;const now=ctx.currentTime;
     [523.25,659.25,783.99,1046.5,1318.5].forEach((f,i)=>{const o=ctx.createOscillator(),g=ctx.createGain(),t=now+i*0.08;
@@ -3930,8 +3950,6 @@ $("recentLabel").addEventListener("click",()=>{
   $("recentLabelText").textContent=_recentRange===3?"直近3日":"直近1日";
   loadHillCats();
 });
-const AUTO_PLAY_KEY="radio_autoplay";
-function autoPlayOn(){return localStorage.getItem(AUTO_PLAY_KEY)==="1";}
 let _autoTimer=null;
 function doTitlePlay(){
   $("titleScreen").classList.remove("visible");
@@ -3939,7 +3957,7 @@ function doTitlePlay(){
   else showTutorial("first");                    /* 初回：チュートリアルへ */
 }
 function startAutoPlay(){
-  $("titlePlay").hidden=true;$("autoPlayRow").hidden=true;
+  $("titlePlay").hidden=true;
   const bar=$("autoPlayBar"),fill=$("autoPlayFill");
   bar.hidden=false;fill.style.width="0%";
   requestAnimationFrame(()=>requestAnimationFrame(()=>{fill.style.width="100%";}));
@@ -3948,12 +3966,10 @@ function startAutoPlay(){
 }
 function cancelAutoPlay(){
   if(_autoTimer){clearTimeout(_autoTimer);_autoTimer=null;}
-  $("autoPlayBar").hidden=true;$("titlePlay").hidden=false;$("autoPlayRow").hidden=false;
-  $("autoPlayChk").checked=false;localStorage.setItem(AUTO_PLAY_KEY,"0");
+  $("autoPlayBar").hidden=true;$("titlePlay").hidden=false;
 }
 $("titlePlay").addEventListener("click",()=>{playClick();doTitlePlay();});
-$("autoPlayChk").addEventListener("change",e=>{localStorage.setItem(AUTO_PLAY_KEY,e.target.checked?"1":"0");});
-$("autoPlayBar").addEventListener("click",()=>{playClick();cancelAutoPlay();});   /* バーを押すと自動を中止 */
+$("autoPlayBar").addEventListener("click",()=>{playClick();cancelAutoPlay();});   /* バーを押すと自動を中止してプレイボタンに */
 function buildTitleArt(body,ear,cos,msg){
   const cat=`<g transform="translate(160,134)">${catFigureHTML(body,ear,"sit",[0,0],"normal",cos).replace(/^<svg[^>]*>/,"").replace(/<\/svg>$/,"")}</g>`;
   const bubble=msg?`<g>
@@ -4003,9 +4019,8 @@ function profileBoot(){
   renderTitleCat();
   subscribeNotif();
   $("titleScreen").classList.add("visible");   /* タイトルは毎回最初に表示 */
-  $("autoPlayChk").checked=autoPlayOn();
-  if(autoPlayOn())startAutoPlay();
-  else{$("titlePlay").hidden=false;$("autoPlayRow").hidden=false;$("autoPlayBar").hidden=true;}
+  if(getProfile()){startAutoPlay();}            /* 2回目以降：ロードバー→自動で開始 */
+  else{$("titlePlay").hidden=false;$("autoPlayBar").hidden=true;}   /* 初回：プレイボタン */
 }
 
 /* =========================================================

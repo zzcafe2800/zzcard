@@ -27,6 +27,20 @@ button,input{font:inherit;}
 #selectScreen{position:absolute;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;
   padding:30px 22px;overflow-y:auto;overflow-x:hidden;touch-action:manipulation;
   background:linear-gradient(180deg,#bfe6ff 0%,#d8f0ff 34%,#ecf6ff 58%,#fff1e2 100%);}
+#selectScreen.sky-morning{background:linear-gradient(180deg,#bfe6ff 0%,#d8f0ff 34%,#ecf6ff 58%,#fff1e2 100%);}
+#selectScreen.sky-day{background:linear-gradient(180deg,#8fd0ff 0%,#aadcff 36%,#d6efff 64%,#eef9ff 100%);}
+#selectScreen.sky-evening{background:linear-gradient(180deg,#5d6bb4 0%,#b984c0 38%,#ef9c9c 70%,#ffce97 100%);}
+#selectScreen.sky-night{background:linear-gradient(180deg,#0e1640 0%,#1f2a5c 40%,#3a4279 72%,#585c93 100%);}
+.sky-evening #sun{background:radial-gradient(circle at 50% 50%,#fff1d6 0%,#ff9e6a 48%,rgba(255,150,90,0) 74%);}
+.sky-night #sun{top:9%;background:radial-gradient(circle at 50% 50%,#ffffff 0%,#e6ecff 46%,rgba(220,230,255,0) 72%);}
+.sky-night .twinkle{opacity:.9;}
+#selectScreen:not(.sky-night) .twinkle{opacity:.22;}
+.sky-evening .hillBack,.sky-night .hillBack{background:rgba(60,72,120,.45);}
+.sky-evening .hillFront,.sky-night .hillFront{background:rgba(44,54,98,.6);}
+.sky-night #selectTitle{color:#eef2ff;text-shadow:0 2px 10px rgba(0,0,0,.35);}
+.sky-night #lobbySub{color:#c4ccec;}
+.sky-evening #selectTitle{color:#fff;text-shadow:0 2px 8px rgba(120,70,90,.4);}
+.sky-night #homeGateText,.sky-night #homeGateRemain,.sky-evening #homeGateText,.sky-evening #homeGateRemain{color:#eef2ff;}
 
 /* 空の装飾 */
 #skyDecor{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
@@ -83,11 +97,10 @@ button,input{font:inherit;}
 @keyframes heroBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
 .modeCard>*{pointer-events:none;}
 .randomTodayCircle,.randomTodayLabel{pointer-events:auto!important;}
-.modePreview{position:relative;width:100%;border-radius:24px;overflow:hidden;
-  background:rgba(255,255,255,.94);border:3px solid #fff;padding:14px;
-  box-shadow:0 24px 46px rgba(120,180,220,.34);transition:transform .25s,box-shadow .25s;}
-.modeCard:hover .modePreview{transform:scale(1.02);box-shadow:0 28px 56px rgba(120,180,220,.42);}
+.modePreview{position:relative;width:100%;background:none;border:none;padding:0;box-shadow:none;border-radius:0;overflow:visible;transition:transform .25s;}
+.modeCard:hover .modePreview{transform:scale(1.02);}
 .modePreview img{display:block;width:100%;max-height:46vh;object-fit:contain;border-radius:14px;}
+.radioSvg{display:block;width:100%;height:auto;filter:drop-shadow(0 16px 26px rgba(120,180,220,.34));}
 .modeLabel{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);z-index:5;white-space:nowrap;
   padding:13px 30px;border-radius:999px;color:#fff;font-size:17px;font-weight:700;letter-spacing:.08em;
   background:linear-gradient(135deg,#ffa6c8,#ff86b4);border:2.5px solid rgba(255,255,255,.8);
@@ -556,8 +569,8 @@ button,input{font:inherit;}
 #backToSelect{top:64px;}   /* プロフィールバーの下にずらす */
 #forceOpenBtn{display:none!important;}
 
-#profileSetup,#profilePanel{position:fixed;inset:0;z-index:210;display:none;align-items:center;justify-content:center;
-  background:rgba(200,234,255,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:22px;overflow-y:auto;}
+#profileSetup,#profilePanel{position:fixed;inset:0;z-index:210;display:none;align-items:flex-start;justify-content:center;
+  background:rgba(200,234,255,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:46px 22px 30px;overflow-y:auto;}
 #profileSetup.visible,#profilePanel.visible{display:flex;}
 #psBox,#ppBox{width:min(360px,94vw);margin:auto;border-radius:26px;padding:22px;position:relative;
   background:rgba(255,255,255,.97);border:1.5px solid rgba(143,220,255,.4);box-shadow:0 30px 70px rgba(111,205,255,.26);
@@ -592,15 +605,59 @@ button,input{font:inherit;}
 #ppStreak{font-size:13px;color:#6f9fb6;font-weight:700;text-align:center;background:rgba(238,248,255,.7);
   border-radius:14px;padding:9px;border:1.5px solid rgba(143,220,255,.28);}
 #ppStreak b{color:#ef8a4d;font-size:16px;}
-#ppTabs{display:flex;gap:6px;background:rgba(143,220,255,.12);border-radius:999px;padding:4px;}
-.ppTab{flex:1;height:34px;border:none;border-radius:999px;background:transparent;color:#7aa5bc;font-size:13px;font-weight:700;cursor:pointer;}
-.ppTab.active{background:#fff;color:#4d7790;box-shadow:0 3px 10px rgba(111,205,255,.2);}
+#ppTabs{position:absolute;top:-25px;left:18px;display:flex;gap:5px;background:none;padding:0;}
+.ppTab{flex:0 0 auto;height:29px;padding:0 14px;border:none;border-radius:13px 13px 0 0;cursor:pointer;
+  background:rgba(255,255,255,.72);color:#7aa5bc;font-size:12px;font-weight:700;box-shadow:0 -3px 9px rgba(111,205,255,.12);}
+.ppTab.active{background:rgba(255,255,255,.97);color:#4d7790;}
 .ppTabBody{display:flex;flex-direction:column;gap:10px;}
+/* パネル内カレンダー（小さめ） */
+#ppCalGrid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+#ppCalGrid .calDow{font-size:9px;padding:2px 0;}
+#ppCalGrid .calDay{min-height:30px;padding:3px 1px;border-radius:8px;}
+#ppCalGrid .calDayNum{font-size:9px;margin-bottom:1px;}
+#ppCalGrid .calDayStamp{width:18px;height:18px;}
+/* みんなの一覧 */
+#ppListBox{display:flex;flex-direction:column;gap:7px;max-height:46vh;overflow-y:auto;}
+.ppListRow{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:14px;
+  background:rgba(238,248,255,.7);border:1.5px solid rgba(143,220,255,.24);}
+.ppListAvatar{width:28px;height:28px;border-radius:50%;flex:0 0 auto;box-shadow:inset 0 0 0 2px rgba(255,255,255,.85);}
+.ppListName{flex:1;font-size:13px;font-weight:700;color:#4d7790;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ppListStreak{font-size:12px;font-weight:700;color:#ef8a4d;}
+.ppListMsg{text-align:center;font-size:12px;color:#9bbacb;padding:18px 8px;line-height:1.6;}
+#ppFeedBox{display:flex;flex-direction:column;gap:7px;max-height:48vh;overflow-y:auto;}
+.feedRow{display:flex;align-items:center;gap:9px;padding:8px 11px;border-radius:13px;
+  background:rgba(238,248,255,.7);border:1.5px solid rgba(143,220,255,.24);}
+.feedAvatar{width:26px;height:26px;border-radius:50%;flex:0 0 auto;box-shadow:inset 0 0 0 2px rgba(255,255,255,.85);}
+.feedName{flex:1;font-size:13px;font-weight:700;color:#4d7790;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.feedStamp{width:24px;height:24px;flex:0 0 auto;}.feedStamp img{width:100%;height:100%;object-fit:contain;}
+.feedDate{font-size:10px;color:#9bbacb;font-weight:700;}
 #ppPublicBtn,#ppEditBtn,#ppRestoreSave{height:44px;border:none;border-radius:999px;cursor:pointer;font-size:13px;font-weight:700;}
 #ppPublicBtn{background:rgba(143,220,255,.18);color:#4d7790;}
 #ppPublicBtn.pub{background:linear-gradient(135deg,#7fd8b0,#5ec79a);color:#fff;}
 #ppEditBtn{background:linear-gradient(135deg,#8fdcff,#63ccff);color:#fff;}
 #ppRestoreSave{background:rgba(143,220,255,.18);color:#4d7790;}
+#ppRestoreOpen{height:42px;border:none;border-radius:999px;cursor:pointer;font-size:12px;font-weight:700;
+  background:rgba(255,221,236,.6);color:#c46a92;}
+#restorePanel{position:fixed;inset:0;z-index:212;display:none;align-items:flex-start;justify-content:center;
+  background:rgba(200,234,255,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:46px 22px 30px;overflow-y:auto;}
+#restorePanel.visible{display:flex;}
+#restoreBox{width:min(340px,92vw);margin:auto;border-radius:24px;padding:22px;
+  background:rgba(255,255,255,.97);border:1.5px solid rgba(143,220,255,.4);box-shadow:0 24px 60px rgba(111,205,255,.26);
+  display:flex;flex-direction:column;gap:12px;}
+#restoreHead{display:flex;align-items:center;justify-content:space-between;}
+#restoreTitle{font-size:16px;font-weight:700;color:#5c93ad;letter-spacing:.04em;}
+#restoreClose{width:30px;height:30px;border:none;border-radius:999px;background:rgba(143,220,255,.16);color:#5c93ad;font-size:18px;cursor:pointer;}
+.restoreNote{font-size:11px;color:#86abc0;line-height:1.6;}
+#restoreId,#restorePw{height:44px;border-radius:12px;border:1.5px solid rgba(143,220,255,.4);background:#fff;padding:0 13px;font-size:14px;color:#3f6b84;font-weight:600;outline:none;}
+#restoreIdList{display:flex;flex-direction:column;gap:6px;max-height:34vh;overflow-y:auto;}
+.restoreIdRow{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:12px;cursor:pointer;
+  background:rgba(238,248,255,.7);border:1.5px solid rgba(143,220,255,.24);}
+.restoreIdRow.sel{border-color:#7fd0a0;background:rgba(186,238,210,.5);}
+.restoreIdRow .ra{width:24px;height:24px;border-radius:50%;flex:0 0 auto;}
+.restoreIdRow .rn{flex:1;font-size:13px;font-weight:700;color:#4d7790;}
+.restoreIdRow .ri{font-size:11px;color:#9bbacb;font-weight:700;}
+#restoreDo{height:48px;border:none;border-radius:999px;cursor:pointer;font-size:15px;font-weight:700;
+  background:linear-gradient(135deg,#7fd8b0,#5ec79a);color:#fff;box-shadow:0 10px 24px rgba(94,199,154,.36);}
 #ppCalMonth{text-align:center;font-size:13px;font-weight:700;color:#5c93ad;margin-bottom:6px;}
 
 /* 目標時間外の確認カード */
@@ -614,6 +671,31 @@ button,input{font:inherit;}
 #confirmStartBtns button{flex:1;height:46px;border:none;border-radius:999px;font-size:14px;font-weight:700;cursor:pointer;}
 #confirmNo{background:rgba(143,220,255,.18);color:#5c93ad;}
 #confirmYes{background:linear-gradient(135deg,#ffa6c8,#ff86b4);color:#fff;}
+
+/* いいねカード・通知パネル */
+#likeCard,#notifPanel{position:fixed;inset:0;z-index:208;display:none;align-items:center;justify-content:center;
+  background:rgba(200,234,255,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding:24px;overflow-y:auto;}
+#likeCard.visible,#notifPanel.visible{display:flex;}
+#likeCardBox,#notifBox{width:min(340px,92vw);margin:auto;border-radius:24px;padding:22px;position:relative;
+  background:rgba(255,255,255,.97);border:1.5px solid rgba(143,220,255,.4);box-shadow:0 24px 60px rgba(111,205,255,.26);
+  display:flex;flex-direction:column;gap:12px;}
+#likeCardTitle{font-size:15px;font-weight:700;color:#4d7790;text-align:center;letter-spacing:.04em;}
+#likeList,#notifList{display:flex;flex-direction:column;gap:8px;max-height:50vh;overflow-y:auto;}
+.likeRow{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:14px;
+  background:rgba(238,248,255,.7);border:1.5px solid rgba(143,220,255,.24);}
+.likeRowAvatar{width:30px;height:30px;border-radius:50%;flex:0 0 auto;box-shadow:inset 0 0 0 2px rgba(255,255,255,.85);}
+.likeRowName{flex:1;font-size:13px;font-weight:700;color:#4d7790;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.likeRowStamp{width:26px;height:26px;flex:0 0 auto;}.likeRowStamp img{width:100%;height:100%;object-fit:contain;}
+.likeBtn{border:none;border-radius:999px;padding:7px 13px;font-size:13px;font-weight:700;cursor:pointer;
+  background:linear-gradient(135deg,#ffa6c8,#ff86b4);color:#fff;flex:0 0 auto;}
+.likeBtn.done{background:rgba(143,220,255,.2);color:#7aa5bc;cursor:default;}
+#likeClose{height:44px;border:none;border-radius:999px;background:rgba(143,220,255,.16);color:#5c93ad;font-size:14px;font-weight:700;cursor:pointer;}
+#notifHead{display:flex;align-items:center;justify-content:space-between;}
+#notifTitle{font-size:16px;font-weight:700;color:#5c93ad;letter-spacing:.06em;}
+#notifClose{width:30px;height:30px;border:none;border-radius:999px;background:rgba(143,220,255,.16);color:#5c93ad;font-size:18px;cursor:pointer;}
+.notifRow{font-size:13px;color:#4d7790;font-weight:600;padding:10px 12px;border-radius:12px;background:rgba(238,248,255,.7);}
+.notifRow.unread{background:rgba(255,221,236,.6);}
+.notifMsg{text-align:center;font-size:12px;color:#9bbacb;padding:18px 8px;}
 
 @media(prefers-reduced-motion:reduce){
   #sun,.cloud,.twinkle,.modeCard,.randomTodayCircle img{animation:none!important;}
@@ -662,7 +744,24 @@ button,input{font:inherit;}
       <div id="homeGateBarWrap"><div id="homeGateBar"><div id="homeGateSun"></div></div></div>
     </div>
     <button class="modeCard" id="randomModeBtn" type="button">
-      <div class="modePreview"><img src="randm.png" alt=""></div>
+      <div class="modePreview"><svg class="radioSvg" viewBox="0 0 220 152" xmlns="http://www.w3.org/2000/svg">
+        <line x1="168" y1="40" x2="202" y2="8" stroke="#7cc3e6" stroke-width="5" stroke-linecap="round"/>
+        <circle cx="202" cy="8" r="6" fill="#7cc3e6"/>
+        <path d="M44 40 Q110 8 176 40" fill="none" stroke="#7cc3e6" stroke-width="7" stroke-linecap="round"/>
+        <rect x="16" y="38" width="188" height="104" rx="18" fill="#8fd2ef"/>
+        <rect x="16" y="38" width="188" height="104" rx="18" fill="none" stroke="#6fb9dd" stroke-width="3"/>
+        <circle cx="66" cy="92" r="32" fill="#eaf7ff"/>
+        <g fill="#bfe3f5">
+          <circle cx="54" cy="80" r="3"/><circle cx="66" cy="80" r="3"/><circle cx="78" cy="80" r="3"/>
+          <circle cx="54" cy="92" r="3"/><circle cx="66" cy="92" r="3"/><circle cx="78" cy="92" r="3"/>
+          <circle cx="54" cy="104" r="3"/><circle cx="66" cy="104" r="3"/><circle cx="78" cy="104" r="3"/>
+        </g>
+        <rect x="116" y="56" width="74" height="24" rx="6" fill="#eaf7ff"/>
+        <rect x="122" y="64" width="40" height="3" rx="1.5" fill="#bfe3f5"/>
+        <rect x="122" y="71" width="28" height="3" rx="1.5" fill="#bfe3f5"/>
+        <circle cx="130" cy="108" r="11" fill="#eaf7ff"/><circle cx="130" cy="108" r="4" fill="#9fd4ef"/>
+        <circle cx="166" cy="108" r="11" fill="#eaf7ff"/><circle cx="166" cy="108" r="4" fill="#9fd4ef"/>
+      </svg></div>
       <div class="modeLabel">はじめる</div>
       <div class="randomTodayCircle" id="todayCircle"><img id="todayStampPreview" src="" alt=""><div id="todayQ">？</div></div>
       <div class="randomTodayLabel" id="todayLabel">今日のスタンプ</div>
@@ -898,8 +997,10 @@ button,input{font:inherit;}
     </div>
     <div id="ppStreak">🔥 <b id="ppStreakNum">0</b> 日連続</div>
     <div id="ppTabs">
-      <button class="ppTab active" data-tab="prof" type="button">プロフィール</button>
+      <button class="ppTab" data-tab="list" type="button">一覧</button>
+      <button class="ppTab" data-tab="feed" type="button">投稿</button>
       <button class="ppTab" data-tab="cal" type="button">カレンダー</button>
+      <button class="ppTab active" data-tab="prof" type="button">プロフィール</button>
     </div>
     <div id="ppTabProf" class="ppTabBody">
       <button id="ppPublicBtn" type="button">公開／非公開</button>
@@ -910,13 +1011,20 @@ button,input{font:inherit;}
           <label class="psField"><span>復元ID（英字6文字）</span><input id="ppId" type="text" maxlength="6" placeholder="abcdef"></label>
           <label class="psField"><span>パスワード（数字4桁）</span><input id="ppPw" type="text" inputmode="numeric" maxlength="4" placeholder="0000"></label>
           <button id="ppRestoreSave" type="button">保存</button>
-          <div class="psNote">データが消えたときの復元用。Firebase連携後に有効になるよ</div>
+          <button id="ppRestoreOpen" type="button">別の端末から復元する</button>
+          <div class="psNote">データが消えたときの復元用。前のIDとパスワードで記録を取り戻せるよ</div>
         </div>
       </details>
     </div>
     <div id="ppTabCal" class="ppTabBody" hidden>
       <div id="ppCalMonth"></div>
       <div id="ppCalGrid" class="calGrid"></div>
+    </div>
+    <div id="ppTabList" class="ppTabBody" hidden>
+      <div id="ppListBox"></div>
+    </div>
+    <div id="ppTabFeed" class="ppTabBody" hidden>
+      <div id="ppFeedBox"></div>
     </div>
   </div>
 </div>
@@ -928,6 +1036,38 @@ button,input{font:inherit;}
       <button id="confirmNo" type="button">いいえ</button>
       <button id="confirmYes" type="button">はい</button>
     </div>
+  </div>
+</div>
+
+<div id="likeCard">
+  <div id="likeCardBox">
+    <div id="likeCardTitle">最近がんばった人にいいね👍</div>
+    <div id="likeList"></div>
+    <button id="likeClose" type="button">とじる</button>
+  </div>
+</div>
+
+<div id="notifPanel">
+  <div id="notifBox">
+    <div id="notifHead">
+      <div id="notifTitle">通知</div>
+      <button id="notifClose" type="button">×</button>
+    </div>
+    <div id="notifList"></div>
+  </div>
+</div>
+
+<div id="restorePanel">
+  <div id="restoreBox">
+    <div id="restoreHead">
+      <div id="restoreTitle">前のIDから復元</div>
+      <button id="restoreClose" type="button">×</button>
+    </div>
+    <div class="restoreNote">前に決めた復元IDをタップして、パスワード（数字4桁）を入れてね</div>
+    <input id="restoreId" type="text" maxlength="6" placeholder="復元ID（英字6文字）">
+    <input id="restorePw" type="text" inputmode="numeric" maxlength="4" placeholder="パスワード（数字4桁）">
+    <div id="restoreIdList"></div>
+    <button id="restoreDo" type="button">この記録にリンクする</button>
   </div>
 </div>
 
@@ -994,6 +1134,7 @@ const firebaseConfig={
   apiKey:"AIzaSyD0BqEbygfWAxnpIWxjc8CeEVlIu1kRMbI",
   authDomain:"card-zz.firebaseapp.com",
   projectId:"card-zz",
+  databaseURL:"https://card-zz-default-rtdb.firebaseio.com",
   storageBucket:"card-zz.firebasestorage.app",
   messagingSenderId:"844080901066",
   appId:"1:844080901066:web:d66ccd77a1fc581c637d33",
@@ -1007,6 +1148,182 @@ const firebaseConfig={
     if(await isSupported())getAnalytics(app);
   }catch(e){console.warn("firebase skipped",e);}
 })();
+
+/* ===== Firebase Realtime Database（公開プロフィールの共有） ===== */
+const FB_APP="https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+const FB_DB="https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
+const UID_KEY="radio_uid";
+function getUid(){
+  let u=localStorage.getItem(UID_KEY);
+  if(!u){u="u"+Math.random().toString(36).slice(2,10);localStorage.setItem(UID_KEY,u);}
+  return u;
+}
+function escHtml(s){return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+let _db=null,_dbTried=false;
+async function getDB(){
+  if(_db)return _db;
+  if(_dbTried&&!_db)return null;
+  _dbTried=true;
+  try{
+    const{initializeApp,getApps}=await import(FB_APP);
+    const app=getApps().length?getApps()[0]:initializeApp(firebaseConfig);
+    const{getDatabase}=await import(FB_DB);
+    _db=getDatabase(app);return _db;
+  }catch(e){console.warn("db init failed",e);return null;}
+}
+async function publishProfile(){
+  const p=getProfile();if(!p)return;
+  const db=await getDB();if(!db)return;
+  try{
+    const{ref,set,remove}=await import(FB_DB);
+    if(p.isPublic){
+      await set(ref(db,"profiles/"+getUid()),{
+        name:p.name||"匿名さん",color:p.color||"#8fdcff",comment:p.comment||"",
+        wakeHour:Number.isFinite(p.wakeHour)?p.wakeHour:6,streak:calcStreak().current,
+        public:true,updatedAt:Date.now()
+      });
+    }else{
+      await remove(ref(db,"profiles/"+getUid()));   /* 非公開なら一覧から消す */
+    }
+  }catch(e){console.warn("publish failed",e);}
+}
+async function loadProfiles(){
+  const db=await getDB();if(!db)return null;
+  try{
+    const{ref,get}=await import(FB_DB);
+    const snap=await get(ref(db,"profiles"));
+    return snap.exists()?snap.val():{};
+  }catch(e){console.warn("load failed",e);return null;}
+}
+async function renderList(){
+  const box=$("ppListBox");
+  box.innerHTML='<div class="ppListMsg">読み込み中…</div>';
+  const data=await loadProfiles();
+  if(data===null){box.innerHTML='<div class="ppListMsg">みんなの一覧は<br>Firebaseの設定（Realtime Database）後に表示されるよ</div>';return;}
+  const rows=Object.values(data).filter(x=>x&&x.public);
+  if(!rows.length){box.innerHTML='<div class="ppListMsg">まだ公開している人がいないよ</div>';return;}
+  rows.sort((a,b)=>(b.streak||0)-(a.streak||0));
+  box.innerHTML="";
+  rows.forEach(x=>{
+    const row=document.createElement("div");row.className="ppListRow";
+    row.innerHTML=`<span class="ppListAvatar" style="background:${escHtml(x.color||"#8fdcff")}"></span>`+
+      `<span class="ppListName">${escHtml(x.name||"匿名さん")}</span>`+
+      `<span class="ppListStreak">🔥${(x.streak||0)}</span>`;
+    box.appendChild(row);
+  });
+}
+
+/* ===== 投稿・いいね・通知 ===== */
+async function renderFeed(){
+  const box=$("ppFeedBox");
+  box.innerHTML='<div class="ppListMsg">読み込み中…</div>';
+  const db=await getDB();
+  if(!db){box.innerHTML='<div class="ppListMsg">投稿はFirebaseの設定後に表示されるよ</div>';return;}
+  try{
+    const{ref,get}=await import(FB_DB);
+    const snap=await get(ref(db,"posts"));
+    const data=snap.exists()?snap.val():{};
+    const posts=Object.values(data).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,30);
+    if(!posts.length){box.innerHTML='<div class="ppListMsg">まだ投稿が無いよ</div>';return;}
+    box.innerHTML="";
+    posts.forEach(po=>{
+      const row=document.createElement("div");row.className="feedRow";
+      row.innerHTML=`<span class="feedAvatar" style="background:${escHtml(po.color||"#8fdcff")}"></span>`+
+        `<span class="feedName">${escHtml(po.name||"匿名さん")}</span>`+
+        `<span class="feedStamp"><img src="${escHtml(po.stamp||"")}" alt=""></span>`+
+        `<span class="feedDate">${escHtml(po.date||"")}</span>`;
+      box.appendChild(row);
+    });
+  }catch(e){box.innerHTML='<div class="ppListMsg">読み込めなかったよ</div>';console.warn(e);}
+}
+async function postToday(){
+  const p=getProfile();if(!p||!p.isPublic)return;
+  const stamp=todayStamp();if(!stamp)return;
+  const db=await getDB();if(!db)return;
+  try{
+    const{ref,set}=await import(FB_DB);
+    const date=jstKey();
+    await set(ref(db,"posts/"+getUid()+"_"+date),{
+      uid:getUid(),name:p.name||"匿名さん",color:p.color||"#8fdcff",date,stamp,createdAt:Date.now()
+    });
+  }catch(e){console.warn("post failed",e);}
+}
+async function fetchRecentPosts(){
+  const db=await getDB();if(!db)return null;
+  try{
+    const{ref,get}=await import(FB_DB);
+    const snap=await get(ref(db,"posts"));
+    if(!snap.exists())return [];
+    const y=addDays(jstKey(),-1),me=getUid();
+    return Object.entries(snap.val()).map(([k,v])=>Object.assign({pid:k},v))
+      .filter(x=>x.uid!==me&&x.date>=y).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,3);
+  }catch(e){console.warn(e);return null;}
+}
+async function showLikeCard(){
+  const posts=await fetchRecentPosts();
+  if(posts===null||posts.length===0)return;
+  const list=$("likeList");list.innerHTML="";
+  posts.forEach(po=>{
+    const row=document.createElement("div");row.className="likeRow";
+    row.innerHTML=`<span class="likeRowAvatar" style="background:${escHtml(po.color||"#8fdcff")}"></span>`+
+      `<span class="likeRowName">${escHtml(po.name||"匿名さん")}</span>`+
+      `<span class="likeRowStamp"><img src="${escHtml(po.stamp||"")}" alt=""></span>`;
+    const btn=document.createElement("button");btn.className="likeBtn";btn.textContent="いいね";
+    btn.onclick=()=>likePost(po,btn);
+    row.appendChild(btn);list.appendChild(row);
+  });
+  $("likeCard").classList.add("visible");
+}
+async function likePost(po,btn){
+  btn.classList.add("done");btn.textContent="ありがとう♡";btn.onclick=null;
+  const db=await getDB();if(!db)return;
+  const me=getProfile()||{};
+  try{
+    const{ref,set,push}=await import(FB_DB);
+    await set(ref(db,"likes/"+po.pid+"/"+getUid()),true);
+    await push(ref(db,"notif/"+po.uid),{
+      fromName:me.isPublic?(me.name||"匿名"):"匿名",read:false,createdAt:Date.now()
+    });
+  }catch(e){console.warn("like failed",e);}
+}
+let _notifData={};
+async function subscribeNotif(){
+  const db=await getDB();if(!db)return;
+  try{
+    const{ref,onValue}=await import(FB_DB);
+    onValue(ref(db,"notif/"+getUid()),snap=>{
+      _notifData=snap.exists()?snap.val():{};
+      const unread=Object.values(_notifData).filter(n=>n&&!n.read).length;
+      const c=$("tpbCount");c.textContent=unread;c.classList.toggle("show",unread>0);
+    });
+  }catch(e){console.warn("notif sub failed",e);}
+}
+function openNotif(){
+  const list=$("notifList");
+  const items=Object.entries(_notifData).map(([k,v])=>Object.assign({nid:k},v)).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+  if(!items.length)list.innerHTML='<div class="notifMsg">まだ通知はないよ</div>';
+  else{
+    list.innerHTML="";
+    items.forEach(n=>{
+      const d=document.createElement("div");d.className="notifRow"+(n.read?"":" unread");
+      d.textContent=`${escHtml(n.fromName||"匿名")}さんがいいねしました`;
+      list.appendChild(d);
+    });
+  }
+  $("notifPanel").classList.add("visible");
+  markNotifRead();
+}
+async function markNotifRead(){
+  const db=await getDB();if(!db)return;
+  const keys=Object.keys(_notifData).filter(k=>_notifData[k]&&!_notifData[k].read);
+  if(!keys.length)return;
+  try{
+    const{ref,update}=await import(FB_DB);
+    const upd={};keys.forEach(k=>{upd["notif/"+getUid()+"/"+k+"/read"]=true;});
+    await update(ref(db),upd);
+    $("tpbCount").classList.remove("show");
+  }catch(e){console.warn(e);}
+}
 
 /* =========================================================
    定数・設定
@@ -1740,7 +2057,7 @@ function openCardMenu(){cardMenuScreen.classList.add("visible");}
 function closeCardMenu(){cardMenuScreen.classList.remove("visible");}
 $("cardMenuClose").addEventListener("click",()=>{playClick();closeCardMenu();});
 
-saveBtn.addEventListener("click",async()=>{if(!activeWin)return;playClick();await savePNG();});
+saveBtn.addEventListener("click",async()=>{if(!activeWin)return;playClick();await savePNG();await postToday();showLikeCard();});
 undoBtn.addEventListener("click",()=>{if(!activeWin)return;playClick();undoS();});
 redoBtn.addEventListener("click",()=>{if(!activeWin)return;playClick();redoS();});
 snsBtn.addEventListener("click",()=>{playClick();});
@@ -1954,6 +2271,7 @@ function markTodayDone(){
   dates.push(today);
   localStorage.setItem(DONE_KEY,JSON.stringify(dates));
   const st=stampForDate(today);
+  publishProfile();   /* 連続日数を一覧に反映 */
   return{added:true,newStamp:!before.has(st),stamp:st};
 }
 function calcStreak(){
@@ -1968,7 +2286,15 @@ function calcStreak(){
 function getCollected(){return new Set(getDoneDates().map(stampForDate).filter(Boolean));}
 function todayDone(){return getDoneDates().includes(jstKey());}
 
+function applySkyByTime(){
+  const h=jstParts().h;
+  const cls=(h>=5&&h<10)?"sky-morning":(h>=10&&h<16)?"sky-day":(h>=16&&h<19)?"sky-evening":"sky-night";
+  const s=$("selectScreen");
+  s.classList.remove("sky-morning","sky-day","sky-evening","sky-night");
+  s.classList.add(cls);
+}
 function refreshHomeGate(){
+  applySkyByTime();
   const wake=profileWake(),now=nowHourFloat();
   const g=$("homeGate");
   const inWindow=now>=wake&&now<wake+1;
@@ -2093,7 +2419,7 @@ function saveFromSetup(skip){
   };
   saveProfile(p);
   closeProfileSetup();
-  renderProfileBar();refreshHome();
+  renderProfileBar();refreshHome();publishProfile();
 }
 function openProfilePanel(){
   const p=getProfile()||{};
@@ -2111,9 +2437,18 @@ function switchPpTab(t){
   document.querySelectorAll(".ppTab").forEach(b=>b.classList.toggle("active",b.dataset.tab===t));
   $("ppTabProf").hidden=t!=="prof";
   $("ppTabCal").hidden=t!=="cal";
+  $("ppTabList").hidden=t!=="list";
+  $("ppTabFeed").hidden=t!=="feed";
   if(t==="cal")renderCalInto($("ppCalMonth"),$("ppCalGrid"));
+  if(t==="list")renderList();
+  if(t==="feed")renderFeed();
 }
 $("topProfileBar").addEventListener("click",()=>{playClick();openProfilePanel();});
+$("tpbBell").addEventListener("click",e=>{e.stopPropagation();playClick();openNotif();});
+$("notifClose").addEventListener("click",()=>{playClick();$("notifPanel").classList.remove("visible");});
+$("notifPanel").addEventListener("click",e=>{if(e.target===$("notifPanel"))$("notifPanel").classList.remove("visible");});
+$("likeClose").addEventListener("click",()=>{playClick();$("likeCard").classList.remove("visible");});
+$("likeCard").addEventListener("click",e=>{if(e.target===$("likeCard"))$("likeCard").classList.remove("visible");});
 $("ppClose").addEventListener("click",()=>{playClick();$("profilePanel").classList.remove("visible");});
 $("profilePanel").addEventListener("click",e=>{if(e.target===$("profilePanel"))$("profilePanel").classList.remove("visible");});
 document.querySelectorAll(".ppTab").forEach(b=>b.addEventListener("click",()=>{playClick();switchPpTab(b.dataset.tab);}));
@@ -2121,19 +2456,79 @@ $("ppPublicBtn").addEventListener("click",()=>{
   const p=getProfile()||{};p.isPublic=!p.isPublic;saveProfile(p);
   $("ppPublicBtn").classList.toggle("pub",p.isPublic);
   $("ppPublicBtn").textContent=p.isPublic?"公開中（タップで非公開）":"非公開（タップで公開）";
+  publishProfile();
 });
 $("ppEditBtn").addEventListener("click",()=>{playClick();$("profilePanel").classList.remove("visible");openProfileSetup(true);});
-$("ppRestoreSave").addEventListener("click",()=>{
+$("ppRestoreSave").addEventListener("click",async()=>{
   const p=getProfile()||{};
   p.id=($("ppId").value||"").toLowerCase().replace(/[^a-z]/g,"").slice(0,6);
   p.pw=($("ppPw").value||"").replace(/[^0-9]/g,"").slice(0,4);
-  saveProfile(p);toast("復元ID設定を保存したよ");
+  saveProfile(p);
+  await saveRestoreId(p);
+  toast("復元ID設定を保存したよ");
+});
+async function saveRestoreId(p){
+  if(!p.id||!p.pw)return;
+  const db=await getDB();if(!db)return;
+  try{
+    const{ref,set}=await import(FB_DB);
+    await set(ref(db,"ids/"+p.id),{
+      uid:getUid(),pw:p.pw,name:p.name||"匿名さん",color:p.color||"#8fdcff",
+      comment:p.comment||"",wakeHour:Number.isFinite(p.wakeHour)?p.wakeHour:6,isPublic:!!p.isPublic
+    });
+  }catch(e){console.warn("saveRestoreId failed",e);}
+}
+let _restoreSel=null;
+$("ppRestoreOpen").addEventListener("click",async()=>{playClick();await openRestore();});
+$("restoreClose").addEventListener("click",()=>{playClick();$("restorePanel").classList.remove("visible");});
+$("restorePanel").addEventListener("click",e=>{if(e.target===$("restorePanel"))$("restorePanel").classList.remove("visible");});
+async function openRestore(){
+  _restoreSel=null;$("restoreId").value="";$("restorePw").value="";
+  const list=$("restoreIdList");list.innerHTML='<div class="restoreNote">読み込み中…</div>';
+  $("restorePanel").classList.add("visible");
+  const db=await getDB();
+  if(!db){list.innerHTML='<div class="restoreNote">Firebase設定後に一覧が出るよ。IDを直接入力してもOK</div>';return;}
+  try{
+    const{ref,get}=await import(FB_DB);
+    const snap=await get(ref(db,"ids"));
+    const data=snap.exists()?snap.val():{};
+    const ids=Object.keys(data);
+    if(!ids.length){list.innerHTML='<div class="restoreNote">まだ登録された復元IDが無いよ</div>';return;}
+    list.innerHTML="";
+    ids.forEach(id=>{
+      const v=data[id]||{};
+      const row=document.createElement("div");row.className="restoreIdRow";
+      row.innerHTML=`<span class="ra" style="background:${escHtml(v.color||"#8fdcff")}"></span>`+
+        `<span class="rn">${escHtml(v.name||"匿名さん")}</span><span class="ri">${escHtml(id)}</span>`;
+      row.onclick=()=>{_restoreSel=id;$("restoreId").value=id;[...list.children].forEach(c=>c.classList.remove("sel"));row.classList.add("sel");};
+      list.appendChild(row);
+    });
+  }catch(e){list.innerHTML='<div class="restoreNote">一覧を読み込めなかったよ。IDを直接入力してね</div>';}
+}
+$("restoreDo").addEventListener("click",async()=>{
+  const id=($("restoreId").value||"").toLowerCase().replace(/[^a-z]/g,"").slice(0,6);
+  const pw=($("restorePw").value||"").replace(/[^0-9]/g,"").slice(0,4);
+  if(!id||!pw){toast("IDとパスワードを入れてね");return;}
+  const db=await getDB();if(!db){toast("いまは復元できないよ（Firebase設定が必要）");return;}
+  try{
+    const{ref,get}=await import(FB_DB);
+    const snap=await get(ref(db,"ids/"+id));
+    if(!snap.exists()){toast("そのIDは見つからないよ");return;}
+    const d=snap.val();
+    if(String(d.pw)!==pw){toast("パスワードが違うよ");return;}
+    localStorage.setItem(UID_KEY,d.uid);
+    saveProfile({name:d.name||"匿名さん",color:d.color||"#8fdcff",comment:d.comment||"",
+      wakeHour:Number.isFinite(d.wakeHour)?d.wakeHour:6,isPublic:!!d.isPublic,id,pw});
+    toast("リンクできた！記録を取り戻したよ");
+    setTimeout(()=>location.reload(),900);
+  }catch(e){toast("復元に失敗したよ");console.warn(e);}
 });
 $("psSubmit").addEventListener("click",()=>{playClick();saveFromSetup(false);});
 $("psSkip").addEventListener("click",()=>{playClick();saveFromSetup(true);});
 $("psWake").addEventListener("input",updateWakeHint);
 function profileBoot(){
   renderProfileBar();
+  subscribeNotif();
   if(!getProfile())openProfileSetup(false);
 }
 

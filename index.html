@@ -2263,8 +2263,6 @@ function openCommentPop(name,comment){
   $("commentPopText").textContent=comment;
   $("commentPop").classList.add("visible");
 }
-$("commentPopClose").addEventListener("click",()=>{playClick();$("commentPop").classList.remove("visible");});
-$("commentPop").addEventListener("click",e=>{if(e.target===$("commentPop"))$("commentPop").classList.remove("visible");});
 function startCommentCycle(figs){
   if(_commentTimer){clearInterval(_commentTimer);_commentTimer=null;}
   const withC=figs.filter(f=>f.riseEl&&f.comment&&f.rise);   /* 起床表示とコメント両方ある子だけ交互に */
@@ -3857,6 +3855,8 @@ $("photoCancelBtn").addEventListener("click",()=>{playClick();exitPhotoMode();})
 $("tpbBell").addEventListener("click",e=>{e.stopPropagation();playClick();openNotif();});
 $("notifClose").addEventListener("click",()=>{playClick();$("notifPanel").classList.remove("visible");});
 $("notifPanel").addEventListener("click",e=>{if(e.target===$("notifPanel"))$("notifPanel").classList.remove("visible");});
+$("commentPopClose").addEventListener("click",()=>{playClick();$("commentPop").classList.remove("visible");});
+$("commentPop").addEventListener("click",e=>{if(e.target===$("commentPop"))$("commentPop").classList.remove("visible");});
 $("likeClose").addEventListener("click",()=>{playClick();$("likeCard").classList.remove("visible");});
 $("likeCard").addEventListener("click",e=>{if(e.target===$("likeCard"))$("likeCard").classList.remove("visible");});
 $("ppClose").addEventListener("click",()=>{playClick();$("profilePanel").classList.remove("visible");});

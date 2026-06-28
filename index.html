@@ -106,7 +106,8 @@ button,input{font:inherit;}
   background:rgba(143,220,255,.16);border-radius:999px;padding:1px 7px;}
 .catRise{font-size:9px;font-weight:800;color:#4d7790;background:rgba(143,220,255,.18);
   border-radius:999px;padding:1px 7px;white-space:nowrap;}
-.catRise.isComment{white-space:normal;max-width:108px;color:#d46a9a;background:#fff0f6;line-height:1.25;}
+.catRise.isComment{white-space:normal;max-width:96px;color:#d46a9a;background:#fff0f6;line-height:1.2;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-align:center;}
 .catMark{font-weight:800;font-size:10px;}
 .catMark.mOk{color:#3bb273;}
 .catMark.mNg{color:#e8923c;}
@@ -730,6 +731,18 @@ button,input{font:inherit;}
 #titlePlay{border:none;border-radius:999px;padding:15px 52px;font-family:inherit;font-size:19px;font-weight:800;cursor:pointer;
   background:linear-gradient(135deg,#7fd8b0,#5ec79a);color:#fff;box-shadow:0 10px 26px rgba(94,199,154,.45);letter-spacing:1px;}
 #titlePlay:active{transform:scale(.95);}
+#titlePlay[hidden]{display:none;}
+#autoPlayRow{display:inline-flex;align-items:center;gap:6px;margin-top:12px;cursor:pointer;
+  font-size:12px;font-weight:700;color:#9bbacb;opacity:.85;user-select:none;}
+#autoPlayRow input{width:15px;height:15px;accent-color:#7fc8e8;cursor:pointer;}
+#autoPlayRow[hidden]{display:none;}
+#autoPlayBar{position:relative;width:min(220px,68vw);height:42px;margin-top:12px;border-radius:999px;
+  overflow:hidden;background:rgba(143,220,255,.22);box-shadow:inset 0 1px 4px rgba(80,150,190,.18);cursor:pointer;}
+#autoPlayBar[hidden]{display:none;}
+#autoPlayFill{position:absolute;inset:0;width:0;border-radius:999px;
+  background:linear-gradient(135deg,#7fd0ff,#6fb8f0);transition:width 2s linear;}
+#autoPlayText{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:800;color:#fff;text-shadow:0 1px 2px rgba(80,140,180,.4);z-index:1;}
 .tutPage{display:flex;flex-direction:column;align-items:center;gap:11px;}
 .tutPage[hidden]{display:none;}
 .tutIcon{font-size:40px;line-height:1;order:0;filter:drop-shadow(0 6px 10px rgba(111,205,255,.3));}
@@ -1305,6 +1318,8 @@ button,input{font:inherit;}
     <div id="titleName">ズズ<br>ラジオ体操部</div>
     <div id="titleThumb"></div>
     <button id="titlePlay" type="button">▶ プレイ</button>
+    <label id="autoPlayRow"><input type="checkbox" id="autoPlayChk"><span>次回から自動</span></label>
+    <div id="autoPlayBar" hidden><div id="autoPlayFill"></div><span id="autoPlayText">ロード中…</span></div>
   </div>
 </div>
 
@@ -1791,7 +1806,8 @@ async function likePost(po,btn){
 }
 let _allPosts={},_allLikes={},_notifList=[];
 const NOTIF_SEEN_KEY="radio_notif_seen";
-function notifLastSeen(){return parseInt(localStorage.getItem(NOTIF_SEEN_KEY)||"0",10)||0;}
+function notifSeenMap(){try{const v=JSON.parse(localStorage.getItem(NOTIF_SEEN_KEY)||"{}");return(v&&typeof v==="object"&&!Array.isArray(v))?v:{};}catch(e){return{};}}
+function setNotifSeenMap(m){try{localStorage.setItem(NOTIF_SEEN_KEY,JSON.stringify(m));}catch(e){}}
 const _catReduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 let _hillCatsData=[],_catTimer=null,_eyeTimer=null,_catFigs=[],_commentTimer=null;
 const _CATBK="#1c1c1c";
@@ -2336,23 +2352,19 @@ function nyanCapture(){
 }
 function recomputeNotifs(){
   const me=getUid();
-  const myPosts={};
-  Object.entries(_allPosts).forEach(([pid,p])=>{if(p&&p.uid===me)myPosts[pid]=p;});
-  const list=[];
-  Object.entries(_allLikes).forEach(([pid,likers])=>{
-    const post=myPosts[pid];if(!post||!likers||typeof likers!=="object")return;
-    const label=postDateLabel(post.createdAt);
-    Object.entries(likers).forEach(([uid,v])=>{
-      if(uid===me)return;
-      const name=(v&&typeof v==="object"&&v.name)?v.name:"匿名";
-      const at=(v&&typeof v==="object"&&v.at)?v.at:0;
-      list.push({id:pid+":"+uid,fromName:name,post:label,at});
-    });
+  const seen=notifSeenMap();
+  const list=[];let unread=0;
+  Object.entries(_allPosts).forEach(([pid,p])=>{
+    if(!p||p.uid!==me)return;
+    const likers=_allLikes[pid];
+    const cur=(likers&&typeof likers==="object")?Object.keys(likers).length:0;
+    if(cur<=0)return;
+    const s=seen[pid]||0;
+    unread+=Math.max(0,cur-s);   /* 新しく増えたハートの数 */
+    list.push({pid,post:postDateLabel(p.createdAt),count:cur,at:p.createdAt||0,isNew:cur>s});
   });
-  list.sort((a,b)=>(b.at||0)-(a.at||0));   /* 最近のが一番上 */
+  list.sort((a,b)=>(b.at||0)-(a.at||0));   /* 最近の投稿が一番上 */
   _notifList=list;
-  const seen=notifLastSeen();
-  const unread=list.filter(n=>(n.at||0)>seen).length;
   const c=$("tpbCount");if(c){c.textContent=unread;c.classList.toggle("show",unread>0);}
 }
 async function subscribeNotif(){
@@ -2365,21 +2377,21 @@ async function subscribeNotif(){
 }
 function openNotif(){
   const list=$("notifList");
-  const seen=notifLastSeen();
   if(!_notifList.length)list.innerHTML='<div class="notifMsg">まだ通知はないよ</div>';
   else{
     list.innerHTML="";
     _notifList.forEach(n=>{
-      const d=document.createElement("div");d.className="notifRow"+((n.at||0)>seen?" unread":"");
-      d.textContent=n.post?`${escHtml(n.post)}の投稿に ${escHtml(n.fromName||"匿名")}さんがいいね♡`:`${escHtml(n.fromName||"匿名")}さんがいいねしました`;
+      const d=document.createElement("div");d.className="notifRow"+(n.isNew?" unread":"");
+      d.textContent=`${escHtml(n.post)}の投稿に ${n.count}件のいいねがつきました♡`;
       list.appendChild(d);
     });
   }
   $("notifPanel").classList.add("visible");
-  /* 既読：今より前のいいねは全部既読に（通知自体は消えず残る） */
-  const maxAt=_notifList.reduce((m,n)=>Math.max(m,n.at||0),0);
-  localStorage.setItem(NOTIF_SEEN_KEY,String(Math.max(maxAt,Date.now())));
-  const c=$("tpbCount");if(c)c.classList.remove("show");
+  /* 既読：各投稿の今のいいね数を保存（通知一覧は消えず残る） */
+  const seen=notifSeenMap();
+  _notifList.forEach(n=>{seen[n.pid]=n.count;});
+  setNotifSeenMap(seen);
+  const c=$("tpbCount");if(c){c.textContent="0";c.classList.remove("show");}
 }
 function markNotifRead(){ /* 通知はlikes由来に変更したため不要（互換のため空に） */ }
 
@@ -2446,6 +2458,7 @@ const $=id=>document.getElementById(id);
 const bgmAudio=$("bgmAudio"),stampSnd=$("stampSound"),clickSnd=$("clickSound");
 if(!_isCrawler){bgmAudio.src="bgm11.mp3";stampSnd.src="stamp.mp3";clickSnd.src="click-1.mp3";}
 const selectScreen=$("selectScreen"),randomBtn=$("randomModeBtn");
+let _startedOnce=false;
 const todayPrv=$("todayStampPreview");
 const todayCircle=$("todayCircle")||{contains:()=>false,addEventListener:()=>{}},todayLabel=$("todayLabel")||{contains:()=>false,addEventListener:()=>{}};
 const calPop=$("calendarPopup"),calClose=$("calendarClose"),calMonth=$("calendarMonth"),calGrid=$("calendarGrid");
@@ -3086,6 +3099,7 @@ function dlCard(src,name){const a=document.createElement("a");a.href=src;a.downl
    ========================================================= */
 function startRandomMode(){
   mode="random";
+  _startedOnce=true;   /* このセッションで一度始めた（次回から確認カードを省略） */
   hideSelect();
   clearStamps();
   uploaded=null;
@@ -3131,7 +3145,7 @@ function handleCardSelect(target){
   startBGM();
   playClick();
   const wake=profileWake(),now=nowHourFloat();
-  if(now>=wake&&now<wake+1){startRandomMode();return;}   /* 目標枠内：そのまま */
+  if((now>=wake&&now<wake+1)||_startedOnce){startRandomMode();return;}   /* 目標枠内、または同セッションで一度始めていれば確認なしでそのまま */
   /* 枠外：確認カードを出す */
   let msg;
   if(now<wake){
@@ -3916,12 +3930,30 @@ $("recentLabel").addEventListener("click",()=>{
   $("recentLabelText").textContent=_recentRange===3?"直近3日":"直近1日";
   loadHillCats();
 });
-$("titlePlay").addEventListener("click",()=>{
-  playClick();
+const AUTO_PLAY_KEY="radio_autoplay";
+function autoPlayOn(){return localStorage.getItem(AUTO_PLAY_KEY)==="1";}
+let _autoTimer=null;
+function doTitlePlay(){
   $("titleScreen").classList.remove("visible");
   if(getProfile()){showSelect();updateTop();}   /* 2回目以降：そのままホームへ */
   else showTutorial("first");                    /* 初回：チュートリアルへ */
-});
+}
+function startAutoPlay(){
+  $("titlePlay").hidden=true;$("autoPlayRow").hidden=true;
+  const bar=$("autoPlayBar"),fill=$("autoPlayFill");
+  bar.hidden=false;fill.style.width="0%";
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{fill.style.width="100%";}));
+  if(_autoTimer)clearTimeout(_autoTimer);
+  _autoTimer=setTimeout(()=>{_autoTimer=null;doTitlePlay();},2000);
+}
+function cancelAutoPlay(){
+  if(_autoTimer){clearTimeout(_autoTimer);_autoTimer=null;}
+  $("autoPlayBar").hidden=true;$("titlePlay").hidden=false;$("autoPlayRow").hidden=false;
+  $("autoPlayChk").checked=false;localStorage.setItem(AUTO_PLAY_KEY,"0");
+}
+$("titlePlay").addEventListener("click",()=>{playClick();doTitlePlay();});
+$("autoPlayChk").addEventListener("change",e=>{localStorage.setItem(AUTO_PLAY_KEY,e.target.checked?"1":"0");});
+$("autoPlayBar").addEventListener("click",()=>{playClick();cancelAutoPlay();});   /* バーを押すと自動を中止 */
 function buildTitleArt(body,ear,cos,msg){
   const cat=`<g transform="translate(160,134)">${catFigureHTML(body,ear,"sit",[0,0],"normal",cos).replace(/^<svg[^>]*>/,"").replace(/<\/svg>$/,"")}</g>`;
   const bubble=msg?`<g>
@@ -3971,6 +4003,9 @@ function profileBoot(){
   renderTitleCat();
   subscribeNotif();
   $("titleScreen").classList.add("visible");   /* タイトルは毎回最初に表示 */
+  $("autoPlayChk").checked=autoPlayOn();
+  if(autoPlayOn())startAutoPlay();
+  else{$("titlePlay").hidden=false;$("autoPlayRow").hidden=false;$("autoPlayBar").hidden=true;}
 }
 
 /* =========================================================

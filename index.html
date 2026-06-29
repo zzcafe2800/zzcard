@@ -727,6 +727,16 @@ button,input{font:inherit;}
 #catRoom.visible{display:block;}
 #roomScene{position:absolute;inset:0;}
 #roomScene svg{width:100%;height:100%;display:block;}
+.catBreathe{transform-origin:60px 118px;animation:catBreathe 3.6s ease-in-out infinite;will-change:transform;}
+@keyframes catBreathe{0%,100%{transform:scaleY(1) scaleX(1);}50%{transform:scaleY(1.022) scaleX(0.991);}}
+.catGest{transform-origin:60px 116px;transition:transform .22s ease;}
+.catGest.yawn{transform:scaleY(1.07) translateY(-3px);}
+.catGest.twitch{transform:rotate(-3.5deg);}
+.catGest.approaching{animation:catApproach 1.5s ease-out;}
+@keyframes catApproach{0%{transform:scale(.4) translateY(60px);opacity:.5;}100%{transform:scale(1) translateY(0);opacity:1;}}
+.rmCat{cursor:pointer;}
+.peekCat{animation:peekIn .55s cubic-bezier(.3,1.1,.5,1) both;}
+@keyframes peekIn{0%{opacity:0;}40%{opacity:1;}100%{opacity:1;}}
 #affBar{position:absolute;left:14px;top:50%;transform:translateY(-50%);z-index:6;display:flex;flex-direction:column;align-items:center;gap:7px;}
 #affHeart{font-size:22px;filter:drop-shadow(0 2px 3px rgba(255,120,150,.4));}
 #affTrack{width:18px;height:170px;border-radius:999px;background:rgba(255,255,255,.7);
@@ -3785,20 +3795,24 @@ function saveFromSetup(){
   renderProfileBar();refreshHome();loadHillCats();publishProfile();
 }
 let _roomState="normal",_ballTaps=0,_idleSpot=0,_playEyeDir=[0,0],_lastEye=0;
-let _roomAngryTimer=null,_roomAvertTimer=null,_roomBoredTimer=null,_boredReturn=null,_roomIdleTimer=null,_tOff={x:0,y:0};
-const ROOM_SPOTS=[[0.42,0.55],[0.30,0.66],[0.52,0.50],[0.36,0.62],[0.46,0.66]];
+let _roomAngryTimer=null,_roomAvertTimer=null,_roomBoredTimer=null,_boredReturn=null,_roomIdleTimer=null,_watchTimer=null,_happyTimer=null,_tOff={x:0,y:0};
+let _rcParams=null,_rcLifeTimer=null,_rcBlinkTimer=null,_catGestClass="",_peekSide="left",_specialTimer=null;
+const ROOM_SPOTS=[[0.42,0.55],[0.30,0.66],[0.52,0.50],[0.36,0.62],[0.46,0.66],[0.25,0.54],[0.58,0.60],[0.40,0.70]];
 const AFF_KEY="radio_affection",AFF_DAY_KEY="radio_aff_day",AFF_FOOD_KEY="radio_aff_food";
 const AFF_STAGES=[{min:0,name:"はじめまして"},{min:20,name:"また君？"},{min:40,name:"下僕"},{min:60,name:"甘えん坊"},{min:80,name:"メロメロ"}];
 function getAffection(){return Math.max(0,Math.min(100,parseInt(localStorage.getItem(AFF_KEY)||"6",10)||0));}
 function setAffection(v){localStorage.setItem(AFF_KEY,String(Math.max(0,Math.min(100,Math.round(v)))));refreshAffBar();}
 function affStage(){const p=getAffection();let s=AFF_STAGES[0];AFF_STAGES.forEach(x=>{if(p>=x.min)s=x;});return s;}
+function affStageIndex(){const p=getAffection();let i=0;AFF_STAGES.forEach((x,idx)=>{if(p>=x.min)i=idx;});return i;}
+function affTier(){const i=affStageIndex();return i<=1?"cold":(i===2?"mid":"warm");}
+function svgHeart(x,y,sz,col){const s=sz/10;return `<path transform="translate(${x},${y}) scale(${s})" d="M0 3 C0 -1 -5 -1 -5 3 C-5 6 0 9 0 11 C0 9 5 6 5 3 C5 -1 0 -1 0 3 Z" fill="${col}"/>`;}
 function bumpAffectionDaily(){const k=jstKey();if(localStorage.getItem(AFF_DAY_KEY)!==k){setAffection(getAffection()+12);localStorage.setItem(AFF_DAY_KEY,k);}}
 function feedCat(){
   let f={};try{f=JSON.parse(localStorage.getItem(AFF_FOOD_KEY)||"{}")||{};}catch(e){}
   const k=jstKey();if(f.day!==k)f={day:k,n:0};
   if(f.n>=5){toast("今日はもうおなかいっぱい🐈");return;}
   f.n++;localStorage.setItem(AFF_FOOD_KEY,JSON.stringify(f));
-  setAffection(getAffection()+5);playPop();toast("もぐもぐ…🐟 +5");roomHeartPop();
+  setAffection(getAffection()+5);playPop();playMeow("happy");toast("もぐもぐ…🐟 +5");roomHeartPop();
 }
 function roomHeartPop(){
   const r=$("catRoom");if(!r)return;
@@ -3807,6 +3821,11 @@ function roomHeartPop(){
   r.appendChild(h);setTimeout(()=>h.remove(),1100);
 }
 function roomVisible(){return $("catRoom").classList.contains("visible");}
+/* == ランダム性ヘルパー（ロボットっぽさを消す） == */
+function rnd(a,b){return a+Math.random()*(b-a);}
+function rndi(a,b){return Math.round(rnd(a,b));}
+function chance(p){return Math.random()<p;}
+let _playStart=0,_playFollowMs=1000,_playLookedAway=false,_angerAt=3;
 function roomGeom(){
   const W=Math.max(320,Math.round(window.innerWidth)),H=Math.max(440,Math.round(window.innerHeight));
   const floorY=Math.round(H*0.58);
@@ -3814,16 +3833,19 @@ function roomGeom(){
   return {W,H,floorY,catScale};
 }
 function catBackHTML(b,e){
-  let s='';
-  s+=`<path d="M86 108 C104 104 106 84 95 78" fill="none" stroke="${b}" stroke-width="13" stroke-linecap="round"/>`;
-  s+=`<path d="M60 120 C32 120 26 92 32 70 C38 50 48 44 60 44 C72 44 82 50 88 70 C94 92 88 120 60 120 Z" fill="${b}"/>`;
-  s+=`<ellipse cx="46" cy="116" rx="9" ry="6" fill="${b}"/><ellipse cx="74" cy="116" rx="9" ry="6" fill="${b}"/>`;
-  s+=`<circle cx="60" cy="44" r="24" fill="${b}"/>`;
-  s+=`<path d="M40 32 L35 9 L57 26 Z" fill="${b}"/><path d="M80 32 L85 9 L63 26 Z" fill="${b}"/>`;
-  s+=`<path d="M43 27 L41 15 L52 25 Z" fill="${e}" opacity=".45"/><path d="M77 27 L79 15 L68 25 Z" fill="${e}" opacity=".45"/>`;
+  /* おすわりと同じシルエットで「顔なし・耳の中なし・足なし」の後ろ姿 */
+  return tailSway(`<path d="M74 112 C102 112 108 72 94 58" fill="none" stroke="${b}" stroke-width="13" stroke-linecap="round"/>`,82,108,3.5)
+    +`<path d="M60 118 C32 118 26 90 31 66 C35 46 44 41 60 41 C76 41 85 46 89 66 C94 90 88 118 60 118 Z" fill="${b}"/>`
+    +`<circle cx="60" cy="46" r="27" fill="${b}"/>`
+    +catEars2(60,46,27,b,b);   /* 耳の中も体色＝後ろから見て中が見えない */
+}
+function roomFaceInner(b,e,cos,dir){
+  let s=`<circle cx="60" cy="60" r="40" fill="${b}"/>`+catEars2(60,60,40,b,e)+catEyesRound(43,77,62,12,dir||[0,0]);
+  if(cos&&cos.hat)s+=_drawHat(cos.hat.id,60,60,40,cos.hat.col);
   return s;
 }
 function roomSceneSVG(){
+  _rcParams=null;_catGestClass="";
   const body=profileBody(),ear=profileColor(),cos=getEquippedCostume(),pose=getEquippedPose();
   const g=roomGeom(),W=g.W,H=g.H,floorY=g.floorY,catScale=g.catScale,band=H-floorY;
   const towerCx=Math.min(W-Math.round(W*0.10),Math.round(W*0.84));
@@ -3835,17 +3857,39 @@ function roomSceneSVG(){
   const winW=Math.min(220,Math.round(W*0.30)),winH=Math.min(190,Math.round(H*0.28)),winX=Math.round(W*0.06),winY=Math.round(H*0.09);
   const ballR=Math.max(16,Math.round(W*0.028)),ballX=W*0.58,ballY=floorY+band*0.6;
   const foodX=Math.round(W*0.12),foodY=floorY+band*0.46,foodR=Math.max(20,Math.round(W*0.035));
-  function catAt(tx,ty,s,inner){return `<g class="rmCat" transform="translate(${tx.toFixed(1)},${ty.toFixed(1)}) scale(${s.toFixed(3)})">${inner}</g>`;}
+  function catAt(tx,ty,s,inner){return `<g class="rmCat" transform="translate(${tx.toFixed(1)},${ty.toFixed(1)}) scale(${s.toFixed(3)})"><g class="catBreathe"><g class="catGest ${_catGestClass}">${inner}</g></g></g>`;}
   let cat,extra="";
   if(_roomState==="angry"){
     const s=catScale*0.72;cat=catAt(towerCx-60*s,towerTopY-118*s,s,catBackHTML(body,ear));
     extra=`<g transform="translate(${(towerCx+60*s).toFixed(1)},${(towerTopY-108*s).toFixed(1)})" stroke="#ff6b8a" stroke-width="3" stroke-linecap="round"><path d="M0 0 l8 -5 M0 0 l8 5 M11 -8 l5 10 M11 8 l5 -10"/></g>`;
   }else if(_roomState==="bored"){
     const s=catScale*0.74;cat=catAt(towerCx-60*s,towerTopY-118*s,s,catInner(body,ear,"sleep",[0,0],"normal",cos));
+  }else if(_roomState==="happy"){
+    /* なついた猫：ボールの近くに寄ってきて喜ぶ（メロメロはゴロン） */
+    const idx=affStageIndex();const hpose=(idx>=4)?"lie":pose;
+    const hx=W*0.50,hy=floorY+band*0.62;
+    cat=catAt(hx-60*catScale,hy-124*catScale,catScale,catInner(body,ear,hpose,[0.5,0.3],"content",cos));
+    extra=svgHeart(hx-34*catScale,hy-150*catScale,16,"#ff7ba6")+svgHeart(hx+18*catScale,hy-168*catScale,12,"#ffa6c4")+svgHeart(hx+44*catScale,hy-140*catScale,10,"#ff8fb4");
+  }else if(_roomState==="approach"){
+    /* ドアップでこっちに近づいてくる */
+    _catGestClass="approaching";
+    const s=catScale*2.15,cx=W*0.5,fy=H*1.04;
+    cat=catAt(cx-60*s,fy-124*s,s,catInner(body,ear,pose,[0,0],"wide",cos));
+  }else if(_roomState==="peek"){
+    /* いなくなったと思ったら端から顔だけぬーっと */
+    const s=Math.max(catScale*2.2,(H*0.5)/120);
+    const eyes=_peekSide==="left"?[1,0.1]:[-1,0.1];
+    const headW=120*s;
+    const tx=_peekSide==="left"? -headW*0.42 : W-headW*0.58;
+    const ty=H*0.5-60*s;
+    cat=`<g class="rmCat peekCat" transform="translate(${tx.toFixed(1)},${ty.toFixed(1)}) scale(${s.toFixed(3)})">${roomFaceInner(body,ear,cos,eyes)}</g>`;
   }else{
     let dir=[0,0],expr="normal";
     if(_roomState==="avert"){dir=[-1,-0.6];expr="half";}
-    else if(_roomState==="play"){dir=_playEyeDir;expr="normal";}
+    else if(_roomState==="play"){dir=_playEyeDir;expr=(affTier()==="warm")?"wide":"normal";}
+    else if(_roomState==="watch"){dir=[1,0.4];expr="wide";}
+    else if(affTier()==="warm"){expr="content";}   /* なつくと普段から嬉しそうな目 */
+    _rcParams={body,ear,cos,pose,dir:dir.slice(),expr,calm:(_roomState==="normal")};
     cat=catAt(rugCx-60*catScale,feetY-124*catScale,catScale,catInner(body,ear,pose,dir,expr,cos));
   }
   return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
@@ -3884,6 +3928,46 @@ function renderRoom(){
   refreshGachaBadge();refreshAffBar();
   const ball=document.getElementById("roomBall");if(ball)ball.addEventListener("click",e=>{e.stopPropagation();tapBall();});
   const food=document.getElementById("roomFood");if(food)food.addEventListener("click",e=>{e.stopPropagation();feedCat();});
+  const cc=document.querySelector("#roomScene .rmCat");if(cc)cc.addEventListener("click",e=>{e.stopPropagation();petCat();});
+  if(_rcParams&&_rcParams.calm)startCatLifeRoom();else stopCatLifeRoom();
+}
+function setCatInnerRoom(dir,expr){
+  const el=document.querySelector("#roomScene .catGest");if(!el||!_rcParams)return;
+  el.innerHTML=catInner(_rcParams.body,_rcParams.ear,_rcParams.pose,dir,expr,_rcParams.cos);
+}
+function stopCatLifeRoom(){if(_rcLifeTimer){clearTimeout(_rcLifeTimer);_rcLifeTimer=null;}if(_rcBlinkTimer){clearTimeout(_rcBlinkTimer);_rcBlinkTimer=null;}}
+function roomGesture(){
+  const gest=document.querySelector("#roomScene .catGest");
+  if(!_rcParams||!_rcParams.calm||!roomVisible()||!gest)return;
+  const r=Math.random();
+  if(r<0.07){
+    /* あくび（たまに）：目を閉じてお口あーん＋のびっ */
+    const a=POSE_ANCHORS[_rcParams.pose]||POSE_ANCHORS.sit,hx=a.h[0],hy=a.h[1],hr=a.h[2];
+    const mouth=`<ellipse cx="${hx}" cy="${(hy+hr*0.5).toFixed(1)}" rx="${(hr*0.18).toFixed(1)}" ry="${(hr*0.26).toFixed(1)}" fill="#7a3b46"/><path d="M${(hx-hr*0.12).toFixed(1)} ${(hy+hr*0.56).toFixed(1)} q${(hr*0.12).toFixed(1)} ${(hr*0.13).toFixed(1)} ${(hr*0.24).toFixed(1)} 0" fill="#ff9bb0"/>`;
+    gest.classList.add("yawn");
+    gest.innerHTML=catInner(_rcParams.body,_rcParams.ear,_rcParams.pose,_rcParams.dir,"line",_rcParams.cos)+mouth;
+    _rcBlinkTimer=setTimeout(()=>{gest.classList.remove("yawn");setCatInnerRoom(_rcParams.dir,_rcParams.expr);},780);
+  }else if(r<0.30){
+    /* 耳／頭ピクッ */
+    gest.classList.add("twitch");
+    _rcBlinkTimer=setTimeout(()=>{if(gest)gest.classList.remove("twitch");},210);
+  }else{
+    /* まばたき＋たまにキョロッ */
+    setCatInnerRoom(_rcParams.dir,"line");
+    _rcBlinkTimer=setTimeout(()=>{
+      if(Math.random()<0.55)_rcParams.dir=EYE_DIRS[Math.floor(Math.random()*EYE_DIRS.length)];else _rcParams.dir=[0,0];
+      setCatInnerRoom(_rcParams.dir,_rcParams.expr);
+    },140);
+  }
+}
+function startCatLifeRoom(){
+  stopCatLifeRoom();
+  const loop=()=>{
+    if(!_rcParams||!_rcParams.calm||!roomVisible())return;
+    roomGesture();
+    _rcLifeTimer=setTimeout(loop,2200+Math.random()*2800);
+  };
+  _rcLifeTimer=setTimeout(loop,1600+Math.random()*1600);
 }
 function renderRoomFade(){
   const sc=$("roomScene");if(!sc){renderRoom();return;}
@@ -3900,31 +3984,156 @@ function playSqueak(){
     o.connect(gn);gn.connect(ctx.destination);o.start(t);o.stop(t+0.26);
   }catch(e){}
 }
+/* 気持ちによって変わる「ニャー」（母音 m→ya→a を擬似的に） */
+function playMeow(mood){
+  try{
+    const ctx=ensureCtx();if(!ctx)return;const t=ctx.currentTime;
+    let base,peak,end,dur,vol,det;
+    switch(mood){
+      case "love":   base=600;peak=940;end=560;dur=0.6; vol=0.16;det=4;break;
+      case "happy":  base=560;peak=860;end=520;dur=0.5; vol=0.17;det=5;break;
+      case "curious":base=520;peak=700;end=470;dur=0.4; vol=0.16;det=4;break;
+      case "annoyed":base=470;peak=520;end=300;dur=0.24;vol=0.15;det=8;break;
+      case "angry":  base=320;peak=360;end=210;dur=0.55;vol=0.17;det=10;break;
+      default:       base=520;peak=760;end=500;dur=0.45;vol=0.16;det=5;
+    }
+    const master=ctx.createGain();master.gain.value=1;master.connect(ctx.destination);
+    /* 声帯っぽい鋸波を2本（微デチューン）＋鼻に抜ける口の開き（ローパスのスイープ） */
+    const lp=ctx.createBiquadFilter();lp.type="lowpass";lp.Q.value=8;
+    lp.frequency.setValueAtTime(500,t);                          /* m（口閉じ） */
+    lp.frequency.linearRampToValueAtTime(2600,t+dur*0.28);       /* あー（口開く） */
+    lp.frequency.linearRampToValueAtTime(900,t+dur);            /* んー（閉じる） */
+    const g=ctx.createGain();g.gain.setValueAtTime(0.0001,t);
+    g.gain.exponentialRampToValueAtTime(vol,t+0.05);
+    g.gain.setValueAtTime(vol,t+dur*0.55);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    lp.connect(g);g.connect(master);
+    [0,det].forEach((d,i)=>{
+      const o=ctx.createOscillator();o.type=i===0?"sawtooth":"triangle";
+      o.frequency.setValueAtTime(base+d,t);
+      o.frequency.linearRampToValueAtTime(peak+d,t+dur*0.3);
+      o.frequency.exponentialRampToValueAtTime(end+d,t+dur);
+      const lfo=ctx.createOscillator(),la=ctx.createGain();lfo.frequency.value=15;la.gain.value=18;
+      lfo.connect(la);la.connect(o.frequency);lfo.start(t);lfo.stop(t+dur);
+      o.connect(lp);o.start(t);o.stop(t+dur+0.03);
+    });
+  }catch(e){}
+}
+/* ゴロゴロ（喉鳴り） */
+function playPurr(dur){
+  try{
+    const ctx=ensureCtx();if(!ctx)return;const t=ctx.currentTime;dur=dur||1.7;
+    const o=ctx.createOscillator();o.type="sawtooth";o.frequency.setValueAtTime(52,t);
+    const lp=ctx.createBiquadFilter();lp.type="lowpass";lp.frequency.value=260;
+    const g=ctx.createGain();g.gain.setValueAtTime(0.10,t);     /* 振幅のベース */
+    const lfo=ctx.createOscillator();lfo.type="sine";lfo.frequency.value=27;  /* ゴロゴロのパルス */
+    const la=ctx.createGain();la.gain.value=0.10;
+    const env=ctx.createGain();env.gain.setValueAtTime(0.0001,t);
+    env.gain.linearRampToValueAtTime(1,t+0.25);env.gain.setValueAtTime(1,t+dur-0.3);env.gain.linearRampToValueAtTime(0.0001,t+dur);
+    o.connect(lp);lp.connect(g);g.connect(env);env.connect(ctx.destination);
+    lfo.connect(la);la.connect(g.gain);
+    o.start(t);o.stop(t+dur+0.02);lfo.start(t);lfo.stop(t+dur+0.02);
+  }catch(e){}
+}
+function moodMeow(){
+  const tier=affTier();
+  if(tier==="warm")return playMeow(affStageIndex()>=4?"love":"happy");
+  if(tier==="mid")return playMeow("curious");
+  return playMeow("normal");
+}
 function tapBall(){
   playSqueak();
-  if(_roomState==="angry"||_roomState==="bored")return;
+  if(["angry","bored","happy","approach","peek"].indexOf(_roomState)>=0)return;
+  let tier=affTier();
+  /* 低確率で“絆の壁”をランダム突破：冷たい子が一瞬ボールに興味／ごくたまにデレる */
+  if(tier==="cold"&&chance(0.16))tier="mid";
+  else if(tier!=="warm"&&chance(0.05))tier="warm";
+  if(tier==="warm"){
+    _roomState="happy";clearReactTimers();playMeow(affStageIndex()>=4?"love":"happy");
+    _happyTimer=setTimeout(()=>{_roomState="normal";_happyTimer=null;if(roomVisible())renderRoom();},rndi(2800,5500));
+    renderRoomFade();roomHeartPop();return;
+  }
+  if(tier==="mid"){
+    _roomState="watch";clearReactTimers();if(chance(0.85))playMeow("curious");
+    _watchTimer=setTimeout(()=>{if(_roomState==="watch"){_roomState="normal";_watchTimer=null;if(roomVisible())renderRoom();}},rndi(2200,4600));
+    renderRoom();if(chance(0.12))roomHeartPop();return;
+  }
+  /* cold：そっけない → 連打で怒ってタワーへ（回数もランダム 2〜4） */
   _ballTaps++;
-  if(_ballTaps>=3){goAngry();}
-  else{_roomState="avert";clearAvert();_roomAvertTimer=setTimeout(()=>{if(_roomState==="avert"){_roomState="normal";if(roomVisible())renderRoom();}},4000);renderRoom();}
+  if(_ballTaps>=(_angerAt||3)){goAngry();}
+  else{_roomState="avert";clearAvert();if(chance(0.8))playMeow("annoyed");_roomAvertTimer=setTimeout(()=>{if(_roomState==="avert"){_roomState="normal";if(roomVisible())renderRoom();}},rndi(2400,4800));renderRoom();}
+}
+function clearReactTimers(){clearAvert();if(_watchTimer){clearTimeout(_watchTimer);_watchTimer=null;}if(_happyTimer){clearTimeout(_happyTimer);_happyTimer=null;}}
+function petCat(){
+  if(["angry","bored","approach","peek"].indexOf(_roomState)>=0)return;
+  let tier=affTier();
+  if(tier==="cold"&&chance(0.10))tier="mid";          /* たまに逃げずに受け入れる */
+  else if(tier!=="warm"&&chance(0.04))tier="warm";    /* ごくまれにゴロゴロ */
+  if(tier==="cold"){
+    /* 最初のころは撫でようとするとすぐ逃げる（たまに♡だけ残して） */
+    if(chance(0.8))playMeow("annoyed");clearReactTimers();stopCatLifeRoom();
+    if(chance(0.12))roomHeartPop();
+    let n=_idleSpot;if(ROOM_SPOTS.length>1){do{n=Math.floor(Math.random()*ROOM_SPOTS.length);}while(n===_idleSpot);}
+    _idleSpot=n;_roomState="normal";renderRoomFade();return;
+  }
+  if(tier==="mid"){
+    _roomState="watch";clearReactTimers();if(chance(0.7))playMeow("curious");
+    if(chance(0.3))roomHeartPop();
+    _watchTimer=setTimeout(()=>{if(_roomState==="watch"){_roomState="normal";_watchTimer=null;if(roomVisible())renderRoom();}},rndi(2000,3800));
+    renderRoom();return;
+  }
+  /* なつくと撫でさせてくれてゴロゴロ＋たまに♡ */
+  _roomState="happy";clearReactTimers();playPurr(rnd(1.5,2.4));
+  if(chance(0.7))roomHeartPop();if(chance(0.3))setTimeout(roomHeartPop,rndi(300,700));
+  setAffection(getAffection()+1);
+  _happyTimer=setTimeout(()=>{_roomState="normal";_happyTimer=null;if(roomVisible())renderRoom();},rndi(2000,4200));
+  renderRoomFade();
+}
+function doApproach(){
+  _roomState="approach";stopCatLifeRoom();
+  if(_specialTimer)clearTimeout(_specialTimer);
+  _specialTimer=setTimeout(()=>{_roomState="normal";_specialTimer=null;if(roomVisible())renderRoomFade();},rndi(2000,3600));
+  renderRoomFade();if(chance(0.75))setTimeout(moodMeow,rndi(350,800));
+}
+function doPeek(){
+  _peekSide=Math.random()<0.5?"left":"right";
+  _roomState="peek";stopCatLifeRoom();
+  if(_specialTimer)clearTimeout(_specialTimer);
+  _specialTimer=setTimeout(()=>{_roomState="normal";_specialTimer=null;if(roomVisible())renderRoomFade();},rndi(1800,3400));
+  renderRoomFade();if(chance(0.7))setTimeout(moodMeow,rndi(300,700));
 }
 function goAngry(){
-  _roomState="angry";clearAvert();
+  _roomState="angry";clearAvert();playMeow("angry");
   if(_roomAngryTimer)clearTimeout(_roomAngryTimer);
-  _roomAngryTimer=setTimeout(()=>{_roomState="normal";_ballTaps=0;_roomAngryTimer=null;if(roomVisible())renderRoomFade();},60000);
+  _roomAngryTimer=setTimeout(()=>{_roomState="normal";_ballTaps=0;_angerAt=rndi(2,4);_roomAngryTimer=null;if(roomVisible())renderRoomFade();},rndi(38000,75000));
   renderRoomFade();
 }
 function teaserPlay(px,py){
-  if(_roomState==="angry"||_roomState==="bored")return;
-  if(_roomState!=="play"){_roomState="play";if(_roomBoredTimer)clearTimeout(_roomBoredTimer);_roomBoredTimer=setTimeout(goBored,4000);}
-  const g=roomGeom(),sp=ROOM_SPOTS[_idleSpot%ROOM_SPOTS.length];
-  const headX=g.W*sp[0],headY=(g.floorY+(g.H-g.floorY)*sp[1])-124*g.catScale+46*g.catScale;
-  _playEyeDir=[clamp((px-headX)/180,-1,1),clamp((py-headY)/180,-1,1)];
-  const t=Date.now();if(t-_lastEye<120)return;_lastEye=t;if(roomVisible())renderRoom();
+  if(["angry","bored","happy","approach","peek"].indexOf(_roomState)>=0)return;
+  if(_roomState!=="play"){
+    _roomState="play";_playStart=Date.now();_playFollowMs=rndi(550,1500);_playLookedAway=false;
+    if(_roomBoredTimer)clearTimeout(_roomBoredTimer);_roomBoredTimer=setTimeout(goBored,rndi(2600,5800));
+    if(chance(0.7))moodMeow();
+  }
+  const t=Date.now();
+  if(t-_playStart<_playFollowMs){
+    /* 最初だけ目で追う */
+    const g=roomGeom(),sp=ROOM_SPOTS[_idleSpot%ROOM_SPOTS.length];
+    const headX=g.W*sp[0],headY=(g.floorY+(g.H-g.floorY)*sp[1])-124*g.catScale+46*g.catScale;
+    _playEyeDir=[clamp((px-headX)/180,-1,1),clamp((py-headY)/180,-1,1)];
+    if(t-_lastEye<rndi(90,170))return;_lastEye=t;if(roomVisible())renderRoom();
+  }else if(!_playLookedAway){
+    /* すぐ飽きて目を離す（プイッ） */
+    _playLookedAway=true;
+    _playEyeDir=chance(0.5)?[1,-0.6]:[-1,-0.6];
+    if(chance(0.4))_playEyeDir=[0,0];
+    if(roomVisible())renderRoom();
+  }
 }
 function goBored(){
   _roomState="bored";_roomBoredTimer=null;
   if(_boredReturn)clearTimeout(_boredReturn);
-  _boredReturn=setTimeout(()=>{_roomState="normal";if(roomVisible())renderRoomFade();},20000);
+  _boredReturn=setTimeout(()=>{_roomState="normal";if(roomVisible())renderRoomFade();},rndi(13000,28000));
   renderRoomFade();
 }
 function teaserRelease(){
@@ -3934,21 +4143,32 @@ function scheduleIdle(){
   if(_roomIdleTimer)clearTimeout(_roomIdleTimer);
   _roomIdleTimer=setTimeout(()=>{
     if(_roomState==="normal"&&roomVisible()){
-      let n=_idleSpot;if(ROOM_SPOTS.length>1){do{n=Math.floor(Math.random()*ROOM_SPOTS.length);}while(n===_idleSpot);}
-      _idleSpot=n;renderRoomFade();
+      const r=Math.random();
+      if(r<0.12){doApproach();}
+      else if(r<0.24){doPeek();}
+      else if(r<0.30){roomHeartPop();if(chance(0.5))setTimeout(moodMeow,rndi(200,600));}  /* 何もなく ふと♡ */
+      else{
+        let n=_idleSpot;if(ROOM_SPOTS.length>1){do{n=Math.floor(Math.random()*ROOM_SPOTS.length);}while(n===_idleSpot);}
+        _idleSpot=n;renderRoomFade();
+        if(chance(0.3))setTimeout(moodMeow,rndi(250,700));
+        if(chance(0.12))setTimeout(roomHeartPop,rndi(400,900));
+      }
     }
     scheduleIdle();
-  },14000);
+  },rndi(8000,18000));   /* 間隔もランダム */
 }
 function openRoom(){
   if(_roomState!=="angry"){_roomState="normal";_ballTaps=0;}
+  _angerAt=rndi(2,4);
   renderRoom();$("catRoom").classList.add("visible");scheduleIdle();
+  if(_roomState!=="angry"&&chance(0.85))setTimeout(moodMeow,rndi(350,900));   /* 入室あいさつ（たまに鳴かない） */
 }
 function closeRoom(){
-  clearAvert();
+  clearAvert();clearReactTimers();stopCatLifeRoom();
+  if(_specialTimer){clearTimeout(_specialTimer);_specialTimer=null;}
   if(_roomIdleTimer){clearTimeout(_roomIdleTimer);_roomIdleTimer=null;}
   if(_roomBoredTimer){clearTimeout(_roomBoredTimer);_roomBoredTimer=null;}
-  if(_roomState==="avert"||_roomState==="play")_roomState="normal";
+  if(["avert","play","watch","happy","approach","peek"].indexOf(_roomState)>=0)_roomState="normal";
   $("catRoom").classList.remove("visible");
 }
 function setupTeaser(){

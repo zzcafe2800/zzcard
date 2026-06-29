@@ -734,6 +734,13 @@ button,input{font:inherit;}
 .catGest.twitch{transform:rotate(-3.5deg);}
 .catGest.approaching{animation:catApproach 1.5s ease-out;}
 @keyframes catApproach{0%{transform:scale(.4) translateY(60px);opacity:.5;}100%{transform:scale(1) translateY(0);opacity:1;}}
+.catGest.grooming{animation:catGroom .9s ease-in-out infinite;}
+@keyframes catGroom{0%,100%{transform:rotate(0) translateY(0);}50%{transform:rotate(2.6deg) translateY(2px);}}
+#roomBubble{position:absolute;z-index:8;transform:translate(-50%,-100%);background:#fff;color:#7c5a86;font-size:13px;font-weight:800;
+  padding:5px 12px;border-radius:14px;box-shadow:0 4px 12px rgba(150,120,160,.28);opacity:0;pointer-events:none;white-space:nowrap;
+  transition:opacity .25s ease;}
+#roomBubble.show{opacity:1;}
+#roomBubble::after{content:"";position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);border:7px solid transparent;border-top-color:#fff;border-bottom:0;}
 .rmCat{cursor:pointer;}
 .peekCat{animation:peekIn .55s cubic-bezier(.3,1.1,.5,1) both;}
 @keyframes peekIn{0%{opacity:0;}40%{opacity:1;}100%{opacity:1;}}
@@ -3826,6 +3833,47 @@ function rnd(a,b){return a+Math.random()*(b-a);}
 function rndi(a,b){return Math.round(rnd(a,b));}
 function chance(p){return Math.random()<p;}
 let _playStart=0,_playFollowMs=1000,_playLookedAway=false,_angerAt=3;
+/* == 個性（ずっと一貫）／日替わり気分／不在 == */
+const PERSONA_KEY="radio_cat_persona",MOOD_KEY="radio_cat_mood",CATSEEN_KEY="radio_cat_lastseen";
+function getPersona(){
+  let p=null;try{p=JSON.parse(localStorage.getItem(PERSONA_KEY));}catch(e){}
+  if(!p||typeof p!=="object"){
+    p={side:chance(0.5)?"left":"right",ballLove:chance(0.5),nap:chance(0.5)?"sleep":"lie"};
+    localStorage.setItem(PERSONA_KEY,JSON.stringify(p));
+  }
+  return p;
+}
+const MOODS=[
+  {id:"あまえたい",warm:0.22,act:0.05,sleepy:0,heart:0.18},
+  {id:"やんちゃ",  warm:0.05,act:0.30,sleepy:-0.1,heart:0.05},
+  {id:"ねむい",    warm:0.0, act:-0.28,sleepy:0.45,heart:0.0},
+  {id:"きまぐれ",  warm:0.12,act:0.12,sleepy:0.08,heart:0.10},
+  {id:"ごきげん",  warm:0.16,act:0.10,sleepy:0,heart:0.14}
+];
+function getMood(){
+  const k=jstKey();let m=null;try{m=JSON.parse(localStorage.getItem(MOOD_KEY));}catch(e){}
+  if(!m||m.day!==k){m={day:k,i:Math.floor(Math.random()*MOODS.length)};localStorage.setItem(MOOD_KEY,JSON.stringify(m));}
+  return MOODS[m.i]||MOODS[0];
+}
+let _aloof=false,_aloofLeft=0,_bubbleTimer=null,_catHeadXY=null,_petStreak=0,_lastPet=0;
+function checkReunion(){
+  const last=parseInt(localStorage.getItem(CATSEEN_KEY)||"0",10),now=Date.now();
+  localStorage.setItem(CATSEEN_KEY,String(now));
+  if(last&&now-last>2*86400000){_aloof=true;_aloofLeft=rndi(3,5);}else{_aloof=false;_aloofLeft=0;}
+}
+function warmupTick(){if(_aloof){_aloofLeft--;if(_aloofLeft<=0){_aloof=false;sayName("…！");}}}
+function downTier(t){return _aloof?(t==="warm"?"mid":(t==="mid"?"cold":"cold")):t;}
+function catName(){const p=(typeof getProfile==="function")?getProfile():null;return(p&&p.name)?p.name:"";}
+function roomBubble(txt){
+  const r=$("catRoom");if(!r||!txt)return;
+  let b=document.getElementById("roomBubble");
+  if(!b){b=document.createElement("div");b.id="roomBubble";r.appendChild(b);}
+  if(_catHeadXY){b.style.left=Math.max(40,Math.min(window.innerWidth-40,_catHeadXY.x))+"px";b.style.top=Math.max(70,_catHeadXY.y-14)+"px";}
+  b.textContent=txt;b.classList.remove("show");void b.offsetWidth;b.classList.add("show");
+  if(_bubbleTimer)clearTimeout(_bubbleTimer);_bubbleTimer=setTimeout(()=>b.classList.remove("show"),rndi(1900,2600));
+}
+function moodSuffix(){const m=getMood().id;return m==="ねむい"?"…":m==="やんちゃ"?"！":m==="あまえたい"?"♡":(chance(0.5)?"♪":"〜");}
+function sayName(suf){const n=catName();if(!n)return;roomBubble(n+(suf||moodSuffix()));}
 function roomGeom(){
   const W=Math.max(320,Math.round(window.innerWidth)),H=Math.max(440,Math.round(window.innerHeight));
   const floorY=Math.round(H*0.58);
@@ -3849,15 +3897,17 @@ function roomSceneSVG(){
   const body=profileBody(),ear=profileColor(),cos=getEquippedCostume(),pose=getEquippedPose();
   const g=roomGeom(),W=g.W,H=g.H,floorY=g.floorY,catScale=g.catScale,band=H-floorY;
   const towerCx=Math.min(W-Math.round(W*0.10),Math.round(W*0.84));
-  const towerTopY=Math.round(H*0.28);
-  const tw=Math.min(160,Math.round(W*0.34));
+  const towerTopY=Math.round(H*0.27);
+  const tw=Math.min(168,Math.round(W*0.36));
   const sp=ROOM_SPOTS[_idleSpot%ROOM_SPOTS.length];
   const rugCx=W*sp[0], feetY=floorY+band*sp[1];
-  const rugCy=floorY+band*0.55, rugRx=Math.min(W*0.42,Math.round(W*0.46)), rugRy=Math.max(28,band*0.34);
-  const winW=Math.min(220,Math.round(W*0.30)),winH=Math.min(190,Math.round(H*0.28)),winX=Math.round(W*0.06),winY=Math.round(H*0.09);
-  const ballR=Math.max(16,Math.round(W*0.028)),ballX=W*0.58,ballY=floorY+band*0.6;
-  const foodX=Math.round(W*0.12),foodY=floorY+band*0.46,foodR=Math.max(20,Math.round(W*0.035));
-  function catAt(tx,ty,s,inner){return `<g class="rmCat" transform="translate(${tx.toFixed(1)},${ty.toFixed(1)}) scale(${s.toFixed(3)})"><g class="catBreathe"><g class="catGest ${_catGestClass}">${inner}</g></g></g>`;}
+  const rugCx0=W*0.40, rugCy=floorY+band*0.56, rugRx=Math.min(W*0.42,Math.round(W*0.44)), rugRy=Math.max(30,band*0.36);
+  const winW=Math.min(216,Math.round(W*0.30)),winH=Math.min(186,Math.round(H*0.27)),winX=Math.round(W*0.07),winY=Math.round(H*0.12);
+  const ballR=Math.max(16,Math.round(W*0.028)),ballX=W*0.56,ballY=floorY+band*0.62;
+  const foodX=Math.round(W*0.14),foodY=floorY+band*0.42,foodR=Math.max(19,Math.round(W*0.034));
+  const railY=Math.round(floorY*0.64);
+  const cushCx=Math.round(W*0.20),cushCy=floorY+band*0.78,cushRx=Math.min(86,Math.round(W*0.15));
+  function catAt(tx,ty,s,inner){return `<g class="rmCat" transform="translate(${tx.toFixed(1)},${ty.toFixed(1)}) scale(${s.toFixed(3)})"><ellipse cx="60" cy="122" rx="40" ry="8.5" fill="#6b4636" opacity="0.16"/><g class="catBreathe"><g class="catGest ${_catGestClass}">${inner}</g></g></g>`;}
   let cat,extra="";
   if(_roomState==="angry"){
     const s=catScale*0.72;cat=catAt(towerCx-60*s,towerTopY-118*s,s,catBackHTML(body,ear));
@@ -3865,18 +3915,32 @@ function roomSceneSVG(){
   }else if(_roomState==="bored"){
     const s=catScale*0.74;cat=catAt(towerCx-60*s,towerTopY-118*s,s,catInner(body,ear,"sleep",[0,0],"normal",cos));
   }else if(_roomState==="happy"){
-    /* なついた猫：ボールの近くに寄ってきて喜ぶ（メロメロはゴロン） */
     const idx=affStageIndex();const hpose=(idx>=4)?"lie":pose;
-    const hx=W*0.50,hy=floorY+band*0.62;
+    const hx=W*0.50,hy=floorY+band*0.64;
     cat=catAt(hx-60*catScale,hy-124*catScale,catScale,catInner(body,ear,hpose,[0.5,0.3],"content",cos));
     extra=svgHeart(hx-34*catScale,hy-150*catScale,16,"#ff7ba6")+svgHeart(hx+18*catScale,hy-168*catScale,12,"#ffa6c4")+svgHeart(hx+44*catScale,hy-140*catScale,10,"#ff8fb4");
+  }else if(_roomState==="nap"){
+    /* ひとりで寝る（毛布なし）＋Zzz */
+    const persona=getPersona();const np=persona.nap==="lie"?"lie":"sleep";
+    const nx=rugCx,ny=feetY;
+    cat=catAt(nx-60*catScale,ny-124*catScale,catScale,catInner(body,ear,np,[0,0],"line",cos));
+    extra=`<g transform="translate(${(nx+34*catScale).toFixed(1)},${(ny-118*catScale).toFixed(1)})" fill="#9cb6c4" font-family="sans-serif" font-weight="800" opacity="0.85"><text x="0" y="0" font-size="${(16*catScale).toFixed(0)}">Z</text><text x="${(13*catScale).toFixed(0)}" y="${(-12*catScale).toFixed(0)}" font-size="${(11*catScale).toFixed(0)}">z</text></g>`;
+    _catHeadXY={x:nx,y:ny-90*catScale};
+  }else if(_roomState==="groom"){
+    /* 毛づくろい（こっちを見てない） */
+    _catGestClass="grooming";
+    cat=catAt(rugCx-60*catScale,feetY-124*catScale,catScale,catInner(body,ear,pose,[0,0.7],"content",cos));
+    _catHeadXY={x:rugCx,y:feetY-100*catScale};
+  }else if(_roomState==="playball"){
+    /* ひとり遊び：ボールの横で見つめる（こっちは見てない） */
+    const bx=W*0.56,by=floorY+band*0.62;
+    cat=catAt(bx-130*catScale,by-124*catScale,catScale,catInner(body,ear,pose,[1,0.4],"wide",cos));
+    _catHeadXY={x:bx-70*catScale,y:by-100*catScale};
   }else if(_roomState==="approach"){
-    /* ドアップでこっちに近づいてくる */
     _catGestClass="approaching";
     const s=catScale*2.15,cx=W*0.5,fy=H*1.04;
     cat=catAt(cx-60*s,fy-124*s,s,catInner(body,ear,pose,[0,0],"wide",cos));
   }else if(_roomState==="peek"){
-    /* いなくなったと思ったら端から顔だけぬーっと */
     const s=Math.max(catScale*2.2,(H*0.5)/120);
     const eyes=_peekSide==="left"?[1,0.1]:[-1,0.1];
     const headW=120*s;
@@ -3888,39 +3952,74 @@ function roomSceneSVG(){
     if(_roomState==="avert"){dir=[-1,-0.6];expr="half";}
     else if(_roomState==="play"){dir=_playEyeDir;expr=(affTier()==="warm")?"wide":"normal";}
     else if(_roomState==="watch"){dir=[1,0.4];expr="wide";}
-    else if(affTier()==="warm"){expr="content";}   /* なつくと普段から嬉しそうな目 */
+    else if(affTier()==="warm"){expr="content";}
     _rcParams={body,ear,cos,pose,dir:dir.slice(),expr,calm:(_roomState==="normal")};
+    _catHeadXY={x:rugCx,y:feetY-100*catScale};
     cat=catAt(rugCx-60*catScale,feetY-124*catScale,catScale,catInner(body,ear,pose,dir,expr,cos));
   }
+  /* ガーランド（旗） */
+  let garland=`<path d="M${W*0.30} ${H*0.045} Q${W*0.5} ${H*0.09} ${W*0.72} ${H*0.05}" fill="none" stroke="#d9b7c6" stroke-width="2"/>`;
+  const gc=["#ffb3c6","#ffd59e","#b9e3c6","#bcd6ff","#e7c0ef"];
+  for(let i=0;i<7;i++){const fx=W*0.30+(W*0.42)*(i/6),fy=H*0.045+Math.sin(i/6*Math.PI)*H*0.018;garland+=`<path d="M${fx-8} ${fy} L${fx+8} ${fy} L${fx} ${fy+16} Z" fill="${gc[i%gc.length]}"/>`;}
+  /* タワーの上の猫の影は省略。タワー描画 */
+  const tMid=(towerTopY+floorY)/2;
   return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
 <defs>
-<linearGradient id="rmWall" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffe6ef"/><stop offset="100%" stop-color="#ffeff5"/></linearGradient>
-<linearGradient id="rmFloor" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ecd2ad"/><stop offset="100%" stop-color="#e3c79e"/></linearGradient>
-<linearGradient id="rmSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#bfe6ff"/><stop offset="100%" stop-color="#eaf7ff"/></linearGradient>
+<linearGradient id="rmWall" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffe3ee"/><stop offset="100%" stop-color="#ffeef4"/></linearGradient>
+<linearGradient id="rmWainscot" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff4f7"/><stop offset="100%" stop-color="#ffe9f0"/></linearGradient>
+<linearGradient id="rmFloor" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ecd2ad"/><stop offset="100%" stop-color="#e0c298"/></linearGradient>
+<linearGradient id="rmSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#a9ddff"/><stop offset="70%" stop-color="#d4f0ff"/><stop offset="100%" stop-color="#eafff0"/></linearGradient>
+<radialGradient id="rmGlow" cx="0.5" cy="0.4" r="0.7"><stop offset="0%" stop-color="#fff6e8" stop-opacity="0.5"/><stop offset="100%" stop-color="#fff6e8" stop-opacity="0"/></radialGradient>
+<pattern id="rmDots" width="48" height="48" patternUnits="userSpaceOnUse"><circle cx="12" cy="12" r="3" fill="#ffffff" opacity="0.3"/><circle cx="36" cy="36" r="3" fill="#ffffff" opacity="0.3"/></pattern>
 </defs>
 <rect x="0" y="0" width="${W}" height="${floorY}" fill="url(#rmWall)"/>
+<rect x="0" y="0" width="${W}" height="${railY}" fill="url(#rmDots)"/>
+<rect x="0" y="${railY}" width="${W}" height="${floorY-railY}" fill="url(#rmWainscot)"/>
+<g stroke="#f3cdd9" stroke-width="2" opacity="0.7">${[0.12,0.3,0.7,0.9].map(f=>`<line x1="${(W*f).toFixed(0)}" y1="${railY+6}" x2="${(W*f).toFixed(0)}" y2="${floorY-4}"/>`).join("")}</g>
+<rect x="0" y="${railY-6}" width="${W}" height="8" rx="2" fill="#f7dbe6"/>
 <rect x="0" y="${floorY}" width="${W}" height="${H-floorY}" fill="url(#rmFloor)"/>
-<rect x="0" y="${floorY-8}" width="${W}" height="14" fill="#f4ddc6"/>
+<rect x="0" y="${floorY-2}" width="${W}" height="16" fill="#f2d6bf"/>
+<rect x="0" y="${floorY}" width="${W}" height="22" fill="#000000" opacity="0.06"/>
+<g stroke="#d6b98c" stroke-width="2" opacity="0.45">${[0.16,0.36,0.56,0.78,0.95].map(f=>`<line x1="${(W*f).toFixed(0)}" y1="${floorY+4}" x2="${(W*(f-0.5)*1.5+W*0.5).toFixed(0)}" y2="${H}"/>`).join("")}</g>
+<polygon points="${winX+14},${winY+winH-6} ${winX+winW-14},${winY+winH-6} ${winX+winW+60},${Math.round(floorY+band*0.5)} ${winX-40},${Math.round(floorY+band*0.5)}" fill="#fff3cf" opacity="0.16"/>
+<g>
+<rect x="${winX-4}" y="${winY-12}" width="${winW+8}" height="9" rx="4" fill="#caa478"/>
 <rect x="${winX}" y="${winY}" width="${winW}" height="${winH}" rx="14" fill="#ffffff"/>
-<rect x="${winX+10}" y="${winY+10}" width="${winW-20}" height="${winH-20}" rx="8" fill="url(#rmSky)"/>
-<circle cx="${winX+winW-34}" cy="${winY+40}" r="18" fill="#ffe39c"/>
-<rect x="${winX+winW/2-5}" y="${winY+10}" width="10" height="${winH-20}" fill="#ffffff"/><rect x="${winX+10}" y="${winY+winH/2-5}" width="${winW-20}" height="10" fill="#ffffff"/>
-<rect x="${winX-8}" y="${winY+winH}" width="${winW+16}" height="12" rx="5" fill="#f4ddc6"/>
-<rect x="${Math.round(W*0.54)}" y="${Math.round(H*0.10)}" width="86" height="68" rx="8" fill="#fff" stroke="#e8c7a0" stroke-width="5"/>
-<path d="M${Math.round(W*0.54)+14} ${Math.round(H*0.10)+56} l16 -24 13 15 11 -15 15 24 Z" fill="#a9dc8f"/>
-<rect x="${towerCx-tw/2}" y="${floorY-16}" width="${tw}" height="26" rx="9" fill="#caa478"/>
-<rect x="${towerCx-17}" y="${towerTopY+8}" width="34" height="${floorY-towerTopY-2}" rx="8" fill="#d9b88c"/>
-<rect x="${towerCx-tw/2}" y="${(towerTopY+floorY)/2}" width="${tw}" height="20" rx="9" fill="#b98e63"/>
+<rect x="${winX+9}" y="${winY+9}" width="${winW-18}" height="${winH-18}" rx="8" fill="url(#rmSky)"/>
+<circle cx="${winX+winW-38}" cy="${winY+40}" r="17" fill="#ffe39c"/>
+<ellipse cx="${winX+44}" cy="${winY+winH-40}" rx="34" ry="20" fill="#bfe6a8"/><ellipse cx="${winX+winW-50}" cy="${winY+winH-32}" rx="40" ry="22" fill="#aedb98"/>
+<g fill="#ffffff" opacity="0.95"><ellipse cx="${winX+54}" cy="${winY+54}" rx="22" ry="9"/><ellipse cx="${winX+72}" cy="${winY+48}" rx="15" ry="8"/></g>
+<rect x="${winX+winW/2-4}" y="${winY+9}" width="8" height="${winH-18}" fill="#ffffff"/><rect x="${winX+9}" y="${winY+winH/2-4}" width="${winW-18}" height="8" fill="#ffffff"/>
+<path d="M${winX-2} ${winY} q-12 ${winH*0.3} 0 ${winH*0.55} q-14 ${winH*0.25} 2 ${winH*0.45} l10 0 l0 ${-winH} Z" fill="#ffc2d6"/>
+<path d="M${winX+winW+2} ${winY} q12 ${winH*0.3} 0 ${winH*0.55} q14 ${winH*0.25} -2 ${winH*0.45} l-10 0 l0 ${-winH} Z" fill="#ffc2d6"/>
+<rect x="${winX-10}" y="${winY+winH}" width="${winW+20}" height="11" rx="5" fill="#f2d6bf"/>
+</g>
+${garland}
+<g><circle cx="${W*0.40}" cy="${H*0.12}" r="${Math.min(26,W*0.05)}" fill="#fff" stroke="#e8c7a0" stroke-width="4"/><circle cx="${W*0.40}" cy="${H*0.12}" r="2.5" fill="#9c7c5b"/><line x1="${W*0.40}" y1="${H*0.12}" x2="${W*0.40}" y2="${H*0.12-13}" stroke="#9c7c5b" stroke-width="2.4" stroke-linecap="round"/><line x1="${W*0.40}" y1="${H*0.12}" x2="${W*0.40+9}" y2="${H*0.12+5}" stroke="#9c7c5b" stroke-width="2.4" stroke-linecap="round"/></g>
+<g><rect x="${W*0.50}" y="${H*0.085}" width="${Math.min(82,W*0.15)}" height="${Math.min(64,H*0.11)}" rx="7" fill="#fff" stroke="#e8c7a0" stroke-width="5"/><path d="M${W*0.50+12} ${H*0.085+Math.min(64,H*0.11)-12} l16 -22 12 13 11 -15 16 24 Z" fill="#a9dc8f"/><circle cx="${W*0.50+Math.min(82,W*0.15)-18}" cy="${H*0.085+18}" r="7" fill="#ffe39c"/></g>
+<g><rect x="${W*0.62}" y="${H*0.30}" width="${Math.min(120,W*0.2)}" height="9" rx="3" fill="#e2bd91"/><rect x="${W*0.64}" y="${H*0.30-26}" width="20" height="26" rx="3" fill="#e58aa6"/><g fill="#7fc88f"><ellipse cx="${W*0.64+10}" cy="${H*0.30-34}" rx="6" ry="14"/><ellipse cx="${W*0.64+2}" cy="${H*0.30-28}" rx="5" ry="11" transform="rotate(-30 ${W*0.64+2} ${H*0.30-28})"/><ellipse cx="${W*0.64+18}" cy="${H*0.30-28}" rx="5" ry="11" transform="rotate(30 ${W*0.64+18} ${H*0.30-28})"/></g><rect x="${W*0.64+34}" y="${H*0.30-20}" width="14" height="20" rx="3" fill="#bcd6ff"/></g>
+<ellipse cx="${towerCx}" cy="${floorY+10}" rx="${tw*0.6}" ry="14" fill="#6b4636" opacity="0.15"/>
+<rect x="${towerCx-tw/2}" y="${floorY-18}" width="${tw}" height="28" rx="10" fill="#caa478"/><rect x="${towerCx-tw/2}" y="${floorY-18}" width="${tw}" height="10" rx="6" fill="#d8b98e"/>
+<g><rect x="${towerCx-tw/2+6}" y="${floorY-18-tw*0.62}" width="${tw*0.62}" height="${tw*0.62}" rx="10" fill="#dcbf95" stroke="#c8a673" stroke-width="3"/><circle cx="${towerCx-tw/2+6+tw*0.31}" cy="${floorY-18-tw*0.31}" r="${tw*0.2}" fill="#7a5a3c"/></g>
+<rect x="${towerCx+tw*0.12}" y="${towerTopY+10}" width="30" height="${floorY-towerTopY-2}" rx="8" fill="#d9b88c"/>
+<g stroke="#c19a6a" stroke-width="2.4" opacity="0.6">${(()=>{let l="";for(let y=towerTopY+24;y<floorY-12;y+=16)l+=`<line x1="${towerCx+tw*0.12}" y1="${y}" x2="${towerCx+tw*0.12+30}" y2="${y+12}"/>`;return l;})()}</g>
+<rect x="${towerCx-tw*0.1}" y="${tMid}" width="${tw*0.7}" height="20" rx="9" fill="#b98e63"/>
 <ellipse cx="${towerCx}" cy="${towerTopY}" rx="${tw*0.5}" ry="${tw*0.2}" fill="#e8b98a"/>
 <path d="M${towerCx-tw*0.5} ${towerTopY} a${tw*0.5} ${tw*0.2} 0 0 1 ${tw} 0 a${tw*0.5} ${tw*0.12} 0 0 1 ${-tw} 0" fill="#ffd9b0"/>
-<ellipse cx="${towerCx}" cy="${towerTopY}" rx="${tw*0.38}" ry="${tw*0.12}" fill="#f6c79a"/>
-<ellipse cx="${rugCx.toFixed(0)}" cy="${rugCy.toFixed(0)}" rx="${rugRx}" ry="${rugRy.toFixed(0)}" fill="#ffd3e2"/>
-<ellipse cx="${rugCx.toFixed(0)}" cy="${rugCy.toFixed(0)}" rx="${(rugRx*0.62).toFixed(0)}" ry="${(rugRy*0.62).toFixed(0)}" fill="#fff0f6"/>
-<ellipse cx="${Math.round(W*0.18)}" cy="${(floorY+band*0.72).toFixed(0)}" rx="${Math.min(80,Math.round(W*0.14))}" ry="${Math.max(18,band*0.12).toFixed(0)}" fill="#d4ecff"/>
-<g id="roomFood" style="cursor:pointer"><ellipse cx="${foodX}" cy="${foodY.toFixed(0)}" rx="${foodR}" ry="${(foodR*0.42).toFixed(1)}" fill="#9fd4f0"/><ellipse cx="${foodX}" cy="${(foodY-3).toFixed(0)}" rx="${foodR}" ry="${(foodR*0.42).toFixed(1)}" fill="#bfe6ff"/><path d="M${foodX-foodR*0.6} ${(foodY-4).toFixed(0)} q${foodR*0.6} -${foodR*0.4} ${foodR*1.2} 0" fill="#ffcaa0"/><circle cx="${foodX}" cy="${(foodY-5).toFixed(0)}" r="${(foodR*1.25).toFixed(0)}" fill="transparent"/></g>
+<ellipse cx="${towerCx}" cy="${towerTopY}" rx="${tw*0.38}" ry="${tw*0.12}" fill="#ffb3c6"/>
+<line x1="${towerCx-tw*0.34}" y1="${tMid}" x2="${towerCx-tw*0.42}" y2="${tMid+54}" stroke="#cfa9d6" stroke-width="3"/><circle cx="${towerCx-tw*0.42}" cy="${tMid+60}" r="11" fill="#c39be0"/><g stroke="#d9b3ec" stroke-width="2.6" stroke-linecap="round"><line x1="${towerCx-tw*0.42}" y1="${tMid+60}" x2="${towerCx-tw*0.5}" y2="${tMid+50}"/><line x1="${towerCx-tw*0.42}" y1="${tMid+60}" x2="${towerCx-tw*0.34}" y2="${tMid+50}"/></g>
+<ellipse cx="${rugCx0.toFixed(0)}" cy="${(rugCy+8).toFixed(0)}" rx="${(rugRx*1.04).toFixed(0)}" ry="${(rugRy*1.04).toFixed(0)}" fill="#6b4636" opacity="0.10"/>
+<ellipse cx="${rugCx0.toFixed(0)}" cy="${rugCy.toFixed(0)}" rx="${rugRx}" ry="${rugRy.toFixed(0)}" fill="#ffc8db"/>
+<ellipse cx="${rugCx0.toFixed(0)}" cy="${rugCy.toFixed(0)}" rx="${(rugRx*0.8).toFixed(0)}" ry="${(rugRy*0.8).toFixed(0)}" fill="none" stroke="#ffe1ec" stroke-width="6"/>
+<ellipse cx="${rugCx0.toFixed(0)}" cy="${rugCy.toFixed(0)}" rx="${(rugRx*0.52).toFixed(0)}" ry="${(rugRy*0.52).toFixed(0)}" fill="#fff0f6"/>
+<ellipse cx="${cushCx}" cy="${(cushCy+6).toFixed(0)}" rx="${(cushRx*1.05).toFixed(0)}" ry="${(cushRx*0.4).toFixed(0)}" fill="#6b4636" opacity="0.12"/>
+<ellipse cx="${cushCx}" cy="${cushCy.toFixed(0)}" rx="${cushRx}" ry="${(cushRx*0.42).toFixed(0)}" fill="#a9d6ff"/>
+<ellipse cx="${cushCx}" cy="${(cushCy-6).toFixed(0)}" rx="${(cushRx*0.78).toFixed(0)}" ry="${(cushRx*0.32).toFixed(0)}" fill="#cfe9ff"/>
+<g id="roomFood" style="cursor:pointer"><ellipse cx="${foodX+foodR*1.5}" cy="${(foodY+4).toFixed(0)}" rx="${(foodR*1.1).toFixed(0)}" ry="${(foodR*0.4).toFixed(1)}" fill="#6b4636" opacity="0.12"/><ellipse cx="${foodX}" cy="${foodY.toFixed(0)}" rx="${foodR}" ry="${(foodR*0.42).toFixed(1)}" fill="#9fd4f0"/><ellipse cx="${foodX}" cy="${(foodY-3).toFixed(0)}" rx="${foodR}" ry="${(foodR*0.42).toFixed(1)}" fill="#bfe6ff"/><path d="M${foodX-foodR*0.55} ${(foodY-4).toFixed(0)} q${foodR*0.55} -${foodR*0.4} ${foodR*1.1} 0" fill="#ffcaa0"/><ellipse cx="${foodX+foodR*2.5}" cy="${foodY.toFixed(0)}" rx="${(foodR*0.85).toFixed(0)}" ry="${(foodR*0.36).toFixed(1)}" fill="#cdeaf8"/><ellipse cx="${foodX+foodR*2.5}" cy="${(foodY-2).toFixed(0)}" rx="${(foodR*0.7).toFixed(0)}" ry="${(foodR*0.28).toFixed(1)}" fill="#8fd0ee"/><circle cx="${foodX+foodR}" cy="${foodY.toFixed(0)}" r="${(foodR*2).toFixed(0)}" fill="transparent"/></g>
+<rect x="0" y="0" width="${W}" height="${H}" fill="url(#rmGlow)"/>
 ${cat}
-${extra}
-<g id="roomBall" style="cursor:pointer"><circle cx="${ballX.toFixed(0)}" cy="${ballY.toFixed(0)}" r="${ballR}" fill="#ffd45f"/><path d="M${(ballX-ballR*0.9).toFixed(0)} ${(ballY-ballR*0.2).toFixed(0)} q${ballR*0.9} -${ballR*0.5} ${ballR*1.8} 0 M${(ballX-ballR*0.8).toFixed(0)} ${(ballY+ballR*0.4).toFixed(0)} q${ballR*0.8} ${ballR*0.4} ${ballR*1.6} 0" stroke="#ef9f4f" stroke-width="3" fill="none"/><circle cx="${ballX.toFixed(0)}" cy="${ballY.toFixed(0)}" r="${(ballR*1.4).toFixed(0)}" fill="transparent"/></g>
+<g class="rmExtra">${extra}</g>
+<g id="roomBall" style="cursor:pointer"><ellipse cx="${ballX.toFixed(0)}" cy="${(ballY+ballR*0.95).toFixed(0)}" rx="${(ballR*1.1).toFixed(0)}" ry="${(ballR*0.34).toFixed(1)}" fill="#6b4636" opacity="0.14"/><circle cx="${ballX.toFixed(0)}" cy="${ballY.toFixed(0)}" r="${ballR}" fill="#ffd45f"/><circle cx="${(ballX-ballR*0.32).toFixed(0)}" cy="${(ballY-ballR*0.34).toFixed(0)}" r="${(ballR*0.3).toFixed(0)}" fill="#fff0c2" opacity="0.8"/><path d="M${(ballX-ballR*0.9).toFixed(0)} ${(ballY-ballR*0.15).toFixed(0)} q${ballR*0.9} -${ballR*0.5} ${ballR*1.8} 0 M${(ballX-ballR*0.8).toFixed(0)} ${(ballY+ballR*0.45).toFixed(0)} q${ballR*0.8} ${ballR*0.4} ${ballR*1.6} 0" stroke="#ef9f4f" stroke-width="3" fill="none"/><circle cx="${ballX.toFixed(0)}" cy="${ballY.toFixed(0)}" r="${(ballR*1.5).toFixed(0)}" fill="transparent"/></g>
 </svg>`;
 }
 function renderRoom(){
@@ -3971,8 +4070,17 @@ function startCatLifeRoom(){
 }
 function renderRoomFade(){
   const sc=$("roomScene");if(!sc){renderRoom();return;}
-  sc.style.transition="opacity .28s ease";sc.style.opacity="0";
-  setTimeout(()=>{renderRoom();sc.style.opacity="1";},280);
+  sc.style.opacity="1";
+  const old=sc.querySelector(".rmCat");
+  if(!old){renderRoom();fadeInCat();return;}
+  old.style.transition="opacity .26s ease";old.style.opacity="0";
+  const ex=sc.querySelector(".rmExtra");if(ex){ex.style.transition="opacity .26s";ex.style.opacity="0";}
+  setTimeout(()=>{renderRoom();fadeInCat();},250);
+}
+function fadeInCat(){
+  const nw=document.querySelector("#roomScene .rmCat");if(!nw)return;
+  nw.style.opacity="0";nw.style.transition="opacity .3s ease";
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{nw.style.opacity="1";}));
 }
 function refreshAffBar(){const f=$("affFill");if(f)f.style.height=getAffection()+"%";const l=$("affLabel");if(l)l.textContent=affStage().name;}
 function clearAvert(){if(_roomAvertTimer){clearTimeout(_roomAvertTimer);_roomAvertTimer=null;}}
@@ -4020,14 +4128,14 @@ function playMeow(mood){
   }catch(e){}
 }
 /* ゴロゴロ（喉鳴り） */
-function playPurr(dur){
+function playPurr(dur,vol){
   try{
-    const ctx=ensureCtx();if(!ctx)return;const t=ctx.currentTime;dur=dur||1.7;
+    const ctx=ensureCtx();if(!ctx)return;const t=ctx.currentTime;dur=dur||1.7;vol=vol||1;
     const o=ctx.createOscillator();o.type="sawtooth";o.frequency.setValueAtTime(52,t);
     const lp=ctx.createBiquadFilter();lp.type="lowpass";lp.frequency.value=260;
-    const g=ctx.createGain();g.gain.setValueAtTime(0.10,t);     /* 振幅のベース */
-    const lfo=ctx.createOscillator();lfo.type="sine";lfo.frequency.value=27;  /* ゴロゴロのパルス */
-    const la=ctx.createGain();la.gain.value=0.10;
+    const g=ctx.createGain();g.gain.setValueAtTime(0.10*vol,t);
+    const lfo=ctx.createOscillator();lfo.type="sine";lfo.frequency.value=27;
+    const la=ctx.createGain();la.gain.value=0.10*vol;
     const env=ctx.createGain();env.gain.setValueAtTime(0.0001,t);
     env.gain.linearRampToValueAtTime(1,t+0.25);env.gain.setValueAtTime(1,t+dur-0.3);env.gain.linearRampToValueAtTime(0.0001,t+dur);
     o.connect(lp);lp.connect(g);g.connect(env);env.connect(ctx.destination);
@@ -4043,37 +4151,43 @@ function moodMeow(){
 }
 function tapBall(){
   playSqueak();
-  if(["angry","bored","happy","approach","peek"].indexOf(_roomState)>=0)return;
+  if(["angry","bored","happy","approach","peek","nap","groom","playball"].indexOf(_roomState)>=0)return;
+  warmupTick();
+  const mood=getMood(),persona=getPersona();
   let tier=affTier();
-  /* 低確率で“絆の壁”をランダム突破：冷たい子が一瞬ボールに興味／ごくたまにデレる */
-  if(tier==="cold"&&chance(0.16))tier="mid";
-  else if(tier!=="warm"&&chance(0.05))tier="warm";
+  /* 個性（ボール好き）と日替わり気分で“興味/デレ”の出やすさが変わる */
+  const interest=0.16+mood.warm+(persona.ballLove?0.16:0);
+  const warmP=0.05+mood.warm+(persona.ballLove?0.06:0);
+  if(tier==="cold"&&chance(interest))tier="mid";
+  else if(tier!=="warm"&&chance(warmP))tier="warm";
+  tier=downTier(tier);   /* 久しぶりだと最初そっけない */
   if(tier==="warm"){
-    _roomState="happy";clearReactTimers();playMeow(affStageIndex()>=4?"love":"happy");
+    _roomState="happy";clearReactTimers();playMeow(affStageIndex()>=4?"love":"happy");if(chance(0.4))sayName();
     _happyTimer=setTimeout(()=>{_roomState="normal";_happyTimer=null;if(roomVisible())renderRoom();},rndi(2800,5500));
     renderRoomFade();roomHeartPop();return;
   }
   if(tier==="mid"){
     _roomState="watch";clearReactTimers();if(chance(0.85))playMeow("curious");
     _watchTimer=setTimeout(()=>{if(_roomState==="watch"){_roomState="normal";_watchTimer=null;if(roomVisible())renderRoom();}},rndi(2200,4600));
-    renderRoom();if(chance(0.12))roomHeartPop();return;
+    renderRoom();if(chance(0.12+mood.heart))roomHeartPop();return;
   }
-  /* cold：そっけない → 連打で怒ってタワーへ（回数もランダム 2〜4） */
   _ballTaps++;
   if(_ballTaps>=(_angerAt||3)){goAngry();}
   else{_roomState="avert";clearAvert();if(chance(0.8))playMeow("annoyed");_roomAvertTimer=setTimeout(()=>{if(_roomState==="avert"){_roomState="normal";if(roomVisible())renderRoom();}},rndi(2400,4800));renderRoom();}
 }
 function clearReactTimers(){clearAvert();if(_watchTimer){clearTimeout(_watchTimer);_watchTimer=null;}if(_happyTimer){clearTimeout(_happyTimer);_happyTimer=null;}}
 function petCat(){
-  if(["angry","bored","approach","peek"].indexOf(_roomState)>=0)return;
+  if(["angry","bored","approach","peek","nap","groom","playball"].indexOf(_roomState)>=0)return;
+  warmupTick();
+  const mood=getMood();
   let tier=affTier();
-  if(tier==="cold"&&chance(0.10))tier="mid";          /* たまに逃げずに受け入れる */
-  else if(tier!=="warm"&&chance(0.04))tier="warm";    /* ごくまれにゴロゴロ */
+  if(tier==="cold"&&chance(0.10+mood.warm))tier="mid";
+  else if(tier!=="warm"&&chance(0.04+mood.warm))tier="warm";
+  tier=downTier(tier);
   if(tier==="cold"){
-    /* 最初のころは撫でようとするとすぐ逃げる（たまに♡だけ残して） */
     if(chance(0.8))playMeow("annoyed");clearReactTimers();stopCatLifeRoom();
-    if(chance(0.12))roomHeartPop();
-    let n=_idleSpot;if(ROOM_SPOTS.length>1){do{n=Math.floor(Math.random()*ROOM_SPOTS.length);}while(n===_idleSpot);}
+    if(chance(0.12+mood.heart))roomHeartPop();
+    let n=_idleSpot;if(ROOM_SPOTS.length>1){do{n=pickSpot();}while(n===_idleSpot);}
     _idleSpot=n;_roomState="normal";renderRoomFade();return;
   }
   if(tier==="mid"){
@@ -4082,10 +4196,14 @@ function petCat(){
     _watchTimer=setTimeout(()=>{if(_roomState==="watch"){_roomState="normal";_watchTimer=null;if(roomVisible())renderRoom();}},rndi(2000,3800));
     renderRoom();return;
   }
-  /* なつくと撫でさせてくれてゴロゴロ＋たまに♡ */
-  _roomState="happy";clearReactTimers();playPurr(rnd(1.5,2.4));
-  if(chance(0.7))roomHeartPop();if(chance(0.3))setTimeout(roomHeartPop,rndi(300,700));
+  /* なつくと撫でさせてくれてゴロゴロ。続けて撫でるほどゴロゴロが大きく→長いと寝落ち */
+  const now=Date.now();if(now-_lastPet<4500)_petStreak++;else _petStreak=1;_lastPet=now;
+  _roomState="happy";clearReactTimers();
+  playPurr(rnd(1.5,2.4),Math.min(2.2,1+_petStreak*0.28));
+  if(chance(0.7))roomHeartPop();if(chance(0.35))setTimeout(roomHeartPop,rndi(300,700));
+  if(chance(0.35))sayName("♡");
   setAffection(getAffection()+1);
+  if(_petStreak>=5){ _petStreak=0; goNap(true); return; }   /* 長く撫でると寝落ち */
   _happyTimer=setTimeout(()=>{_roomState="normal";_happyTimer=null;if(roomVisible())renderRoom();},rndi(2000,4200));
   renderRoomFade();
 }
@@ -4111,7 +4229,9 @@ function goAngry(){
 function teaserPlay(px,py){
   if(["angry","bored","happy","approach","peek"].indexOf(_roomState)>=0)return;
   if(_roomState!=="play"){
-    _roomState="play";_playStart=Date.now();_playFollowMs=rndi(550,1500);_playLookedAway=false;
+    _roomState="play";_playStart=Date.now();
+    _playFollowMs=chance(0.55)?rndi(450,1500):0;   /* 追うかどうかもランダム（追わない時もある） */
+    _playLookedAway=false;
     if(_roomBoredTimer)clearTimeout(_roomBoredTimer);_roomBoredTimer=setTimeout(goBored,rndi(2600,5800));
     if(chance(0.7))moodMeow();
   }
@@ -4136,39 +4256,79 @@ function goBored(){
   _boredReturn=setTimeout(()=>{_roomState="normal";if(roomVisible())renderRoomFade();},rndi(13000,28000));
   renderRoomFade();
 }
+function pickSpot(){
+  const persona=getPersona();
+  if(chance(0.62)){
+    const cand=[];ROOM_SPOTS.forEach((s,i)=>{if((persona.side==="left"&&s[0]<0.42)||(persona.side==="right"&&s[0]>=0.42))cand.push(i);});
+    if(cand.length)return cand[Math.floor(Math.random()*cand.length)];
+  }
+  return Math.floor(Math.random()*ROOM_SPOTS.length);
+}
+function goNap(fromPet){
+  _roomState="nap";clearReactTimers();stopCatLifeRoom();
+  if(_specialTimer)clearTimeout(_specialTimer);
+  if(fromPet&&chance(0.6))sayName("…zzz");
+  _specialTimer=setTimeout(()=>{_roomState="normal";_specialTimer=null;if(roomVisible())renderRoomFade();},rndi(8000,16000));
+  renderRoomFade();
+}
+function goGroom(){
+  _roomState="groom";stopCatLifeRoom();
+  if(_specialTimer)clearTimeout(_specialTimer);
+  _specialTimer=setTimeout(()=>{_roomState="normal";_specialTimer=null;if(roomVisible())renderRoomFade();},rndi(3000,6000));
+  renderRoomFade();
+}
+function goPlayBall(){
+  _roomState="playball";stopCatLifeRoom();
+  if(_specialTimer)clearTimeout(_specialTimer);
+  if(chance(0.6))setTimeout(()=>playSqueak(),rndi(300,900));
+  _specialTimer=setTimeout(()=>{_roomState="normal";_specialTimer=null;if(roomVisible())renderRoomFade();},rndi(3000,6000));
+  renderRoomFade();
+}
 function teaserRelease(){
   if(_roomState==="play"){if(_roomBoredTimer){clearTimeout(_roomBoredTimer);_roomBoredTimer=null;}_roomState="normal";if(roomVisible())renderRoom();}
 }
 function scheduleIdle(){
   if(_roomIdleTimer)clearTimeout(_roomIdleTimer);
+  const mood=getMood();
+  const wait=Math.max(4500,rndi(7000,16000)-Math.round(mood.act*3500)+Math.round(mood.sleepy*3500));
   _roomIdleTimer=setTimeout(()=>{
     if(_roomState==="normal"&&roomVisible()){
       const r=Math.random();
-      if(r<0.12){doApproach();}
-      else if(r<0.24){doPeek();}
-      else if(r<0.30){roomHeartPop();if(chance(0.5))setTimeout(moodMeow,rndi(200,600));}  /* 何もなく ふと♡ */
+      const napP=0.09+Math.max(0,mood.sleepy)*0.5;
+      const actP=Math.max(0,mood.act)*0.22;
+      if(r<napP){goNap(false);}
+      else if(r<napP+0.10){goGroom();}
+      else if(r<napP+0.16+actP){chance(0.5)?goPlayBall():doApproach();}
+      else if(r<napP+0.26+actP){doPeek();}
+      else if(r<napP+0.32+actP){roomHeartPop();if(chance(0.5))setTimeout(moodMeow,rndi(200,600));}
       else{
-        let n=_idleSpot;if(ROOM_SPOTS.length>1){do{n=Math.floor(Math.random()*ROOM_SPOTS.length);}while(n===_idleSpot);}
+        let n=_idleSpot;if(ROOM_SPOTS.length>1){do{n=pickSpot();}while(n===_idleSpot);}
         _idleSpot=n;renderRoomFade();
         if(chance(0.3))setTimeout(moodMeow,rndi(250,700));
-        if(chance(0.12))setTimeout(roomHeartPop,rndi(400,900));
+        if(chance(0.10+mood.heart))setTimeout(roomHeartPop,rndi(400,900));
+        if(chance(0.12))setTimeout(()=>sayName(),rndi(400,900));
       }
     }
     scheduleIdle();
-  },rndi(8000,18000));   /* 間隔もランダム */
+  },wait);
 }
 function openRoom(){
   if(_roomState!=="angry"){_roomState="normal";_ballTaps=0;}
-  _angerAt=rndi(2,4);
+  _angerAt=rndi(2,4);_petStreak=0;
+  checkReunion();getMood();getPersona();
   renderRoom();$("catRoom").classList.add("visible");scheduleIdle();
-  if(_roomState!=="angry"&&chance(0.85))setTimeout(moodMeow,rndi(350,900));   /* 入室あいさつ（たまに鳴かない） */
+  if(_roomState!=="angry"){
+    if(_aloof){if(chance(0.6))setTimeout(()=>roomBubble("…？"),rndi(500,1000));}
+    else{if(chance(0.6))setTimeout(()=>sayName(),rndi(500,1100));if(chance(0.8))setTimeout(moodMeow,rndi(800,1400));}
+  }
 }
 function closeRoom(){
   clearAvert();clearReactTimers();stopCatLifeRoom();
   if(_specialTimer){clearTimeout(_specialTimer);_specialTimer=null;}
   if(_roomIdleTimer){clearTimeout(_roomIdleTimer);_roomIdleTimer=null;}
   if(_roomBoredTimer){clearTimeout(_roomBoredTimer);_roomBoredTimer=null;}
-  if(["avert","play","watch","happy","approach","peek"].indexOf(_roomState)>=0)_roomState="normal";
+  if(["avert","play","watch","happy","approach","peek","nap","groom","playball"].indexOf(_roomState)>=0)_roomState="normal";
+  const bb=document.getElementById("roomBubble");if(bb)bb.classList.remove("show");
   $("catRoom").classList.remove("visible");
 }
 function setupTeaser(){

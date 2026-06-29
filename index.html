@@ -723,8 +723,13 @@ button,input{font:inherit;}
 #tutPages{width:min(360px,90vw);}
 /* ===== 猫のおうち（部屋）===== */
 #catRoom{position:fixed;inset:0;z-index:115;display:none;overflow:hidden;
+  cursor:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='34'%20height='34'%20viewBox='0%200%2034%2034'%3E%3Cpath%20d='M10%2017%20q0%20-5%205%20-5%20l6%200%20q5%200%205%205%20l0%204%20q0%207%20-8%207%20l-2%200%20q-6%200%20-6%20-6%20z'%20fill='white'%20stroke='%23777'%20stroke-width='1.6'/%3E%3Ccircle%20cx='14'%20cy='13'%20r='2.5'%20fill='white'%20stroke='%23777'%20stroke-width='1.3'/%3E%3Ccircle%20cx='18.5'%20cy='12.2'%20r='2.5'%20fill='white'%20stroke='%23777'%20stroke-width='1.3'/%3E%3Ccircle%20cx='23'%20cy='13'%20r='2.5'%20fill='white'%20stroke='%23777'%20stroke-width='1.3'/%3E%3Cpath%20d='M10%2018%20q-4%20-1%20-4%202%20q0%203%204%202%20z'%20fill='white'%20stroke='%23777'%20stroke-width='1.3'/%3E%3C/svg%3E")%2014%2010,auto;
   background:linear-gradient(180deg,#ffe8f0 0%,#fdeef5 46%,#f3e3d0 46%,#efdcc6 100%);}
 #catRoom.visible{display:block;}
+#roomStatus{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:7;display:flex;gap:6px;align-items:center;
+  background:rgba(255,255,255,.82);backdrop-filter:blur(3px);border-radius:16px;padding:5px 12px;
+  font-size:12px;font-weight:800;color:#8a6a78;box-shadow:0 3px 10px rgba(160,130,150,.2);white-space:nowrap;pointer-events:none;}
+#roomStatus .rsDot{opacity:.5;}
 #roomScene{position:absolute;inset:0;}
 #roomScene svg{width:100%;height:100%;display:block;}
 .catBreathe{transform-origin:60px 118px;animation:catBreathe 3.6s ease-in-out infinite;will-change:transform;}
@@ -732,10 +737,20 @@ button,input{font:inherit;}
 .catGest{transform-origin:60px 116px;transition:transform .22s ease;}
 .catGest.yawn{transform:scaleY(1.07) translateY(-3px);}
 .catGest.twitch{transform:rotate(-3.5deg);}
-.catGest.approaching{animation:catApproach 1.5s ease-out;}
-@keyframes catApproach{0%{transform:scale(.4) translateY(60px);opacity:.5;}100%{transform:scale(1) translateY(0);opacity:1;}}
+.catGest.approaching{animation:catApproach 1.8s cubic-bezier(.4,0,.5,1);}
+@keyframes catApproach{0%{transform:translateY(230px) scale(.78);}60%{transform:translateY(40px) scale(.95);}100%{transform:translateY(0) scale(1);}}
 .catGest.grooming{animation:catGroom .9s ease-in-out infinite;}
 @keyframes catGroom{0%,100%{transform:rotate(0) translateY(0);}50%{transform:rotate(2.6deg) translateY(2px);}}
+.catGest.eatbob{animation:catEat .7s ease-in-out infinite;}
+@keyframes catEat{0%,100%{transform:translateY(0);}50%{transform:translateY(4px) scaleY(.98);}}
+.catGest.pounce{animation:catPounce .5s ease;}
+@keyframes catPounce{0%{transform:translateY(0) scale(1);}38%{transform:translateY(-26px) scale(1.05);}70%{transform:translateY(-4px);}100%{transform:translateY(0) scale(1);}}
+.catGest.flinch{animation:catFlinch .4s ease;}
+@keyframes catFlinch{0%,100%{transform:translateX(0) rotate(0);}25%{transform:translateX(-7px) rotate(-3deg);}60%{transform:translateX(6px) rotate(3deg);}}
+.rmZ{animation:zFloat 2.4s ease-in-out infinite;transform-origin:center;}
+@keyframes zFloat{0%{opacity:.2;transform:translateY(4px);}50%{opacity:.9;transform:translateY(-2px);}100%{opacity:.2;transform:translateY(4px);}}
+.rmBreath{transform-origin:center;animation:breathe 3.2s ease-in-out infinite;}
+@keyframes breathe{0%,100%{transform:scale(.3);opacity:0;}55%{transform:scale(1);opacity:.7;}80%{transform:scale(1.05);opacity:0;}}
 #roomBubble{position:absolute;z-index:8;transform:translate(-50%,-100%);background:#fff;color:#7c5a86;font-size:13px;font-weight:800;
   padding:5px 12px;border-radius:14px;box-shadow:0 4px 12px rgba(150,120,160,.28);opacity:0;pointer-events:none;white-space:nowrap;
   transition:opacity .25s ease;}
@@ -770,6 +785,22 @@ button,input{font:inherit;}
 #roomBag:active{transform:translateX(-50%) scale(.94);}
 #roomCam{position:absolute;bottom:18px;right:16px;z-index:6;width:50px;height:50px;border:none;border-radius:50%;cursor:pointer;
   background:rgba(255,255,255,.85);box-shadow:0 6px 16px rgba(111,205,255,.28);display:flex;align-items:center;justify-content:center;}
+#roomShop{position:absolute;bottom:18px;left:16px;z-index:6;width:50px;height:50px;border:none;border-radius:50%;cursor:pointer;
+  background:rgba(255,255,255,.85);box-shadow:0 6px 16px rgba(255,160,200,.3);display:flex;align-items:center;justify-content:center;font-size:24px;}
+#shopPanel{position:absolute;inset:0;z-index:9;display:none;align-items:flex-end;justify-content:center;background:rgba(120,90,110,.28);}
+#shopPanel.show{display:flex;}
+#shopCard{width:min(440px,94%);max-height:80%;overflow-y:auto;background:#fff;border-radius:22px 22px 0 0;padding:16px 16px 22px;box-shadow:0 -8px 30px rgba(150,120,150,.3);}
+#shopCard h3{margin:4px 0 2px;font-size:16px;color:#7c5a86;text-align:center;}
+.shopHint{text-align:center;font-size:12px;color:#b08;opacity:.8;margin-bottom:10px;}
+.shopSec{font-size:13px;font-weight:800;color:#8a6a78;margin:12px 2px 6px;}
+.shopGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;}
+.shopItem{position:relative;border:2.5px solid #eee;border-radius:16px;padding:8px 4px 6px;text-align:center;cursor:pointer;background:#fffafc;transition:.15s;}
+.shopItem:hover{border-color:#ffd0e2;}
+.shopItem.sel{border-color:#ff9ec2;background:#fff0f6;}
+.shopItem svg{width:46px;height:46px;display:block;margin:0 auto 3px;}
+.shopItem .nm{font-size:11px;color:#86707c;font-weight:700;}
+.shopFav{position:absolute;top:-7px;right:-7px;background:#ff7ba6;color:#fff;font-size:10px;font-weight:800;border-radius:10px;padding:2px 6px;box-shadow:0 2px 6px rgba(255,120,160,.4);}
+#shopClose{display:block;margin:16px auto 0;border:none;background:#f3e3ea;color:#8a6a78;font-weight:800;border-radius:14px;padding:9px 28px;cursor:pointer;}
 #roomCam svg{width:26px;height:26px;}
 #roomCam:active{transform:scale(.94);}
 .coinBadge{} /* (既存) */
@@ -1384,11 +1415,22 @@ button,input{font:inherit;}
 
 <div id="catRoom">
   <div id="roomScene"></div>
+  <div id="roomStatus"></div>
   <div id="affBar"><span id="affHeart">❤</span><div id="affTrack"><div id="affFill"></div></div><div id="affLabel">はじめまして</div></div>
   <div id="teaser"><svg viewBox="0 0 60 174" xmlns="http://www.w3.org/2000/svg"><line x1="30" y1="172" x2="30" y2="62" stroke="#b98e63" stroke-width="6" stroke-linecap="round"/><g class="teaserTip"><line x1="30" y1="62" x2="30" y2="32" stroke="#cfa9d6" stroke-width="3" stroke-linecap="round"/><g stroke="#d9b3ec" stroke-width="3.4" stroke-linecap="round"><line x1="30" y1="30" x2="15" y2="12"/><line x1="30" y1="30" x2="45" y2="12"/><line x1="30" y1="30" x2="30" y2="6"/><line x1="30" y1="30" x2="22" y2="9"/><line x1="30" y1="30" x2="38" y2="9"/></g><circle cx="30" cy="30" r="9" fill="#c39be0"/></g></svg></div>
   <button id="roomBack" type="button" aria-label="もどる">✕</button>
   <button id="roomBag" type="button" aria-label="プロフィール・衣装"><svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path d="M12 19 a12 12 0 0 1 24 0" fill="none" stroke="#4f88a4" stroke-width="3.4" stroke-linecap="round"/><rect x="6" y="18" width="36" height="26" rx="6" fill="#bfe6ff" stroke="#4f88a4" stroke-width="3"/><path d="M6 25 h36 v6 a3.5 3.5 0 0 1 -3.5 3.5 H9.5 A3.5 3.5 0 0 1 6 31 Z" fill="#9fd4f0" stroke="#4f88a4" stroke-width="3" stroke-linejoin="round"/><rect x="20" y="29" width="8" height="9" rx="2.2" fill="#4f88a4"/></svg><span id="roomBagBadge" class="coinBadge" hidden></span></button>
   <button id="roomCam" type="button" aria-label="カメラ"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M11 7 L13 4 L19 4 L21 7 L27 7 Q29 7 29 9 L29 24 Q29 26 27 26 L5 26 Q3 26 3 24 L3 9 Q3 7 5 7 Z" fill="none" stroke="#5c93ad" stroke-width="2.4" stroke-linejoin="round"/><circle cx="16" cy="16" r="6" fill="none" stroke="#5c93ad" stroke-width="2.4"/></svg></button>
+  <button id="roomShop" type="button" aria-label="ショップ">🛒</button>
+  <div id="shopPanel"><div id="shopCard">
+    <h3>🛒 おもちゃショップ</h3>
+    <div class="shopHint" id="shopFavHint"></div>
+    <div class="shopSec">ボール</div>
+    <div class="shopGrid" id="shopBalls"></div>
+    <div class="shopSec">じゃらし</div>
+    <div class="shopGrid" id="shopToys"></div>
+    <button id="shopClose" type="button">とじる</button>
+  </div></div>
 </div>
 
 <div id="titleScreen">
@@ -3819,7 +3861,15 @@ function feedCat(){
   const k=jstKey();if(f.day!==k)f={day:k,n:0};
   if(f.n>=5){toast("今日はもうおなかいっぱい🐈");return;}
   f.n++;localStorage.setItem(AFF_FOOD_KEY,JSON.stringify(f));
-  setAffection(getAffection()+5);playPop();playMeow("happy");toast("もぐもぐ…🐟 +5");roomHeartPop();
+  setAffection(getAffection()+5);
+  if(["angry","bored"].indexOf(_roomState)>=0){playPop();playMeow("happy");toast("もぐもぐ…🐟 +5");return;}
+  _roomState="eating";clearReactTimers();stopCatLifeRoom();
+  if(_specialTimer)clearTimeout(_specialTimer);
+  setTimeout(()=>playMeow("happy"),rndi(400,800));
+  setTimeout(()=>{playPop();roomHeartPop();},rndi(1100,1700));
+  _need="ごきげん";refreshRoomStatus();
+  _specialTimer=setTimeout(()=>{_roomState="normal";_specialTimer=null;toast("もぐもぐ…🐟 +5");if(roomVisible())renderRoomFade();},rndi(2400,3400));
+  renderRoomFade();
 }
 function roomHeartPop(){
   const r=$("catRoom");if(!r)return;
@@ -3828,20 +3878,27 @@ function roomHeartPop(){
   r.appendChild(h);setTimeout(()=>h.remove(),1100);
 }
 function roomVisible(){return $("catRoom").classList.contains("visible");}
+function jstHour(){const d=new Date();return new Date(d.getTime()+(d.getTimezoneOffset()*60000)+9*3600000).getHours();}
 /* == ランダム性ヘルパー（ロボットっぽさを消す） == */
 function rnd(a,b){return a+Math.random()*(b-a);}
 function rndi(a,b){return Math.round(rnd(a,b));}
 function chance(p){return Math.random()<p;}
-let _playStart=0,_playFollowMs=1000,_playLookedAway=false,_angerAt=3;
-/* == 個性（ずっと一貫）／日替わり気分／不在 == */
-const PERSONA_KEY="radio_cat_persona",MOOD_KEY="radio_cat_mood",CATSEEN_KEY="radio_cat_lastseen";
+let _playStart=0,_playFollowMs=1000,_playLookedAway=false,_angerAt=3,_playEyeCur=[0,0],_playTgt=[0,0];
+/* == 個性（3タイプ・ずっと一貫）／日替わり気分／不在 == */
+const PERSONA_KEY="radio_cat_persona",MOOD_KEY="radio_cat_mood",CATSEEN_KEY="radio_cat_lastseen",NEED_KEY="radio_cat_need";
+const PERSONA_TYPES={
+  あまえんぼ:{id:"あまえんぼ",icon:"🩷",ballLove:false,nap:"lie",energy:0.0, talk:0.9, warmBias:0.10, follow:true,  likeBall:"yarn",  likeToy:"feather",petLikes:["head","back","belly","tail"],petNG:[]},
+  やんちゃ:  {id:"やんちゃ",  icon:"⚡",ballLove:true, nap:"lie",energy:0.35,talk:0.5, warmBias:0.0,  follow:false, likeBall:"bell",  likeToy:"mouse", petLikes:["head","back"],petNG:["belly"]},
+  マイペース:{id:"マイペース",icon:"🌙",ballLove:false,nap:"sleep",energy:-0.2,talk:0.35,warmBias:-0.05,follow:false, likeBall:"basic", likeToy:"wand",  petLikes:["back","head"],petNG:["belly","tail"]}
+};
 function getPersona(){
   let p=null;try{p=JSON.parse(localStorage.getItem(PERSONA_KEY));}catch(e){}
-  if(!p||typeof p!=="object"){
-    p={side:chance(0.5)?"left":"right",ballLove:chance(0.5),nap:chance(0.5)?"sleep":"lie"};
+  if(!p||!p.type||!PERSONA_TYPES[p.type]){
+    const keys=Object.keys(PERSONA_TYPES),type=keys[Math.floor(Math.random()*keys.length)];
+    p={type,side:chance(0.5)?"left":"right"};
     localStorage.setItem(PERSONA_KEY,JSON.stringify(p));
   }
-  return p;
+  return Object.assign({},PERSONA_TYPES[p.type],{type:p.type,side:p.side});
 }
 const MOODS=[
   {id:"あまえたい",warm:0.22,act:0.05,sleepy:0,heart:0.18},
@@ -3855,7 +3912,101 @@ function getMood(){
   if(!m||m.day!==k){m={day:k,i:Math.floor(Math.random()*MOODS.length)};localStorage.setItem(MOOD_KEY,JSON.stringify(m));}
   return MOODS[m.i]||MOODS[0];
 }
-let _aloof=false,_aloofLeft=0,_bubbleTimer=null,_catHeadXY=null,_petStreak=0,_lastPet=0;
+/* == 今の気持ち（ニーズ）：時間経過＋気分＋空腹で変動 == */
+const NEEDS={
+  ねむい:{icon:"😴",label:"ねむい"},おなかすいた:{icon:"🍚",label:"おなかすいた"},
+  あそびたい:{icon:"🧶",label:"あそびたい"},あまえん坊:{icon:"🩷",label:"あまえたい"},ごきげん:{icon:"🎵",label:"ごきげん"}
+};
+let _need="ごきげん",_needTimer=null;
+function hungerLevel(){
+  let f={};try{f=JSON.parse(localStorage.getItem(AFF_FOOD_KEY)||"{}")||{};}catch(e){}
+  const k=jstKey();if(f.day!==k)return 1;            /* 今日まだ食べてない＝空腹 */
+  return Math.max(0,1-(f.n||0)/3);
+}
+function rollNeed(){
+  const mood=getMood(),persona=getPersona();
+  const w={ねむい:0.6+Math.max(0,mood.sleepy)*1.4-persona.energy,
+           おなかすいた:0.5+hungerLevel()*1.6,
+           あそびたい:0.7+Math.max(0,mood.act)*1.3+persona.energy+(persona.ballLove?0.3:0),
+           あまえん坊:0.6+mood.warm*1.3+(affTier()==="warm"?0.5:0)+(persona.follow?0.3:0),
+           ごきげん:0.5+mood.heart};
+  let tot=0;for(const k in w)tot+=Math.max(0.05,w[k]);
+  let r=Math.random()*tot;
+  for(const k in w){r-=Math.max(0.05,w[k]);if(r<=0){_need=k;break;}}
+  refreshRoomStatus();
+}
+function refreshRoomStatus(){
+  const el=document.getElementById("roomStatus");if(!el)return;
+  const mood=getMood(),nd=NEEDS[_need]||NEEDS.ごきげん;
+  el.innerHTML=`<span>きょう ${mood.id}</span><span class="rsDot">・</span><span>${nd.icon} ${nd.label}</span>`;
+}
+function startNeedDrift(){if(_needTimer)clearTimeout(_needTimer);const t=()=>{rollNeed();_needTimer=setTimeout(t,rndi(22000,45000));};_needTimer=setTimeout(t,rndi(18000,30000));}
+/* == ショップ：ボール／じゃらし（猫ごとにお気に入りが違う） == */
+const EQUIP_BALL_KEY="radio_equip_ball",EQUIP_TOY_KEY="radio_equip_toy";
+const BALLS=[
+  {id:"basic",name:"きほんボール"},
+  {id:"yarn", name:"けいとだま"},
+  {id:"bell", name:"すずボール"}
+];
+const TOYS=[
+  {id:"wand",   name:"ふつうじゃらし"},
+  {id:"feather",name:"はね"},
+  {id:"mouse",  name:"ねずみ"}
+];
+function getEquippedBall(){const v=localStorage.getItem(EQUIP_BALL_KEY);return BALLS.some(b=>b.id===v)?v:"basic";}
+function setEquippedBall(id){localStorage.setItem(EQUIP_BALL_KEY,id);}
+function getEquippedToy(){const v=localStorage.getItem(EQUIP_TOY_KEY);return TOYS.some(t=>t.id===v)?v:"wand";}
+function setEquippedToy(id){localStorage.setItem(EQUIP_TOY_KEY,id);}
+/* ボール描画（中心x,y 半径r） */
+function ballSVG(id,x,y,r,bare){
+  x=+x;y=+y;r=+r;
+  const sh=bare?"":`<ellipse cx="${x.toFixed(0)}" cy="${(y+r*0.95).toFixed(0)}" rx="${(r*1.1).toFixed(0)}" ry="${(r*0.34).toFixed(1)}" fill="#6b4636" opacity="0.14"/>`;
+  let body;
+  if(id==="yarn"){
+    body=`<circle cx="${x}" cy="${y}" r="${r}" fill="#ff9ec2"/>`
+      +`<g stroke="#e87aa6" stroke-width="2.4" fill="none" opacity="0.85"><path d="M${x-r*0.8} ${y-r*0.3} q${r*0.8} ${r*0.6} ${r*1.5} -0.2"/><path d="M${x-r*0.85} ${y+r*0.2} q${r*0.9} -${r*0.5} ${r*1.6} 0.1"/><path d="M${x-r*0.3} ${y-r*0.85} q${r*0.5} ${r*0.9} 0.1 ${r*1.6}"/><path d="M${x+r*0.3} ${y-r*0.85} q-${r*0.5} ${r*0.9} -0.1 ${r*1.6}"/></g>`
+      +`<path d="M${x+r*0.7} ${y+r*0.5} q${r*0.7} ${r*0.4} ${r*0.4} ${r}" stroke="#ff9ec2" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+  }else if(id==="bell"){
+    body=`<circle cx="${x}" cy="${y}" r="${r}" fill="#ffd45f"/>`
+      +`<path d="M${x-r} ${y} a${r} ${r} 0 0 1 ${r*2} 0 Z" fill="#ffe08a"/>`
+      +`<rect x="${x-r*0.16}" y="${y-r*1.25}" width="${r*0.32}" height="${r*0.4}" rx="2" fill="#e0a93f"/><circle cx="${x}" cy="${y-r*1.3}" r="${r*0.22}" fill="none" stroke="#e0a93f" stroke-width="2"/>`
+      +`<line x1="${x-r*0.7}" y1="${y+r*0.25}" x2="${x+r*0.7}" y2="${y+r*0.25}" stroke="#e0a93f" stroke-width="2.6"/><circle cx="${x}" cy="${y+r*0.5}" r="${r*0.16}" fill="#e0a93f"/>`;
+  }else{
+    body=`<circle cx="${x}" cy="${y}" r="${r}" fill="#ffd45f"/><circle cx="${(x-r*0.32).toFixed(0)}" cy="${(y-r*0.34).toFixed(0)}" r="${(r*0.3).toFixed(0)}" fill="#fff0c2" opacity="0.8"/><path d="M${(x-r*0.9).toFixed(0)} ${(y-r*0.15).toFixed(0)} q${r*0.9} -${r*0.5} ${r*1.8} 0 M${(x-r*0.8).toFixed(0)} ${(y+r*0.45).toFixed(0)} q${r*0.8} ${r*0.4} ${r*1.6} 0" stroke="#ef9f4f" stroke-width="3" fill="none"/>`;
+  }
+  if(bare)return body;
+  return `<g id="roomBall" style="cursor:pointer">${sh}${body}<circle cx="${x}" cy="${y}" r="${(r*1.5).toFixed(0)}" fill="transparent"/></g>`;
+}
+/* じゃらし先端の描画（teaser SVG内・棒の上） */
+function teaserInnerSVG(id){
+  const stick=`<line x1="30" y1="172" x2="30" y2="62" stroke="#b98e63" stroke-width="6" stroke-linecap="round"/>`;
+  let tip;
+  if(id==="feather"){
+    tip=`<g class="teaserTip"><line x1="30" y1="62" x2="30" y2="40" stroke="#cfa9d6" stroke-width="3" stroke-linecap="round"/>`
+      +`<path d="M30 40 C18 30 16 14 24 6 C30 12 32 28 30 40 Z" fill="#a6d8f0"/><path d="M30 40 C42 30 44 14 36 6 C30 12 28 28 30 40 Z" fill="#bfe6ff"/><line x1="30" y1="40" x2="30" y2="10" stroke="#7fb8d8" stroke-width="1.6"/></g>`;
+  }else if(id==="mouse"){
+    tip=`<g class="teaserTip"><line x1="30" y1="62" x2="30" y2="34" stroke="#cfa9d6" stroke-width="2.4" stroke-linecap="round"/>`
+      +`<ellipse cx="30" cy="24" rx="13" ry="9" fill="#b9b0c8"/><circle cx="22" cy="17" r="4" fill="#cfc6dc"/><circle cx="30" cy="15" r="4" fill="#cfc6dc"/><circle cx="20" cy="24" r="1.4" fill="#444"/><path d="M41 26 q9 2 7 10" stroke="#b9b0c8" stroke-width="2.2" fill="none" stroke-linecap="round"/></g>`;
+  }else{
+    tip=`<g class="teaserTip"><line x1="30" y1="62" x2="30" y2="32" stroke="#cfa9d6" stroke-width="3" stroke-linecap="round"/><g stroke="#d9b3ec" stroke-width="3.4" stroke-linecap="round"><line x1="30" y1="30" x2="15" y2="12"/><line x1="30" y1="30" x2="45" y2="12"/><line x1="30" y1="30" x2="30" y2="6"/><line x1="30" y1="30" x2="22" y2="9"/><line x1="30" y1="30" x2="38" y2="9"/></g><circle cx="30" cy="30" r="9" fill="#c39be0"/></g>`;
+  }
+  return stick+tip;
+}
+function applyEquippedToy(){const t=$("teaser");if(t){const svg=t.querySelector("svg");if(svg)svg.innerHTML=teaserInnerSVG(getEquippedToy());}}
+function renderShop(){
+  const persona=getPersona(),eb=getEquippedBall(),et=getEquippedToy();
+  const fav=$("shopFavHint");
+  if(fav)fav.textContent=`${persona.icon} ${persona.id}な この子のお気に入り：${(BALLS.find(b=>b.id===persona.likeBall)||{}).name} ・ ${(TOYS.find(t=>t.id===persona.likeToy)||{}).name}`;
+  const bg=$("shopBalls");
+  if(bg){bg.innerHTML=BALLS.map(b=>`<div class="shopItem ${b.id===eb?"sel":""}" data-ball="${b.id}">${b.id===persona.likeBall?'<span class="shopFav">すき</span>':""}<svg viewBox="0 0 46 46" xmlns="http://www.w3.org/2000/svg">${ballSVG(b.id,23,22,15,true)}</svg><div class="nm">${b.name}</div></div>`).join("");
+    bg.querySelectorAll("[data-ball]").forEach(el=>el.addEventListener("click",()=>{setEquippedBall(el.dataset.ball);playPop();if(roomVisible())renderRoom();renderShop();}));}
+  const tg=$("shopToys");
+  if(tg){tg.innerHTML=TOYS.map(t=>`<div class="shopItem ${t.id===et?"sel":""}" data-toy="${t.id}">${t.id===persona.likeToy?'<span class="shopFav">すき</span>':""}<svg viewBox="6 -6 48 80" xmlns="http://www.w3.org/2000/svg">${teaserInnerSVG(t.id)}</svg><div class="nm">${t.name}</div></div>`).join("");
+    tg.querySelectorAll("[data-toy]").forEach(el=>el.addEventListener("click",()=>{setEquippedToy(el.dataset.toy);playPop();applyEquippedToy();renderShop();}));}
+}
+function openShop(){renderShop();$("shopPanel").classList.add("show");}
+function closeShop(){$("shopPanel").classList.remove("show");}
+let _aloof=false,_aloofLeft=0,_bubbleTimer=null,_catHeadXY=null,_petStreak=0,_lastPet=0,_catXform=null,_petZone="back",_ballPos=null,_catFree=null,_eyeTrackT=0;
 function checkReunion(){
   const last=parseInt(localStorage.getItem(CATSEEN_KEY)||"0",10),now=Date.now();
   localStorage.setItem(CATSEEN_KEY,String(now));
@@ -3870,10 +4021,26 @@ function roomBubble(txt){
   if(!b){b=document.createElement("div");b.id="roomBubble";r.appendChild(b);}
   if(_catHeadXY){b.style.left=Math.max(40,Math.min(window.innerWidth-40,_catHeadXY.x))+"px";b.style.top=Math.max(70,_catHeadXY.y-14)+"px";}
   b.textContent=txt;b.classList.remove("show");void b.offsetWidth;b.classList.add("show");
-  if(_bubbleTimer)clearTimeout(_bubbleTimer);_bubbleTimer=setTimeout(()=>b.classList.remove("show"),rndi(1900,2600));
+  if(_bubbleTimer)clearTimeout(_bubbleTimer);_bubbleTimer=setTimeout(()=>b.classList.remove("show"),rndi(1000,1600));  /* 一瞬だけ */
 }
 function moodSuffix(){const m=getMood().id;return m==="ねむい"?"…":m==="やんちゃ"?"！":m==="あまえたい"?"♡":(chance(0.5)?"♪":"〜");}
-function sayName(suf){const n=catName();if(!n)return;roomBubble(n+(suf||moodSuffix()));}
+function nameSpaced(){const n=catName();if(!n)return"";return Array.from(n).join("…");}
+function sayName(suf){const n=nameSpaced();if(!n)return;roomBubble(n+(suf||moodSuffix()));}
+/* 仲良くなるほどセリフが増える（片言・一瞬） */
+function maybeSayLine(){
+  const tier=affTier();
+  const p=tier==="warm"?0.16:(tier==="mid"?0.07:0.03);
+  if(!chance(p))return;
+  const nm=nameSpaced();
+  const cold=["…","ん…"];
+  const mid=["ん…？","に…ゃ",nm||"…"];
+  const warm=[nm?nm+"…♪":"あそ…ぶ","な…で","ごは…ん？","ねむ…","す…き","こ…こ","にゃ〜…",nm?nm+"…♡":"ふみ…ふみ"];
+  let pool=cold;if(tier==="mid")pool=cold.concat(mid);if(tier==="warm")pool=mid.concat(warm);
+  if(_need==="おなかすいた"&&tier!=="cold")pool=pool.concat(["ごは…ん","お…なか…"]);
+  if(_need==="ねむい")pool=pool.concat(["ね…む","ふ…ぁ"]);
+  if(_need==="あそびたい"&&tier!=="cold")pool=pool.concat(["あそ…ぶ！","ボー…ル"]);
+  roomBubble(pool[Math.floor(Math.random()*pool.length)]);
+}
 function roomGeom(){
   const W=Math.max(320,Math.round(window.innerWidth)),H=Math.max(440,Math.round(window.innerHeight));
   const floorY=Math.round(H*0.58);
@@ -3892,6 +4059,19 @@ function roomFaceInner(b,e,cos,dir){
   if(cos&&cos.hat)s+=_drawHat(cos.hat.id,60,60,40,cos.hat.col);
   return s;
 }
+/* 丸まって眠る かわいい寝ポーズ */
+function napCurl(b,e){
+  const hx=42,hy=80,hr=23;
+  let s=`<ellipse cx="66" cy="94" rx="46" ry="29" fill="${b}"/>`;            /* 丸い体 */
+  s+=`<ellipse cx="90" cy="90" rx="22" ry="21" fill="${b}"/>`;               /* お尻のふくらみ */
+  s+=`<path d="M32 112 C6 110 8 80 36 84 C58 87 70 98 66 110" fill="none" stroke="${b}" stroke-width="13" stroke-linecap="round"/>`; /* 前に巻いたしっぽ */
+  s+=`<ellipse cx="44" cy="110" rx="13" ry="7" fill="${b}"/>`;               /* 前足 */
+  s+=`<circle cx="${hx}" cy="${hy}" r="${hr}" fill="${b}"/>`+catEars2(hx,hy,hr,b,e);  /* 頭をのせる */
+  s+=`<path d="M${hx-14} ${hy+1} Q${hx-8} ${hy+7} ${hx-2} ${hy+1}" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>`;  /* 閉じた目 */
+  s+=`<path d="M${hx+2} ${hy+1} Q${hx+8} ${hy+7} ${hx+14} ${hy+1}" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>`;
+  s+=`<ellipse cx="${hx-13}" cy="${hy+9}" rx="5" ry="3" fill="#ffb3c8" opacity="0.6"/><ellipse cx="${hx+13}" cy="${hy+9}" rx="5" ry="3" fill="#ffb3c8" opacity="0.6"/>`;
+  return s;
+}
 function roomSceneSVG(){
   _rcParams=null;_catGestClass="";
   const body=profileBody(),ear=profileColor(),cos=getEquippedCostume(),pose=getEquippedPose();
@@ -3903,11 +4083,32 @@ function roomSceneSVG(){
   const rugCx=W*sp[0], feetY=floorY+band*sp[1];
   const rugCx0=W*0.40, rugCy=floorY+band*0.56, rugRx=Math.min(W*0.42,Math.round(W*0.44)), rugRy=Math.max(30,band*0.36);
   const winW=Math.min(216,Math.round(W*0.30)),winH=Math.min(186,Math.round(H*0.27)),winX=Math.round(W*0.07),winY=Math.round(H*0.12);
-  const ballR=Math.max(16,Math.round(W*0.028)),ballX=W*0.56,ballY=floorY+band*0.62;
+  const ballR=Math.max(16,Math.round(W*0.028));
+  let ballX=W*0.56,ballY=floorY+band*0.62;
+  if(_ballPos){ballX=clamp(_ballPos.x,ballR+10,W-ballR-10);ballY=clamp(_ballPos.y,floorY+ballR*0.6,H-ballR-8);}
   const foodX=Math.round(W*0.14),foodY=floorY+band*0.42,foodR=Math.max(19,Math.round(W*0.034));
   const railY=Math.round(floorY*0.64);
+  /* 窓の外＝今の時刻に合わせる（昼/夕/夜） */
+  const _hr=jstHour();
+  let skyTop,skyMid,skyBot,celes,stars="",tint="",showClouds=true,hillCol="#bfe6a8",hillCol2="#aedb98";
+  if(_hr>=19||_hr<5){
+    skyTop="#283457";skyMid="#3c4d72";skyBot="#5b6c8c";showClouds=false;hillCol="#3f5a52";hillCol2="#365049";
+    celes=`<circle cx="${winX+winW-42}" cy="${winY+38}" r="14" fill="#f3f0d8"/><circle cx="${winX+winW-36}" cy="${winY+34}" r="12" fill="#34456b"/>`;
+    stars=`<g fill="#fff">${[[winX+40,winY+34,1.6],[winX+66,winY+26,1.2],[winX+90,winY+52,1.5],[winX+30,winY+70,1.2],[winX+winW-70,winY+30,1.4],[winX+winW-30,winY+80,1.2]].map(s=>`<circle cx="${s[0]}" cy="${s[1]}" r="${s[2]}" opacity="0.9"/>`).join("")}</g>`;
+    tint=`<rect x="0" y="0" width="${W}" height="${H}" fill="#1b2440" opacity="0.26"/><ellipse cx="${W*0.5}" cy="${floorY*0.2}" rx="${W*0.7}" ry="${H*0.4}" fill="url(#rmWarm)"/>`;
+  }else if(_hr>=17){
+    skyTop="#ff9e72";skyMid="#ffc59a";skyBot="#ffe6cc";hillCol="#9cc890";hillCol2="#86b87e";
+    celes=`<circle cx="${winX+winW-40}" cy="${winY+50}" r="19" fill="#ffcf7a"/>`;
+    tint=`<rect x="0" y="0" width="${W}" height="${H}" fill="#ff9a5a" opacity="0.07"/>`;
+  }else if(_hr<7){
+    skyTop="#c2d2ea";skyMid="#ecd8e2";skyBot="#ffe7da";hillCol="#a9d6a0";hillCol2="#93c98a";
+    celes=`<circle cx="${winX+winW-38}" cy="${winY+44}" r="17" fill="#ffe39c"/>`;
+  }else{
+    skyTop="#a9ddff";skyMid="#d4f0ff";skyBot="#eafff0";
+    celes=`<circle cx="${winX+winW-38}" cy="${winY+40}" r="17" fill="#ffe39c"/>`;
+  }
   const cushCx=Math.round(W*0.20),cushCy=floorY+band*0.78,cushRx=Math.min(86,Math.round(W*0.15));
-  function catAt(tx,ty,s,inner){return `<g class="rmCat" transform="translate(${tx.toFixed(1)},${ty.toFixed(1)}) scale(${s.toFixed(3)})"><ellipse cx="60" cy="122" rx="40" ry="8.5" fill="#6b4636" opacity="0.16"/><g class="catBreathe"><g class="catGest ${_catGestClass}">${inner}</g></g></g>`;}
+  function catAt(tx,ty,s,inner){_catXform={tx,ty,s};const fx=(tx+60*s),fy=(ty+119*s);return `<g class="rmWalk"><ellipse class="rmShadow" cx="${fx.toFixed(1)}" cy="${fy.toFixed(1)}" rx="${(40*s).toFixed(1)}" ry="${(8*s).toFixed(1)}" fill="#7a5238" opacity="0.13"/><g class="rmCat" transform="translate(${tx.toFixed(1)},${ty.toFixed(1)}) scale(${s.toFixed(3)})"><g class="catBreathe"><g class="catGest ${_catGestClass}">${inner}</g></g></g></g>`;}
   let cat,extra="";
   if(_roomState==="angry"){
     const s=catScale*0.72;cat=catAt(towerCx-60*s,towerTopY-118*s,s,catBackHTML(body,ear));
@@ -3920,26 +4121,46 @@ function roomSceneSVG(){
     cat=catAt(hx-60*catScale,hy-124*catScale,catScale,catInner(body,ear,hpose,[0.5,0.3],"content",cos));
     extra=svgHeart(hx-34*catScale,hy-150*catScale,16,"#ff7ba6")+svgHeart(hx+18*catScale,hy-168*catScale,12,"#ffa6c4")+svgHeart(hx+44*catScale,hy-140*catScale,10,"#ff8fb4");
   }else if(_roomState==="nap"){
-    /* ひとりで寝る（毛布なし）＋Zzz */
-    const persona=getPersona();const np=persona.nap==="lie"?"lie":"sleep";
-    const nx=rugCx,ny=feetY;
-    cat=catAt(nx-60*catScale,ny-124*catScale,catScale,catInner(body,ear,np,[0,0],"line",cos));
-    extra=`<g transform="translate(${(nx+34*catScale).toFixed(1)},${(ny-118*catScale).toFixed(1)})" fill="#9cb6c4" font-family="sans-serif" font-weight="800" opacity="0.85"><text x="0" y="0" font-size="${(16*catScale).toFixed(0)}">Z</text><text x="${(13*catScale).toFixed(0)}" y="${(-12*catScale).toFixed(0)}" font-size="${(11*catScale).toFixed(0)}">z</text></g>`;
-    _catHeadXY={x:nx,y:ny-90*catScale};
+    /* 丸まって眠る（かわいい寝ポーズ）＋寝息＋Zzz */
+    const bx=catScale,nx=rugCx,ny=feetY,tx=nx-60*bx,ty=ny-124*bx;
+    cat=catAt(tx,ty,bx,napCurl(body,ear));
+    const noseX=tx+54*bx,noseY=ty+92*bx;
+    extra=`<circle class="rmBreath" cx="${noseX.toFixed(1)}" cy="${noseY.toFixed(1)}" r="${(6*bx).toFixed(1)}" fill="#cdeeffee" stroke="#a9d6ff" stroke-width="1.2"/>`
+      +`<g class="rmZ" transform="translate(${(tx+30*bx).toFixed(1)},${(ty+16*bx).toFixed(1)})" fill="#9fc2d6" font-family="sans-serif" font-weight="800"><text x="0" y="0" font-size="${(13*bx).toFixed(0)}">z</text><text x="${(10*bx).toFixed(0)}" y="${(-10*bx).toFixed(0)}" font-size="${(17*bx).toFixed(0)}">Z</text><text x="${(24*bx).toFixed(0)}" y="${(-22*bx).toFixed(0)}" font-size="${(22*bx).toFixed(0)}">Z</text></g>`;
+    _catHeadXY={x:nx-18*bx,y:ty+56*bx};
+    _catHeadXY={x:nx,y:ny-60*bx};
+  }else if(_roomState==="eating"||_roomState==="foodbeg"){
+    /* ごはん皿のところに来る（皿の右にいて顔を皿の方へ） */
+    const eat=_roomState==="eating";
+    const cx=Math.max(64*catScale,foodX+foodR*2.5+34*catScale),fy=foodY+16;
+    if(eat)_catGestClass="eatbob";
+    cat=catAt(cx-60*catScale,fy-124*catScale,catScale,catInner(body,ear,pose,eat?[-0.8,0.8]:[-0.7,0.3],eat?"content":"wide",cos));
+    _catHeadXY={x:cx-30*catScale,y:fy-100*catScale};
   }else if(_roomState==="groom"){
     /* 毛づくろい（こっちを見てない） */
     _catGestClass="grooming";
     cat=catAt(rugCx-60*catScale,feetY-124*catScale,catScale,catInner(body,ear,pose,[0,0.7],"content",cos));
     _catHeadXY={x:rugCx,y:feetY-100*catScale};
   }else if(_roomState==="playball"){
-    /* ひとり遊び：ボールの横で見つめる（こっちは見てない） */
-    const bx=W*0.56,by=floorY+band*0.62;
-    cat=catAt(bx-130*catScale,by-124*catScale,catScale,catInner(body,ear,pose,[1,0.4],"wide",cos));
-    _catHeadXY={x:bx-70*catScale,y:by-100*catScale};
+    /* ボールの横で見つめる／追いかけ（画面内にクランプ） */
+    const onRight=ballX>W*0.5;
+    let ccx=ballX+(onRight?-1:1)*(64*catScale+ballR);
+    ccx=clamp(ccx,64*catScale,W-64*catScale);
+    const cfy=Math.min(ballY,floorY+band*0.66);
+    cat=catAt(ccx-60*catScale,cfy-124*catScale+8,catScale,catInner(body,ear,pose,[onRight?1:-1,0.45],"wide",cos));
+    _catHeadXY={x:ccx,y:cfy-90*catScale};
+  }else if(_roomState==="chase"&&_catFree){
+    /* ボールを追いかけ中（自由位置・目はボール） */
+    const s=catScale,fx=clamp(_catFree.x,64*s,W-64*s),fy=clamp(_catFree.y,floorY+30,H-10);
+    const hX=fx,hY=fy-90*s,bX=_ballPos?_ballPos.x:fx,bY=_ballPos?_ballPos.y:fy;
+    const eyes=[clamp((bX-hX)/200,-1,1),clamp((bY-hY)/200,-1,1)];
+    cat=catAt(fx-60*s,fy-124*s,s,catInner(body,ear,pose,eyes,"wide",cos));
+    _catHeadXY={x:fx,y:hY};
   }else if(_roomState==="approach"){
+    /* 下からどんどん近づいてくる（ドアップ） */
     _catGestClass="approaching";
-    const s=catScale*2.15,cx=W*0.5,fy=H*1.04;
-    cat=catAt(cx-60*s,fy-124*s,s,catInner(body,ear,pose,[0,0],"wide",cos));
+    const s=catScale*2.2,cx=W*0.5,fy=H*1.06;
+    cat=catAt(cx-60*s,fy-124*s,s,catInner(body,ear,pose,[0,0.1],"wide",cos));
   }else if(_roomState==="peek"){
     const s=Math.max(catScale*2.2,(H*0.5)/120);
     const eyes=_peekSide==="left"?[1,0.1]:[-1,0.1];
@@ -3968,7 +4189,8 @@ function roomSceneSVG(){
 <linearGradient id="rmWall" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffe3ee"/><stop offset="100%" stop-color="#ffeef4"/></linearGradient>
 <linearGradient id="rmWainscot" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff4f7"/><stop offset="100%" stop-color="#ffe9f0"/></linearGradient>
 <linearGradient id="rmFloor" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ecd2ad"/><stop offset="100%" stop-color="#e0c298"/></linearGradient>
-<linearGradient id="rmSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#a9ddff"/><stop offset="70%" stop-color="#d4f0ff"/><stop offset="100%" stop-color="#eafff0"/></linearGradient>
+<linearGradient id="rmSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${skyTop}"/><stop offset="70%" stop-color="${skyMid}"/><stop offset="100%" stop-color="${skyBot}"/></linearGradient>
+<radialGradient id="rmWarm" cx="0.5" cy="0.5" r="0.5"><stop offset="0%" stop-color="#ffdca0" stop-opacity="0.5"/><stop offset="100%" stop-color="#ffdca0" stop-opacity="0"/></radialGradient>
 <radialGradient id="rmGlow" cx="0.5" cy="0.4" r="0.7"><stop offset="0%" stop-color="#fff6e8" stop-opacity="0.5"/><stop offset="100%" stop-color="#fff6e8" stop-opacity="0"/></radialGradient>
 <pattern id="rmDots" width="48" height="48" patternUnits="userSpaceOnUse"><circle cx="12" cy="12" r="3" fill="#ffffff" opacity="0.3"/><circle cx="36" cy="36" r="3" fill="#ffffff" opacity="0.3"/></pattern>
 </defs>
@@ -3986,9 +4208,10 @@ function roomSceneSVG(){
 <rect x="${winX-4}" y="${winY-12}" width="${winW+8}" height="9" rx="4" fill="#caa478"/>
 <rect x="${winX}" y="${winY}" width="${winW}" height="${winH}" rx="14" fill="#ffffff"/>
 <rect x="${winX+9}" y="${winY+9}" width="${winW-18}" height="${winH-18}" rx="8" fill="url(#rmSky)"/>
-<circle cx="${winX+winW-38}" cy="${winY+40}" r="17" fill="#ffe39c"/>
-<ellipse cx="${winX+44}" cy="${winY+winH-40}" rx="34" ry="20" fill="#bfe6a8"/><ellipse cx="${winX+winW-50}" cy="${winY+winH-32}" rx="40" ry="22" fill="#aedb98"/>
-<g fill="#ffffff" opacity="0.95"><ellipse cx="${winX+54}" cy="${winY+54}" rx="22" ry="9"/><ellipse cx="${winX+72}" cy="${winY+48}" rx="15" ry="8"/></g>
+${stars}
+${celes}
+<ellipse cx="${winX+44}" cy="${winY+winH-40}" rx="34" ry="20" fill="${hillCol}"/><ellipse cx="${winX+winW-50}" cy="${winY+winH-32}" rx="40" ry="22" fill="${hillCol2}"/>
+${showClouds?`<g fill="#ffffff" opacity="0.95"><ellipse cx="${winX+54}" cy="${winY+54}" rx="22" ry="9"/><ellipse cx="${winX+72}" cy="${winY+48}" rx="15" ry="8"/></g>`:""}
 <rect x="${winX+winW/2-4}" y="${winY+9}" width="8" height="${winH-18}" fill="#ffffff"/><rect x="${winX+9}" y="${winY+winH/2-4}" width="${winW-18}" height="8" fill="#ffffff"/>
 <path d="M${winX-2} ${winY} q-12 ${winH*0.3} 0 ${winH*0.55} q-14 ${winH*0.25} 2 ${winH*0.45} l10 0 l0 ${-winH} Z" fill="#ffc2d6"/>
 <path d="M${winX+winW+2} ${winY} q12 ${winH*0.3} 0 ${winH*0.55} q14 ${winH*0.25} -2 ${winH*0.45} l-10 0 l0 ${-winH} Z" fill="#ffc2d6"/>
@@ -4017,18 +4240,89 @@ ${garland}
 <ellipse cx="${cushCx}" cy="${(cushCy-6).toFixed(0)}" rx="${(cushRx*0.78).toFixed(0)}" ry="${(cushRx*0.32).toFixed(0)}" fill="#cfe9ff"/>
 <g id="roomFood" style="cursor:pointer"><ellipse cx="${foodX+foodR*1.5}" cy="${(foodY+4).toFixed(0)}" rx="${(foodR*1.1).toFixed(0)}" ry="${(foodR*0.4).toFixed(1)}" fill="#6b4636" opacity="0.12"/><ellipse cx="${foodX}" cy="${foodY.toFixed(0)}" rx="${foodR}" ry="${(foodR*0.42).toFixed(1)}" fill="#9fd4f0"/><ellipse cx="${foodX}" cy="${(foodY-3).toFixed(0)}" rx="${foodR}" ry="${(foodR*0.42).toFixed(1)}" fill="#bfe6ff"/><path d="M${foodX-foodR*0.55} ${(foodY-4).toFixed(0)} q${foodR*0.55} -${foodR*0.4} ${foodR*1.1} 0" fill="#ffcaa0"/><ellipse cx="${foodX+foodR*2.5}" cy="${foodY.toFixed(0)}" rx="${(foodR*0.85).toFixed(0)}" ry="${(foodR*0.36).toFixed(1)}" fill="#cdeaf8"/><ellipse cx="${foodX+foodR*2.5}" cy="${(foodY-2).toFixed(0)}" rx="${(foodR*0.7).toFixed(0)}" ry="${(foodR*0.28).toFixed(1)}" fill="#8fd0ee"/><circle cx="${foodX+foodR}" cy="${foodY.toFixed(0)}" r="${(foodR*2).toFixed(0)}" fill="transparent"/></g>
 <rect x="0" y="0" width="${W}" height="${H}" fill="url(#rmGlow)"/>
+${tint}
+${ballSVG(getEquippedBall(),ballX,ballY,ballR)}
 ${cat}
 <g class="rmExtra">${extra}</g>
-<g id="roomBall" style="cursor:pointer"><ellipse cx="${ballX.toFixed(0)}" cy="${(ballY+ballR*0.95).toFixed(0)}" rx="${(ballR*1.1).toFixed(0)}" ry="${(ballR*0.34).toFixed(1)}" fill="#6b4636" opacity="0.14"/><circle cx="${ballX.toFixed(0)}" cy="${ballY.toFixed(0)}" r="${ballR}" fill="#ffd45f"/><circle cx="${(ballX-ballR*0.32).toFixed(0)}" cy="${(ballY-ballR*0.34).toFixed(0)}" r="${(ballR*0.3).toFixed(0)}" fill="#fff0c2" opacity="0.8"/><path d="M${(ballX-ballR*0.9).toFixed(0)} ${(ballY-ballR*0.15).toFixed(0)} q${ballR*0.9} -${ballR*0.5} ${ballR*1.8} 0 M${(ballX-ballR*0.8).toFixed(0)} ${(ballY+ballR*0.45).toFixed(0)} q${ballR*0.8} ${ballR*0.4} ${ballR*1.6} 0" stroke="#ef9f4f" stroke-width="3" fill="none"/><circle cx="${ballX.toFixed(0)}" cy="${ballY.toFixed(0)}" r="${(ballR*1.5).toFixed(0)}" fill="transparent"/></g>
 </svg>`;
 }
 function renderRoom(){
   $("roomScene").innerHTML=roomSceneSVG();
-  refreshGachaBadge();refreshAffBar();
-  const ball=document.getElementById("roomBall");if(ball)ball.addEventListener("click",e=>{e.stopPropagation();tapBall();});
+  refreshGachaBadge();refreshAffBar();refreshRoomStatus();
+  const ball=document.getElementById("roomBall");if(ball)ball.addEventListener("pointerdown",startBallDrag);
   const food=document.getElementById("roomFood");if(food)food.addEventListener("click",e=>{e.stopPropagation();feedCat();});
-  const cc=document.querySelector("#roomScene .rmCat");if(cc)cc.addEventListener("click",e=>{e.stopPropagation();petCat();});
+  const cc=document.querySelector("#roomScene .rmCat");
+  if(cc){
+    cc.style.cursor="grab";
+    cc.addEventListener("pointerdown",e=>{e.stopPropagation();startPet(e);});
+  }
   if(_rcParams&&_rcParams.calm)startCatLifeRoom();else stopCatLifeRoom();
+}
+/* == 長押しでよしよし：部位（猫ごとのOK/NG）＋ゆっくりほど逃げにくい == */
+let _petting=false,_petHoldTimer=null,_petTrust=0,_petId=null;
+function petZoneAt(cx,cy){
+  if(!_catXform)return "back";
+  const lx=(cx-_catXform.tx)/_catXform.s, ly=(cy-_catXform.ty)/_catXform.s;
+  if(lx<-14||lx>134||ly<-16||ly>134)return "back";
+  if(ly<56)return "head";
+  if(lx>90)return "tail";
+  if(ly>96&&lx>=40&&lx<=82)return "belly";
+  return "back";
+}
+const ZONE_JP={head:"あたま",back:"せなか",belly:"おなか",tail:"しっぽ"};
+function flinchCat(){const g=document.querySelector("#roomScene .catGest");if(!g)return;g.classList.remove("flinch");void g.offsetWidth;g.classList.add("flinch");setTimeout(()=>{if(g)g.classList.remove("flinch");},420);}
+function runAway(){
+  stopCatLifeRoom();let n=_idleSpot;if(ROOM_SPOTS.length>1){do{n=pickSpot();}while(n===_idleSpot);}
+  _roomState="normal";moveToSpot(n);   /* ぴょんぴょん逃げる（瞬間移動しない） */
+}
+function startPet(e){
+  if(["nap","eating","foodbeg","chase","approach","peek"].indexOf(_roomState)>=0)return;   /* 寝てる時などは無反応 */
+  if(["angry","bored","playball"].indexOf(_roomState)>=0){petCat();return;}
+  _petting=true;_petId=e.pointerId;_petTrust=0;_petZone=petZoneAt(e.clientX,e.clientY);
+  try{e.target.setPointerCapture(e.pointerId);}catch(_){}
+  document.addEventListener("pointermove",petMove);
+  document.addEventListener("pointerup",endPet);
+  document.addEventListener("pointercancel",endPet);
+  petTick(true);
+  _petHoldTimer=setInterval(()=>petTick(false),700);
+}
+function petMove(e){if(_petting)_petZone=petZoneAt(e.clientX,e.clientY);}
+function petTick(first){
+  if(!_petting)return;
+  const persona=getPersona(),mood=getMood(),zone=_petZone||"back";
+  const ng=persona.petNG.indexOf(zone)>=0, liked=persona.petLikes.indexOf(zone)>=0;
+  if(ng){
+    /* 嫌なところを触られたら：イヤがって逃げる */
+    flinchCat();if(chance(0.8))playMeow("annoyed");if(chance(0.75))roomBubble("イ…ヤ！");
+    if(chance(0.7)){endPet();runAway();}
+    return;
+  }
+  let tier=affTier();
+  const likeB=liked?0.12:0;
+  if(tier==="cold"&&chance(0.10+mood.warm+_petTrust*0.08+likeB))tier="mid";
+  else if(tier!=="warm"&&chance(0.04+mood.warm+_petTrust*0.05+likeB))tier="warm";
+  tier=downTier(tier);
+  if(tier==="cold"){
+    /* まだ仲良くない：基本は逃げず我慢。たまに「イヤ」と吹き出すだけ（ごくまれに逃げる） */
+    if(chance(0.05)){endPet();roomBubble("イ…ヤ");if(chance(0.6))playMeow("annoyed");runAway();return;}
+    if(chance(0.24))roomBubble(chance(0.5)?"イ…ヤ":"…");
+    _petTrust++;if(chance(liked?0.3:0.14))roomHeartPop();
+    return;
+  }
+  warmupTick();
+  if(_roomState!=="happy"){_roomState="happy";renderRoom();}
+  _petStreak++;playPurr(rnd(1.4,2.0),Math.min(2.2,1+_petStreak*0.25));
+  roomHeartPop();if(chance(liked?0.6:0.4))setTimeout(roomHeartPop,rndi(200,500));
+  if(chance(0.3))sayName("♡");
+  if(first)setAffection(getAffection()+1);
+  if(_petStreak>=6){endPet();_petStreak=0;goNap(true);return;}
+  if(first&&liked&&chance(0.4))roomBubble("そこ…すき♡");
+}
+function endPet(){
+  _petting=false;if(_petHoldTimer){clearInterval(_petHoldTimer);_petHoldTimer=null;}
+  document.removeEventListener("pointermove",petMove);
+  document.removeEventListener("pointerup",endPet);document.removeEventListener("pointercancel",endPet);
+  if(_roomState==="happy"){if(_happyTimer)clearTimeout(_happyTimer);_happyTimer=setTimeout(()=>{_roomState="normal";_happyTimer=null;if(roomVisible())renderRoom();},rndi(1500,2800));}
 }
 function setCatInnerRoom(dir,expr){
   const el=document.querySelector("#roomScene .catGest");if(!el||!_rcParams)return;
@@ -4064,9 +4358,9 @@ function startCatLifeRoom(){
   const loop=()=>{
     if(!_rcParams||!_rcParams.calm||!roomVisible())return;
     roomGesture();
-    _rcLifeTimer=setTimeout(loop,2200+Math.random()*2800);
+    _rcLifeTimer=setTimeout(loop,3400+Math.random()*4200);
   };
-  _rcLifeTimer=setTimeout(loop,1600+Math.random()*1600);
+  _rcLifeTimer=setTimeout(loop,2200+Math.random()*2200);
 }
 function renderRoomFade(){
   const sc=$("roomScene");if(!sc){renderRoom();return;}
@@ -4079,10 +4373,48 @@ function renderRoomFade(){
 }
 function fadeInCat(){
   const nw=document.querySelector("#roomScene .rmCat");if(!nw)return;
-  nw.style.opacity="0";nw.style.transition="opacity .3s ease";
+  nw.style.opacity="0";nw.style.transition="opacity .35s ease";
   requestAnimationFrame(()=>requestAnimationFrame(()=>{nw.style.opacity="1";}));
 }
-function refreshAffBar(){const f=$("affFill");if(f)f.style.height=getAffection()+"%";const l=$("affLabel");if(l)l.textContent=affStage().name;}
+function spotScreen(i){const g=roomGeom();const sp=ROOM_SPOTS[i%ROOM_SPOTS.length];const rugCx=g.W*sp[0],feetY=g.floorY+(g.H-g.floorY)*sp[1];return {x:rugCx-60*g.catScale,y:feetY-124*g.catScale};}
+/* 近い移動はつないで歩く／遠い移動は消えて少し経って現れる（マイペース） */
+function moveToSpot(n){
+  if(n===_idleSpot){if(roomVisible())renderRoom();return;}
+  const oldS=spotScreen(_idleSpot),newS=spotScreen(n);
+  _idleSpot=n;
+  const dist=Math.hypot(newS.x-oldS.x,newS.y-oldS.y);
+  if(dist<window.innerWidth*0.55)hopCatTo(oldS,newS);else fadeFar();
+}
+function hopCatTo(oldS,newS){
+  renderRoom();
+  const w=document.querySelector("#roomScene .rmWalk");if(!w){fadeInCat();return;}
+  const dx=oldS.x-newS.x,dy=oldS.y-newS.y,dist=Math.hypot(dx,dy);
+  const hops=Math.max(1,Math.round(dist/64));
+  const frames=[];
+  for(let i=0;i<=hops;i++){
+    const f=i/hops;frames.push({transform:`translate(${(dx*(1-f)).toFixed(1)}px,${(dy*(1-f)).toFixed(1)}px)`,offset:f});
+    if(i<hops){const fm=(i+0.5)/hops;frames.push({transform:`translate(${(dx*(1-fm)).toFixed(1)}px,${(dy*(1-fm)-26).toFixed(1)}px)`,offset:fm});}
+  }
+  try{
+    w.style.transform=`translate(${dx.toFixed(1)}px,${dy.toFixed(1)}px)`;
+    const a=w.animate(frames,{duration:Math.max(420,hops*300),easing:"ease-out"});  /* ぴょんぴょん（マイペース） */
+    a.onfinish=()=>{try{w.style.transform="translate(0,0)";a.cancel();}catch(_){}};
+  }catch(_){w.style.transform="translate(0,0)";}
+}
+function fadeFar(){
+  const sc=$("roomScene");const old=sc&&sc.querySelector(".rmCat"),osh=sc&&sc.querySelector(".rmShadow");
+  if(!old){renderRoom();fadeInCat();return;}
+  old.style.transition="opacity .3s ease";old.style.opacity="0";
+  if(osh){osh.style.transition="opacity .3s";osh.style.opacity="0";}
+  setTimeout(()=>{renderRoom();fadeInCat();},rndi(550,850));   /* 消えて少し経ってから現れる */
+}
+function refreshAffBar(){
+  const f=$("affFill");
+  if(f){f.style.height=getAffection()+"%";
+    const cols=["#cdd6dd,#aab8c2","#ffd59e,#ffb86b","#a6e0c2,#5fc8a0","#ffb3d0,#ff84b4","#ff9ec2,#ff5e88"];
+    const c=cols[Math.max(0,Math.min(4,affStageIndex()))];f.style.background=`linear-gradient(180deg,${c})`;}
+  const l=$("affLabel");if(l)l.textContent=affStage().name;
+}
 function clearAvert(){if(_roomAvertTimer){clearTimeout(_roomAvertTimer);_roomAvertTimer=null;}}
 function playSqueak(){
   try{const ctx=ensureCtx();if(!ctx)return;const t=ctx.currentTime;
@@ -4155,9 +4487,10 @@ function tapBall(){
   warmupTick();
   const mood=getMood(),persona=getPersona();
   let tier=affTier();
-  /* 個性（ボール好き）と日替わり気分で“興味/デレ”の出やすさが変わる */
-  const interest=0.16+mood.warm+(persona.ballLove?0.16:0);
-  const warmP=0.05+mood.warm+(persona.ballLove?0.06:0);
+  /* 個性（ボール好き）＋日替わり気分＋お気に入りボールで“興味/デレ”が変わる */
+  const favBall=getEquippedBall()===persona.likeBall;
+  const interest=0.16+mood.warm+(persona.ballLove?0.16:0)+(favBall?0.18:0);
+  const warmP=0.05+mood.warm+(persona.ballLove?0.06:0)+(favBall?0.08:0);
   if(tier==="cold"&&chance(interest))tier="mid";
   else if(tier!=="warm"&&chance(warmP))tier="warm";
   tier=downTier(tier);   /* 久しぶりだと最初そっけない */
@@ -4185,10 +4518,9 @@ function petCat(){
   else if(tier!=="warm"&&chance(0.04+mood.warm))tier="warm";
   tier=downTier(tier);
   if(tier==="cold"){
-    if(chance(0.8))playMeow("annoyed");clearReactTimers();stopCatLifeRoom();
+    if(chance(0.7))playMeow("annoyed");if(chance(0.4))roomBubble("イ…ヤ");
     if(chance(0.12+mood.heart))roomHeartPop();
-    let n=_idleSpot;if(ROOM_SPOTS.length>1){do{n=pickSpot();}while(n===_idleSpot);}
-    _idleSpot=n;_roomState="normal";renderRoomFade();return;
+    return;   /* 逃げずに我慢 */
   }
   if(tier==="mid"){
     _roomState="watch";clearReactTimers();if(chance(0.7))playMeow("curious");
@@ -4210,14 +4542,14 @@ function petCat(){
 function doApproach(){
   _roomState="approach";stopCatLifeRoom();
   if(_specialTimer)clearTimeout(_specialTimer);
-  _specialTimer=setTimeout(()=>{_roomState="normal";_specialTimer=null;if(roomVisible())renderRoomFade();},rndi(2000,3600));
+  _specialTimer=setTimeout(()=>{_roomState="normal";_specialTimer=null;if(roomVisible())renderRoomFade();},rndi(3200,5200));
   renderRoomFade();if(chance(0.75))setTimeout(moodMeow,rndi(350,800));
 }
 function doPeek(){
   _peekSide=Math.random()<0.5?"left":"right";
   _roomState="peek";stopCatLifeRoom();
   if(_specialTimer)clearTimeout(_specialTimer);
-  _specialTimer=setTimeout(()=>{_roomState="normal";_specialTimer=null;if(roomVisible())renderRoomFade();},rndi(1800,3400));
+  _specialTimer=setTimeout(()=>{_roomState="normal";_specialTimer=null;if(roomVisible())renderRoomFade();},rndi(2800,4600));
   renderRoomFade();if(chance(0.7))setTimeout(moodMeow,rndi(300,700));
 }
 function goAngry(){
@@ -4227,21 +4559,25 @@ function goAngry(){
   renderRoomFade();
 }
 function teaserPlay(px,py){
-  if(["angry","bored","happy","approach","peek"].indexOf(_roomState)>=0)return;
+  if(["angry","bored","happy","approach","peek","eating","nap","foodbeg"].indexOf(_roomState)>=0)return;
   if(_roomState!=="play"){
     _roomState="play";_playStart=Date.now();
-    _playFollowMs=chance(0.55)?rndi(450,1500):0;   /* 追うかどうかもランダム（追わない時もある） */
-    _playLookedAway=false;
-    if(_roomBoredTimer)clearTimeout(_roomBoredTimer);_roomBoredTimer=setTimeout(goBored,rndi(2600,5800));
-    if(chance(0.7))moodMeow();
+    _playFollowMs=chance(0.6)?rndi(800,2400):0;   /* 追う時間は少し長め */
+    _playLookedAway=false;_playEyeCur=[0,0];
+    if(_roomBoredTimer)clearTimeout(_roomBoredTimer);_roomBoredTimer=setTimeout(goBored,rndi(3200,7000));
+    if(chance(0.6))moodMeow();
+    const persona=getPersona();const favToy=getEquippedToy()===persona.likeToy;
+    if(chance((persona.ballLove||_need==="あそびたい"||favToy)?0.32:0.16))setTimeout(pounceCat,rndi(500,1100));   /* たまに飛びつく（控えめ） */
   }
   const t=Date.now();
   if(t-_playStart<_playFollowMs){
-    /* 最初だけ目で追う */
     const g=roomGeom(),sp=ROOM_SPOTS[_idleSpot%ROOM_SPOTS.length];
     const headX=g.W*sp[0],headY=(g.floorY+(g.H-g.floorY)*sp[1])-124*g.catScale+46*g.catScale;
-    _playEyeDir=[clamp((px-headX)/180,-1,1),clamp((py-headY)/180,-1,1)];
-    if(t-_lastEye<rndi(90,170))return;_lastEye=t;if(roomVisible())renderRoom();
+    _playTgt=[clamp((px-headX)/210,-1,1),clamp((py-headY)/210,-1,1)];
+    if(t-_lastEye<rndi(240,380))return;_lastEye=t;   /* ゆっくり更新 */
+    /* のっぺり：目標へ少しずつ寄せる */
+    _playEyeCur=[_playEyeCur[0]+(_playTgt[0]-_playEyeCur[0])*0.3,_playEyeCur[1]+(_playTgt[1]-_playEyeCur[1])*0.3];
+    _playEyeDir=_playEyeCur;if(roomVisible())renderRoom();
   }else if(!_playLookedAway){
     /* すぐ飽きて目を離す（プイッ） */
     _playLookedAway=true;
@@ -4268,7 +4604,7 @@ function goNap(fromPet){
   _roomState="nap";clearReactTimers();stopCatLifeRoom();
   if(_specialTimer)clearTimeout(_specialTimer);
   if(fromPet&&chance(0.6))sayName("…zzz");
-  _specialTimer=setTimeout(()=>{_roomState="normal";_specialTimer=null;if(roomVisible())renderRoomFade();},rndi(8000,16000));
+  _specialTimer=setTimeout(()=>{_roomState="normal";_specialTimer=null;if(roomVisible())renderRoomFade();},rndi(16000,34000));   /* 寝てる時間は長め */
   renderRoomFade();
 }
 function goGroom(){
@@ -4290,33 +4626,47 @@ function teaserRelease(){
 function scheduleIdle(){
   if(_roomIdleTimer)clearTimeout(_roomIdleTimer);
   const mood=getMood();
-  const wait=Math.max(4500,rndi(7000,16000)-Math.round(mood.act*3500)+Math.round(mood.sleepy*3500));
+  /* マイペース：間隔は長め＋ばらつき大（のっそり） */
+  const wait=Math.max(6500,rndi(10000,23000)-Math.round(mood.act*3000)+Math.round(mood.sleepy*4000));
   _roomIdleTimer=setTimeout(()=>{
     if(_roomState==="normal"&&roomVisible()){
       const r=Math.random();
-      const napP=0.09+Math.max(0,mood.sleepy)*0.5;
-      const actP=Math.max(0,mood.act)*0.22;
-      if(r<napP){goNap(false);}
-      else if(r<napP+0.10){goGroom();}
-      else if(r<napP+0.16+actP){chance(0.5)?goPlayBall():doApproach();}
-      else if(r<napP+0.26+actP){doPeek();}
-      else if(r<napP+0.32+actP){roomHeartPop();if(chance(0.5))setTimeout(moodMeow,rndi(200,600));}
+      let napP=0.10+Math.max(0,mood.sleepy)*0.4, playP=0.10+Math.max(0,mood.act)*0.18, clingP=0.08;
+      if(_need==="ねむい")napP+=0.28;
+      if(_need==="あそびたい")playP+=0.26;
+      if(_need==="あまえん坊")clingP+=0.26;
+      if(_need==="おなかすいた"&&chance(0.45)){goFoodBeg();scheduleIdle();return;}
+      if(r<0.26){ /* じっとしている（マイペース：何もしない間） */
+        if(chance(0.4))setTimeout(moodMeow,rndi(300,900));
+        else if(chance(0.4))maybeSayLine();
+      }
+      else if(r<0.26+napP){goNap(false);}
+      else if(r<0.26+napP+0.08){goGroom();}
+      else if(r<0.26+napP+0.08+playP){chance(0.5)?goPlayBall():doApproach();}
+      else if(r<0.26+napP+0.08+playP+clingP){affTier()==="warm"?doApproach():doPeek();}
       else{
         let n=_idleSpot;if(ROOM_SPOTS.length>1){do{n=pickSpot();}while(n===_idleSpot);}
-        _idleSpot=n;renderRoomFade();
-        if(chance(0.3))setTimeout(moodMeow,rndi(250,700));
-        if(chance(0.10+mood.heart))setTimeout(roomHeartPop,rndi(400,900));
-        if(chance(0.12))setTimeout(()=>sayName(),rndi(400,900));
+        moveToSpot(n);
+        if(chance(0.25))setTimeout(moodMeow,rndi(400,1100));
+        maybeSayLine();
       }
     }
     scheduleIdle();
   },wait);
 }
+function goFoodBeg(){
+  /* おなかすいた：ごはん皿の近くに来て鳴く */
+  _roomState="foodbeg";stopCatLifeRoom();
+  if(_specialTimer)clearTimeout(_specialTimer);
+  setTimeout(()=>playMeow("curious"),rndi(300,700));if(chance(0.5))setTimeout(()=>roomBubble("ごは…ん"),rndi(500,900));
+  _specialTimer=setTimeout(()=>{_roomState="normal";_specialTimer=null;if(roomVisible())renderRoomFade();},rndi(3000,5500));
+  renderRoomFade();
+}
 function openRoom(){
   if(_roomState!=="angry"){_roomState="normal";_ballTaps=0;}
-  _angerAt=rndi(2,4);_petStreak=0;
-  checkReunion();getMood();getPersona();
-  renderRoom();$("catRoom").classList.add("visible");scheduleIdle();
+  _angerAt=rndi(2,4);_petStreak=0;_ballPos=null;
+  checkReunion();getMood();getPersona();rollNeed();refreshRoomStatus();applyEquippedToy();
+  renderRoom();$("catRoom").classList.add("visible");scheduleIdle();startNeedDrift();
   if(_roomState!=="angry"){
     if(_aloof){if(chance(0.6))setTimeout(()=>roomBubble("…？"),rndi(500,1000));}
     else{if(chance(0.6))setTimeout(()=>sayName(),rndi(500,1100));if(chance(0.8))setTimeout(moodMeow,rndi(800,1400));}
@@ -4325,6 +4675,7 @@ function openRoom(){
 function closeRoom(){
   clearAvert();clearReactTimers();stopCatLifeRoom();
   if(_specialTimer){clearTimeout(_specialTimer);_specialTimer=null;}
+  if(_needTimer){clearTimeout(_needTimer);_needTimer=null;}
   if(_roomIdleTimer){clearTimeout(_roomIdleTimer);_roomIdleTimer=null;}
   if(_roomBoredTimer){clearTimeout(_roomBoredTimer);_roomBoredTimer=null;}
   if(["avert","play","watch","happy","approach","peek","nap","groom","playball"].indexOf(_roomState)>=0)_roomState="normal";
@@ -4543,9 +4894,137 @@ $("topProfileBar").addEventListener("click",()=>{playClick();openProfilePanel();
 $("bagBtn").addEventListener("click",()=>{playClick();openRoom();});
 $("roomBag").addEventListener("click",()=>{playClick();openProfilePanel();});
 $("roomCam").addEventListener("click",()=>{playClick();roomCapture();});
+$("roomShop").addEventListener("click",()=>{playClick();openShop();});
+$("shopClose").addEventListener("click",()=>{playClick();closeShop();});
+$("shopPanel").addEventListener("click",e=>{if(e.target.id==="shopPanel")closeShop();});
 $("roomBack").addEventListener("click",()=>{playClick();closeRoom();});
 setupTeaser();
 window.addEventListener("resize",()=>{if(roomVisible())renderRoom();});
+function pounceCat(){
+  const g=document.querySelector("#roomScene .catGest");if(!g)return;
+  g.classList.remove("pounce");void g.offsetWidth;g.classList.add("pounce");
+  if(chance(0.7))moodMeow();
+  setTimeout(()=>{if(g)g.classList.remove("pounce");},540);
+}
+/* == ボールを掴んで投げる（転がるモデル） == */
+let _ballDragging=false,_chaseEager=false;
+function startBallDrag(e){
+  e.stopPropagation();e.preventDefault();
+  const ball=document.getElementById("roomBall");if(!ball)return;
+  const g=roomGeom();
+  const base=_ballPos?{x:clamp(_ballPos.x,0,g.W),y:clamp(_ballPos.y,0,g.H)}:{x:g.W*0.56,y:g.floorY+(g.H-g.floorY)*0.62};
+  const start={x:e.clientX,y:e.clientY};
+  let last={x:e.clientX,y:e.clientY,t:Date.now()},vel={x:0,y:0},moved=false;
+  _ballDragging=true;try{ball.setPointerCapture(e.pointerId);}catch(_){}
+  const move=ev=>{
+    const dx=ev.clientX-start.x,dy=ev.clientY-start.y;
+    if(Math.abs(dx)+Math.abs(dy)>6)moved=true;
+    ball.setAttribute("transform",`translate(${dx},${dy})`);
+    const now=Date.now(),dt=Math.max(16,now-last.t);
+    vel={x:(ev.clientX-last.x)/dt*16,y:(ev.clientY-last.y)/dt*16};
+    last={x:ev.clientX,y:ev.clientY,t:now};
+  };
+  const up=ev=>{
+    document.removeEventListener("pointermove",move);document.removeEventListener("pointerup",up);_ballDragging=false;
+    const off={x:last.x-start.x,y:last.y-start.y};
+    if(!moved){ball.removeAttribute("transform");tapBall();return;}
+    throwBall(base,off,vel,ball);
+  };
+  document.addEventListener("pointermove",move);
+  document.addEventListener("pointerup",up);
+}
+function ballChaseEager(){
+  if(["angry","bored","nap","eating","foodbeg"].indexOf(_roomState)>=0)return false;
+  const persona=getPersona();
+  return persona.ballLove||_need==="あそびたい"||affTier()!=="cold"||chance(0.45);
+}
+function trackEyesToBall(){
+  const now=Date.now();if(now-_eyeTrackT<90)return;_eyeTrackT=now;
+  if(!_rcParams||!_catHeadXY||!_ballPos)return;
+  const dir=[clamp((_ballPos.x-_catHeadXY.x)/210,-1,1),clamp((_ballPos.y-_catHeadXY.y)/210,-1,1)];
+  setCatInnerRoom(dir,"wide");
+}
+function throwBall(base,off,vel,ball){
+  const g=roomGeom();
+  const minX=24,maxX=g.W-24,minY=g.floorY+12,maxY=g.H-14,CAP=20;   /* 最大速度ひかえめ */
+  let cx=base.x+off.x,cy=base.y+off.y;
+  let vx=Math.max(-CAP,Math.min(CAP,vel.x*0.9)),vy=Math.max(-CAP,Math.min(CAP,vel.y*0.9));
+  const eager=ballChaseEager();
+  if(eager){if(_roomState!=="normal"){_roomState="normal";}if(roomVisible())renderRoom();if(chance(0.8))moodMeow();}
+  const step=()=>{
+    vx*=0.93;vy*=0.93;cx+=vx;cy+=vy;
+    if(cx<minX){cx=minX;vx=-vx*0.6;}if(cx>maxX){cx=maxX;vx=-vx*0.6;}
+    if(cy<minY){cy=minY;vy=-vy*0.6;}if(cy>maxY){cy=maxY;vy=-vy*0.6;}
+    _ballPos={x:cx,y:cy};
+    ball.setAttribute("transform",`translate(${(cx-base.x).toFixed(1)},${(cy-base.y).toFixed(1)})`);
+    if(eager&&_roomState==="normal")trackEyesToBall();   /* ボールを目で追う */
+    if(Math.abs(vx)+Math.abs(vy)>4.5){requestAnimationFrame(step);}
+    else{
+      ball.removeAttribute("transform");
+      _ballPos={x:clamp(cx,minX,maxX),y:clamp(cy,g.floorY+12,maxY)};
+      if(chance(0.6))playSqueak();
+      if(eager&&["angry","bored","nap","eating","foodbeg","approach","peek"].indexOf(_roomState)<0)startChase();
+      else if(roomVisible())renderRoom();
+    }
+  };
+  requestAnimationFrame(step);
+}
+function startChase(){
+  if(_catXform)_catFree={x:_catXform.tx+60*_catXform.s,y:_catXform.ty+124*_catXform.s};
+  else{const s=spotScreen(_idleSpot),g=roomGeom();_catFree={x:s.x+60*g.catScale,y:s.y+124*g.catScale};}
+  _roomState="chase";if(_specialTimer)clearTimeout(_specialTimer);
+  chaseStep();
+}
+function chaseStep(){
+  if(_roomState!=="chase"||!roomVisible()||!_catFree){return;}
+  const g=roomGeom();
+  const bX=_ballPos?_ballPos.x:g.W*0.56,bY=_ballPos?_ballPos.y:g.floorY+(g.H-g.floorY)*0.62;
+  const onRight=bX>g.W*0.5;
+  const tX=clamp(bX+(onRight?-1:1)*(60*g.catScale+22),64*g.catScale,g.W-64*g.catScale);
+  const tY=clamp(bY,g.floorY+30,g.H-10);
+  const dx=tX-_catFree.x,dy=tY-_catFree.y,dist=Math.hypot(dx,dy);
+  if(dist<64){
+    _roomState="playball";_ballPos=_ballPos;_catFree=null;
+    if(roomVisible())renderRoom();if(chance(0.6))setTimeout(pounceCat,rndi(150,400));
+    if(_specialTimer)clearTimeout(_specialTimer);
+    _specialTimer=setTimeout(()=>{_roomState="normal";_specialTimer=null;if(roomVisible())renderRoomFade();},rndi(3500,6500));
+    return;
+  }
+  const stepLen=Math.min(dist,70+Math.random()*34);
+  const nx=_catFree.x+dx/dist*stepLen,ny=_catFree.y+dy/dist*stepLen;
+  hopFree({x:_catFree.x,y:_catFree.y},{x:nx,y:ny},()=>{setTimeout(chaseStep,rndi(140,420));});  /* ぴょん、と一歩ずつ（間あり＝マイペース） */
+}
+function hopFree(oldF,newF,onDone){
+  _catFree=newF;renderRoom();
+  const w=document.querySelector("#roomScene .rmWalk");if(!w){onDone&&onDone();return;}
+  const dx=oldF.x-newF.x,dy=oldF.y-newF.y;
+  try{
+    const a=w.animate([{transform:`translate(${dx}px,${dy}px)`},{transform:`translate(${(dx*0.5).toFixed(1)}px,${(dy*0.5-30).toFixed(1)}px)`,offset:0.5},{transform:`translate(0px,0px)`}],{duration:300,easing:"ease-out"});
+    a.onfinish=()=>{onDone&&onDone();};
+  }catch(_){onDone&&onDone();}
+}
+let _followT=0;
+(function setupFollow(){
+  const cr=document.getElementById("catRoom");if(!cr)return;
+  cr.addEventListener("pointermove",e=>{
+    if(!roomVisible()||_roomState!=="normal"||_petting)return;
+    if(affTier()!=="warm")return;
+    const now=Date.now();if(now-_followT<130)return;_followT=now;
+    /* なつくとカーソルを目で追う */
+    if(_rcParams){
+      const hx=_catHeadXY?_catHeadXY.x:window.innerWidth/2,hy=_catHeadXY?_catHeadXY.y:window.innerHeight*0.5;
+      _rcParams.dir=[clamp((e.clientX-hx)/200,-1,1),clamp((e.clientY-hy)/200,-1,1)];
+      setCatInnerRoom(_rcParams.dir,_rcParams.expr);
+    }
+    /* あまえんぼタイプはたまにカーソルの方へ歩く */
+    const persona=getPersona();
+    if(persona.follow&&chance(0.05)){
+      const g=roomGeom(),fx=clamp(e.clientX/g.W,0.16,0.82);
+      let best=_idleSpot,bd=9;ROOM_SPOTS.forEach((s,i)=>{const d=Math.abs(s[0]-fx);if(d<bd){bd=d;best=i;}});
+      if(best!==_idleSpot){_idleSpot=best;renderRoomFade();}
+    }
+  });
+})();
 $("photoCancelBtn").addEventListener("click",()=>{playClick();exitPhotoMode();});
 $("tpbBell").addEventListener("click",e=>{e.stopPropagation();playClick();openNotif();});
 $("notifClose").addEventListener("click",()=>{playClick();$("notifPanel").classList.remove("visible");});

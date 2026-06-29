@@ -725,8 +725,23 @@ button,input{font:inherit;}
 #catRoom{position:fixed;inset:0;z-index:115;display:none;overflow:hidden;
   background:linear-gradient(180deg,#ffe8f0 0%,#fdeef5 46%,#f3e3d0 46%,#efdcc6 100%);}
 #catRoom.visible{display:block;}
-#roomScene{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
-#roomScene svg{width:100%;height:100%;object-fit:cover;}
+#roomScene{position:absolute;inset:0;}
+#roomScene svg{width:100%;height:100%;display:block;}
+#affBar{position:absolute;left:14px;top:50%;transform:translateY(-50%);z-index:6;display:flex;flex-direction:column;align-items:center;gap:7px;}
+#affHeart{font-size:22px;filter:drop-shadow(0 2px 3px rgba(255,120,150,.4));}
+#affTrack{width:18px;height:170px;border-radius:999px;background:rgba(255,255,255,.7);
+  box-shadow:inset 0 1px 4px rgba(120,90,110,.2),0 4px 12px rgba(255,150,180,.25);overflow:hidden;display:flex;align-items:flex-end;
+  background-image:repeating-linear-gradient(0deg,transparent 0,transparent 33px,rgba(180,120,150,.25) 33px,rgba(180,120,150,.25) 34px);}
+#affFill{width:100%;height:6%;border-radius:999px;background:linear-gradient(180deg,#ff8fb4,#ff5e88);transition:height .5s ease;}
+#affLabel{font-size:10px;font-weight:800;color:#d2658c;background:rgba(255,255,255,.8);border-radius:999px;padding:2px 7px;white-space:nowrap;box-shadow:0 2px 6px rgba(255,150,180,.3);}
+#teaser{position:absolute;left:60%;top:42%;width:58px;height:174px;z-index:7;cursor:grab;touch-action:none;}
+#teaser:active{cursor:grabbing;}
+#teaser svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 4px 6px rgba(120,90,140,.28));}
+.teaserTip{transform-origin:30px 62px;animation:teaserSway 2s ease-in-out infinite;}
+#teaser.swing .teaserTip{animation-duration:.6s;}
+@keyframes teaserSway{0%,100%{transform:rotate(-13deg);}50%{transform:rotate(13deg);}}
+.roomHeart{position:absolute;z-index:8;font-size:26px;pointer-events:none;animation:roomHeartUp 1.1s ease-out forwards;}
+@keyframes roomHeartUp{0%{opacity:0;transform:translateY(0) scale(.6);}25%{opacity:1;}100%{opacity:0;transform:translateY(-70px) scale(1.1);}}
 #roomBack{position:absolute;top:14px;right:16px;z-index:6;width:40px;height:40px;border:none;border-radius:50%;cursor:pointer;
   background:rgba(255,255,255,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
   box-shadow:0 6px 16px rgba(111,205,255,.22);color:#7c97a8;font-size:18px;font-weight:800;}
@@ -1352,6 +1367,8 @@ button,input{font:inherit;}
 
 <div id="catRoom">
   <div id="roomScene"></div>
+  <div id="affBar"><span id="affHeart">❤</span><div id="affTrack"><div id="affFill"></div></div><div id="affLabel">はじめまして</div></div>
+  <div id="teaser"><svg viewBox="0 0 60 174" xmlns="http://www.w3.org/2000/svg"><line x1="30" y1="172" x2="30" y2="62" stroke="#b98e63" stroke-width="6" stroke-linecap="round"/><g class="teaserTip"><line x1="30" y1="62" x2="30" y2="32" stroke="#cfa9d6" stroke-width="3" stroke-linecap="round"/><g stroke="#d9b3ec" stroke-width="3.4" stroke-linecap="round"><line x1="30" y1="30" x2="15" y2="12"/><line x1="30" y1="30" x2="45" y2="12"/><line x1="30" y1="30" x2="30" y2="6"/><line x1="30" y1="30" x2="22" y2="9"/><line x1="30" y1="30" x2="38" y2="9"/></g><circle cx="30" cy="30" r="9" fill="#c39be0"/></g></svg></div>
   <button id="roomBack" type="button" aria-label="もどる">✕</button>
   <button id="roomBag" type="button" aria-label="プロフィール・衣装"><svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path d="M12 19 a12 12 0 0 1 24 0" fill="none" stroke="#4f88a4" stroke-width="3.4" stroke-linecap="round"/><rect x="6" y="18" width="36" height="26" rx="6" fill="#bfe6ff" stroke="#4f88a4" stroke-width="3"/><path d="M6 25 h36 v6 a3.5 3.5 0 0 1 -3.5 3.5 H9.5 A3.5 3.5 0 0 1 6 31 Z" fill="#9fd4f0" stroke="#4f88a4" stroke-width="3" stroke-linejoin="round"/><rect x="20" y="29" width="8" height="9" rx="2.2" fill="#4f88a4"/></svg><span id="roomBagBadge" class="coinBadge" hidden></span></button>
   <button id="roomCam" type="button" aria-label="カメラ"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M11 7 L13 4 L19 4 L21 7 L27 7 Q29 7 29 9 L29 24 Q29 26 27 26 L5 26 Q3 26 3 24 L3 9 Q3 7 5 7 Z" fill="none" stroke="#5c93ad" stroke-width="2.4" stroke-linejoin="round"/><circle cx="16" cy="16" r="6" fill="none" stroke="#5c93ad" stroke-width="2.4"/></svg></button>
@@ -3327,6 +3344,7 @@ saveBtn.addEventListener("click",async()=>{
   if(savedRecently()&&!postedToday()){ showPostConfirm(false); return; }  /* 6時間内：保存ボタンが投稿ボタンに */
   await savePNG();
   markSaved();refreshSaveBtn();refreshGroundPost();
+  bumpAffectionDaily();   /* 1日やるごとに親密度メーターUP */
   if(inWakeWindow()){creditGachaDay();refreshGachaBadge();}   /* 目標の時間内に保存したらコイン（1日1回） */
   showPostConfirm(true);
 });
@@ -3766,71 +3784,188 @@ function saveFromSetup(){
   closeProfileSetup();
   renderProfileBar();refreshHome();loadHillCats();publishProfile();
 }
-function roomCatBlock(x,y,scale,body,ear,pose,cos,dir){
-  return `<g transform="translate(${x},${y}) scale(${scale})">${catInner(body,ear,pose,dir||[0,0],"normal",cos)}</g>`;
+let _roomState="normal",_ballTaps=0,_idleSpot=0,_playEyeDir=[0,0],_lastEye=0;
+let _roomAngryTimer=null,_roomAvertTimer=null,_roomBoredTimer=null,_boredReturn=null,_roomIdleTimer=null,_tOff={x:0,y:0};
+const ROOM_SPOTS=[[0.42,0.55],[0.30,0.66],[0.52,0.50],[0.36,0.62],[0.46,0.66]];
+const AFF_KEY="radio_affection",AFF_DAY_KEY="radio_aff_day",AFF_FOOD_KEY="radio_aff_food";
+const AFF_STAGES=[{min:0,name:"はじめまして"},{min:20,name:"また君？"},{min:40,name:"下僕"},{min:60,name:"甘えん坊"},{min:80,name:"メロメロ"}];
+function getAffection(){return Math.max(0,Math.min(100,parseInt(localStorage.getItem(AFF_KEY)||"6",10)||0));}
+function setAffection(v){localStorage.setItem(AFF_KEY,String(Math.max(0,Math.min(100,Math.round(v)))));refreshAffBar();}
+function affStage(){const p=getAffection();let s=AFF_STAGES[0];AFF_STAGES.forEach(x=>{if(p>=x.min)s=x;});return s;}
+function bumpAffectionDaily(){const k=jstKey();if(localStorage.getItem(AFF_DAY_KEY)!==k){setAffection(getAffection()+12);localStorage.setItem(AFF_DAY_KEY,k);}}
+function feedCat(){
+  let f={};try{f=JSON.parse(localStorage.getItem(AFF_FOOD_KEY)||"{}")||{};}catch(e){}
+  const k=jstKey();if(f.day!==k)f={day:k,n:0};
+  if(f.n>=5){toast("今日はもうおなかいっぱい🐈");return;}
+  f.n++;localStorage.setItem(AFF_FOOD_KEY,JSON.stringify(f));
+  setAffection(getAffection()+5);playPop();toast("もぐもぐ…🐟 +5");roomHeartPop();
+}
+function roomHeartPop(){
+  const r=$("catRoom");if(!r)return;
+  const h=document.createElement("div");h.textContent="❤";h.className="roomHeart";
+  h.style.left=(window.innerWidth*0.42)+"px";h.style.top=(window.innerHeight*0.5)+"px";
+  r.appendChild(h);setTimeout(()=>h.remove(),1100);
+}
+function roomVisible(){return $("catRoom").classList.contains("visible");}
+function roomGeom(){
+  const W=Math.max(320,Math.round(window.innerWidth)),H=Math.max(440,Math.round(window.innerHeight));
+  const floorY=Math.round(H*0.58);
+  const catScale=Math.min(2.5,Math.max(1.15,(H*0.32)/124));
+  return {W,H,floorY,catScale};
+}
+function catBackHTML(b,e){
+  let s='';
+  s+=`<path d="M86 108 C104 104 106 84 95 78" fill="none" stroke="${b}" stroke-width="13" stroke-linecap="round"/>`;
+  s+=`<path d="M60 120 C32 120 26 92 32 70 C38 50 48 44 60 44 C72 44 82 50 88 70 C94 92 88 120 60 120 Z" fill="${b}"/>`;
+  s+=`<ellipse cx="46" cy="116" rx="9" ry="6" fill="${b}"/><ellipse cx="74" cy="116" rx="9" ry="6" fill="${b}"/>`;
+  s+=`<circle cx="60" cy="44" r="24" fill="${b}"/>`;
+  s+=`<path d="M40 32 L35 9 L57 26 Z" fill="${b}"/><path d="M80 32 L85 9 L63 26 Z" fill="${b}"/>`;
+  s+=`<path d="M43 27 L41 15 L52 25 Z" fill="${e}" opacity=".45"/><path d="M77 27 L79 15 L68 25 Z" fill="${e}" opacity=".45"/>`;
+  return s;
 }
 function roomSceneSVG(){
   const body=profileBody(),ear=profileColor(),cos=getEquippedCostume(),pose=getEquippedPose();
-  const meCat=roomCatBlock(180,300,1.55,body,ear,pose,cos);
-  const towerCat=roomCatBlock(548,150,0.92,"#f2dcc0","#e89ab4","sit",null,[-2,0]);
-  return `<svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+  const g=roomGeom(),W=g.W,H=g.H,floorY=g.floorY,catScale=g.catScale,band=H-floorY;
+  const towerCx=Math.min(W-Math.round(W*0.10),Math.round(W*0.84));
+  const towerTopY=Math.round(H*0.28);
+  const tw=Math.min(160,Math.round(W*0.34));
+  const sp=ROOM_SPOTS[_idleSpot%ROOM_SPOTS.length];
+  const rugCx=W*sp[0], feetY=floorY+band*sp[1];
+  const rugCy=floorY+band*0.55, rugRx=Math.min(W*0.42,Math.round(W*0.46)), rugRy=Math.max(28,band*0.34);
+  const winW=Math.min(220,Math.round(W*0.30)),winH=Math.min(190,Math.round(H*0.28)),winX=Math.round(W*0.06),winY=Math.round(H*0.09);
+  const ballR=Math.max(16,Math.round(W*0.028)),ballX=W*0.58,ballY=floorY+band*0.6;
+  const foodX=Math.round(W*0.12),foodY=floorY+band*0.46,foodR=Math.max(20,Math.round(W*0.035));
+  function catAt(tx,ty,s,inner){return `<g class="rmCat" transform="translate(${tx.toFixed(1)},${ty.toFixed(1)}) scale(${s.toFixed(3)})">${inner}</g>`;}
+  let cat,extra="";
+  if(_roomState==="angry"){
+    const s=catScale*0.72;cat=catAt(towerCx-60*s,towerTopY-118*s,s,catBackHTML(body,ear));
+    extra=`<g transform="translate(${(towerCx+60*s).toFixed(1)},${(towerTopY-108*s).toFixed(1)})" stroke="#ff6b8a" stroke-width="3" stroke-linecap="round"><path d="M0 0 l8 -5 M0 0 l8 5 M11 -8 l5 10 M11 8 l5 -10"/></g>`;
+  }else if(_roomState==="bored"){
+    const s=catScale*0.74;cat=catAt(towerCx-60*s,towerTopY-118*s,s,catInner(body,ear,"sleep",[0,0],"normal",cos));
+  }else{
+    let dir=[0,0],expr="normal";
+    if(_roomState==="avert"){dir=[-1,-0.6];expr="half";}
+    else if(_roomState==="play"){dir=_playEyeDir;expr="normal";}
+    cat=catAt(rugCx-60*catScale,feetY-124*catScale,catScale,catInner(body,ear,pose,dir,expr,cos));
+  }
+  return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
 <defs>
 <linearGradient id="rmWall" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffe6ef"/><stop offset="100%" stop-color="#ffeff5"/></linearGradient>
 <linearGradient id="rmFloor" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ecd2ad"/><stop offset="100%" stop-color="#e3c79e"/></linearGradient>
 <linearGradient id="rmSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#bfe6ff"/><stop offset="100%" stop-color="#eaf7ff"/></linearGradient>
 </defs>
-<rect x="0" y="0" width="800" height="404" fill="url(#rmWall)"/>
-<rect x="0" y="392" width="800" height="208" fill="url(#rmFloor)"/>
-<rect x="0" y="384" width="800" height="14" fill="#f4ddc6"/>
-<g stroke="#d9bd92" stroke-width="2" opacity=".5"><line x1="120" y1="398" x2="60" y2="600"/><line x1="320" y1="398" x2="300" y2="600"/><line x1="520" y1="398" x2="560" y2="600"/><line x1="720" y1="398" x2="780" y2="600"/></g>
-<!-- 窓 -->
-<rect x="64" y="58" width="184" height="176" rx="16" fill="#ffffff"/>
-<rect x="74" y="68" width="164" height="156" rx="9" fill="url(#rmSky)"/>
-<circle cx="206" cy="104" r="20" fill="#ffe39c"/>
-<g fill="#ffffff" opacity=".9"><ellipse cx="116" cy="150" rx="30" ry="12"/><ellipse cx="140" cy="142" rx="20" ry="10"/></g>
-<rect x="150" y="68" width="10" height="156" fill="#ffffff"/><rect x="74" y="138" width="164" height="10" fill="#ffffff"/>
-<rect x="56" y="232" width="200" height="14" rx="5" fill="#f4ddc6"/>
-<!-- 壁の絵 -->
-<rect x="430" y="70" width="92" height="74" rx="8" fill="#fff" stroke="#e8c7a0" stroke-width="5"/>
-<path d="M444 128 l18 -26 14 16 12 -16 16 26 Z" fill="#a9dc8f"/><circle cx="500" cy="92" r="9" fill="#ffe39c"/>
-<!-- 棚と植物 -->
-<rect x="430" y="200" width="120" height="12" rx="4" fill="#e8c7a0"/>
-<rect x="470" y="172" width="26" height="30" rx="4" fill="#e58aa6"/>
-<g fill="#7fc88f"><ellipse cx="483" cy="160" rx="7" ry="16"/><ellipse cx="471" cy="166" rx="6" ry="13" transform="rotate(-32 471 166)"/><ellipse cx="495" cy="166" rx="6" ry="13" transform="rotate(32 495 166)"/></g>
-<!-- ラグ -->
-<ellipse cx="300" cy="520" rx="240" ry="58" fill="#ffd3e2"/>
-<ellipse cx="300" cy="520" rx="190" ry="44" fill="#ffe1ec"/>
-<ellipse cx="300" cy="520" rx="120" ry="28" fill="#fff0f6"/>
-<!-- クッション -->
-<ellipse cx="150" cy="556" rx="74" ry="26" fill="#bfe0ff"/><ellipse cx="150" cy="550" rx="74" ry="26" fill="#d4ecff"/>
-<!-- キャットタワー -->
-<rect x="600" y="470" width="150" height="30" rx="10" fill="#caa478"/>
-<rect x="655" y="210" width="34" height="262" rx="8" fill="#d9b88c"/>
-<g stroke="#c19a6a" stroke-width="3" opacity=".7"><line x1="657" y1="230" x2="687" y2="246"/><line x1="657" y1="260" x2="687" y2="276"/><line x1="657" y1="290" x2="687" y2="306"/><line x1="657" y1="320" x2="687" y2="336"/><line x1="657" y1="350" x2="687" y2="366"/><line x1="657" y1="380" x2="687" y2="396"/><line x1="657" y1="410" x2="687" y2="426"/></g>
-<rect x="600" y="330" width="150" height="22" rx="9" fill="#b98e63"/>
-<ellipse cx="672" cy="214" rx="78" ry="30" fill="#e8b98a"/>
-<path d="M596 214 a76 30 0 0 1 152 0 a76 18 0 0 1 -152 0" fill="#ffd9b0"/>
-<ellipse cx="672" cy="214" rx="58" ry="18" fill="#f6c79a"/>
-<!-- 吊りおもちゃ -->
-<line x1="600" y1="352" x2="585" y2="408" stroke="#cfa9d6" stroke-width="3"/><circle cx="585" cy="414" r="11" fill="#c39be0"/>
-<!-- ごはんとボール -->
-<ellipse cx="120" cy="476" rx="26" ry="11" fill="#9fd4f0"/><ellipse cx="120" cy="472" rx="26" ry="11" fill="#bfe6ff"/><path d="M104 470 q16 -10 32 0" fill="#ffcaa0"/>
-<circle cx="430" cy="544" r="20" fill="#ffd45f"/><path d="M412 540 q18 -10 36 0 M414 552 q16 8 32 0" stroke="#ef9f4f" stroke-width="3" fill="none"/>
-${towerCat}
-${meCat}
+<rect x="0" y="0" width="${W}" height="${floorY}" fill="url(#rmWall)"/>
+<rect x="0" y="${floorY}" width="${W}" height="${H-floorY}" fill="url(#rmFloor)"/>
+<rect x="0" y="${floorY-8}" width="${W}" height="14" fill="#f4ddc6"/>
+<rect x="${winX}" y="${winY}" width="${winW}" height="${winH}" rx="14" fill="#ffffff"/>
+<rect x="${winX+10}" y="${winY+10}" width="${winW-20}" height="${winH-20}" rx="8" fill="url(#rmSky)"/>
+<circle cx="${winX+winW-34}" cy="${winY+40}" r="18" fill="#ffe39c"/>
+<rect x="${winX+winW/2-5}" y="${winY+10}" width="10" height="${winH-20}" fill="#ffffff"/><rect x="${winX+10}" y="${winY+winH/2-5}" width="${winW-20}" height="10" fill="#ffffff"/>
+<rect x="${winX-8}" y="${winY+winH}" width="${winW+16}" height="12" rx="5" fill="#f4ddc6"/>
+<rect x="${Math.round(W*0.54)}" y="${Math.round(H*0.10)}" width="86" height="68" rx="8" fill="#fff" stroke="#e8c7a0" stroke-width="5"/>
+<path d="M${Math.round(W*0.54)+14} ${Math.round(H*0.10)+56} l16 -24 13 15 11 -15 15 24 Z" fill="#a9dc8f"/>
+<rect x="${towerCx-tw/2}" y="${floorY-16}" width="${tw}" height="26" rx="9" fill="#caa478"/>
+<rect x="${towerCx-17}" y="${towerTopY+8}" width="34" height="${floorY-towerTopY-2}" rx="8" fill="#d9b88c"/>
+<rect x="${towerCx-tw/2}" y="${(towerTopY+floorY)/2}" width="${tw}" height="20" rx="9" fill="#b98e63"/>
+<ellipse cx="${towerCx}" cy="${towerTopY}" rx="${tw*0.5}" ry="${tw*0.2}" fill="#e8b98a"/>
+<path d="M${towerCx-tw*0.5} ${towerTopY} a${tw*0.5} ${tw*0.2} 0 0 1 ${tw} 0 a${tw*0.5} ${tw*0.12} 0 0 1 ${-tw} 0" fill="#ffd9b0"/>
+<ellipse cx="${towerCx}" cy="${towerTopY}" rx="${tw*0.38}" ry="${tw*0.12}" fill="#f6c79a"/>
+<ellipse cx="${rugCx.toFixed(0)}" cy="${rugCy.toFixed(0)}" rx="${rugRx}" ry="${rugRy.toFixed(0)}" fill="#ffd3e2"/>
+<ellipse cx="${rugCx.toFixed(0)}" cy="${rugCy.toFixed(0)}" rx="${(rugRx*0.62).toFixed(0)}" ry="${(rugRy*0.62).toFixed(0)}" fill="#fff0f6"/>
+<ellipse cx="${Math.round(W*0.18)}" cy="${(floorY+band*0.72).toFixed(0)}" rx="${Math.min(80,Math.round(W*0.14))}" ry="${Math.max(18,band*0.12).toFixed(0)}" fill="#d4ecff"/>
+<g id="roomFood" style="cursor:pointer"><ellipse cx="${foodX}" cy="${foodY.toFixed(0)}" rx="${foodR}" ry="${(foodR*0.42).toFixed(1)}" fill="#9fd4f0"/><ellipse cx="${foodX}" cy="${(foodY-3).toFixed(0)}" rx="${foodR}" ry="${(foodR*0.42).toFixed(1)}" fill="#bfe6ff"/><path d="M${foodX-foodR*0.6} ${(foodY-4).toFixed(0)} q${foodR*0.6} -${foodR*0.4} ${foodR*1.2} 0" fill="#ffcaa0"/><circle cx="${foodX}" cy="${(foodY-5).toFixed(0)}" r="${(foodR*1.25).toFixed(0)}" fill="transparent"/></g>
+${cat}
+${extra}
+<g id="roomBall" style="cursor:pointer"><circle cx="${ballX.toFixed(0)}" cy="${ballY.toFixed(0)}" r="${ballR}" fill="#ffd45f"/><path d="M${(ballX-ballR*0.9).toFixed(0)} ${(ballY-ballR*0.2).toFixed(0)} q${ballR*0.9} -${ballR*0.5} ${ballR*1.8} 0 M${(ballX-ballR*0.8).toFixed(0)} ${(ballY+ballR*0.4).toFixed(0)} q${ballR*0.8} ${ballR*0.4} ${ballR*1.6} 0" stroke="#ef9f4f" stroke-width="3" fill="none"/><circle cx="${ballX.toFixed(0)}" cy="${ballY.toFixed(0)}" r="${(ballR*1.4).toFixed(0)}" fill="transparent"/></g>
 </svg>`;
 }
-function renderRoom(){ $("roomScene").innerHTML=roomSceneSVG(); refreshGachaBadge(); }
-function openRoom(){ renderRoom(); $("catRoom").classList.add("visible"); }
-function closeRoom(){ $("catRoom").classList.remove("visible"); }
+function renderRoom(){
+  $("roomScene").innerHTML=roomSceneSVG();
+  refreshGachaBadge();refreshAffBar();
+  const ball=document.getElementById("roomBall");if(ball)ball.addEventListener("click",e=>{e.stopPropagation();tapBall();});
+  const food=document.getElementById("roomFood");if(food)food.addEventListener("click",e=>{e.stopPropagation();feedCat();});
+}
+function renderRoomFade(){
+  const sc=$("roomScene");if(!sc){renderRoom();return;}
+  sc.style.transition="opacity .28s ease";sc.style.opacity="0";
+  setTimeout(()=>{renderRoom();sc.style.opacity="1";},280);
+}
+function refreshAffBar(){const f=$("affFill");if(f)f.style.height=getAffection()+"%";const l=$("affLabel");if(l)l.textContent=affStage().name;}
+function clearAvert(){if(_roomAvertTimer){clearTimeout(_roomAvertTimer);_roomAvertTimer=null;}}
+function playSqueak(){
+  try{const ctx=ensureCtx();if(!ctx)return;const t=ctx.currentTime;
+    const o=ctx.createOscillator(),gn=ctx.createGain();o.type="square";
+    o.frequency.setValueAtTime(420,t);o.frequency.exponentialRampToValueAtTime(920,t+0.09);o.frequency.exponentialRampToValueAtTime(500,t+0.2);
+    gn.gain.setValueAtTime(0.0001,t);gn.gain.exponentialRampToValueAtTime(0.13,t+0.02);gn.gain.exponentialRampToValueAtTime(0.0001,t+0.24);
+    o.connect(gn);gn.connect(ctx.destination);o.start(t);o.stop(t+0.26);
+  }catch(e){}
+}
+function tapBall(){
+  playSqueak();
+  if(_roomState==="angry"||_roomState==="bored")return;
+  _ballTaps++;
+  if(_ballTaps>=3){goAngry();}
+  else{_roomState="avert";clearAvert();_roomAvertTimer=setTimeout(()=>{if(_roomState==="avert"){_roomState="normal";if(roomVisible())renderRoom();}},4000);renderRoom();}
+}
+function goAngry(){
+  _roomState="angry";clearAvert();
+  if(_roomAngryTimer)clearTimeout(_roomAngryTimer);
+  _roomAngryTimer=setTimeout(()=>{_roomState="normal";_ballTaps=0;_roomAngryTimer=null;if(roomVisible())renderRoomFade();},60000);
+  renderRoomFade();
+}
+function teaserPlay(px,py){
+  if(_roomState==="angry"||_roomState==="bored")return;
+  if(_roomState!=="play"){_roomState="play";if(_roomBoredTimer)clearTimeout(_roomBoredTimer);_roomBoredTimer=setTimeout(goBored,4000);}
+  const g=roomGeom(),sp=ROOM_SPOTS[_idleSpot%ROOM_SPOTS.length];
+  const headX=g.W*sp[0],headY=(g.floorY+(g.H-g.floorY)*sp[1])-124*g.catScale+46*g.catScale;
+  _playEyeDir=[clamp((px-headX)/180,-1,1),clamp((py-headY)/180,-1,1)];
+  const t=Date.now();if(t-_lastEye<120)return;_lastEye=t;if(roomVisible())renderRoom();
+}
+function goBored(){
+  _roomState="bored";_roomBoredTimer=null;
+  if(_boredReturn)clearTimeout(_boredReturn);
+  _boredReturn=setTimeout(()=>{_roomState="normal";if(roomVisible())renderRoomFade();},20000);
+  renderRoomFade();
+}
+function teaserRelease(){
+  if(_roomState==="play"){if(_roomBoredTimer){clearTimeout(_roomBoredTimer);_roomBoredTimer=null;}_roomState="normal";if(roomVisible())renderRoom();}
+}
+function scheduleIdle(){
+  if(_roomIdleTimer)clearTimeout(_roomIdleTimer);
+  _roomIdleTimer=setTimeout(()=>{
+    if(_roomState==="normal"&&roomVisible()){
+      let n=_idleSpot;if(ROOM_SPOTS.length>1){do{n=Math.floor(Math.random()*ROOM_SPOTS.length);}while(n===_idleSpot);}
+      _idleSpot=n;renderRoomFade();
+    }
+    scheduleIdle();
+  },14000);
+}
+function openRoom(){
+  if(_roomState!=="angry"){_roomState="normal";_ballTaps=0;}
+  renderRoom();$("catRoom").classList.add("visible");scheduleIdle();
+}
+function closeRoom(){
+  clearAvert();
+  if(_roomIdleTimer){clearTimeout(_roomIdleTimer);_roomIdleTimer=null;}
+  if(_roomBoredTimer){clearTimeout(_roomBoredTimer);_roomBoredTimer=null;}
+  if(_roomState==="avert"||_roomState==="play")_roomState="normal";
+  $("catRoom").classList.remove("visible");
+}
+function setupTeaser(){
+  const t=$("teaser");if(!t||t._wired)return;t._wired=true;
+  const move=e=>{const x=e.clientX,y=e.clientY;t.style.left=(x-_tOff.x)+"px";t.style.top=(y-_tOff.y)+"px";t.classList.add("swing");
+    const tip=t.getBoundingClientRect();teaserPlay(tip.left+tip.width/2,tip.top+24);};
+  const up=()=>{t.classList.remove("swing");document.removeEventListener("pointermove",move);document.removeEventListener("pointerup",up);teaserRelease();};
+  t.addEventListener("pointerdown",e=>{e.preventDefault();const r=t.getBoundingClientRect();_tOff={x:e.clientX-r.left,y:e.clientY-r.top};document.addEventListener("pointermove",move);document.addEventListener("pointerup",up);});
+}
 function roomCapture(){
   const svgEl=$("roomScene").querySelector("svg");if(!svgEl)return;
   try{
-    const xml=new XMLSerializer().serializeToString(svgEl);
+    const g=roomGeom();const xml=new XMLSerializer().serializeToString(svgEl);
     const img=new Image();
     img.onload=()=>{
-      const W=800,H=600,c=document.createElement("canvas");c.width=W;c.height=H;
-      const ctx=c.getContext("2d");ctx.drawImage(img,0,0,W,H);
+      const c=document.createElement("canvas");c.width=g.W;c.height=g.H;
+      const ctx=c.getContext("2d");ctx.drawImage(img,0,0,g.W,g.H);
       c.toBlob(b=>{const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="myroom.png";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);});
     };
     img.onerror=()=>toast("保存に失敗したよ");
@@ -4029,6 +4164,8 @@ $("bagBtn").addEventListener("click",()=>{playClick();openRoom();});
 $("roomBag").addEventListener("click",()=>{playClick();openProfilePanel();});
 $("roomCam").addEventListener("click",()=>{playClick();roomCapture();});
 $("roomBack").addEventListener("click",()=>{playClick();closeRoom();});
+setupTeaser();
+window.addEventListener("resize",()=>{if(roomVisible())renderRoom();});
 $("photoCancelBtn").addEventListener("click",()=>{playClick();exitPhotoMode();});
 $("tpbBell").addEventListener("click",e=>{e.stopPropagation();playClick();openNotif();});
 $("notifClose").addEventListener("click",()=>{playClick();$("notifPanel").classList.remove("visible");});

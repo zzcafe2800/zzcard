@@ -6340,14 +6340,19 @@ function startFirstMeet(){
 async function firstMeetPresent(){
   try{ if(typeof showSelect==="function")showSelect(); }catch(_){}
   try{ openRoom(); }catch(_){}
-  await _wait(600);
+  /* レイアウトが整うまで待つ（0だとアニメが壊れる） */
+  let tries=0;
+  while(tries<25){ try{ const g=roomGeom(); if(g&&g.W>40&&g.H>40)break; }catch(_){}; await _wait(60); tries++; }
+  await _wait(500);
   const nm=(typeof catName==="function"&&catName())?catName():"ねこ";
-  try{ roomBubble("…あれ？"); }catch(_){}
-  await _wait(700);
-  try{ $("roomScene").innerHTML=""; }catch(_){}
   const pick=outingPick();          /* 衣装かポーズ（＝着せ替えできる物） */
   _firstMeetPick=pick;
-  try{ await playReturnAnim(); }catch(e){ console.warn("初対面演出:",e&&e.stack||e); }
+  _outingBusy=true;                 /* アイドル再描画に邪魔されないように */
+  try{ if(typeof roomBubble==="function")roomBubble("…あれ？"); }catch(_){}
+  await _wait(650);
+  try{ $("roomScene").innerHTML=""; await playReturnAnim(); }   /* 必ず：窓からプレゼントをくわえて入ってくる */
+  catch(e){ console.warn("初対面演出:",e&&e.stack||e); }
+  _outingBusy=false;
   try{ grantOutingPick(pick); }catch(_){}
   try{ playMeow("love"); }catch(_){}
   try{ outingRevealGift(pick, `\u{1F338} ${escHtml(nm)}が、はじめての おみやげを くれた！`); }catch(_){}

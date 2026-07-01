@@ -6024,17 +6024,17 @@ let _storyCatName="", _storyNamed=false, _storyAdvOK=true;
 function storyName(){ return _storyCatName || "この子"; }
 const STORY=[
   {type:"text", lines:["これは、わたしと","一ぴきの ねこの","おはなし。"]},
-  {type:"img", src:"1_transparent.png", text:"毎朝の さんぽが、わたしと 愛犬（あいけん）の たからものだった。"},
-  {type:"img", src:"2_transparent.png", text:"ある日、草むらから——ちいさな 子ねこが、こちらを 見ていた。"},
+  {type:"img", fb:"s1", src:"1_transparent.png", text:"毎朝の さんぽが、わたしと 愛犬（あいけん）の たからものだった。"},
+  {type:"img", fb:"s2", src:"2_transparent.png", text:"ある日、草むらから——ちいさな 子ねこが、こちらを 見ていた。"},
   {type:"name", src:"2_transparent.png"},
-  {type:"img", src:"3_transparent.png", text:"その日から {NAME}は、犬の となりを 歩くように なった。"},
-  {type:"img", src:"4_transparent.png", pos:"bottom", text:"春も 夏も、秋も 冬も。三人の さんぽは つづいた。"},
-  {type:"img", src:"5_transparent.png", text:"やがて 愛犬は 年老いて、歩くのも ゆっくりに なっていった。"},
-  {type:"img", src:"6_transparent.png", text:"さんぽに 行けなくても、{NAME}は 窓の外まで 会いに 来てくれた。"},
-  {type:"img", src:"7_transparent.png", hold:2000, text:"——そして ある朝。愛犬の ベッドは、からっぽに なった。"},
+  {type:"img", fb:"s3", src:"3_transparent.png", text:"その日から {NAME}は、犬の となりを 歩くように なった。"},
+  {type:"img", fb:"s4", src:"4_transparent.png", pos:"bottom", text:"春も 夏も、秋も 冬も。三人の さんぽは つづいた。"},
+  {type:"img", fb:"s5", src:"5_transparent.png", text:"やがて 愛犬は 年老いて、歩くのも ゆっくりに なっていった。"},
+  {type:"img", fb:"s6", src:"6_transparent.png", text:"さんぽに 行けなくても、{NAME}は 窓の外まで 会いに 来てくれた。"},
+  {type:"img", fb:"s7", src:"7_transparent.png", hold:2000, text:"——そして ある朝。愛犬の ベッドは、からっぽに なった。"},
   {type:"text", lines:["がらんと した 部屋。","それでも {NAME}は、","毎日 来てくれた。"]},
-  {type:"img", src:"8_transparent.png", text:"おはなを くわえて。まるで、なぐさめる みたいに。"},
-  {type:"img", src:"9_transparent.png", text:"見えなくても、{NAME}が そばに いてくれる。"},
+  {type:"img", fb:"s8", src:"8_transparent.png", text:"おはなを くわえて。まるで、なぐさめる みたいに。"},
+  {type:"img", fb:"s9", src:"9_transparent.png", text:"見えなくても、{NAME}が そばに いてくれる。"},
   {type:"text", lines:["さあ、{NAME}と","また 歩きはじめよう。"]}
 ];
 function storyBlackCat(cx,cy,withGift,happy,sc){
@@ -6160,6 +6160,73 @@ function storyRoomSVG(scene){
   if(scene==="walk"||scene==="walk2"||scene==="walk3"||scene==="seasons")return storyWalk(scene);
   return storyIndoor(scene);
 }
+/* ===== 画像が読めない時のフォールバック（図形で描いた物語シーン・オレンジ猫） ===== */
+function storyCatO(cx,cy,sc,pose){
+  sc=sc||1;const o="#f0a24a",o2="#df8a2c",p="#eda0ad",m="#6a4a24";
+  let s=`<g transform="translate(${cx.toFixed(1)},${cy.toFixed(1)}) scale(${sc})">`;
+  s+=`<ellipse cx="0" cy="5" rx="30" ry="5" fill="#000" opacity="0.12"/>`;
+  if(pose==="sit"){
+    s+=`<path d="M22 -8 Q40 -14 30 -30" fill="none" stroke="${o}" stroke-width="7" stroke-linecap="round"/>`;
+    s+=`<path d="M-20 0 C-24 -30 -12 -44 2 -44 C16 -44 26 -30 22 0 Z" fill="${o}"/>`;
+    s+=`<path d="M-6 -30 q0 16 0 26M6 -30 q0 16 0 26" stroke="${o2}" stroke-width="2" fill="none"/>`;
+    s+=`<circle cx="0" cy="-50" r="14" fill="${o}"/>`;
+    s+=`<path d="M-13 -56 L-17 -70 L-3 -60 Z" fill="${o}"/><path d="M13 -56 L17 -70 L3 -60 Z" fill="${o}"/>`;
+    s+=`<circle cx="-5" cy="-51" r="1.7" fill="${m}"/><circle cx="5" cy="-51" r="1.7" fill="${m}"/><path d="M-2 -45 q2 2 4 0" stroke="${p}" stroke-width="1.6" fill="none"/>`;
+  }else{
+    s+=`<path d="M24 -16 Q42 -30 34 -48" fill="none" stroke="${o}" stroke-width="7" stroke-linecap="round"/>`;
+    s+=`<rect x="-17" y="-16" width="6" height="16" rx="3" fill="${o2}"/><rect x="-5" y="-16" width="6" height="16" rx="3" fill="${o2}"/><rect x="7" y="-16" width="6" height="16" rx="3" fill="${o2}"/><rect x="17" y="-16" width="6" height="16" rx="3" fill="${o2}"/>`;
+    s+=`<ellipse cx="2" cy="-24" rx="26" ry="13" fill="${o}"/>`;
+    s+=`<path d="M-8 -34 q0 10 0 18M2 -35 q0 11 0 19M12 -34 q0 10 0 18" stroke="${o2}" stroke-width="2" fill="none"/>`;
+    s+=`<circle cx="-26" cy="-28" r="12" fill="${o}"/>`;
+    s+=`<path d="M-34 -37 L-37 -49 L-27 -41 Z" fill="${o}"/><path d="M-20 -39 L-16 -50 L-13 -40 Z" fill="${o}"/>`;
+    s+=`<circle cx="-31" cy="-29" r="1.6" fill="${m}"/><circle cx="-37" cy="-26" r="1.6" fill="${p}"/>`;
+  }
+  s+=`</g>`;return s;
+}
+function storyFB(key){
+  const W=320,H=300,gy=238;
+  const open=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg"><rect width="${W}" height="${H}" fill="#fdf9f0"/>`;
+  const grd=`<ellipse cx="160" cy="250" rx="150" ry="12" fill="#000" opacity="0.05"/>`;
+  const leash=(x1,y1,x2,y2)=>`<path d="M${x1} ${y1} Q${(x1+x2)/2} ${Math.min(y1,y2)-12} ${x2} ${y2}" fill="none" stroke="#c94a3a" stroke-width="2.4" stroke-linecap="round"/>`;
+  if(key==="s1"){ return open+grd+storyMe(120,gy,1)+storyDog(206,gy,1)+leash(141,200,186,206)+`</svg>`; }
+  if(key==="s2"){ let g=""; for(let x=54;x<=120;x+=20)g+=storyGrass(x,224,1.1); g+=storyGrass(74,214,1.6)+storyGrass(96,216,1.7);
+    return open+grd+storyMe(214,gy,1)+storyDog(150,gy+4,0.96)+storyBlackCat(86,214,false,false,0.5)+g+`</svg>`; }
+  if(key==="s3"){ return open+grd+storyMe(120,gy,1)+storyDog(200,gy,1)+leash(141,200,182,206)+storyBlackCat(266,gy+4,false,false,0.55)+`</svg>`; }
+  if(key==="s4"){ const leaf=(x,y,c)=>`<path d="M${x} ${y} q6 -4 10 2 q-6 4 -10 -2Z" fill="${c}"/>`;
+    return open.replace("#fdf9f0","#fdf6ea")+grd+leaf(56,54,"#e0912f")+leaf(150,44,"#7fbf5a")+`<path d="M264 52 l3 8 8 3 -8 3 -3 8 -3 -8 -8 -3 8 -3Z" fill="#8fc0e6"/>`+leaf(96,96,"#cf7a35")
+      +storyMe(120,gy,1)+storyDog(200,gy,1)+leash(141,200,182,206)+storyBlackCat(266,gy+4,false,false,0.55)+`</svg>`; }
+  if(key==="s5"){ // 老犬をなでる＋見てる猫
+    let s=open+grd;
+    s+=`<ellipse cx="120" cy="228" rx="66" ry="24" fill="#d8bd8f"/><ellipse cx="150" cy="222" rx="26" ry="16" fill="#c9a878"/>`; // 伏せる犬
+    s+=`<circle cx="150" cy="220" r="6" fill="#5a4a3e" opacity="0.5"/>`;
+    s+=`<path d="M188 236 Q196 196 214 196 Q232 196 232 236 Z" fill="#25222e"/><circle cx="210" cy="188" r="10" fill="#25222e"/>`; // かがむ人
+    s+=`<path d="M186 214 q-14 6 -24 8" stroke="#25222e" stroke-width="7" fill="none" stroke-linecap="round"/>`; // なでる腕
+    s+=storyBlackCat(278,236,false,false,0.5);
+    return s+`</svg>`; }
+  if(key==="s6"){ // 窓：外に猫／中で犬が寝る
+    let s=open+grd;
+    s+=`<rect x="96" y="70" width="150" height="150" rx="6" fill="#eaf4fb" stroke="#8a6a48" stroke-width="7"/>`;
+    s+=`<line x1="171" y1="70" x2="171" y2="220" stroke="#8a6a48" stroke-width="6"/><line x1="96" y1="145" x2="246" y2="145" stroke="#8a6a48" stroke-width="6"/>`;
+    s+=`<ellipse cx="200" cy="196" rx="42" ry="16" fill="#b9c2d6"/><ellipse cx="200" cy="190" rx="30" ry="14" fill="#c9a878"/><circle cx="188" cy="192" r="6" fill="#5a4a3e" opacity="0.5"/>`; // 寝る犬
+    s+=storyBlackCat(120,214,false,false,0.46);
+    return s+`</svg>`; }
+  if(key==="s7"){ // 空のベッド
+    let s=open+`<ellipse cx="160" cy="212" rx="120" ry="20" fill="#000" opacity="0.05"/>`;
+    s+=`<ellipse cx="160" cy="196" rx="96" ry="42" fill="#5b7bbf"/><ellipse cx="160" cy="188" rx="76" ry="30" fill="#eef1f6"/><ellipse cx="160" cy="192" rx="66" ry="22" fill="#e2e6ef"/>`;
+    return s+`</svg>`; }
+  if(key==="s8"){ // ドアの前の猫＋おはな
+    let s=open+grd;
+    s+=`<rect x="150" y="54" width="120" height="180" rx="4" fill="#cbb08a"/>`;
+    s+=`<rect x="164" y="70" width="92" height="150" rx="4" fill="none" stroke="#a98a5f" stroke-width="4"/><circle cx="176" cy="150" r="5" fill="#a98a5f"/>`;
+    s+=storyBlackCat(110,236,false,false,0.62);
+    s+=`<circle cx="150" cy="196" r="5" fill="#e58ab0"/><path d="M150 201 q2 8 -2 14" stroke="#6fae5a" stroke-width="2" fill="none"/>`; // 花
+    return s+`</svg>`; }
+  if(key==="s9"){ // ゴースト犬＋人＋猫
+    return open+grd+`<g opacity="0.4">`+storyDog(80,gy,0.95)+`</g>`+storyMe(170,gy,1)+storyBlackCat(250,gy+4,false,false,0.55)+`</svg>`; }
+  return open+grd+`</svg>`;
+}
+function storyImgErr(img,key){ try{ const w=img&&img.parentNode; if(w&&key){ w.innerHTML=storyFB(key); } else if(img){ img.style.opacity=0; } }catch(_){ try{img.style.opacity=0;}catch(e){} } }
+try{ window.storyImgErr=storyImgErr; }catch(_){}
 function showStory(){
   _storyStage=0;
   let m=document.getElementById("storyIntro");
@@ -6185,7 +6252,7 @@ function renderStory(){
     }
   }else if(isName){
     inner=`<div class="stPageInner">`+
-      `<div class="stPic"><img id="stKitten" class="stKitten" src="${st.src}" alt="" onerror="this.style.opacity=0"></div>`+
+      `<div class="stPic"><img id="stKitten" class="stKitten" src="${st.src}" alt="" onerror="storyImgErr(this,'s2')"></div>`+
       `<div class="stHint" id="stKittenHint">タップして よんでみよう</div>`+
       `<div class="stLine">この子に、名前を つけてあげよう。</div>`+
       `<div class="stNameRow"><input id="stNameInput" type="text" maxlength="12" placeholder="なまえ" value="${escHtml(_storyCatName)}"><button id="stNameOk" type="button">きめた</button></div>`+
@@ -6193,7 +6260,7 @@ function renderStory(){
   }else if(st.type==="reach"){
     inner=`<div class="stPageInner posT">`+
       `<div class="stLine" id="stReachLine">${sub(st.text)}</div>`+
-      `<div class="stPic"><img id="stReachImg" src="${st.src}" alt="" onerror="this.style.opacity=0"></div>`+
+      `<div class="stPic"><img id="stReachImg" src="${st.src}" alt="" onerror="storyImgErr(this,'${st.fb||''}')"></div>`+
       `<div class="stNameRow"><button id="stReachBtn" type="button">そっと 手を さしのべる</button></div>`+
       `</div>`;
   }else if(st.type==="stretch"){
@@ -6204,7 +6271,7 @@ function renderStory(){
   }else{
     const pos=st.pos||"top";
     const line=`<div class="stLine">${sub(st.text)}</div>`;
-    const pic=`<div class="stPic"><img src="${st.src}" alt="" onerror="this.style.opacity=0"></div>`;
+    const pic=`<div class="stPic"><img src="${st.src}" alt="" onerror="storyImgErr(this,'${st.fb||''}')"></div>`;
     inner=`<div class="stPageInner ${pos==="bottom"?"posB":"posT"}">`+(pos==="bottom"?pic+line:line+pic)+`</div>`;
   }
   const folio=`<div class="stFolio">${_storyStage+1} / ${total}</div>`;

@@ -923,16 +923,16 @@ button,input{font:inherit;}
 #outingBig{position:absolute;left:0;right:0;top:calc(64px + env(safe-area-inset-top));display:flex;flex-direction:column;align-items:center;gap:2px;z-index:20;pointer-events:none;text-align:center;}
 #outingBig[hidden]{display:none;}
 #catRoom.awayMode #roomBag,#catRoom.awayMode #roomCam,#catRoom.awayMode #roomShop,#catRoom.awayMode #roomEdit{display:none !important;}
-#bagGuide{position:fixed;inset:0;z-index:200;background:rgba(22,15,10,.6);display:none;}
+#bagGuide{position:absolute;inset:0;z-index:150;background:rgba(22,15,10,.6);display:none;}
 #bagGuide.on{display:block;animation:stFadeIn .4s ease both;}
-#catRoom.guideBag #roomBag{z-index:202 !important;box-shadow:0 0 0 6px rgba(255,255,255,.25),0 0 34px 10px rgba(191,230,255,.9);border-radius:50%;animation:bagPulse 1.3s ease-in-out infinite;}
+#catRoom.guideBag #roomBag{z-index:160 !important;box-shadow:0 0 0 6px rgba(255,255,255,.25),0 0 34px 10px rgba(191,230,255,.9);border-radius:50%;animation:bagPulse 1.3s ease-in-out infinite;}
 @keyframes bagPulse{0%,100%{transform:translateX(-50%) scale(1);}50%{transform:translateX(-50%) scale(1.1);}}
 #bagGuide .bgHint{position:absolute;left:50%;bottom:86px;transform:translateX(-50%);width:min(78vw,300px);text-align:center;font-family:"Yomogi","Kosugi Maru",cursive;font-size:15px;font-weight:800;line-height:1.7;color:#fff8ee;background:rgba(90,60,40,.55);border:1.5px solid rgba(255,255,255,.35);border-radius:16px;padding:12px 14px;}
 #bagGuide .bgArrow{position:absolute;left:50%;bottom:70px;transform:translateX(-50%);color:#ffe6c8;font-size:22px;animation:bagArrow 1s ease-in-out infinite;}
 @keyframes bagArrow{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(5px);}}
-#sendoffGuide{position:fixed;inset:0;z-index:200;background:rgba(22,15,10,.62);display:none;}
+#sendoffGuide{position:absolute;inset:0;z-index:150;background:rgba(22,15,10,.62);display:none;}
 #sendoffGuide.on{display:block;animation:stFadeIn .4s ease both;}
-#catRoom.guideGo #outingBar{z-index:202 !important;}
+#catRoom.guideGo #outingBar{z-index:160 !important;}
 #catRoom.guideGo #outingBar .outingBtn{box-shadow:0 0 0 5px rgba(255,255,255,.28),0 0 34px 10px rgba(159,212,240,.95);animation:sgPulse 1.3s ease-in-out infinite;}
 @keyframes sgPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.07);}}
 #sendoffGuide .sgHint{position:absolute;left:50%;bottom:96px;transform:translateX(-50%);width:min(84vw,340px);text-align:center;font-family:"Yomogi","Kosugi Maru",cursive;font-size:15px;font-weight:800;line-height:1.85;color:#fff8ee;background:rgba(90,60,40,.6);border:1.5px solid rgba(255,255,255,.35);border-radius:16px;padding:14px 16px;}
@@ -6367,7 +6367,8 @@ function spotlightSendoff(){
   try{ refreshOutingUI(); }catch(_){}
   const room=$("catRoom"); if(!room)return;
   let gv=document.getElementById("sendoffGuide");
-  if(!gv){gv=document.createElement("div");gv.id="sendoffGuide";document.body.appendChild(gv);}
+  if(!gv){gv=document.createElement("div");gv.id="sendoffGuide";}
+  if(gv.parentNode!==room)room.appendChild(gv);
   gv.innerHTML=`<div class="sgHint">🌅 目標の時間に アプリを ひらいて、<br>スタンプラリーと プレゼントを もらおう！<br><span class="sgSub">下の「いってらっしゃい」で ねこを おくりだしてね</span></div>`;
   gv.classList.add("on"); room.classList.add("guideGo");
   gv.onclick=()=>{};
@@ -6405,7 +6406,8 @@ async function firstMeetPresent(){
 function spotlightBag(){
   const room=$("catRoom"); if(!room)return;
   let gv=document.getElementById("bagGuide");
-  if(!gv){gv=document.createElement("div");gv.id="bagGuide";document.body.appendChild(gv);}
+  if(!gv){gv=document.createElement("div");gv.id="bagGuide";}
+  if(gv.parentNode!==room)room.appendChild(gv);
   gv.innerHTML=`<div class="bgHint">🎁 もらった ふく・ポーズは<br>ここから きせかえできるよ！</div><div class="bgArrow">▾</div>`;
   gv.classList.add("on"); room.classList.add("guideBag");
   gv.onclick=()=>clearBagGuide();

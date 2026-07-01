@@ -965,11 +965,19 @@ button,input{font:inherit;}
 #storyIntro .stText{font-family:"Yomogi","Kosugi Maru",cursive;font-size:18px;font-weight:800;margin:20px 0 2px;animation:stFade .9s ease both;}
 #storyIntro .stNya{margin-top:14px;border:none;border-radius:999px;padding:13px 44px;font-family:inherit;font-size:16px;font-weight:800;cursor:pointer;color:#5a3a48;background:linear-gradient(135deg,#ffd6e6,#ffb9d4);box-shadow:0 8px 22px rgba(0,0,0,.35);}
 #storyIntro .stNya:active{transform:scale(.96);}
-#storyIntro .stImgWrap{width:min(460px,94vw);aspect-ratio:3/2;border-radius:18px;overflow:hidden;background:#241f2d;box-shadow:0 18px 50px rgba(0,0,0,.5);animation:stFade 1s ease both;}
-#storyIntro .stImgWrap img{width:100%;height:100%;object-fit:cover;display:block;}
-#storyIntro .stDots{display:flex;gap:6px;margin-top:14px;}
-#storyIntro .stDots i{width:6px;height:6px;border-radius:50%;background:#4a4556;transition:.2s;}
-#storyIntro .stDots i.on{background:#ffbcd6;width:16px;border-radius:3px;}
+#storyIntro.storyImg{background:linear-gradient(180deg,#fcf6ec 0%,#faeee6 58%,#f7e6e4 100%);padding:0;justify-content:center;cursor:pointer;}
+#storyIntro .stInner{width:100%;max-width:600px;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:38px 22px 64px;box-sizing:border-box;}
+#storyIntro .stLine{font-family:"Yomogi","Kosugi Maru",cursive;font-size:18px;font-weight:800;line-height:2.05;color:#6f5238;text-align:center;text-shadow:0 1px 0 #fff;opacity:0;animation:stTextUp .9s ease .05s forwards;}
+#storyIntro .stLrule{width:42px;height:2px;border-radius:2px;background:#e6b7a6;margin:12px 0 4px;opacity:0;animation:stTextUp .9s ease .25s forwards;}
+#storyIntro .stPic{flex:1;min-height:0;width:100%;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse 60% 60% at 50% 50%,rgba(255,255,255,.7),rgba(255,255,255,0) 72%);opacity:0;transform:translateY(16px) scale(.98);animation:stPicIn 1.15s cubic-bezier(.2,.7,.2,1) .55s forwards;}
+#storyIntro .stPic img{max-width:100%;max-height:100%;object-fit:contain;filter:drop-shadow(0 12px 24px rgba(150,110,90,.16));}
+@keyframes stTextUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+@keyframes stPicIn{from{opacity:0;transform:translateY(16px) scale(.98);}to{opacity:1;transform:none;}}
+#storyIntro .stInner.posB .stLine{animation-delay:.6s;}
+#storyIntro .stInner.posB .stLrule{animation-delay:.75s;order:2;}
+#storyIntro .stInner.posB .stPic{animation-delay:.1s;}
+#storyIntro .stGo{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:12px;letter-spacing:3px;color:#c19a83;opacity:0;animation:stGoIn .6s ease 1.5s forwards,stBlink 1.9s ease-in-out 2.1s infinite;}
+@keyframes stGoIn{to{opacity:.75;}}
 #outingBig .obTitle{font-family:"Yomogi","Kosugi Maru",cursive;font-size:15px;font-weight:800;color:#6f9fb6;text-shadow:0 1px 2px rgba(255,255,255,.7);}
 #outingBig .obTime{font-family:"Yomogi","Kosugi Maru",cursive;font-size:30px;font-weight:800;color:#4f88a4;text-shadow:0 2px 4px rgba(255,255,255,.7);}
 #outingHomeChip{position:fixed;left:50%;transform:translateX(-50%);top:calc(10px + env(safe-area-inset-top));z-index:120;
@@ -5970,15 +5978,15 @@ const STORY_KEY="radio_story_seen";
 function storySeen(){return localStorage.getItem(STORY_KEY)==="1";}
 let _storyStage=0;
 const STORY=[
-  {type:"img", src:"1.png", text:"まいにち、愛犬（あいけん）との さんぽが 日課だった。"},
-  {type:"img", src:"2.png", text:"ある日、くさむらから 子ねこが ひょっこり。"},
-  {type:"img", src:"3.png", text:"その日から、となりを いっしょに あるいてくれた。"},
-  {type:"img", src:"4.png", text:"どんな日でも、いっしょに あるいた。"},
-  {type:"img", src:"5.png", text:"愛犬は だんだん、あるけなく なっていった。"},
-  {type:"img", src:"6.png", text:"さんぽに 行けなくても、窓の外まで 会いに 来てくれた。"},
-  {type:"img", src:"7.png", text:"——そして 愛犬は、そっと 空へ いった。"},
-  {type:"img", src:"8.png", text:"それでも ねこは、まいにち 来てくれた。<br>いつのまにか、こんなに 大きく なって。"},
-  {type:"img", src:"9.png", text:"「これからは、わたしが となりに いるよ。」<br>いっしょに、つづけていこう。"}
+  {type:"img", src:"1.png", text:"毎朝の さんぽが、わたしと 愛犬（あいけん）の たからものだった。"},
+  {type:"img", src:"2.png", text:"ある日、草むらから——ちいさな 子ねこが、こちらを 見ていた。"},
+  {type:"img", src:"3.png", text:"その日から あの子は、犬の となりを 歩くように なった。"},
+  {type:"img", src:"4.png", pos:"bottom", text:"春も 夏も、秋も 冬も。三人の さんぽは つづいた。"},
+  {type:"img", src:"5.png", text:"やがて 愛犬は 年老いて、歩くのも ゆっくりに なっていった。"},
+  {type:"img", src:"6.png", text:"さんぽに 行けなくても、ねこは 窓の外まで 会いに 来てくれた。"},
+  {type:"img", src:"7.png", text:"——そして ある朝。愛犬の ベッドは、からっぽに なった。"},
+  {type:"img", src:"8.png", text:"それでも ねこは、おはなを くわえて 会いに 来てくれた。"},
+  {type:"img", src:"9.png", text:"見えなくても、きっと そばに いる。<br>さあ、ねこと また 歩きだそう。"}
 ];
 function storyBlackCat(cx,cy,withGift,happy,sc){
   sc=sc||1;
@@ -6120,12 +6128,14 @@ function renderStory(){
   }else if(st.type==="img"){
     m.className="show storyImg";
     const last=(_storyStage>=STORY.length-1);
-    m.innerHTML=`<div class="stImgWrap"><img src="${st.src}" alt="" onerror="this.style.opacity=0"></div>`+
-      `<div class="stText">${st.text}</div>`+
-      `<button class="stNya" type="button">${last?"はじめる":"つぎへ"}</button>`+
-      `<div class="stDots">${STORY.map((_,i)=>`<i class="${i===_storyStage?"on":""}"></i>`).join("")}</div>`;
-    m.onclick=null;
-    const b=m.querySelector(".stNya");if(b)b.onclick=(ev)=>{ev.stopPropagation();try{playClick();}catch(_){}nextStory();};
+    const pos=st.pos||"top";
+    const line=`<div class="stLine">${st.text}</div><div class="stLrule"></div>`;
+    const pic=`<div class="stPic"><img src="${st.src}" alt="" onerror="this.style.opacity=0"></div>`;
+    m.innerHTML=`<div class="stInner ${pos==="bottom"?"posB":"posT"}">`+
+      (pos==="bottom"?pic+line:line+pic)+
+      `</div>`+
+      `<div class="stGo">${last?"タップで はじめる":"タップで つづく"}</div>`;
+    m.onclick=()=>{try{playClick();}catch(_){}nextStory();};
   }else{
     m.className="show storyRoom";
     m.innerHTML=`<div class="stScene">${storyRoomSVG(st.scene)}</div><div class="stText">${st.text}</div><button class="stNya" type="button">にゃー</button>`;

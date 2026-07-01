@@ -986,6 +986,15 @@ button,input{font:inherit;}
 #storyIntro .stChevR{right:16px;font-size:14px;font-family:"Yomogi","Kosugi Maru",cursive;font-weight:800;color:#b98f77;opacity:.8;animation:stBlink 1.9s ease-in-out infinite;}
 #storyIntro .stChev.off{display:none;}
 #storyIntro .stSkip{position:absolute;top:14px;right:16px;font-size:12px;letter-spacing:1px;color:#b7a184;opacity:.7;padding:8px 10px;z-index:3;}
+#firstMeet{position:fixed;inset:0;z-index:3300;display:none;align-items:center;justify-content:center;cursor:pointer;padding:22px;background:radial-gradient(140% 120% at 50% 0%,#efe3d2 0%,#e3d4bf 68%,#d7c6ad 100%);}
+#firstMeet.fmShow{display:flex;}
+#firstMeet .fmPage{position:relative;width:min(600px,94vw);height:min(90vh,880px);background:#fdf9f0;border-radius:14px;border:1px solid #efe3ce;box-shadow:0 20px 54px rgba(90,66,44,.3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:48px 30px 56px;box-sizing:border-box;animation:stTurn .55s cubic-bezier(.2,.7,.2,1) both;}
+#firstMeet .fmPage::before{content:"";position:absolute;inset:13px;border:1px solid #f0e3ce;border-radius:9px;pointer-events:none;}
+#firstMeet .fmPic{flex:1;min-height:0;width:100%;display:flex;align-items:center;justify-content:center;opacity:0;animation:stFadeIn 1.1s ease .15s forwards;}
+#firstMeet .fmPic img{max-width:100%;max-height:100%;object-fit:contain;}
+#firstMeet .fmLine{font-family:"Yomogi","Kosugi Maru",cursive;font-size:19px;font-weight:800;line-height:2.05;color:#6b4f38;text-align:center;padding:0 6px;opacity:0;animation:stFadeIn 1s ease .1s forwards;}
+#firstMeet .fmGo{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:13px;letter-spacing:2px;color:#b98f77;opacity:0;animation:stGoIn2 .6s ease 1.2s forwards,stBlink 1.9s ease-in-out 1.8s infinite;}
+@keyframes stGoIn2{to{opacity:.8;}}
 #storyIntro .stNameRow{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:4px;opacity:0;animation:stFadeIn 1s ease .5s forwards;}
 #storyIntro .stNameRow input{font-family:"Yomogi","Kosugi Maru",cursive;font-size:18px;font-weight:800;color:#6b4f38;text-align:center;width:min(52vw,190px);padding:11px 14px;border:2px solid #e7d3bd;border-radius:14px;background:#fffdf8;outline:none;}
 #storyIntro .stNameRow input:focus{border-color:#e6a98c;}
@@ -4010,6 +4019,7 @@ function openProfileSetup(edit){
 function closeProfileSetup(){$("profileSetup").classList.remove("visible");}
 function saveFromSetup(){
   const prev=getProfile()||{};
+  const wasNew=!(prev&&prev.name);
   let wake=parseInt($("psWake").value,10);if(!Number.isFinite(wake)||wake<0)wake=0;if(wake>23)wake=23;
   let wmin=parseInt($("psWakeMin").value,10);if(!Number.isFinite(wmin)||wmin<0)wmin=0;if(wmin>59)wmin=59;
   const changed=Number.isFinite(prev.wakeHour)&&(prev.wakeHour!==wake||(prev.wakeMin||0)!==wmin);
@@ -4030,6 +4040,7 @@ function saveFromSetup(){
   ensureWakeStart();   /* 「始める」を押した日を起点に3日間 */
   closeProfileSetup();
   renderProfileBar();refreshHome();loadHillCats();publishProfile();
+  if(wasNew && !firstMeetDone()){ try{startFirstMeet();}catch(_){} }
 }
 let _roomState="normal",_ballTaps=0,_idleSpot=0,_playEyeDir=[0,0],_lastEye=0;
 let _roomAvertTimer=null,_roomBoredTimer=null,_boredReturn=null,_roomIdleTimer=null,_watchTimer=null,_happyTimer=null,_tOff={x:0,y:0};
@@ -5772,9 +5783,9 @@ function grantOutingPick(pick){
     else addPose(pick.id);
   }catch(_){}
 }
-function outingRevealGift(pick){
+function outingRevealGift(pick,headText){
   const nm=(typeof catName==="function"&&catName())?catName():"ねこ";
-  const head=`<div style="font-size:13px;font-weight:800;color:#6f9fb6;margin-bottom:3px;">${escHtml(nm)}ちゃんが もって かえってきたよ！</div>`;
+  const head=headText?`<div style="font-size:13px;font-weight:800;color:#6f9fb6;margin-bottom:3px;">${headText}</div>`:`<div style="font-size:13px;font-weight:800;color:#6f9fb6;margin-bottom:3px;">${escHtml(nm)}ちゃんが もって かえってきたよ！</div>`;
   if(pick.type==="item"){
     $("gachaRevealInner").innerHTML=itemAloneSVG(pick.id);
     if(itemCount(pick.id)>=2){
@@ -5999,6 +6010,8 @@ function placeRandomToy(){
 /* ===== 初めての出会い（初回プレイの物語イベント） ===== */
 const STORY_KEY="radio_story_seen";
 function storySeen(){return localStorage.getItem(STORY_KEY)==="1";}
+const FIRSTMEET_KEY="radio_firstmeet";
+function firstMeetDone(){return localStorage.getItem(FIRSTMEET_KEY)==="1";}
 let _storyStage=0;
 let _storyCatName="", _storyNamed=false, _storyAdvOK=true;
 function storyName(){ return _storyCatName || "この子"; }
@@ -6014,9 +6027,8 @@ const STORY=[
   {type:"img", src:"7_transparent.png", hold:2000, text:"——そして ある朝。愛犬の ベッドは、からっぽに なった。"},
   {type:"text", lines:["がらんと した 部屋。","それでも {NAME}は、","毎日 来てくれた。"]},
   {type:"img", src:"8_transparent.png", text:"おはなを くわえて。まるで、なぐさめる みたいに。"},
-  {type:"text", lines:["ひとりぼっちは、","おたがいさま。","はじめて {NAME}を、おうちに 入れた。"]},
-  {type:"reach", src:"9_transparent.png", text:"見えなくても、{NAME}が そばに いてくれる。"},
-  {type:"stretch"}
+  {type:"img", src:"9_transparent.png", text:"見えなくても、{NAME}が そばに いてくれる。"},
+  {type:"text", lines:["さあ、{NAME}と","また 歩きはじめよう。"]}
 ];
 function storyBlackCat(cx,cy,withGift,happy,sc){
   sc=sc||1;
@@ -6145,7 +6157,7 @@ function showStory(){
   _storyStage=0;
   let m=document.getElementById("storyIntro");
   if(!m){m=document.createElement("div");m.id="storyIntro";document.body.appendChild(m);}
-  try{switchBGM("story.mp3");}catch(_){}   /* 物語のBGM（無ければ無音） */
+  try{switchBGM("room.mp3");}catch(_){}   /* 物語のBGM＝ねこの部屋と同じ */
   m.classList.add("show");renderStory();
 }
 function renderStory(){
@@ -6244,6 +6256,38 @@ function endStory(){
   localStorage.setItem(STORY_KEY,"1");
   try{switchBGM("bgm11.mp3");}catch(_){}   /* 通常BGMに戻す */
   try{ if(getProfile()){showSelect();updateTop();} else openProfileSetup(false); }catch(_){}   /* 物語のあと→マイ猫の設定へ */
+}
+/* ===== はじめての対面（設定のあと・部屋で初対面／外から来る／初プレゼント） ===== */
+function startFirstMeet(){
+  localStorage.setItem(FIRSTMEET_KEY,"1");
+  const nm=(typeof catName==="function"&&catName())?catName():"ねこ";
+  let ov=document.getElementById("firstMeet");
+  if(!ov){ov=document.createElement("div");ov.id="firstMeet";document.body.appendChild(ov);}
+  const pages=[
+    {img:"8_transparent.png", text:`コンコン。<br>げんかんに、あの子が 来ていた。`},
+    {img:"8_transparent.png", text:`はじめまして、${escHtml(nm)}。<br>きょうから、いっしょに くらそう。`}
+  ];
+  let stg=0;
+  function draw(){
+    const p=pages[stg], last=(stg>=pages.length-1);
+    ov.className="fmShow";
+    ov.innerHTML=`<div class="fmPage"><div class="fmPic"><img src="${p.img}" alt="" onerror="this.style.opacity=0"></div>`+
+      `<div class="fmLine">${p.text}</div>`+
+      `<div class="fmGo">${last?"むかえいれる \u203a":"タップで つづく"}</div></div>`;
+  }
+  draw();
+  ov.onclick=()=>{ try{playClick();}catch(_){}; if(stg<pages.length-1){stg++;draw();} else { ov.className=""; firstMeetPresent(); } };
+}
+function firstMeetPresent(){
+  try{ if(typeof showSelect==="function")showSelect(); }catch(_){}
+  try{ openRoom(); }catch(_){}
+  const nm=(typeof catName==="function"&&catName())?catName():"ねこ";
+  setTimeout(()=>{
+    try{playMeow("love");}catch(_){}
+    const pick=outingPick();
+    try{grantOutingPick(pick);}catch(_){}
+    try{ outingRevealGift(pick, `\u{1F338} ${escHtml(nm)}が、はじめての おみやげを くれた！`); }catch(_){}
+  }, 800);
 }
 function goToCatRoomAfterPost(){
   _justPosted=true;

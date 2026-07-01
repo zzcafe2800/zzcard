@@ -923,6 +923,13 @@ button,input{font:inherit;}
 #outingBig{position:absolute;left:0;right:0;top:calc(64px + env(safe-area-inset-top));display:flex;flex-direction:column;align-items:center;gap:2px;z-index:20;pointer-events:none;text-align:center;}
 #outingBig[hidden]{display:none;}
 #catRoom.awayMode #roomBag,#catRoom.awayMode #roomCam,#catRoom.awayMode #roomShop,#catRoom.awayMode #roomEdit{display:none !important;}
+#bagGuide{position:fixed;inset:0;z-index:200;background:rgba(22,15,10,.6);display:none;}
+#bagGuide.on{display:block;animation:stFadeIn .4s ease both;}
+#catRoom.guideBag #roomBag{z-index:202 !important;box-shadow:0 0 0 6px rgba(255,255,255,.25),0 0 34px 10px rgba(191,230,255,.9);border-radius:50%;animation:bagPulse 1.3s ease-in-out infinite;}
+@keyframes bagPulse{0%,100%{transform:translateX(-50%) scale(1);}50%{transform:translateX(-50%) scale(1.1);}}
+#bagGuide .bgHint{position:absolute;left:50%;bottom:86px;transform:translateX(-50%);width:min(78vw,300px);text-align:center;font-family:"Yomogi","Kosugi Maru",cursive;font-size:15px;font-weight:800;line-height:1.7;color:#fff8ee;background:rgba(90,60,40,.55);border:1.5px solid rgba(255,255,255,.35);border-radius:16px;padding:12px 14px;}
+#bagGuide .bgArrow{position:absolute;left:50%;bottom:70px;transform:translateX(-50%);color:#ffe6c8;font-size:22px;animation:bagArrow 1s ease-in-out infinite;}
+@keyframes bagArrow{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(5px);}}
 #catRoom.awayMode #roomStatus,#catRoom.awayMode #affBar{display:none !important;}
 #outingBottomCard{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom));z-index:30;
   width:min(340px,90vw);background:rgba(255,255,255,.95);border:2px solid #bfe6ff;border-radius:20px;padding:12px 18px 13px;
@@ -6257,38 +6264,37 @@ function endStory(){
   try{switchBGM("bgm11.mp3");}catch(_){}   /* 通常BGMに戻す */
   try{ if(getProfile()){showSelect();updateTop();} else openProfileSetup(false); }catch(_){}   /* 物語のあと→マイ猫の設定へ */
 }
-/* ===== はじめての対面（設定のあと・部屋で初対面／外から来る／初プレゼント） ===== */
+/* ===== はじめての対面（設定のあと・窓から入ってくる／初プレゼント／かばんへ誘導） ===== */
+let _firstMeetPick=null;
 function startFirstMeet(){
   localStorage.setItem(FIRSTMEET_KEY,"1");
-  const nm=(typeof catName==="function"&&catName())?catName():"ねこ";
-  let ov=document.getElementById("firstMeet");
-  if(!ov){ov=document.createElement("div");ov.id="firstMeet";document.body.appendChild(ov);}
-  const pages=[
-    {img:"8_transparent.png", text:`コンコン。<br>げんかんに、あの子が 来ていた。`},
-    {img:"8_transparent.png", text:`はじめまして、${escHtml(nm)}。<br>きょうから、いっしょに くらそう。`}
-  ];
-  let stg=0;
-  function draw(){
-    const p=pages[stg], last=(stg>=pages.length-1);
-    ov.className="fmShow";
-    ov.innerHTML=`<div class="fmPage"><div class="fmPic"><img src="${p.img}" alt="" onerror="this.style.opacity=0"></div>`+
-      `<div class="fmLine">${p.text}</div>`+
-      `<div class="fmGo">${last?"むかえいれる \u203a":"タップで つづく"}</div></div>`;
-  }
-  draw();
-  ov.onclick=()=>{ try{playClick();}catch(_){}; if(stg<pages.length-1){stg++;draw();} else { ov.className=""; firstMeetPresent(); } };
+  firstMeetPresent();
 }
-function firstMeetPresent(){
+async function firstMeetPresent(){
   try{ if(typeof showSelect==="function")showSelect(); }catch(_){}
   try{ openRoom(); }catch(_){}
+  await _wait(600);
   const nm=(typeof catName==="function"&&catName())?catName():"ねこ";
-  setTimeout(()=>{
-    try{playMeow("love");}catch(_){}
-    const pick=outingPick();
-    try{grantOutingPick(pick);}catch(_){}
-    try{ outingRevealGift(pick, `\u{1F338} ${escHtml(nm)}が、はじめての おみやげを くれた！`); }catch(_){}
-  }, 800);
+  try{ roomBubble("…あれ？"); }catch(_){}
+  await _wait(700);
+  try{ $("roomScene").innerHTML=""; }catch(_){}
+  const pick=outingPick();          /* 衣装かポーズ（＝着せ替えできる物） */
+  _firstMeetPick=pick;
+  try{ await playReturnAnim(); }catch(e){ console.warn("初対面演出:",e&&e.stack||e); }
+  try{ grantOutingPick(pick); }catch(_){}
+  try{ playMeow("love"); }catch(_){}
+  try{ outingRevealGift(pick, `\u{1F338} ${escHtml(nm)}が、はじめての おみやげを くれた！`); }catch(_){}
+  try{ renderRoom(); }catch(_){}
 }
+function spotlightBag(){
+  const room=$("catRoom"); if(!room)return;
+  let gv=document.getElementById("bagGuide");
+  if(!gv){gv=document.createElement("div");gv.id="bagGuide";document.body.appendChild(gv);}
+  gv.innerHTML=`<div class="bgHint">🎁 もらった ふく・ポーズは<br>ここから きせかえできるよ！</div><div class="bgArrow">▾</div>`;
+  gv.classList.add("on"); room.classList.add("guideBag");
+  gv.onclick=()=>clearBagGuide();
+}
+function clearBagGuide(){ const gv=document.getElementById("bagGuide"); if(gv)gv.classList.remove("on"); const room=$("catRoom"); if(room)room.classList.remove("guideBag"); _firstMeetPick=null; }
 function goToCatRoomAfterPost(){
   _justPosted=true;
   _sendoffReady=true;   /* 保存ボタン経由のときだけ いってらっしゃい を出す */
@@ -6502,7 +6508,7 @@ function switchPpTab(t){  document.querySelectorAll(".ppTab").forEach(b=>b.class
 }
 $("topProfileBar").addEventListener("click",()=>{playClick();openProfilePanel();});
 $("bagBtn").addEventListener("click",()=>{playClick();openRoom();});
-$("roomBag").addEventListener("click",()=>{playClick();openProfilePanel(true);});
+$("roomBag").addEventListener("click",()=>{playClick();clearBagGuide();openProfilePanel(true);});
 $("roomCam").addEventListener("click",()=>{playClick();roomCapture();});
 $("roomShop").addEventListener("click",()=>{playClick();openShop();});
 $("roomEdit")&&$("roomEdit").addEventListener("click",()=>{playClick();toggleEdit();});
@@ -6700,7 +6706,7 @@ $("ppClose").addEventListener("click",()=>{playClick();$("profilePanel").classLi
 $("profilePanel").addEventListener("click",e=>{if(e.target===$("profilePanel"))$("profilePanel").classList.remove("visible");});
 document.querySelectorAll(".ppTab").forEach(b=>b.addEventListener("click",()=>{playClick();switchPpTab(b.dataset.tab);}));
 $("gachaSpin").addEventListener("click",doGachaSpin);
-$("gachaRevealOk").addEventListener("click",()=>{playClick();$("gachaReveal").classList.remove("show");});
+$("gachaRevealOk").addEventListener("click",()=>{playClick();$("gachaReveal").classList.remove("show");if(_firstMeetPick){try{spotlightBag();}catch(_){}}});
 try{const _gr=$("gachaReveal");if(_gr&&_gr.parentElement!==document.body)document.body.appendChild(_gr);}catch(_){}   /* どの画面でもお披露目が出るよう body直下へ */
 $("ppPublicBtn").addEventListener("click",()=>{
   const p=getProfile()||{};p.isPublic=!p.isPublic;saveProfile(p);

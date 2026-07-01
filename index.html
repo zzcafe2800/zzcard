@@ -323,9 +323,13 @@ button,input{font:inherit;}
 #homeGateRemain{font-size:15px;font-weight:700;color:#4d7790;letter-spacing:.02em;white-space:nowrap;}
 #homeGate.open #homeGateRemain{font-size:14px;color:#34a672;}
 #homeGateBarWrap{position:relative;width:100%;}
-#buddyCount{margin:0 auto;max-width:290px;text-align:center;font-size:12px;font-weight:800;color:#5a86a0;background:rgba(255,255,255,.66);border:1px solid rgba(255,255,255,.8);border-radius:999px;padding:7px 16px;box-shadow:0 4px 12px rgba(120,180,220,.14);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);letter-spacing:.02em;animation:homeStatIn .5s ease-out both;}
+#topLeftStack{position:fixed;top:60px;left:16px;z-index:119;display:flex;flex-direction:column;gap:6px;align-items:stretch;width:210px;pointer-events:none;}
+#topLeftStack>*{pointer-events:auto;}
+#selectScreen.hidden ~ #topLeftStack{display:none;}
+#buddyCount{margin:0;width:100%;box-sizing:border-box;text-align:center;white-space:nowrap;overflow:hidden;font-size:11.5px;font-weight:800;color:#5a86a0;background:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.85);border-radius:13px;padding:7px 10px;box-shadow:0 4px 12px rgba(120,180,220,.14);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);letter-spacing:.02em;animation:homeStatIn .5s ease-out both;}
 #buddyCount .bcLive{color:#ef8a4d;}
-#pledgeCard{margin:0 auto;max-width:300px;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;color:#4d6f92;background:rgba(255,255,255,.72);border:1px solid rgba(180,200,255,.7);border-radius:16px;padding:9px 10px 9px 14px;box-shadow:0 5px 14px rgba(110,140,200,.16);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:homeStatIn .5s ease-out both;}
+#pledgeCard{margin:0;width:100%;box-sizing:border-box;display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:800;color:#4d6f92;background:rgba(255,255,255,.78);border:1px solid rgba(180,200,255,.7);border-radius:13px;padding:7px 8px 7px 11px;box-shadow:0 4px 12px rgba(110,140,200,.15);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:homeStatIn .5s ease-out both;}
+#pledgeText{flex:1;min-width:0;white-space:nowrap;overflow:hidden;}
 #pledgeText{flex:1;letter-spacing:.02em;}
 #pledgeText b{color:#5f7fe0;}
 #pledgeBtn{border:none;border-radius:999px;padding:7px 15px;font-family:inherit;font-size:12px;font-weight:800;color:#fff;cursor:pointer;background:linear-gradient(135deg,#7b8fe6,#5f6fd0);box-shadow:0 4px 10px rgba(95,111,208,.35);white-space:nowrap;}
@@ -397,6 +401,11 @@ button,input{font:inherit;}
 .rmNow24 .bar{position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);width:4px;border-radius:3px;background:#ff2020;box-shadow:0 0 0 2px #fff,0 0 8px rgba(255,32,32,.7);}
 .rmNow24 .lab{position:absolute;bottom:calc(100% + 5px);left:50%;transform:translateX(-50%);font-size:11px;font-weight:800;color:#fff;background:#ff2020;padding:3px 10px;border-radius:999px;box-shadow:0 3px 10px rgba(255,32,32,.5);white-space:nowrap;}
 .rmNow24 .lab::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#ff2020;}
+.rmReturn24{position:absolute;top:-3px;bottom:-3px;transform:translateX(-50%);z-index:6;}
+.rmReturn24 .bar{position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);width:4px;border-radius:3px;background:#2fb47a;box-shadow:0 0 0 2px #fff,0 0 8px rgba(47,180,122,.65);}
+.rmReturn24 .lab{position:absolute;bottom:calc(100% + 5px);left:50%;transform:translateX(-50%);font-size:11px;font-weight:800;color:#fff;background:#2fb47a;padding:3px 10px;border-radius:999px;box-shadow:0 3px 10px rgba(47,180,122,.45);white-space:nowrap;}
+.rmReturn24 .lab::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#2fb47a;}
+.rmReturn24[hidden]{display:none;}
 .rmTicks24{position:relative;height:14px;margin-top:5px;}
 .rmTicks24 span{position:absolute;transform:translateX(-50%);font-size:9px;font-weight:700;color:#9bb0c0;white-space:nowrap;}
 #dexTabs{display:flex;gap:6px;justify-content:center;margin-bottom:12px;}
@@ -1527,15 +1536,10 @@ button,input{font:inherit;}
             <div id="hgOpenZone" class="rmTgtZone"><span class="rmTgtZoneTxt">目標</span></div>
           </div>
           <div id="hgNowMk" class="rmNow24"><span class="lab" id="hgNowLbl">今 0:00</span><span class="bar"></span></div>
+          <div id="hgReturnMk" class="rmReturn24" hidden><span class="lab" id="hgReturnLbl">帰宅 0:00</span><span class="bar"></span></div>
         </div>
         <div id="hgTicks" class="rmTicks24"></div>
       </div>
-    </div>
-    <div id="buddyCount" hidden></div>
-    <div id="pledgeCard" hidden>
-      <span id="pledgeText"></span>
-      <button id="pledgeBtn" type="button">宣言する</button>
-      <button id="pledgeSkip" type="button" aria-label="とじる">×</button>
     </div>
     <button class="modeCard" id="randomModeBtn" type="button">
       <span class="note n1">♪</span>
@@ -1765,6 +1769,14 @@ button,input{font:inherit;}
   <span id="tpbName">匿名さん</span>
   <span id="tpbBell">🔔<span id="tpbCount">0</span></span>
 </button>
+<div id="topLeftStack">
+  <div id="buddyCount" hidden></div>
+  <div id="pledgeCard" hidden>
+    <span id="pledgeText"></span>
+    <button id="pledgeBtn" type="button">宣言する</button>
+    <button id="pledgeSkip" type="button" aria-label="とじる">×</button>
+  </div>
+</div>
 
 <div id="catRoom">
   <div id="roomBackdrop"></div>
@@ -3793,8 +3805,8 @@ saveBtn.addEventListener("click",async()=>{
   try{refreshOutingUI();refreshHomeOutingChip();}catch(_){}
   bumpAffectionDaily();   /* 1日やるごとに親密度メーターUP */
   if(inWakeWindow()){creditGachaDay();refreshGachaBadge();}   /* 目標の時間内に保存したらコイン（1日1回） */
-  try{ if(!postedToday()){ await postToday(false,""); markPosted();refreshSaveBtn();refreshGroundPost(); } }catch(e){ console.warn("投稿失敗:",e&&e.message); }   /* 確認なしで板に投稿（テスト中はスキップ） */
-  goToCatRoomAfterPost();   /* 保存したら即おうちへ（いってらっしゃいを表示） */
+  if(!postedToday()){ showPostConfirm(false); }   /* 保存したら投稿画面を出す（投稿の前に部屋を開かない） */
+  else{ goToCatRoomAfterPost(); }
 });
 $("postYes").addEventListener("click",async()=>{
   playClick();const c=($("postComment").value||"").trim();
@@ -4098,6 +4110,17 @@ function refreshHomeGate(){
   if(zone){zone.style.left=X(zStart)+"%";zone.style.width=(X(zEnd)-X(zStart))+"%";}
   const nowMk=$("hgNowMk"); if(nowMk)nowMk.style.left=X(now)+"%";
   const nl=$("hgNowLbl"); if(nl){const nh=Math.floor(now),nmm=Math.round((now-nh)*60);nl.textContent="今 "+fmt(nh,nmm);}
+  /* 帰宅マーカー（おでかけ中だけ・帰ってくる時刻） */
+  const rmk=$("hgReturnMk"), rlbl=$("hgReturnLbl");
+  if(rmk){
+    let away=false, rh=0;
+    try{ if(typeof outingPhase==="function"&&outingPhase()==="away"){ away=true; rh=((now+outingRemainingMs()/3600000)%24+24)%24; } }catch(_){}
+    if(away){
+      rmk.hidden=false; rmk.style.left=X(rh)+"%";
+      let rH=Math.floor(rh), rM=Math.round((rh-rH)*60); if(rM===60){rH=(rH+1)%24;rM=0;}
+      if(rlbl)rlbl.textContent="帰宅 "+fmt(rH,rM);
+    }else rmk.hidden=true;
+  }
   /* 今の時間ゾーンで、ラジオ＆はじめるボタンの色を変える */
   const sel=$("selectInner");
   if(sel){
@@ -4143,7 +4166,7 @@ function refreshPledgeUI(){
   const{h:wh,m:wm}=profileWakeHM();
   const wt=wh+":"+String(wm).padStart(2,"0");
   const tk=tomorrowKey(), today=jstKey(), pl=getPledge();
-  const setDone=(txt)=>{card.hidden=false;card.classList.add("done");$("pledgeText").innerHTML=txt;};
+  const setDone=(txt)=>{card.hidden=false;card.classList.add("done");$("pledgeText").innerHTML=txt;fitText($("pledgeText"),12,8);};
   if(pl && pl.forDate===tk){ setDone(`🌙 あした <b>${wt}</b> に 起きる宣言ずみ！ おやすみ`); return; }
   if(pl && pl.forDate===today && !todayDone()){ setDone(`🌟 きょうは 宣言の日！ <b>${wt}</b> に 起きよう`); return; }
   const isNight=(h>=19||h<4);
@@ -4151,6 +4174,7 @@ function refreshPledgeUI(){
   if(isNight && !todayDone() && seen!==today){
     card.hidden=false;card.classList.remove("done");
     $("pledgeText").innerHTML=`🌙 あした <b>${wt}</b> に 起きる？`;
+    fitText($("pledgeText"),12,8);
     return;
   }
   card.hidden=true;
@@ -4182,7 +4206,15 @@ async function refreshBuddyCount(){
     let html=`🌅 今日 <b>${total}</b>人が 体操したよ`;
     if(live>=2)html+=` ・ <span class="bcLive">いま ${live}人</span>`;
     el.innerHTML=html;el.hidden=false;el.dataset.loaded="1";
+    fitText(el,12,8);
   }catch(_){}
+}
+/* テキストをカード幅に収まるよう自動縮小（幅は固定・文字サイズが可変） */
+function fitText(el,maxPx,minPx){
+  if(!el)return;
+  let s=maxPx;el.style.fontSize=s+"px";
+  let guard=0;
+  while(el.scrollWidth>el.clientWidth+0.5 && s>minPx && guard<40){s-=0.5;el.style.fontSize=s+"px";guard++;}
 }
 /* ===== ねこからの手紙（連続日数のマイルストーン） ===== */
 const LETTER_KEY="radio_cat_letters";
@@ -6983,14 +7015,13 @@ function refreshHomeOutingChip(){
   const ph=outingPhase();
   const roomOpen=$("catRoom").classList.contains("visible");
   const away=(ph==="away"&&!roomOpen), back=(ph==="back"&&!roomOpen);
-  const show=away||back;
+  const show=back;   /* おでかけ中の「あと◯分」チップは廃止（バーの帰宅マーカーで表示） */
   if(!chip){
     if(!show)return;
     chip=document.createElement("div");chip.id="outingHomeChip";document.body.appendChild(chip);
   }
   chip.hidden=!show;
-  if(away)chip.innerHTML=`🐾 おかえりまで あと ${fmtRemain(outingRemainingMs())}`;
-  else if(back)chip.innerHTML=`🐈 ねこが かえってくるよ！`;
+  if(back)chip.innerHTML=`🐈 ねこが かえってくるよ！`;
 }
 
 /* 部屋の下に出すボタン（投稿済み→いってらっしゃい／帰宅可→おかえり） */
@@ -7427,11 +7458,11 @@ $("restoreDo").addEventListener("click",async()=>{
   }catch(e){toast("復元に失敗したよ");console.warn(e);}
 });
 $("psSubmit").addEventListener("click",()=>{playClick();saveFromSetup();});
-$("psNext1").addEventListener("click",()=>{playClick();psGoStep((_storyNamed&&_storyCatName)?3:2);});
+$("psNext1").addEventListener("click",()=>{playClick();psGoStep(3);});  /* 名前ステップは廃止（物語で決めた名前を使う） */
 $("psNext2").addEventListener("click",()=>{playClick();psGoStep(3);});
 $("psNext3").addEventListener("click",()=>{playClick();psGoStep(4);});
 $("psBack2").addEventListener("click",()=>{playClick();psGoStep(1);});
-$("psBack3").addEventListener("click",()=>{playClick();psGoStep((_storyNamed&&_storyCatName)?1:2);});
+$("psBack3").addEventListener("click",()=>{playClick();psGoStep(1);});
 $("psBack4").addEventListener("click",()=>{playClick();psGoStep(3);});
 $("psBodySw").addEventListener("click",()=>$("psBodyInput").click());
 $("psEarSw").addEventListener("click",()=>$("psEarInput").click());

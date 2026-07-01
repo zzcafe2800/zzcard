@@ -937,6 +937,11 @@ button,input{font:inherit;}
 @keyframes sgPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.07);}}
 #sendoffGuide .sgHint{position:absolute;left:50%;bottom:96px;transform:translateX(-50%);width:min(84vw,340px);text-align:center;font-family:"Yomogi","Kosugi Maru",cursive;font-size:15px;font-weight:800;line-height:1.85;color:#fff8ee;background:rgba(90,60,40,.6);border:1.5px solid rgba(255,255,255,.35);border-radius:16px;padding:14px 16px;}
 #sendoffGuide .sgSub{display:block;margin-top:6px;font-size:12px;color:#ffe0c0;font-weight:700;}
+#backGuide{position:absolute;inset:0;z-index:150;background:rgba(22,15,10,.62);display:none;}
+#backGuide.on{display:block;animation:stFadeIn .4s ease both;}
+#catRoom.guideBack #roomBack{z-index:160 !important;background:#fff;box-shadow:0 0 0 5px rgba(255,255,255,.28),0 0 30px 9px rgba(255,214,150,.95);animation:sgPulse 1.3s ease-in-out infinite;}
+#backGuide .bkHint{position:absolute;top:64px;right:14px;width:min(70vw,240px);text-align:center;font-family:"Yomogi","Kosugi Maru",cursive;font-size:14px;font-weight:800;line-height:1.8;color:#fff8ee;background:rgba(90,60,40,.6);border:1.5px solid rgba(255,255,255,.35);border-radius:16px;padding:12px 14px;}
+#backGuide .bkHint::after{content:"";position:absolute;top:-9px;right:16px;border:7px solid transparent;border-bottom-color:rgba(90,60,40,.6);}
 #catRoom.awayMode #roomStatus,#catRoom.awayMode #affBar{display:none !important;}
 #outingBottomCard{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom));z-index:30;
   width:min(340px,90vw);background:rgba(255,255,255,.95);border:2px solid #bfe6ff;border-radius:20px;padding:12px 18px 13px;
@@ -5873,6 +5878,20 @@ function _winFrameSVG(winX,winY,winW,winH){
     `<rect x="${(cx-4).toFixed(1)}" y="${(winY+9).toFixed(1)}" width="8" height="${(winH-18).toFixed(1)}" fill="#ffffff"/>`+
     `<rect x="${(winX+9).toFixed(1)}" y="${(cy-4).toFixed(1)}" width="${(winW-18).toFixed(1)}" height="8" fill="#ffffff"/>`;
 }
+/* 送り出し用：後ろ姿の猫（顔なし＝涙目なし／耳の内側の色なし） */
+function sendOffCatBack(body){
+  const c=body||"#cfcfcf";
+  let s=`<g>`;
+  s+=`<ellipse cx="60" cy="118" rx="30" ry="6" fill="#000" opacity="0.14"/>`;                 /* 影 */
+  s+=`<path d="M84 106 C106 98 106 64 92 58" fill="none" stroke="${c}" stroke-width="12" stroke-linecap="round"/>`; /* しっぽ */
+  s+=`<path d="M32 118 C26 78 40 58 60 58 C80 58 94 78 88 118 Z" fill="${c}"/>`;               /* 背中・おしり */
+  s+=`<path d="M60 68 L60 112" stroke="#000" stroke-width="1.2" opacity="0.06"/>`;             /* 背の中心線 */
+  s+=`<circle cx="60" cy="46" r="22" fill="${c}"/>`;                                            /* 後頭部 */
+  s+=`<path d="M44 34 L38 14 L58 30 Z" fill="${c}"/><path d="M76 34 L82 14 L62 30 Z" fill="${c}"/>`; /* 耳（内側の色なし） */
+  s+=`<path d="M44 34 L38 14 L58 30 Z" fill="#000" opacity="0.07"/><path d="M76 34 L82 14 L62 30 Z" fill="#000" opacity="0.07"/>`; /* 耳の裏の陰 */
+  s+=`</g>`;
+  return s;
+}
 async function playSendOffAnim(){
   const {g,winW,winH,winX,winY,floorY}=_winRect();
   const body=profileBody(),ear=profileColor(),cos=getEquippedCostume();
@@ -5880,7 +5899,7 @@ async function playSendOffAnim(){
   const uid=(Date.now()%100000);
   const scene=_outsideScene(winX,winY,winW,winH,uid);
   const frame=_winFrameSVG(winX,winY,winW,winH);
-  const catInnerSVG=catInner(body,ear,"sit",[0,0.2],"cry",cos);
+  const catInnerSVG=sendOffCatBack(body);   /* 後ろ姿（涙目・耳色なし） */
   $("roomScene").innerHTML=`<svg viewBox="0 0 ${g.W} ${g.H}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">`+
     scene+
     `<g id="soFrame">${frame}</g>`+
@@ -5983,11 +6002,13 @@ async function doSendOff(){
     _roomState="normal";_playTarget=null;_catFree=null;_ballRolling=false;_chouPos=null;_haulToy=null;_towerToy=null;_grabIdx=-1;_dragToyXY=null;_hopBusy=false;
     const bb=document.getElementById("roomBubble");if(bb)bb.classList.remove("show");
     await playSendOffAnim();
-    if(_firstOutingSpecial){ _firstOutingSpecial=false; await startOuting(msUntilNextWake()); }
+    const special=_firstOutingSpecial;
+    if(special){ _firstOutingSpecial=false; await startOuting(msUntilNextWake()); }
     else { await startOuting(); }
     refreshOutingUI();
     if($("catRoom").classList.contains("visible"))renderRoom();
     startOutingTick();
+    if(special){ setTimeout(()=>{ try{spotlightBack();}catch(_){} }, 550); }   /* 最後：×に誘導して終わり */
   }finally{_outingBusy=false;const rb=$("roomBack");if(rb)rb.disabled=false;applyBackLock();}
 }
 
@@ -6374,6 +6395,16 @@ function spotlightSendoff(){
   gv.onclick=()=>{};
 }
 function clearSendoffGuide(){ const gv=document.getElementById("sendoffGuide"); if(gv)gv.classList.remove("on"); const room=$("catRoom"); if(room)room.classList.remove("guideGo"); }
+function spotlightBack(){
+  const room=$("catRoom"); if(!room)return;
+  let gv=document.getElementById("backGuide");
+  if(!gv){gv=document.createElement("div");gv.id="backGuide";}
+  if(gv.parentNode!==room)room.appendChild(gv);
+  gv.innerHTML=`<div class="bkHint">これで じゅんび かんりょう！<br>×で とじて、目標の時間に また 会おう</div>`;
+  gv.classList.add("on"); room.classList.add("guideBack");
+  gv.onclick=()=>{};
+}
+function clearBackGuide(){ const gv=document.getElementById("backGuide"); if(gv)gv.classList.remove("on"); const room=$("catRoom"); if(room)room.classList.remove("guideBack"); }
 function startFirstMeet(){
   localStorage.setItem(FIRSTMEET_KEY,"1");
   firstMeetPresent();
@@ -6643,7 +6674,7 @@ $("devOuting").addEventListener("click",()=>{
 });
 $("shopClose").addEventListener("click",()=>{playClick();closeShop();});
 $("shopPanel").addEventListener("click",e=>{if(e.target.id==="shopPanel")closeShop();});
-$("roomBack").addEventListener("click",()=>{playClick();closeRoom();});
+$("roomBack").addEventListener("click",()=>{playClick();try{clearBackGuide();}catch(_){}closeRoom();});
 
 let _roomResizeT=null;
 window.addEventListener("resize",()=>{if(!roomVisible())return;if(_roomResizeT)clearTimeout(_roomResizeT);_roomResizeT=setTimeout(()=>{if(roomVisible()){renderBackdrop();renderRoom();renderRoomAmbient();}},160);});

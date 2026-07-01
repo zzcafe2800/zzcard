@@ -5545,18 +5545,22 @@ function openRoom(){
   _angerAt=rndi(2,4);_petStreak=0;_ballPos=null;
   try{const raw=placedRaw(),keep=raw.filter(p=>ITEM_DEFS[p.type]);if(keep.length!==raw.length)savePlaced(keep);}catch(_){}  /* おもちゃ以外の置物を掃除 */
   checkReunion();getMood();getPersona();rollNeed();refreshRoomStatus();
-  renderBackdrop();renderRoom();renderRoomAmbient();$("catRoom").classList.add("visible");
+  renderBackdrop();
+  if(_firstMeetActive){ try{$("roomScene").innerHTML="";}catch(_){} }   /* 初対面：猫はまだ出さない（アニメで登場） */
+  else { renderRoom(); }
+  renderRoomAmbient();$("catRoom").classList.add("visible");
   syncServerOffset();
   refreshOutingUI();
   loadOuting().then(()=>{
     refreshOutingUI();
+    if(_firstMeetActive)return;                          /* 初対面中は自動描画しない */
     const ph=outingPhase();
     if(ph==="back"){ doReturn(); }                       /* 時間が来てたら開いた瞬間に帰ってくる */
     else if(ph==="away"){ renderRoom();startOutingTick(); }
   });
-  if(outingPhase()==="none"){scheduleIdle();startNeedDrift();}
+  if(!_firstMeetActive && outingPhase()==="none"){scheduleIdle();startNeedDrift();}
   startRoomHourWatch();
-  if(_roomState!=="angry"&&outingPhase()==="none"){
+  if(!_firstMeetActive && _roomState!=="angry"&&outingPhase()==="none"){
     if(_aloof){if(chance(0.6))setTimeout(()=>roomBubble("…？"),rndi(500,1000));}
     else{if(chance(0.6))setTimeout(()=>sayName(),rndi(500,1100));if(chance(0.8))setTimeout(moodMeow,rndi(800,1400));}
   }
@@ -6332,17 +6336,19 @@ function endStory(){
   try{ if(getProfile()){showSelect();updateTop();} else openProfileSetup(false); }catch(_){}   /* 物語のあと→マイ猫の設定へ */
 }
 /* ===== はじめての対面（設定のあと・窓から入ってくる／初プレゼント／かばんへ誘導） ===== */
-let _firstMeetPick=null;
+let _firstMeetPick=null, _firstMeetActive=false;
 function startFirstMeet(){
   localStorage.setItem(FIRSTMEET_KEY,"1");
   firstMeetPresent();
 }
 async function firstMeetPresent(){
+  _firstMeetActive=true;            /* 部屋を開いても猫はまだ出さない */
   try{ if(typeof showSelect==="function")showSelect(); }catch(_){}
   try{ openRoom(); }catch(_){}
   /* レイアウトが整うまで待つ（0だとアニメが壊れる） */
   let tries=0;
   while(tries<25){ try{ const g=roomGeom(); if(g&&g.W>40&&g.H>40)break; }catch(_){}; await _wait(60); tries++; }
+  try{ $("roomScene").innerHTML=""; }catch(_){}   /* 念のため猫を消しておく */
   await _wait(500);
   const nm=(typeof catName==="function"&&catName())?catName():"ねこ";
   const pick=outingPick();          /* 衣装かポーズ（＝着せ替えできる物） */
@@ -6350,13 +6356,15 @@ async function firstMeetPresent(){
   _outingBusy=true;                 /* アイドル再描画に邪魔されないように */
   try{ if(typeof roomBubble==="function")roomBubble("…あれ？"); }catch(_){}
   await _wait(650);
-  try{ $("roomScene").innerHTML=""; await playReturnAnim(); }   /* 必ず：窓からプレゼントをくわえて入ってくる */
+  try{ await playReturnAnim(); }   /* 必ず：窓からプレゼントをくわえて入ってくる（ここで初登場） */
   catch(e){ console.warn("初対面演出:",e&&e.stack||e); }
   _outingBusy=false;
+  _firstMeetActive=false;           /* 以後は通常表示 */
   try{ grantOutingPick(pick); }catch(_){}
   try{ playMeow("love"); }catch(_){}
   try{ outingRevealGift(pick, `\u{1F338} ${escHtml(nm)}が、はじめての おみやげを くれた！`); }catch(_){}
   try{ renderRoom(); }catch(_){}
+  try{ if(outingPhase()==="none"){scheduleIdle();startNeedDrift();} }catch(_){}
 }
 function spotlightBag(){
   const room=$("catRoom"); if(!room)return;

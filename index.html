@@ -986,6 +986,21 @@ button,input{font:inherit;}
 #storyIntro .stChevR{right:16px;font-size:14px;font-family:"Yomogi","Kosugi Maru",cursive;font-weight:800;color:#b98f77;opacity:.8;animation:stBlink 1.9s ease-in-out infinite;}
 #storyIntro .stChev.off{display:none;}
 #storyIntro .stSkip{position:absolute;top:14px;right:16px;font-size:12px;letter-spacing:1px;color:#b7a184;opacity:.7;padding:8px 10px;z-index:3;}
+#storyIntro .stNameRow{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:4px;opacity:0;animation:stFadeIn 1s ease .5s forwards;}
+#storyIntro .stNameRow input{font-family:"Yomogi","Kosugi Maru",cursive;font-size:18px;font-weight:800;color:#6b4f38;text-align:center;width:min(52vw,190px);padding:11px 14px;border:2px solid #e7d3bd;border-radius:14px;background:#fffdf8;outline:none;}
+#storyIntro .stNameRow input:focus{border-color:#e6a98c;}
+#storyIntro .stNameRow button{font-family:"Yomogi","Kosugi Maru",cursive;font-size:15px;font-weight:800;color:#7a4b34;border:none;border-radius:14px;padding:12px 20px;cursor:pointer;background:linear-gradient(135deg,#ffd9b8,#ffc39a);box-shadow:0 6px 16px rgba(180,120,80,.3);}
+#storyIntro .stNameRow button:active{transform:scale(.96);}
+#storyIntro .stHint{font-family:"Yomogi","Kosugi Maru",cursive;font-size:12px;letter-spacing:1px;color:#c39a76;opacity:0;animation:stFadeIn 1s ease .5s forwards;}
+#storyIntro .stKitten{cursor:pointer;}
+#storyIntro .stKitten.stWiggle{animation:stWiggle .5s ease;transform-origin:50% 90%;}
+@keyframes stWiggle{0%,100%{transform:rotate(0);}20%{transform:rotate(-5deg) scale(1.04);}45%{transform:rotate(4deg);}70%{transform:rotate(-3deg);}}
+#storyIntro .stHeart{position:absolute;font-size:26px;color:#ff9ec4;transform:translate(-50%,0);pointer-events:none;animation:stHeartUp 1.5s ease forwards;z-index:2;}
+@keyframes stHeartUp{0%{opacity:0;transform:translate(-50%,6px) scale(.6);}25%{opacity:1;}100%{opacity:0;transform:translate(-50%,-46px) scale(1.1);}}
+#storyIntro .stPic img.stNuzzle{transition:transform .7s cubic-bezier(.2,.7,.2,1);transform:translateX(-16px) rotate(-2deg);}
+#storyIntro .stPage.stHold .stPic{animation-duration:2.6s;}
+#storyIntro .stPage.stHold .stLine{animation-duration:2.4s;}
+#storyIntro .stPage.stHold .stChevR{opacity:0;transition:opacity .4s;}
 #outingBig .obTitle{font-family:"Yomogi","Kosugi Maru",cursive;font-size:15px;font-weight:800;color:#6f9fb6;text-shadow:0 1px 2px rgba(255,255,255,.7);}
 #outingBig .obTime{font-family:"Yomogi","Kosugi Maru",cursive;font-size:30px;font-weight:800;color:#4f88a4;text-shadow:0 2px 4px rgba(255,255,255,.7);}
 #outingHomeChip{position:fixed;left:50%;transform:translateX(-50%);top:calc(10px + env(safe-area-inset-top));z-index:120;
@@ -3980,7 +3995,7 @@ function renderProfileBar(){
 function openProfileSetup(edit){
   const p=getProfile()||{};
   $("psTitle").textContent=edit?"MY猫を編集":"MY猫をつくろう";
-  $("psName").value=p.name||"";
+  $("psName").value=(!edit&&_storyNamed&&_storyCatName)?_storyCatName:(p.name||"");
   wpSet(Number.isFinite(p.wakeHour)?p.wakeHour:6,Number.isFinite(p.wakeMin)?p.wakeMin:0);
   $("psWake").value=Number.isFinite(p.wakeHour)?p.wakeHour:6;
   $("psWakeMin").value=Number.isFinite(p.wakeMin)?p.wakeMin:0;
@@ -5985,19 +6000,23 @@ function placeRandomToy(){
 const STORY_KEY="radio_story_seen";
 function storySeen(){return localStorage.getItem(STORY_KEY)==="1";}
 let _storyStage=0;
+let _storyCatName="", _storyNamed=false, _storyAdvOK=true;
+function storyName(){ return _storyCatName || "この子"; }
 const STORY=[
   {type:"text", lines:["これは、わたしと","一ぴきの ねこの","おはなし。"]},
   {type:"img", src:"1_transparent.png", text:"毎朝の さんぽが、わたしと 愛犬（あいけん）の たからものだった。"},
   {type:"img", src:"2_transparent.png", text:"ある日、草むらから——ちいさな 子ねこが、こちらを 見ていた。"},
-  {type:"img", src:"3_transparent.png", text:"その日から あの子は、犬の となりを 歩くように なった。"},
+  {type:"name", src:"2_transparent.png"},
+  {type:"img", src:"3_transparent.png", text:"その日から {NAME}は、犬の となりを 歩くように なった。"},
   {type:"img", src:"4_transparent.png", pos:"bottom", text:"春も 夏も、秋も 冬も。三人の さんぽは つづいた。"},
   {type:"img", src:"5_transparent.png", text:"やがて 愛犬は 年老いて、歩くのも ゆっくりに なっていった。"},
-  {type:"img", src:"6_transparent.png", text:"さんぽに 行けなくても、ねこは 窓の外まで 会いに 来てくれた。"},
-  {type:"img", src:"7_transparent.png", text:"——そして ある朝。愛犬の ベッドは、からっぽに なった。"},
-  {type:"text", lines:["それでも ねこは、","毎日 来てくれた。"]},
+  {type:"img", src:"6_transparent.png", text:"さんぽに 行けなくても、{NAME}は 窓の外まで 会いに 来てくれた。"},
+  {type:"img", src:"7_transparent.png", hold:2000, text:"——そして ある朝。愛犬の ベッドは、からっぽに なった。"},
+  {type:"text", lines:["がらんと した 部屋。","それでも {NAME}は、","毎日 来てくれた。"]},
   {type:"img", src:"8_transparent.png", text:"おはなを くわえて。まるで、なぐさめる みたいに。"},
-  {type:"img", src:"9_transparent.png", text:"見えなくても、きっと そばに いる。"},
-  {type:"text", lines:["さあ、ねこと","また 歩きはじめよう。"]}
+  {type:"text", lines:["ひとりぼっちは、","おたがいさま。","はじめて {NAME}を、おうちに 入れた。"]},
+  {type:"reach", src:"9_transparent.png", text:"見えなくても、{NAME}が そばに いてくれる。"},
+  {type:"stretch"}
 ];
 function storyBlackCat(cx,cy,withGift,happy,sc){
   sc=sc||1;
@@ -6126,6 +6145,7 @@ function showStory(){
   _storyStage=0;
   let m=document.getElementById("storyIntro");
   if(!m){m=document.createElement("div");m.id="storyIntro";document.body.appendChild(m);}
+  try{switchBGM("story.mp3");}catch(_){}   /* 物語のBGM（無ければ無音） */
   m.classList.add("show");renderStory();
 }
 function renderStory(){
@@ -6133,28 +6153,84 @@ function renderStory(){
   const st=STORY[_storyStage];
   if(!st){endStory();return;}
   const total=STORY.length, last=(_storyStage>=total-1), first=(_storyStage===0);
+  const sub=(t)=>String(t||"").replace(/\{NAME\}/g, escHtml(storyName()));
   m.className="show storyBook";
-  let inner="";
+  let inner="", isName=(st.type==="name");
   if(st.type==="text"){
     if(first){
       inner=`<div class="stPageInner stCover"><div class="stKicker">ものがたり</div>`+
-        `<div class="stLine big">${st.lines.map(l=>`<div>${l}</div>`).join("")}</div>`+
+        `<div class="stLine big">${st.lines.map(l=>`<div>${sub(l)}</div>`).join("")}</div>`+
         `<div class="stCoverRule"></div></div>`;
     }else{
-      inner=`<div class="stPageInner"><div class="stLine big">${st.lines.map(l=>`<div>${l}</div>`).join("")}</div></div>`;
+      inner=`<div class="stPageInner"><div class="stLine big">${st.lines.map(l=>`<div>${sub(l)}</div>`).join("")}</div></div>`;
     }
+  }else if(isName){
+    inner=`<div class="stPageInner">`+
+      `<div class="stPic"><img id="stKitten" class="stKitten" src="${st.src}" alt="" onerror="this.style.opacity=0"></div>`+
+      `<div class="stHint" id="stKittenHint">タップして よんでみよう</div>`+
+      `<div class="stLine">この子に、名前を つけてあげよう。</div>`+
+      `<div class="stNameRow"><input id="stNameInput" type="text" maxlength="12" placeholder="なまえ" value="${escHtml(_storyCatName)}"><button id="stNameOk" type="button">きめた</button></div>`+
+      `</div>`;
+  }else if(st.type==="reach"){
+    inner=`<div class="stPageInner posT">`+
+      `<div class="stLine" id="stReachLine">${sub(st.text)}</div>`+
+      `<div class="stPic"><img id="stReachImg" src="${st.src}" alt="" onerror="this.style.opacity=0"></div>`+
+      `<div class="stNameRow"><button id="stReachBtn" type="button">そっと 手を さしのべる</button></div>`+
+      `</div>`;
+  }else if(st.type==="stretch"){
+    inner=`<div class="stPageInner">`+
+      `<div class="stLine big" id="stStretchLine">いっしょに、<br>のびを してみよう。</div>`+
+      `<div class="stNameRow"><button id="stStretchBtn" type="button">せーの、のび〜</button></div>`+
+      `</div>`;
   }else{
     const pos=st.pos||"top";
-    const line=`<div class="stLine">${st.text}</div>`;
+    const line=`<div class="stLine">${sub(st.text)}</div>`;
     const pic=`<div class="stPic"><img src="${st.src}" alt="" onerror="this.style.opacity=0"></div>`;
     inner=`<div class="stPageInner ${pos==="bottom"?"posB":"posT"}">`+(pos==="bottom"?pic+line:line+pic)+`</div>`;
   }
   const folio=`<div class="stFolio">${_storyStage+1} / ${total}</div>`;
-  const chev=`<div class="stChev stChevL ${first?"off":""}">\u2039</div><div class="stChev stChevR">${last?"はじめる \u203a":"\u203a"}</div>`;
+  const chev=(isName||st.type==="reach"||st.type==="stretch")?"":`<div class="stChev stChevL ${first?"off":""}">\u2039</div><div class="stChev stChevR">${last?"はじめる \u203a":"\u203a"}</div>`;
   const skip=`<div class="stSkip">スキップ</div>`;
   m.innerHTML=`<div class="stPage">${inner}${folio}${chev}</div>${skip}`;
+  _storyAdvOK=true;
+  if(st.hold){ _storyAdvOK=false; const pg=m.querySelector(".stPage"); if(pg)pg.classList.add("stHold"); setTimeout(()=>{ _storyAdvOK=true; if(pg)pg.classList.remove("stHold"); },st.hold); }
+  const floatHeart=(host,x,y)=>{ try{ const h=document.createElement("div");h.className="stHeart";h.textContent="\u2661";h.style.left=(x||50)+"%";h.style.top=(y||52)+"%";host.querySelector(".stPage").appendChild(h);setTimeout(()=>h.remove(),1500);}catch(_){}};
+  if(isName){
+    const inp=m.querySelector("#stNameInput"), ok=m.querySelector("#stNameOk"), kit=m.querySelector("#stKitten"), hint=m.querySelector("#stKittenHint");
+    if(kit)kit.onclick=(e)=>{ e.stopPropagation(); kit.classList.remove("stWiggle"); void kit.offsetWidth; kit.classList.add("stWiggle"); try{playMeow("curious");}catch(_){}; floatHeart(m,52,46); if(hint)hint.textContent="にゃ♪"; };
+    const commit=()=>{ const v=(inp.value||"").trim(); _storyCatName=v.slice(0,12); _storyNamed=!!_storyCatName; try{playClick();}catch(_){}; nextStory(); };
+    if(ok)ok.onclick=(e)=>{e.stopPropagation();commit();};
+    if(inp){ inp.onclick=(e)=>e.stopPropagation(); inp.onkeydown=(e)=>{ if(e.key==="Enter")commit(); }; setTimeout(()=>{try{inp.focus();}catch(_){}} ,300); }
+    m.onclick=(ev)=>{ if(ev.target&&ev.target.classList&&ev.target.classList.contains("stSkip")){try{playClick();}catch(_){}endStory();} };
+    return;
+  }
+  if(st.type==="reach"){
+    const btn=m.querySelector("#stReachBtn"), lineEl=m.querySelector("#stReachLine"), img=m.querySelector("#stReachImg");
+    let stg=0;
+    if(btn)btn.onclick=(e)=>{ e.stopPropagation();
+      if(stg===0){ stg=1; try{playMeow("love");}catch(_){}; try{playPurr(1.6,0.09);}catch(_){}; if(img)img.classList.add("stNuzzle"); floatHeart(m,54,50); setTimeout(()=>floatHeart(m,48,44),260);
+        if(lineEl)lineEl.innerHTML="すり、と "+escHtml(storyName())+"が 頬を よせてきた。<br>——さあ、また 歩きはじめよう。";
+        btn.textContent="つぎへ \u203a";
+      }else{ try{playClick();}catch(_){}; nextStory(); }
+    };
+    m.onclick=(ev)=>{ if(ev.target&&ev.target.classList&&ev.target.classList.contains("stSkip")){try{playClick();}catch(_){}endStory();} };
+    return;
+  }
+  if(st.type==="stretch"){
+    const btn=m.querySelector("#stStretchBtn"), lineEl=m.querySelector("#stStretchLine");
+    let stg=0;
+    if(btn)btn.onclick=(e)=>{ e.stopPropagation();
+      if(stg===0){ stg=1; try{playMeow("happy");}catch(_){}; floatHeart(m,50,42); setTimeout(()=>floatHeart(m,43,38),220); setTimeout(()=>floatHeart(m,57,40),400);
+        if(lineEl)lineEl.innerHTML="んーっ！<br>"+escHtml(storyName())+"が、うれしそうに 目を ほそめた。";
+        btn.textContent="はじめる \u203a";
+      }else{ try{playClick();}catch(_){}; endStory(); }
+    };
+    m.onclick=(ev)=>{ if(ev.target&&ev.target.classList&&ev.target.classList.contains("stSkip")){try{playClick();}catch(_){}endStory();} };
+    return;
+  }
   m.onclick=(ev)=>{
     if(ev.target && ev.target.classList && ev.target.classList.contains("stSkip")){try{playClick();}catch(_){}endStory();return;}
+    if(!_storyAdvOK)return;   /* 溜め中はタップ無効 */
     try{playClick();}catch(_){}
     const x=ev.clientX||0, W=window.innerWidth||360;
     if(x < W*0.3 && _storyStage>0) prevStory(); else nextStory();
@@ -6166,6 +6242,7 @@ function nextStory(){_storyStage++;if(_storyStage>=STORY.length)endStory();else 
 function endStory(){
   const m=document.getElementById("storyIntro");if(m)m.classList.remove("show");
   localStorage.setItem(STORY_KEY,"1");
+  try{switchBGM("bgm11.mp3");}catch(_){}   /* 通常BGMに戻す */
   try{ if(getProfile()){showSelect();updateTop();} else openProfileSetup(false); }catch(_){}   /* 物語のあと→マイ猫の設定へ */
 }
 function goToCatRoomAfterPost(){
@@ -6653,11 +6730,11 @@ $("restoreDo").addEventListener("click",async()=>{
   }catch(e){toast("復元に失敗したよ");console.warn(e);}
 });
 $("psSubmit").addEventListener("click",()=>{playClick();saveFromSetup();});
-$("psNext1").addEventListener("click",()=>{playClick();psGoStep(2);});
+$("psNext1").addEventListener("click",()=>{playClick();psGoStep((_storyNamed&&_storyCatName)?3:2);});
 $("psNext2").addEventListener("click",()=>{playClick();psGoStep(3);});
 $("psNext3").addEventListener("click",()=>{playClick();psGoStep(4);});
 $("psBack2").addEventListener("click",()=>{playClick();psGoStep(1);});
-$("psBack3").addEventListener("click",()=>{playClick();psGoStep(2);});
+$("psBack3").addEventListener("click",()=>{playClick();psGoStep((_storyNamed&&_storyCatName)?1:2);});
 $("psBack4").addEventListener("click",()=>{playClick();psGoStep(3);});
 $("psBodySw").addEventListener("click",()=>$("psBodyInput").click());
 $("psEarSw").addEventListener("click",()=>$("psEarInput").click());

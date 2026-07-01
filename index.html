@@ -930,6 +930,13 @@ button,input{font:inherit;}
 #bagGuide .bgHint{position:absolute;left:50%;bottom:86px;transform:translateX(-50%);width:min(78vw,300px);text-align:center;font-family:"Yomogi","Kosugi Maru",cursive;font-size:15px;font-weight:800;line-height:1.7;color:#fff8ee;background:rgba(90,60,40,.55);border:1.5px solid rgba(255,255,255,.35);border-radius:16px;padding:12px 14px;}
 #bagGuide .bgArrow{position:absolute;left:50%;bottom:70px;transform:translateX(-50%);color:#ffe6c8;font-size:22px;animation:bagArrow 1s ease-in-out infinite;}
 @keyframes bagArrow{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(5px);}}
+#sendoffGuide{position:fixed;inset:0;z-index:200;background:rgba(22,15,10,.62);display:none;}
+#sendoffGuide.on{display:block;animation:stFadeIn .4s ease both;}
+#catRoom.guideGo #outingBar{z-index:202 !important;}
+#catRoom.guideGo #outingBar .outingBtn{box-shadow:0 0 0 5px rgba(255,255,255,.28),0 0 34px 10px rgba(159,212,240,.95);animation:sgPulse 1.3s ease-in-out infinite;}
+@keyframes sgPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.07);}}
+#sendoffGuide .sgHint{position:absolute;left:50%;bottom:96px;transform:translateX(-50%);width:min(84vw,340px);text-align:center;font-family:"Yomogi","Kosugi Maru",cursive;font-size:15px;font-weight:800;line-height:1.85;color:#fff8ee;background:rgba(90,60,40,.6);border:1.5px solid rgba(255,255,255,.35);border-radius:16px;padding:14px 16px;}
+#sendoffGuide .sgSub{display:block;margin-top:6px;font-size:12px;color:#ffe0c0;font-weight:700;}
 #catRoom.awayMode #roomStatus,#catRoom.awayMode #affBar{display:none !important;}
 #outingBottomCard{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom));z-index:30;
   width:min(340px,90vw);background:rgba(255,255,255,.95);border:2px solid #bfe6ff;border-radius:20px;padding:12px 18px 13px;
@@ -5751,8 +5758,8 @@ function serverNow(){return Date.now()+_srvOffset;}
 
 function getOutingLocal(){try{const v=JSON.parse(localStorage.getItem(OUTING_KEY)||"null");return(v&&v.startAt)?v:null;}catch(e){return null;}}
 function setOutingLocal(st){if(st)localStorage.setItem(OUTING_KEY,JSON.stringify(st));else localStorage.removeItem(OUTING_KEY);}
-function outingPhase(){const st=getOutingLocal();if(!st)return"none";return(st.startAt+outingDurMs()-serverNow()>0)?"away":"back";}
-function outingRemainingMs(){const st=getOutingLocal();if(!st)return 0;return Math.max(0,st.startAt+outingDurMs()-serverNow());}
+function outingPhase(){const st=getOutingLocal();if(!st)return"none";const dur=st.dur||outingDurMs();return(st.startAt+dur-serverNow()>0)?"away":"back";}
+function outingRemainingMs(){const st=getOutingLocal();if(!st)return 0;const dur=st.dur||outingDurMs();return Math.max(0,st.startAt+dur-serverNow());}
 function fmtRemain(ms){const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000);return h>0?`${h}時間${m}分`:`${m}分`;}
 
 /* サーバーの状態を読んで正とする（複数端末・時計いじり対策） */
@@ -5762,7 +5769,7 @@ async function loadOuting(){
     if(db){
       const{ref,get}=await import(FB_DB);
       const s=await get(ref(db,"outings/"+getUid()));
-      if(s.exists()){const v=s.val();setOutingLocal({startAt:v.startAt});}
+      if(s.exists()){const v=s.val();setOutingLocal({startAt:v.startAt,dur:v.dur||outingDurMs()});}
       else setOutingLocal(null);
     }
   }catch(_){}
@@ -5770,12 +5777,13 @@ async function loadOuting(){
 }
 
 /* 送り出し：出発時刻をサーバー基準で記録（キャンセル無し） */
-async function startOuting(){
-  const st={startAt:serverNow()};
+async function startOuting(customDur){
+  const dur=(customDur&&customDur>0)?customDur:outingDurMs();
+  const st={startAt:serverNow(),dur};
   setOutingLocal(st);
   try{
     const db=await getDB();
-    if(db){const{ref,set,serverTimestamp}=await import(FB_DB);await set(ref(db,"outings/"+getUid()),{startAt:serverTimestamp(),dur:outingDurMs()});}
+    if(db){const{ref,set,serverTimestamp}=await import(FB_DB);await set(ref(db,"outings/"+getUid()),{startAt:serverTimestamp(),dur});}
   }catch(_){}
 }
 
@@ -5960,6 +5968,7 @@ async function doSendOff(){
   if(_outingBusy)return;_outingBusy=true;
   try{
     playClick();
+    try{clearSendoffGuide();}catch(_){}
     _justPosted=false;                           /* 送り出したら戻るボタン解放 */
     _sendoffReady=false;                          /* 一回限り：送り出したら消す */
     const rb=$("roomBack");if(rb){rb.disabled=true;}   /* 演出中はロック */
@@ -5974,7 +5983,8 @@ async function doSendOff(){
     _roomState="normal";_playTarget=null;_catFree=null;_ballRolling=false;_chouPos=null;_haulToy=null;_towerToy=null;_grabIdx=-1;_dragToyXY=null;_hopBusy=false;
     const bb=document.getElementById("roomBubble");if(bb)bb.classList.remove("show");
     await playSendOffAnim();
-    await startOuting();
+    if(_firstOutingSpecial){ _firstOutingSpecial=false; await startOuting(msUntilNextWake()); }
+    else { await startOuting(); }
     refreshOutingUI();
     if($("catRoom").classList.contains("visible"))renderRoom();
     startOutingTick();
@@ -6336,7 +6346,33 @@ function endStory(){
   try{ if(getProfile()){showSelect();updateTop();} else openProfileSetup(false); }catch(_){}   /* 物語のあと→マイ猫の設定へ */
 }
 /* ===== はじめての対面（設定のあと・窓から入ってくる／初プレゼント／かばんへ誘導） ===== */
-let _firstMeetPick=null, _firstMeetActive=false;
+let _firstMeetPick=null, _firstMeetActive=false, _firstMeetGuideSendoff=false, _firstOutingSpecial=false;
+/* 次の「目標の起きる時間」までのms（初回だけ、おでかけ時間をこれにする） */
+function msUntilNextWake(){
+  try{
+    const {h,m}=profileWakeHM();
+    const base=new Date(serverNow());
+    const t=new Date(base); t.setHours(h,m||0,0,0);
+    if(t.getTime()<=base.getTime()) t.setDate(t.getDate()+1);
+    let d=t.getTime()-base.getTime();
+    if(d<60000)d=60000;
+    return d;
+  }catch(_){ return OUTING_MS; }
+}
+function onClosetClosed(){ if(_firstMeetGuideSendoff){ setTimeout(()=>{ try{spotlightSendoff();}catch(_){} },260); } }
+function spotlightSendoff(){
+  _firstMeetGuideSendoff=false;
+  _firstOutingSpecial=true;
+  _sendoffReady=true;
+  try{ refreshOutingUI(); }catch(_){}
+  const room=$("catRoom"); if(!room)return;
+  let gv=document.getElementById("sendoffGuide");
+  if(!gv){gv=document.createElement("div");gv.id="sendoffGuide";document.body.appendChild(gv);}
+  gv.innerHTML=`<div class="sgHint">🌅 目標の時間に アプリを ひらいて、<br>スタンプラリーと プレゼントを もらおう！<br><span class="sgSub">下の「いってらっしゃい」で ねこを おくりだしてね</span></div>`;
+  gv.classList.add("on"); room.classList.add("guideGo");
+  gv.onclick=()=>{};
+}
+function clearSendoffGuide(){ const gv=document.getElementById("sendoffGuide"); if(gv)gv.classList.remove("on"); const room=$("catRoom"); if(room)room.classList.remove("guideGo"); }
 function startFirstMeet(){
   localStorage.setItem(FIRSTMEET_KEY,"1");
   firstMeetPresent();
@@ -6588,7 +6624,7 @@ function switchPpTab(t){  document.querySelectorAll(".ppTab").forEach(b=>b.class
 }
 $("topProfileBar").addEventListener("click",()=>{playClick();openProfilePanel();});
 $("bagBtn").addEventListener("click",()=>{playClick();openRoom();});
-$("roomBag").addEventListener("click",()=>{playClick();clearBagGuide();openProfilePanel(true);});
+$("roomBag").addEventListener("click",()=>{playClick();const wasGuide=!!_firstMeetPick;clearBagGuide();openProfilePanel(true);if(wasGuide)_firstMeetGuideSendoff=true;});
 $("roomCam").addEventListener("click",()=>{playClick();roomCapture();});
 $("roomShop").addEventListener("click",()=>{playClick();openShop();});
 $("roomEdit")&&$("roomEdit").addEventListener("click",()=>{playClick();toggleEdit();});
@@ -6782,8 +6818,8 @@ $("commentPopClose").addEventListener("click",()=>{playClick();$("commentPop").c
 $("commentPop").addEventListener("click",e=>{if(e.target===$("commentPop"))$("commentPop").classList.remove("visible");});
 $("likeClose").addEventListener("click",()=>{playClick();$("likeCard").classList.remove("visible");});
 $("likeCard").addEventListener("click",e=>{if(e.target===$("likeCard"))$("likeCard").classList.remove("visible");});
-$("ppClose").addEventListener("click",()=>{playClick();$("profilePanel").classList.remove("visible");});
-$("profilePanel").addEventListener("click",e=>{if(e.target===$("profilePanel"))$("profilePanel").classList.remove("visible");});
+$("ppClose").addEventListener("click",()=>{playClick();$("profilePanel").classList.remove("visible");onClosetClosed();});
+$("profilePanel").addEventListener("click",e=>{if(e.target===$("profilePanel")){$("profilePanel").classList.remove("visible");onClosetClosed();}});
 document.querySelectorAll(".ppTab").forEach(b=>b.addEventListener("click",()=>{playClick();switchPpTab(b.dataset.tab);}));
 $("gachaSpin").addEventListener("click",doGachaSpin);
 $("gachaRevealOk").addEventListener("click",()=>{playClick();$("gachaReveal").classList.remove("show");if(_firstMeetPick){try{spotlightBag();}catch(_){}}});

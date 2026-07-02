@@ -4714,7 +4714,7 @@ function refreshHomeGate(){
   const rmk=$("hgReturnMk"), rlbl=$("hgReturnLbl");
   if(rmk){
     let away=false, rh=0;
-    try{ if(typeof outingPhase==="function"&&outingPhase()==="away"){ away=true; rh=((now+outingRemainingMs()/3600000)%24+24)%24; } }catch(_){}
+    try{ if(typeof outingPhase==="function"&&outingPhase()==="away"){ away=true; rh=((wake-6)%24+24)%24; } }catch(_){}
     if(away){
       rmk.hidden=false; rmk.style.left=X(rh)+"%";
       let rH=Math.floor(rh), rM=Math.round((rh-rH)*60); if(rM===60){rH=(rH+1)%24;rM=0;}
@@ -7138,8 +7138,8 @@ async function doSendOff(){
     try{ await playSendOffAnim(); }catch(e){ console.warn("送り出し演出:",e&&e.stack||e); }
     _sendoffAnimating=false;
     const special=_firstOutingSpecial;
-    if(special){ _firstOutingSpecial=false; await startOuting(msUntilNextWake()); }
-    else { await startOuting(); }
+    if(special){ _firstOutingSpecial=false; }
+    await startOuting(msUntilReturn());
     refreshOutingUI();
     if($("catRoom").classList.contains("visible"))renderRoom();
     startOutingTick();
@@ -7523,6 +7523,18 @@ function endStory(){
 /* ===== はじめての対面（設定のあと・窓から入ってくる／初プレゼント／かばんへ誘導） ===== */
 let _firstMeetPick=null, _firstMeetActive=false, _firstMeetGuideSendoff=false, _firstOutingSpecial=false, _sendoffAnimating=false;
 /* 次の「目標の起きる時間」までのms（初回だけ、おでかけ時間をこれにする） */
+/* 帰宅時刻＝必ず「目標の6時間前」（早起き帯の始まり）に固定 */
+function msUntilReturn(){
+  try{
+    const {h,m}=profileWakeHM();
+    const base=new Date(serverNow());
+    const t=new Date(base); t.setHours(h-6,m||0,0,0);   /* 目標の6時間前（負時は前日扱いで正規化される） */
+    if(t.getTime()<=base.getTime()) t.setDate(t.getDate()+1);
+    let d=t.getTime()-base.getTime();
+    if(d<60000)d=60000;
+    return d;
+  }catch(_){return outingDurMs();}
+}
 function msUntilNextWake(){
   try{
     const {h,m}=profileWakeHM();
@@ -8252,12 +8264,12 @@ $("gateHours").textContent=`朝 ${fmtHM(JST_OH,JST_OM)}〜${fmtHM(JST_CH,JST_CM)
 checkButtonDates();
 updateCounts();
 /* ===== 【隠し】全衣装ためし解禁トグル（プロフィール右上・透明） ===== */
-function refreshUnlockBtn(){const b=document.getElementById("unlockAllBtn");if(b)b.title=_devUnlockAll?"全衣装ON":"全衣装OFF";}
+function refreshUnlockBtn(){const b=document.getElementById("unlockAllBtn");if(b){b.textContent="・";b.title=_devUnlockAll?"全衣装ON":"全衣装OFF";b.style.color=_devUnlockAll?"#ff9d3c":"#c3d0da";}}
 function ensureUnlockBtn(){
   const old=document.getElementById("unlockAllBtn");if(old&&old.parentElement&&old.parentElement.id!=="ppBox")old.remove();
   const box=document.getElementById("ppBox");if(!box||document.getElementById("unlockAllBtn"))return;
   const b=document.createElement("button");b.id="unlockAllBtn";b.type="button";b.setAttribute("aria-label","");
-  b.style.cssText="position:absolute;top:10px;right:52px;width:34px;height:34px;border:none;background:transparent;opacity:0;cursor:pointer;z-index:5;padding:0;";
+  b.style.cssText="position:absolute;top:8px;right:52px;width:30px;height:30px;border:none;background:transparent;cursor:pointer;z-index:5;padding:0;font-size:20px;line-height:1;font-weight:900;color:#c3d0da;";
   b.addEventListener("click",()=>{
     _devUnlockAll=!_devUnlockAll;
     try{localStorage.setItem("radio_unlock_all",_devUnlockAll?"1":"0");}catch(_){}
@@ -8357,5 +8369,3 @@ profileBoot();
 </script>
 </body>
 </html>
-
-  

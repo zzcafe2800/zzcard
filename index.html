@@ -4342,7 +4342,6 @@ function handleCardSelect(target){
   _cardBusy=true;setTimeout(()=>{_cardBusy=false;},800);
   startBGM();
   playClick();
-  if(todayDone()){ showSendoffChoice(postedToday()); return; }   /* 今日はスタンプ済み→見送り選択へ */
   const wake=profileWake(),now=nowHourFloat();
   if((now>=wake&&now<wake+1)||_startedOnce){startRandomMode();return;}   /* 目標枠内、または同セッションで一度始めていれば確認なしでそのまま */
   /* 枠外：確認カードを出す */
@@ -4425,8 +4424,13 @@ saveBtn.addEventListener("click",async()=>{
   try{refreshOutingUI();refreshHomeOutingChip();}catch(_){}
   bumpAffectionDaily();   /* 1日やるごとに親密度メーターUP */
   if(inWakeWindow()){creditGachaDay();refreshGachaBadge();}   /* 目標の時間内に保存したらコイン（1日1回） */
-  if(!postedToday()){ showPostConfirm(false); }   /* 未投稿→投稿画面（投稿/やめる） */
-  else{ showSendoffChoice(); }                    /* 投稿済み→投稿は飛ばして やめる/見送り へ */
+  const away=(typeof outingPhase==="function"&&outingPhase()==="away");
+  if(postedToday()){
+    if(away){ /* おでかけ中＆投稿済み：保存だけ（画面遷移なし） */ }
+    else{ openRoom(); }   /* おでかけしてない＆投稿済み：そのまま部屋へ（猫に会う） */
+  }else{
+    showPostConfirm(false);   /* 未投稿：投稿するか？（この後の遷移は away で分岐） */
+  }
 });
 /* やめる／見送り の選択画面（＝postDoneを流用） */
 function showSendoffChoice(posted){
@@ -4442,14 +4446,21 @@ $("postYes").addEventListener("click",async()=>{
   $("postConfirm").classList.remove("visible");
   await postToday($("postAnon").checked,c);
   markPosted();refreshSaveBtn();refreshGroundPost();
-  showSendoffChoice(true);   /* 投稿後→やめる/見送り */
+  const away=(typeof outingPhase==="function"&&outingPhase()==="away");
+  if(away){ /* おでかけ中：投稿したらスタンプラリーに戻る（見送りなし） */ }
+  else{ showSendoffChoice(true); }   /* 投稿後→やめる/見送り */
 });
-$("postNo").addEventListener("click",()=>{playClick();$("postConfirm").classList.remove("visible");showSendoffChoice(false);});   /* 投稿しない→見送り選択へ */
+$("postNo").addEventListener("click",()=>{
+  playClick();$("postConfirm").classList.remove("visible");
+  const away=(typeof outingPhase==="function"&&outingPhase()==="away");
+  if(away){ /* おでかけ中：投稿しない→スタンプラリーに戻る */ }
+  else{ showSendoffChoice(false); }   /* 投稿しない→見送り選択へ */
+});
 $("postComment").addEventListener("input",updatePostPreview);
 $("groundPostBtn").addEventListener("click",()=>{playClick();showPostConfirm(false);});
 $("postDoneRally").addEventListener("click",()=>{playClick();$("postDone").classList.remove("visible");});   /* やめる→スタンプラリー */
 $("postDoneHome").addEventListener("click",()=>{playClick();$("postDone").classList.remove("visible");goToCatRoomAfterPost();});   /* 見送り→いってらっしゃい */
-$("postConfirm").addEventListener("click",e=>{if(e.target===$("postConfirm")){$("postConfirm").classList.remove("visible");showSendoffChoice(false);}});
+$("postConfirm").addEventListener("click",e=>{if(e.target===$("postConfirm")){$("postConfirm").classList.remove("visible");const away=(typeof outingPhase==="function"&&outingPhase()==="away");if(!away)showSendoffChoice(false);}});
 undoBtn.addEventListener("click",()=>{if(!activeWin)return;playClick();undoS();});
 redoBtn.addEventListener("click",()=>{if(!activeWin)return;playClick();redoS();});
 snsBtn.addEventListener("click",()=>{playClick();});

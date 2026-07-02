@@ -4259,19 +4259,8 @@ async function savePNG(){
   const today=jstKey();
   try{
     const url=oc.toDataURL("image/png");
-    let shared=false;
-    /* モバイルではダウンロードが無視されることがあるので、可能なら共有シートで保存 */
-    try{
-      if(navigator.canShare && typeof fetch==="function"){
-        const blob=await (await fetch(url)).blob();
-        const file=new File([blob],`radio-stamp-${today}.png`,{type:"image/png"});
-        if(navigator.canShare({files:[file]})){ await navigator.share({files:[file]}); shared=true; }
-      }
-    }catch(_){/* 共有キャンセル等は無視してダウンロードにフォールバック */}
-    if(!shared){
-      const a=document.createElement("a");a.href=url;
-      a.download=`radio-stamp-${today}.png`;document.body.appendChild(a);a.click();a.remove();
-    }
+    const a=document.createElement("a");a.href=url;
+    a.download=`radio-stamp-${today}.png`;document.body.appendChild(a);a.click();a.remove();
     try{toast("ほぞんしたよ！📷");}catch(_){}
   }catch(e){
     /* プレビュー等でクロスオリジン画像によりcanvasが汚染されると toDataURL が SecurityError を投げる。
@@ -4313,7 +4302,8 @@ function startRandomMode(){
     mFrac=missRate();
     idx=(Math.random()<mFrac)?-1:pickStampIdx();
   }
-  stampPath=null;
+  stampPath=decided||null;   /* 決定済み（2回目以降）は即セットして押せるように */
+  if(decided)ghostImg.src=decided;
   openRoulette(idx,picked=>{
     if(picked===null){            /* はずれ：保存しない・カード準備に進まない */
       refreshTodayPreview();
@@ -4333,6 +4323,7 @@ function handleCardSelect(target){
   _cardBusy=true;setTimeout(()=>{_cardBusy=false;},800);
   startBGM();
   playClick();
+  if(todayDone()){ showSendoffChoice(postedToday()); return; }   /* 今日はスタンプ済み→見送り選択へ */
   const wake=profileWake(),now=nowHourFloat();
   if((now>=wake&&now<wake+1)||_startedOnce){startRandomMode();return;}   /* 目標枠内、または同セッションで一度始めていれば確認なしでそのまま */
   /* 枠外：確認カードを出す */
@@ -4772,6 +4763,7 @@ function refreshHome(){
   if(badge)badge.hidden=(current<1);
   refreshRareMeter();
   refreshGroundPost();
+  try{const ml=document.querySelector(".modeLabel");if(ml)ml.textContent=todayDone()?"スタンプ済み":"はじめる";}catch(_){}
   try{checkCatLetter(current);}catch(_){}
   try{refreshBuddyCount();}catch(_){}
   try{refreshPledgeUI();}catch(_){}

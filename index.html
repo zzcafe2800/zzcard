@@ -1986,8 +1986,8 @@ button,input{font:inherit;}
     <input type="text" id="postComment" maxlength="30" placeholder="ひとこと（任意）例：今日も早起き！"/>
     <label id="postAnonRow"><input type="checkbox" id="postAnon"/> 匿名で投稿する</label>
     <div id="postConfirmBtns">
-      <button id="postNo" type="button">やめる</button>
-      <button id="postYes" type="button">投稿</button>
+      <button id="postNo" type="button">投稿しない</button>
+      <button id="postYes" type="button">投稿する</button>
     </div>
   </div>
 </div>
@@ -1998,8 +1998,8 @@ button,input{font:inherit;}
     <div id="postDoneSub">みんなのホームに表示されるよ</div>
     <div id="postDonePreview"></div>
     <div id="postDoneBtns">
-      <button id="postDoneRally" type="button">スタンプラリー</button>
-      <button id="postDoneHome" type="button">ホーム</button>
+      <button id="postDoneRally" type="button">やめる</button>
+      <button id="postDoneHome" type="button">見送り</button>
     </div>
   </div>
 </div>
@@ -2247,9 +2247,8 @@ function showPostConfirm(fromSave){
 function refreshSaveBtn(){
   const sb=$("saveBtn");if(!sb)return;
   const lbl=sb.querySelector(".saveBtnLabel");
-  const toPost=savedRecently()&&!postedToday();
-  if(lbl)lbl.textContent=toPost?"投稿":"ほぞん";
-  sb.classList.toggle("asPost",toPost);
+  if(lbl)lbl.textContent="ほぞん";   /* 何度でも保存できる（投稿ボタンには変えない） */
+  sb.classList.remove("asPost");
 }
 function refreshGroundPost(){
   const g=$("groundPostBtn");if(!g)return;
@@ -4229,7 +4228,7 @@ async function loadImg(src){return new Promise((res,rej)=>{const i=new Image();i
    保存（朝参加/夜参加をcanvasに描画）
    ========================================================= */
 async function savePNG(){
-  if(!cardPath)return;
+  if(!cardPath){ try{toast("保存する画像が まだ無いよ");}catch(_){}; return; }
   const base=await loadImg(cardImg.src);
   const oc=document.createElement("canvas");const ctx=oc.getContext("2d");
   oc.width=base.naturalWidth||base.width;oc.height=base.naturalHeight||base.height;
@@ -4260,8 +4259,20 @@ async function savePNG(){
   const today=jstKey();
   try{
     const url=oc.toDataURL("image/png");
-    const a=document.createElement("a");a.href=url;
-    a.download=`radio-stamp-${today}.png`;document.body.appendChild(a);a.click();a.remove();
+    let shared=false;
+    /* モバイルではダウンロードが無視されることがあるので、可能なら共有シートで保存 */
+    try{
+      if(navigator.canShare && typeof fetch==="function"){
+        const blob=await (await fetch(url)).blob();
+        const file=new File([blob],`radio-stamp-${today}.png`,{type:"image/png"});
+        if(navigator.canShare({files:[file]})){ await navigator.share({files:[file]}); shared=true; }
+      }
+    }catch(_){/* 共有キャンセル等は無視してダウンロードにフォールバック */}
+    if(!shared){
+      const a=document.createElement("a");a.href=url;
+      a.download=`radio-stamp-${today}.png`;document.body.appendChild(a);a.click();a.remove();
+    }
+    try{toast("ほぞんしたよ！📷");}catch(_){}
   }catch(e){
     /* プレビュー等でクロスオリジン画像によりcanvasが汚染されると toDataURL が SecurityError を投げる。
        GitHub Pages（同一オリジン）では問題なし。ここで握りつぶして保存フローは続行する。 */
@@ -4399,29 +4410,36 @@ function closeCardMenu(){cardMenuScreen.classList.remove("visible");refreshSaveB
 
 saveBtn.addEventListener("click",async()=>{
   if(!activeWin)return;playClick();
-  if(savedRecently()&&!postedToday()){ showPostConfirm(false); return; }  /* 6時間内：保存ボタンが投稿ボタンに */
   try{ await savePNG(); }catch(e){ console.warn("savePNG失敗:",e&&e.message); }
   markSaved();refreshSaveBtn();refreshGroundPost();
   try{refreshOutingUI();refreshHomeOutingChip();}catch(_){}
   bumpAffectionDaily();   /* 1日やるごとに親密度メーターUP */
   if(inWakeWindow()){creditGachaDay();refreshGachaBadge();}   /* 目標の時間内に保存したらコイン（1日1回） */
-  if(!postedToday()){ showPostConfirm(false); }   /* 保存したら投稿画面を出す（投稿の前に部屋を開かない） */
-  else{ goToCatRoomAfterPost(); }
+  if(!postedToday()){ showPostConfirm(false); }   /* 未投稿→投稿画面（投稿/やめる） */
+  else{ showSendoffChoice(); }                    /* 投稿済み→投稿は飛ばして やめる/見送り へ */
 });
+/* やめる／見送り の選択画面（＝postDoneを流用） */
+function showSendoffChoice(posted){
+  try{$("postConfirm").classList.remove("visible");}catch(_){}
+  const t=$("postDoneTitle"), sub=$("postDoneSub");
+  if(t)t.textContent=posted?"投稿しました🎉":"きょうも おつかれさま！";
+  if(sub)sub.textContent=posted?"みんなのホームに表示されるよ":"ねこを 見送る？";
+  try{$("postDonePreview").innerHTML="";}catch(_){}
+  $("postDone").classList.add("visible");
+}
 $("postYes").addEventListener("click",async()=>{
   playClick();const c=($("postComment").value||"").trim();
   $("postConfirm").classList.remove("visible");
   await postToday($("postAnon").checked,c);
   markPosted();refreshSaveBtn();refreshGroundPost();
-  $("postDonePreview").innerHTML=postPreviewHTML(c);
-  $("postDone").classList.add("visible");
+  showSendoffChoice(true);   /* 投稿後→やめる/見送り */
 });
-$("postNo").addEventListener("click",()=>{playClick();$("postConfirm").classList.remove("visible");goToCatRoomAfterPost();});
+$("postNo").addEventListener("click",()=>{playClick();$("postConfirm").classList.remove("visible");showSendoffChoice(false);});   /* 投稿しない→見送り選択へ */
 $("postComment").addEventListener("input",updatePostPreview);
 $("groundPostBtn").addEventListener("click",()=>{playClick();showPostConfirm(false);});
-$("postDoneRally").addEventListener("click",()=>{playClick();$("postDone").classList.remove("visible");});
-$("postDoneHome").addEventListener("click",()=>{playClick();$("postDone").classList.remove("visible");goToCatRoomAfterPost();});
-$("postConfirm").addEventListener("click",e=>{if(e.target===$("postConfirm")){$("postConfirm").classList.remove("visible");goToCatRoomAfterPost();}});
+$("postDoneRally").addEventListener("click",()=>{playClick();$("postDone").classList.remove("visible");});   /* やめる→スタンプラリー */
+$("postDoneHome").addEventListener("click",()=>{playClick();$("postDone").classList.remove("visible");goToCatRoomAfterPost();});   /* 見送り→いってらっしゃい */
+$("postConfirm").addEventListener("click",e=>{if(e.target===$("postConfirm")){$("postConfirm").classList.remove("visible");showSendoffChoice(false);}});
 undoBtn.addEventListener("click",()=>{if(!activeWin)return;playClick();undoS();});
 redoBtn.addEventListener("click",()=>{if(!activeWin)return;playClick();redoS();});
 snsBtn.addEventListener("click",()=>{playClick();});

@@ -4304,9 +4304,14 @@ function startRandomMode(){
   }
   stampPath=decided||null;   /* 決定済み（2回目以降）は即セットして押せるように */
   if(decided)ghostImg.src=decided;
-  openRoulette(idx,picked=>{
-    if(picked===null){            /* はずれ：保存しない・カード準備に進まない */
+  openRoulette(idx,async(picked)=>{
+    if(picked===null){            /* はずれ：白黒スタンプを押せるようにする（見た目が違うだけ） */
+      const gbase=POOL[Math.floor(Math.random()*POOL.length)];
+      let gsrc=gbase;
+      try{ gsrc=await toGrayDataURL(gbase); }catch(_){ gsrc=gbase; }
+      stampPath=gsrc; ghostImg.src=gsrc;
       refreshTodayPreview();
+      openCardMenu();   /* はずれでもカード準備→スタンプを押せる */
       return;
     }
     if(!decided)assignTodayStamp(idx);   /* 初回だけ保存 */
@@ -4314,6 +4319,20 @@ function startRandomMode(){
     refreshTodayPreview();
     openCardMenu();   /* ★ ルーレットの後にカード準備画面を表示 */
   },mFrac);
+}
+/* スタンプ画像を白黒データURLにする（はずれ用） */
+async function toGrayDataURL(src){
+  const img=await loadImg(src);
+  const w=img.naturalWidth||img.width||128, h=img.naturalHeight||img.height||128;
+  const c=document.createElement("canvas");c.width=w;c.height=h;
+  const x=c.getContext("2d");
+  x.drawImage(img,0,0,w,h);
+  try{
+    const d=x.getImageData(0,0,w,h),p=d.data;
+    for(let i=0;i<p.length;i+=4){const g=(p[i]*0.299+p[i+1]*0.587+p[i+2]*0.114)|0;p[i]=p[i+1]=p[i+2]=g;}
+    x.putImageData(d,0,0);
+  }catch(_){ /* クロスオリジンで読めない場合はそのまま */ }
+  return c.toDataURL("image/png");
 }
 
 let _cardBusy=false;
@@ -4611,23 +4630,10 @@ function spinWheel(winnerIdx,onDone){
     if(wi){wi.style.transition="opacity .3s";wi.style.opacity="1";}
     rs.classList.add("reveal");
     if(isMiss){
-      rr.textContent="はずれ… もう一回！";rr.classList.add("show");
+      rr.textContent="はずれスタンプ…";rr.classList.add("show");
       buzz();
-      const ww2=$("wheelWrap");if(ww2)ww2.style.display="none";
-      $("rouletteTitle").textContent="はずれ…";
-      const ws=$("rouletteWinStamp");if(ws)ws.style.display="none";
-      $("rouletteWinName").textContent="もう一回まわそう！";
-      $("rouletteWin").hidden=false;
-      const nx=$("rouletteNext");
-      nx.textContent="もう一回まわす";
-      nx.onclick=()=>{
-        playClick();
-        $("rouletteWin").hidden=true;
-        if(ws)ws.style.display="";
-        nx.textContent="つぎへ";
-        rs.classList.remove("visible","reveal");
-        startRandomMode();   /* はずれは何度でも回せる */
-      };
+      if(typeof onDone==="function")onDone(null);
+      setTimeout(()=>{rs.classList.remove("visible","reveal");},1400);
     }else{
       winSound();
       const st=POOL[winnerIdx];

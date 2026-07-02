@@ -4611,19 +4611,34 @@ function spinWheel(winnerIdx,onDone){
     if(wi){wi.style.transition="opacity .3s";wi.style.opacity="1";}
     rs.classList.add("reveal");
     if(isMiss){
-      rr.textContent="はずれスタンプ…";rr.classList.add("show");
+      rr.textContent="はずれ… もう一回！";rr.classList.add("show");
       buzz();
-      if(typeof onDone==="function")onDone(null);
-      setTimeout(()=>{rs.classList.remove("visible","reveal");},1400);
+      const ww2=$("wheelWrap");if(ww2)ww2.style.display="none";
+      $("rouletteTitle").textContent="はずれ…";
+      const ws=$("rouletteWinStamp");if(ws)ws.style.display="none";
+      $("rouletteWinName").textContent="もう一回まわそう！";
+      $("rouletteWin").hidden=false;
+      const nx=$("rouletteNext");
+      nx.textContent="もう一回まわす";
+      nx.onclick=()=>{
+        playClick();
+        $("rouletteWin").hidden=true;
+        if(ws)ws.style.display="";
+        nx.textContent="つぎへ";
+        rs.classList.remove("visible","reveal");
+        startRandomMode();   /* はずれは何度でも回せる */
+      };
     }else{
       winSound();
       const st=POOL[winnerIdx];
       const ww=$("wheelWrap");if(ww)ww.style.display="none";
       $("rouletteTitle").textContent="やったね！";
+      const ws=$("rouletteWinStamp");if(ws)ws.style.display="";
       $("rouletteWinStamp").src=st;
       $("rouletteWinName").textContent=`${stampName(st)} GET！`;
       $("rouletteWin").hidden=false;
-      $("rouletteNext").onclick=()=>{
+      const nx=$("rouletteNext");nx.textContent="つぎへ";
+      nx.onclick=()=>{
         playClick();
         $("rouletteWin").hidden=true;
         rs.classList.remove("visible","reveal");

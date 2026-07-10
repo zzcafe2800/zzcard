@@ -1807,7 +1807,7 @@ button,input{font:inherit;}
     </div>
   </div>
   <div id="tutDots"><span class="tutDot active"></span><span class="tutDot"></span><span class="tutDot"></span></div>
-  <div id="tutStartRow"><button id="tutSkip" type="button">スキップ</button><button id="tutStart" type="button">ものがたりを 見る</button></div>
+  <div id="tutStartRow"><button id="tutStart" type="button">はじめる</button></div>
 </div>
 
 <div id="profileSetup">
@@ -5368,10 +5368,31 @@ function renderProfileBar(){
   $("tpbName").textContent=p&&p.name?p.name:"匿名さん";
   $("tpbAvatar").innerHTML=catFaceSvg(profileBody(),profileColor(),getEquippedCostume());
 }
+let _pendingCatName="";
+function showNameCard(){
+  let m=document.getElementById("nameCard");
+  if(!m){
+    m=document.createElement("div");m.id="nameCard";
+    m.style.cssText="position:fixed;inset:0;z-index:400;display:flex;align-items:center;justify-content:center;background:rgba(180,205,220,.35);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);";
+    m.innerHTML=`<div style="background:#fff;border-radius:22px;padding:26px 22px 20px;width:min(84vw,320px);box-shadow:0 16px 40px rgba(120,160,190,.3);text-align:center;">
+      <div style="font-size:34px;margin-bottom:6px;">🐈‍⬛</div>
+      <div style="font-size:16px;font-weight:800;color:#4a6b7e;margin-bottom:4px;">この子の なまえは？</div>
+      <div style="font-size:12px;color:#8aa7b8;margin-bottom:14px;">あとで かえられるよ</div>
+      <input id="nameCardInput" type="text" maxlength="12" placeholder="なまえ" style="width:100%;box-sizing:border-box;padding:11px 14px;border:2px solid #d5e6ef;border-radius:12px;font-size:15px;text-align:center;outline:none;margin-bottom:16px;">
+      <button id="nameCardOk" type="button" style="width:100%;border:none;border-radius:999px;padding:12px;font-size:15px;font-weight:800;background:linear-gradient(135deg,#7fc0dc,#5b9cb8);color:#fff;box-shadow:0 6px 16px rgba(91,156,184,.35);cursor:pointer;">けってい</button>
+    </div>`;
+    document.body.appendChild(m);
+    const inp=m.querySelector("#nameCardInput"), ok=m.querySelector("#nameCardOk");
+    const go=()=>{ _pendingCatName=(inp.value||"").trim().slice(0,12); try{playClick();}catch(_){}; m.remove(); openProfileSetup(false); };
+    ok.addEventListener("click",go);
+    inp.addEventListener("keydown",e=>{if(e.key==="Enter")go();});
+    setTimeout(()=>{try{inp.focus();}catch(_){}} ,120);
+  }else{ m.style.display="flex"; }
+}
 function openProfileSetup(edit){
   const p=getProfile()||{};
   $("psTitle").textContent=edit?"MY猫を編集":"MY猫をつくろう";
-  $("psName").value=p.name||"";
+  $("psName").value=p.name||_pendingCatName||"";
   wpSet(Number.isFinite(p.wakeHour)?p.wakeHour:6,Number.isFinite(p.wakeMin)?p.wakeMin:0);
   $("psWake").value=Number.isFinite(p.wakeHour)?p.wakeHour:6;
   $("psWakeMin").value=Number.isFinite(p.wakeMin)?p.wakeMin:0;
@@ -8242,7 +8263,7 @@ function tutGo(i){
   const row=$("tutStartRow"); if(row)row.style.display=_tutPage===last?"":"none";
   const sk=$("tutSkip"), st=$("tutStart");
   if(_tutMode==="help"){ if(sk)sk.style.display="none"; if(st)st.textContent="とじる"; }
-  else{ if(sk)sk.style.display=""; if(st)st.textContent="ものがたりを 見る"; }
+  else{ if(sk)sk.style.display="none"; if(st)st.textContent="はじめる"; }
 }
 function showTutorial(mode){_tutMode=mode||"first";tutGo(0);$("tutorial").classList.add("visible");}
 $("tutPrev").addEventListener("click",()=>{playClick();tutGo(_tutPage-1);});
@@ -8250,12 +8271,13 @@ $("tutNext").addEventListener("click",()=>{playClick();tutGo(_tutPage+1);});
 $("tutStart").addEventListener("click",()=>{
   playClick();
   $("tutorial").classList.remove("visible");
-  if(_tutMode!=="help"){ try{ if(getProfile()){showSelect();updateTop();} else openProfileSetup(false); }catch(_){ openProfileSetup(false); } }
+  if(_tutMode!=="help"){ try{ if(getProfile()){showSelect();updateTop();} else showNameCard(); }catch(_){ showNameCard(); } }
 });
-$("tutSkip").addEventListener("click",()=>{
+const _tutSkipBtn=$("tutSkip");
+if(_tutSkipBtn)_tutSkipBtn.addEventListener("click",()=>{
   playClick();
   $("tutorial").classList.remove("visible");
-  try{ if(getProfile()){showSelect();updateTop();} else openProfileSetup(false); }catch(_){ openProfileSetup(false); }
+  try{ if(getProfile()){showSelect();updateTop();} else showNameCard(); }catch(_){ showNameCard(); }
 });
 $("helpBtn").addEventListener("click",()=>{playClick();showTutorial("help");});
 $("nyanShot").addEventListener("click",()=>{playClick();if(!_photoMode)enterPhotoMode();});

@@ -217,7 +217,7 @@ button,input{font:inherit;}
 #recentLabel .recentCat{width:22px;height:22px;}
 .sky-night #recentLabel{background:rgba(70,82,130,.62);color:#eef2ff;}
 #selectInner{pointer-events:none;}
-#selectInner .modeCard,#selectInner #pledgeCard{pointer-events:auto;}
+#selectInner .modeCard{pointer-events:auto;}
 .hillBack{width:180vw;height:280px;bottom:-160px;background:#c7e3b8;}
 .hillFront{width:155vw;height:240px;bottom:-130px;background:#aecf99;}
 .cloud{position:absolute;background:rgba(255,255,255,.9);border-radius:999px;
@@ -328,16 +328,6 @@ button,input{font:inherit;}
 #selectScreen.hidden ~ #topLeftStack{display:none;}
 #buddyCount{margin:0;width:100%;box-sizing:border-box;text-align:center;white-space:nowrap;overflow:hidden;font-size:11.5px;font-weight:800;color:#5a86a0;background:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.85);border-radius:13px;padding:7px 10px;box-shadow:0 4px 12px rgba(120,180,220,.14);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);letter-spacing:.02em;animation:homeStatIn .5s ease-out both;}
 #buddyCount .bcLive{color:#ef8a4d;}
-#pledgeCard{margin:0;width:100%;box-sizing:border-box;display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:800;color:#4d6f92;background:rgba(255,255,255,.78);border:1px solid rgba(180,200,255,.7);border-radius:13px;padding:7px 8px 7px 11px;box-shadow:0 4px 12px rgba(110,140,200,.15);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:homeStatIn .5s ease-out both;}
-#pledgeText{flex:1;min-width:0;white-space:nowrap;overflow:hidden;}
-#pledgeText{flex:1;letter-spacing:.02em;}
-#pledgeText b{color:#5f7fe0;}
-#pledgeBtn{border:none;border-radius:999px;padding:7px 15px;font-family:inherit;font-size:12px;font-weight:800;color:#fff;cursor:pointer;background:linear-gradient(135deg,#7b8fe6,#5f6fd0);box-shadow:0 4px 10px rgba(95,111,208,.35);white-space:nowrap;}
-#pledgeSkip{border:none;background:none;color:#9fb0c6;font-size:16px;cursor:pointer;padding:0 2px;line-height:1;}
-#pledgeCard.done{background:rgba(230,238,255,.72);border-color:rgba(150,175,240,.6);}
-#pledgeCard.done #pledgeBtn,#pledgeCard.done #pledgeSkip{display:none;}
-.sky-night #pledgeCard,.sky-evening #pledgeCard{background:rgba(70,82,130,.55);border-color:rgba(255,255,255,.35);color:#eef2ff;}
-.sky-night #pledgeText b,.sky-evening #pledgeText b{color:#c9d4ff;}
 .sky-night #buddyCount,.sky-evening #buddyCount{background:rgba(70,82,130,.5);border-color:rgba(255,255,255,.35);color:#eef2ff;}
 .sky-night #buddyCount .bcLive,.sky-evening #buddyCount .bcLive{color:#ffd08a;}
 #letterPopup{position:fixed;inset:0;z-index:2800;display:none;align-items:center;justify-content:center;background:rgba(40,60,90,.42);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);padding:24px;}
@@ -413,16 +403,16 @@ button,input{font:inherit;}
 .dexTab.active{color:#fff;background:linear-gradient(135deg,#7ec8ee,#5bb0e0);box-shadow:0 4px 12px rgba(91,176,224,.34);}
 .dexMini{width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
 .dexMini svg{width:84%;height:84%;}
-.dexCell.locked .dexMini{display:none;}
+.dexCell.locked .dexMini{filter:blur(4.5px) saturate(.85);opacity:.42;}
+.dexCell.locked .dexMini svg{animation:none;}
 #dexGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:12px;}
 .dexCell{position:relative;aspect-ratio:1;border-radius:18px;display:flex;align-items:center;justify-content:center;
   background:rgba(143,220,255,.10);border:1.5px solid rgba(143,220,255,.22);padding:14px 8px 26px;overflow:hidden;}
 .dexCell.got{background:rgba(195,238,255,.45);border-color:rgba(99,204,255,.42);
   box-shadow:0 6px 16px rgba(99,204,255,.16);}
 .dexCell img{width:100%;height:100%;object-fit:contain;}
-.dexCell.locked img{display:none;}
-.dexQ{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  font-size:30px;font-weight:700;color:rgba(120,165,188,.6);}
+.dexCell.locked img{filter:blur(4.5px) saturate(.85);opacity:.42;}
+.dexQ{position:absolute;top:4px;right:6px;font-size:15px;font-weight:900;color:#8fb0c4;text-shadow:0 1px 2px rgba(255,255,255,.8);}
 
 /* ===================== TOAST ===================== */
 .toast{position:absolute;left:50%;top:64px;transform:translate(-50%,-12px);z-index:300;
@@ -534,7 +524,8 @@ button,input{font:inherit;}
 /* ===================== 図鑑（ワクワク強化） ===================== */
 .dexStars{position:absolute;top:4px;left:0;right:0;text-align:center;font-size:11px;
   color:#ffb24d;letter-spacing:1px;text-shadow:0 1px 2px rgba(255,160,40,.4);pointer-events:none;}
-.dexCell.locked .dexStars{color:rgba(150,180,200,.5);text-shadow:none;}
+.dexCell.locked .dexStars{color:#ffb24d;opacity:.95;}
+.dexCell.locked.rare{border-color:rgba(255,190,90,.5);}
 .dexDate{position:absolute;bottom:14px;left:0;right:0;text-align:center;font-size:8px;
   color:#8ab8cc;font-weight:700;pointer-events:none;}
 .dexName{position:absolute;bottom:3px;left:0;right:0;text-align:center;font-size:9.5px;
@@ -1086,40 +1077,10 @@ button,input{font:inherit;}
 #outingIntro .oiBtn{border:none;border-radius:999px;padding:13px 36px;font-family:inherit;font-size:15px;font-weight:800;cursor:pointer;
   color:#fff;background:linear-gradient(135deg,#8fd0ef,#6bb8e0);box-shadow:0 8px 20px rgba(107,184,224,.42);}
 #outingIntro .oiBtn:active{transform:scale(.96);}
-#storyIntro{position:fixed;inset:0;z-index:3200;display:none;flex-direction:column;align-items:center;justify-content:center;
-  background:#1a1722;color:#f3eee8;padding:24px;text-align:center;}
-#storyIntro.show{display:flex;}
-#storyIntro.storyText{cursor:pointer;background:radial-gradient(120% 100% at 50% 40%,#fdf8f0 0%,#faeee6 62%,#f3ddda 100%);}
-#storyIntro .stCard{font-family:"Yomogi","Kosugi Maru",cursive;font-size:23px;font-weight:800;line-height:2.2;letter-spacing:1px;color:#6f5238;text-align:center;padding:0 30px;animation:stFade 1.4s ease both;}
-#storyIntro .stNext{position:absolute;bottom:34px;left:0;right:0;text-align:center;font-size:12px;color:#c19a83;letter-spacing:3px;animation:stBlink 1.8s ease-in-out infinite;}
 @keyframes stFade{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
 @keyframes stBlink{0%,100%{opacity:.25;}50%{opacity:.9;}}
-#storyIntro .stScene{width:min(420px,92vw);box-shadow:0 18px 50px rgba(0,0,0,.5);border-radius:18px;overflow:hidden;animation:stFade 1s ease both;}
-#storyIntro .stScene svg{width:100%;height:auto;display:block;}
-#storyIntro .stText{font-family:"Yomogi","Kosugi Maru",cursive;font-size:18px;font-weight:800;margin:20px 0 2px;animation:stFade .9s ease both;}
-#storyIntro .stNya{margin-top:14px;border:none;border-radius:999px;padding:13px 44px;font-family:inherit;font-size:16px;font-weight:800;cursor:pointer;color:#5a3a48;background:linear-gradient(135deg,#ffd6e6,#ffb9d4);box-shadow:0 8px 22px rgba(0,0,0,.35);}
-#storyIntro .stNya:active{transform:scale(.96);}
-#storyIntro.storyBook{background:radial-gradient(140% 120% at 50% 0%,#efe3d2 0%,#e3d4bf 68%,#d7c6ad 100%);padding:22px;cursor:pointer;}
-#storyIntro .stPage{position:relative;width:min(600px,94vw);height:min(90vh,880px);background:#fdf9f0;border-radius:14px;border:1px solid #efe3ce;box-shadow:0 20px 54px rgba(90,66,44,.3);overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 30px 56px;box-sizing:border-box;animation:stTurn .55s cubic-bezier(.2,.7,.2,1) both;}
-#storyIntro .stPage::before{content:"";position:absolute;inset:13px;border:1px solid #f0e3ce;border-radius:9px;pointer-events:none;}
 @keyframes stTurn{from{opacity:0;transform:translateX(28px);}to{opacity:1;transform:none;}}
-#storyIntro .stPageInner{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
-#storyIntro .stPageInner.stCover{gap:20px;}
-#storyIntro .stKicker{font-family:"Yomogi","Kosugi Maru",cursive;font-size:12px;letter-spacing:6px;color:#c39a76;opacity:0;animation:stFadeIn 1s ease .05s forwards;}
-#storyIntro .stCoverRule{width:46px;height:2px;border-radius:2px;background:#e3c4ad;opacity:0;animation:stFadeIn 1s ease .4s forwards;}
-#storyIntro .stLine{font-family:"Yomogi","Kosugi Maru",cursive;font-size:18px;font-weight:800;line-height:2.05;color:#6b4f38;text-align:center;padding:0 6px;opacity:0;animation:stFadeIn 1s ease .15s forwards;}
-#storyIntro .stLine.big{font-size:24px;line-height:2.25;letter-spacing:1px;}
-#storyIntro .stPic{flex:1;min-height:0;width:100%;display:flex;align-items:center;justify-content:center;opacity:0;animation:stFadeIn 1.1s ease .5s forwards;}
-#storyIntro .stPic img{max-width:100%;max-height:100%;object-fit:contain;}
-#storyIntro .stPageInner.posB .stLine{animation-delay:.55s;}
-#storyIntro .stPageInner.posB .stPic{animation-delay:.12s;}
 @keyframes stFadeIn{from{opacity:0;}to{opacity:1;}}
-#storyIntro .stFolio{position:absolute;bottom:20px;left:0;right:0;text-align:center;font-family:"Yomogi","Kosugi Maru",cursive;font-size:12px;letter-spacing:2px;color:#c8ae8b;}
-#storyIntro .stChev{position:absolute;top:50%;transform:translateY(-50%);color:#cbb08e;user-select:none;}
-#storyIntro .stChevL{left:14px;font-size:26px;opacity:.5;}
-#storyIntro .stChevR{right:16px;font-size:14px;font-family:"Yomogi","Kosugi Maru",cursive;font-weight:800;color:#b98f77;opacity:.8;animation:stBlink 1.9s ease-in-out infinite;}
-#storyIntro .stChev.off{display:none;}
-#storyIntro .stSkip{position:absolute;top:14px;right:16px;font-size:12px;letter-spacing:1px;color:#b7a184;opacity:.7;padding:8px 10px;z-index:3;}
 #firstMeet{position:fixed;inset:0;z-index:3300;display:none;align-items:center;justify-content:center;cursor:pointer;padding:22px;background:radial-gradient(140% 120% at 50% 0%,#efe3d2 0%,#e3d4bf 68%,#d7c6ad 100%);}
 #firstMeet.fmShow{display:flex;}
 #firstMeet .fmPage{position:relative;width:min(600px,94vw);height:min(90vh,880px);background:#fdf9f0;border-radius:14px;border:1px solid #efe3ce;box-shadow:0 20px 54px rgba(90,66,44,.3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:48px 30px 56px;box-sizing:border-box;animation:stTurn .55s cubic-bezier(.2,.7,.2,1) both;}
@@ -1129,21 +1090,8 @@ button,input{font:inherit;}
 #firstMeet .fmLine{font-family:"Yomogi","Kosugi Maru",cursive;font-size:19px;font-weight:800;line-height:2.05;color:#6b4f38;text-align:center;padding:0 6px;opacity:0;animation:stFadeIn 1s ease .1s forwards;}
 #firstMeet .fmGo{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:13px;letter-spacing:2px;color:#b98f77;opacity:0;animation:stGoIn2 .6s ease 1.2s forwards,stBlink 1.9s ease-in-out 1.8s infinite;}
 @keyframes stGoIn2{to{opacity:.8;}}
-#storyIntro .stNameRow{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:4px;opacity:0;animation:stFadeIn 1s ease .5s forwards;}
-#storyIntro .stNameRow input{font-family:"Yomogi","Kosugi Maru",cursive;font-size:18px;font-weight:800;color:#6b4f38;text-align:center;width:min(52vw,190px);padding:11px 14px;border:2px solid #e7d3bd;border-radius:14px;background:#fffdf8;outline:none;}
-#storyIntro .stNameRow input:focus{border-color:#e6a98c;}
-#storyIntro .stNameRow button{font-family:"Yomogi","Kosugi Maru",cursive;font-size:15px;font-weight:800;color:#7a4b34;border:none;border-radius:14px;padding:12px 20px;cursor:pointer;background:linear-gradient(135deg,#ffd9b8,#ffc39a);box-shadow:0 6px 16px rgba(180,120,80,.3);}
-#storyIntro .stNameRow button:active{transform:scale(.96);}
-#storyIntro .stHint{font-family:"Yomogi","Kosugi Maru",cursive;font-size:12px;letter-spacing:1px;color:#c39a76;opacity:0;animation:stFadeIn 1s ease .5s forwards;}
-#storyIntro .stKitten{cursor:pointer;}
-#storyIntro .stKitten.stWiggle{animation:stWiggle .5s ease;transform-origin:50% 90%;}
 @keyframes stWiggle{0%,100%{transform:rotate(0);}20%{transform:rotate(-5deg) scale(1.04);}45%{transform:rotate(4deg);}70%{transform:rotate(-3deg);}}
-#storyIntro .stHeart{position:absolute;font-size:26px;color:#ff9ec4;transform:translate(-50%,0);pointer-events:none;animation:stHeartUp 1.5s ease forwards;z-index:2;}
 @keyframes stHeartUp{0%{opacity:0;transform:translate(-50%,6px) scale(.6);}25%{opacity:1;}100%{opacity:0;transform:translate(-50%,-46px) scale(1.1);}}
-#storyIntro .stPic img.stNuzzle{transition:transform .7s cubic-bezier(.2,.7,.2,1);transform:translateX(-16px) rotate(-2deg);}
-#storyIntro .stPage.stHold .stPic{animation-duration:2.6s;}
-#storyIntro .stPage.stHold .stLine{animation-duration:2.4s;}
-#storyIntro .stPage.stHold .stChevR{opacity:0;transition:opacity .4s;}
 #outingBig .obTitle{font-family:"Yomogi","Kosugi Maru",cursive;font-size:15px;font-weight:800;color:#6f9fb6;text-shadow:0 1px 2px rgba(255,255,255,.7);}
 #outingBig .obTime{font-family:"Yomogi","Kosugi Maru",cursive;font-size:30px;font-weight:800;color:#4f88a4;text-shadow:0 2px 4px rgba(255,255,255,.7);}
 #outingHomeChip{position:fixed;left:50%;transform:translateX(-50%);top:calc(10px + env(safe-area-inset-top));z-index:120;
@@ -1771,11 +1719,6 @@ button,input{font:inherit;}
 </button>
 <div id="topLeftStack">
   <div id="buddyCount" hidden></div>
-  <div id="pledgeCard" hidden>
-    <span id="pledgeText"></span>
-    <button id="pledgeBtn" type="button">宣言する</button>
-    <button id="pledgeSkip" type="button" aria-label="とじる">×</button>
-  </div>
 </div>
 
 <div id="catRoom">
@@ -2398,18 +2341,24 @@ function catEars2(hx,hy,hr,body,ear){
 function poseSit(b,e,d){return tailSway(`<path d="M74 112 C102 112 108 72 94 58" fill="none" stroke="${b}" stroke-width="13" stroke-linecap="round"/>`,82,108,3.5)+
   `<path d="M60 118 C32 118 26 90 31 66 C35 46 44 41 60 41 C76 41 85 46 89 66 C94 90 88 118 60 118 Z" fill="${b}"/>`+
   `<circle cx="60" cy="46" r="27" fill="${b}"/>`+catEars2(60,46,27,b,e)+catEyesRound(51,69,47,9,d);}
-function poseLoaf(b,e){return `<ellipse cx="60" cy="92" rx="48" ry="28" fill="${b}"/>`+
-  `<path d="M10 94 Q38 116 82 104" fill="none" stroke="${b}" stroke-width="13" stroke-linecap="round"/>`+
-  catEars2(60,71,17,b,e)+catEyeBars(50,70,84,11);}
-function poseStand(b,e,d){let s='';[40,56,72,88].forEach(x=>{s+=`<rect x="${x-4}" y="96" width="8" height="20" rx="4" fill="${b}"/>`;});
-  s+=`<ellipse cx="64" cy="86" rx="38" ry="20" fill="${b}"/>`+
-  tailSway(`<path d="M96 84 C112 76 112 36 100 30" fill="none" stroke="${b}" stroke-width="12" stroke-linecap="round"/>`,96,84,3.2)+
-  `<circle cx="36" cy="64" r="22" fill="${b}"/>`+catEars2(36,64,22,b,e)+catEyesRound(30,42,64,6,d);return s;}
-function poseLie(b,e,d){let s=`<ellipse cx="62" cy="98" rx="44" ry="17" fill="${b}"/>`+
-  `<path d="M30 110 q3 -12 12 -12 q9 0 9 12 z" fill="${b}"/><path d="M50 110 q3 -12 12 -12 q9 0 9 12 z" fill="${b}"/>`+
-  tailSway(`<path d="M98 100 C114 96 114 80 104 78" fill="none" stroke="${b}" stroke-width="11" stroke-linecap="round"/>`,98,100,3.4)+
-  `<path d="M30 96 C24 80 30 64 46 64 C58 64 64 74 64 88 Z" fill="${b}"/>`+
-  `<circle cx="40" cy="70" r="21" fill="${b}"/>`+catEars2(40,70,21,b,e)+catEyesRound(34,46,71,6.5,d);return s;}
+function poseLoaf(b,e){return `<ellipse cx="60" cy="94" rx="46" ry="30" fill="${b}"/>`+
+  `<path d="M16 100 Q40 122 88 108" fill="none" stroke="${b}" stroke-width="14" stroke-linecap="round"/>`+
+  catEars2(60,74,16,b,e)+
+  `<path d="M47 86 q5 4 10 0 M63 86 q5 4 10 0" fill="none" stroke="${_eyeBar}" stroke-width="4.6" stroke-linecap="round"/>`+
+  `<ellipse cx="41" cy="94" rx="4" ry="2.5" fill="#ff9db0" opacity=".45"/><ellipse cx="79" cy="94" rx="4" ry="2.5" fill="#ff9db0" opacity=".45"/>`+
+  `<text x="88" y="66" font-size="12" font-weight="800" fill="#c9d8ff" font-family="'Yomogi',sans-serif">z</text><text x="97" y="55" font-size="16" font-weight="800" fill="#dce6ff" font-family="'Yomogi',sans-serif">Z</text>`;}
+function poseStand(b,e,d){let s='';
+  [42,58,74,90].forEach(x=>{s+=`<rect x="${x-5}" y="94" width="10" height="20" rx="5" fill="${b}"/><ellipse cx="${x}" cy="114" rx="6.5" ry="4.5" fill="${b}"/>`;});
+  s+=`<ellipse cx="66" cy="86" rx="37" ry="22" fill="${b}"/>`+
+  tailSway(`<path d="M98 82 C114 74 114 40 102 34" fill="none" stroke="${b}" stroke-width="13" stroke-linecap="round"/>`,98,82,3.2)+
+  `<circle cx="36" cy="60" r="25" fill="${b}"/>`+catEars2(36,60,25,b,e)+catEyesRound(28,44,62,7,d)+
+  `<ellipse cx="21" cy="70" rx="4" ry="2.5" fill="#ff9db0" opacity=".45"/><ellipse cx="51" cy="70" rx="4" ry="2.5" fill="#ff9db0" opacity=".45"/>`;return s;}
+function poseLie(b,e,d){let s=`<ellipse cx="66" cy="99" rx="42" ry="19" fill="${b}"/>`+
+  `<ellipse cx="36" cy="110" rx="9" ry="5.5" fill="${b}"/><ellipse cx="56" cy="112" rx="9" ry="5.5" fill="${b}"/>`+
+  tailSway(`<path d="M100 96 C116 92 116 76 106 75" fill="none" stroke="${b}" stroke-width="12" stroke-linecap="round"/>`,100,96,3.4)+
+  `<circle cx="40" cy="76" r="25" fill="${b}"/>`+catEars2(40,76,25,b,e)+catEyesRound(31,49,78,7.5,d)+
+  `<ellipse cx="24" cy="86" rx="4" ry="2.5" fill="#ff9db0" opacity=".45"/><ellipse cx="56" cy="86" rx="4" ry="2.5" fill="#ff9db0" opacity=".45"/>`;
+  return s;}
 function poseBow(b,e,d){let s=tailSway(`<path d="M100 66 C116 58 116 26 103 24" fill="none" stroke="${b}" stroke-width="12" stroke-linecap="round"/>`,100,66,3.2)+
   `<ellipse cx="84" cy="78" rx="22" ry="24" fill="${b}"/>`+
   `<path d="M30 104 C20 102 18 88 28 82 C44 72 62 70 80 72 C92 73 96 84 92 96 C88 106 78 106 70 102 C62 98 54 98 46 102 C40 105 34 106 30 104 Z" fill="${b}"/>`+
@@ -2441,10 +2390,19 @@ function poseJar(b,e,d){let s=_blob(b);
   s+=`<rect x="44" y="14" width="32" height="10" rx="4" fill="#bfe1f0" stroke="#9fcfe6" stroke-width="2"/>`;
   s+=`<rect x="43" y="26" width="6" height="40" rx="3" fill="#ffffff" opacity=".5"/>`;return s;}
 function poseSack(b,e,d){let s=_blob(b);
-  s+=`<circle cx="60" cy="46" r="21" fill="${b}"/>`+catEars2(60,46,21,b,e)+catEyesRound(51,69,47,7.5,d);
-  s+=`<path d="M28 60 Q24 92 40 108 Q60 116 80 108 Q96 92 92 60 Q60 52 28 60 Z" fill="#e8f0f4" opacity=".42" stroke="#c2d2dc" stroke-width="1.6"/>`;
-  s+=`<path d="M31 60 Q27 46 37 46 Q45 46 43 60" fill="none" stroke="#c2d2dc" stroke-width="2"/>`;
-  s+=`<path d="M89 60 Q93 46 83 46 Q75 46 77 60" fill="none" stroke="#c2d2dc" stroke-width="2"/>`;return s;}
+  s+=`<circle cx="60" cy="44" r="24" fill="${b}"/>`+catEars2(60,44,24,b,e)+catEyesRound(50,70,46,8,d);
+  s+=`<ellipse cx="43" cy="55" rx="4" ry="2.5" fill="#ff9db0" opacity=".5"/><ellipse cx="77" cy="55" rx="4" ry="2.5" fill="#ff9db0" opacity=".5"/>`;
+  /* まるっとした ふくろ（口をきゅっと結んだ布・体をすっぽり覆う） */
+  s+=`<path d="M30 62 Q20 96 38 114 Q60 126 82 114 Q100 96 90 62 Q76 56 60 57 Q44 56 30 62 Z" fill="#f0e6d2" stroke="#cdb98f" stroke-width="1.8"/>`;
+  s+=`<path d="M30 62 Q20 96 38 114 Q47 119 56 120 L52 64 Z" fill="#dbc9a4" opacity=".5"/>`;
+  /* 口もとのしぼり＋ひも */
+  s+=`<path d="M34 62 Q60 70 86 62" fill="none" stroke="#cdb98f" stroke-width="2.4"/>`;
+  s+=`<g stroke="#cdb98f" stroke-width="2"><line x1="42" y1="63.5" x2="41" y2="70"/><line x1="52" y1="65.5" x2="52" y2="72"/><line x1="66" y1="65.5" x2="67" y2="72"/><line x1="78" y1="63.5" x2="80" y2="70"/></g>`;
+  s+=`<circle cx="88" cy="64" r="3.4" fill="#e0485c"/><path d="M88 64 q6 2 8 8 M88 64 q-2 7 2 12" fill="none" stroke="#e0485c" stroke-width="2.4" stroke-linecap="round"/>`;
+  /* つぎはぎパッチ */
+  s+=`<rect x="46" y="86" width="13" height="11" rx="2.5" fill="#bcd4e8" transform="rotate(-8 52 91)"/>`;
+  s+=`<g stroke="#7fa3c0" stroke-width="1.2" stroke-dasharray="2.4 2"><rect x="47.4" y="87.4" width="10.2" height="8.2" rx="1.6" fill="none" transform="rotate(-8 52 91)"/></g>`;
+  return s;}
 function poseBowl(b,e,d){let s='';
   s+=`<ellipse cx="60" cy="80" rx="42" ry="11" fill="#eaf6fb" stroke="#bfe0ef" stroke-width="2"/>`;
   s+=`<path d="M60 112 C40 112 33 98 36 86 C40 74 50 70 60 70 C70 70 80 74 84 86 C87 98 80 112 60 112 Z" fill="${b}"/>`;
@@ -2459,28 +2417,37 @@ function poseTurn(b,e,d){let s='';
   s+=`<ellipse cx="50" cy="117" rx="8" ry="5" fill="${b}"/><ellipse cx="70" cy="117" rx="8" ry="5" fill="${b}"/>`;
   s+=`<g transform="rotate(-24 64 42)"><circle cx="64" cy="42" r="21" fill="${b}"/>`+catEars2(64,42,21,b,e)+catEyesRound(55,73,43,7.5,d)+`</g>`;return s;}
 function poseSitFluffy(b,e,d){let s='';
-  s+=`<path d="M86 108 C102 106 104 90 94 86" fill="none" stroke="${b}" stroke-width="13" stroke-linecap="round"/>`;
-  s+=`<path d="M60 120 C34 120 28 96 30 78 Q26 74 30 70 Q34 72 34 70 Q38 60 50 58 Q56 50 60 56 Q64 50 70 58 Q82 60 86 70 Q86 72 90 70 Q94 74 90 78 C92 96 86 120 60 120 Z" fill="${b}"/>`;
-  s+=`<ellipse cx="50" cy="116" rx="8" ry="6" fill="${b}"/><ellipse cx="70" cy="116" rx="8" ry="6" fill="${b}"/>`;
-  s+=`<circle cx="60" cy="58" r="23" fill="${b}"/>`+catEars2(60,58,23,b,e)+catEyesRound(51,69,59,8,d);return s;}
+  s+=`<path d="M92 104 C106 100 106 84 96 82" fill="none" stroke="${b}" stroke-width="14" stroke-linecap="round"/>`;
+  s+=`<path d="M60 120 C36 120 30 102 32 88 C33 78 40 71 48 68 Q54 62 60 66 Q66 62 72 68 C80 71 87 78 88 88 C90 102 84 120 60 120 Z" fill="${b}"/>`;
+  s+=`<ellipse cx="49" cy="117" rx="9" ry="6.5" fill="${b}"/><ellipse cx="71" cy="117" rx="9" ry="6.5" fill="${b}"/>`;
+  s+=`<path d="M40 84 q-6 2 -7 8 M44 76 q-7 0 -9 5 M80 84 q6 2 7 8 M76 76 q7 0 9 5" fill="none" stroke="${b}" stroke-width="5" stroke-linecap="round"/>`;
+  s+=`<circle cx="60" cy="52" r="27" fill="${b}"/>`+catEars2(60,52,27,b,e)+catEyesRound(50,70,54,8.5,d);
+  s+=`<ellipse cx="42" cy="63" rx="4.5" ry="2.8" fill="#ff9db0" opacity=".45"/><ellipse cx="78" cy="63" rx="4.5" ry="2.8" fill="#ff9db0" opacity=".45"/>`;
+  return s;}
 function poseStare(b,e,d){let s='';
   s+=`<path d="M78 110 C94 106 94 86 84 82" fill="none" stroke="${b}" stroke-width="11" stroke-linecap="round"/>`;
   s+=`<path d="M60 120 C42 120 38 100 40 80 C42 62 50 54 60 54 C70 54 78 62 80 80 C82 100 78 120 60 120 Z" fill="${b}"/>`;
   s+=`<ellipse cx="54" cy="116" rx="7" ry="6" fill="${b}"/><ellipse cx="66" cy="116" rx="7" ry="6" fill="${b}"/>`;
   s+=`<circle cx="60" cy="44" r="24" fill="${b}"/>`+catEars2(60,44,24,b,e)+catEyesRound(50,70,45,9.5,[0,0]);return s;}
 function poseStand4(b,e,d){let s='';
-  s+=`<path d="M92 90 C112 88 114 68 102 64" fill="none" stroke="${b}" stroke-width="12" stroke-linecap="round"/>`;
-  s+=`<ellipse cx="62" cy="84" rx="34" ry="20" fill="${b}"/>`;
-  s+=`<rect x="36" y="96" width="9" height="22" rx="4" fill="${b}"/><rect x="52" y="98" width="9" height="20" rx="4" fill="${b}"/><rect x="70" y="98" width="9" height="20" rx="4" fill="${b}"/><rect x="84" y="96" width="9" height="22" rx="4" fill="${b}"/>`;
-  s+=`<circle cx="40" cy="56" r="21" fill="${b}"/>`+catEars2(40,56,21,b,e)+catEyesRound(31,49,57,7,d);return s;}
+  s+=`<path d="M94 88 C114 86 116 66 104 62" fill="none" stroke="${b}" stroke-width="13" stroke-linecap="round"/>`;
+  s+=`<ellipse cx="64" cy="84" rx="34" ry="22" fill="${b}"/>`;
+  [[40,94,22],[56,96,20],[72,96,20],[86,94,22]].forEach(([x,y,hh])=>{s+=`<rect x="${x-5}" y="${y}" width="10" height="${hh}" rx="5" fill="${b}"/><ellipse cx="${x}" cy="${y+hh}" rx="6.5" ry="4.5" fill="${b}"/>`;});
+  s+=`<circle cx="40" cy="52" r="24" fill="${b}"/>`+catEars2(40,52,24,b,e)+catEyesRound(31,49,54,7.5,d)+
+  `<ellipse cx="24" cy="62" rx="4" ry="2.5" fill="#ff9db0" opacity=".45"/><ellipse cx="56" cy="62" rx="4" ry="2.5" fill="#ff9db0" opacity=".45"/>`;return s;}
 function poseSurprise(b,e,d){let s='';
-  s+=`<path d="M84 74 C104 66 116 44 110 26" fill="none" stroke="${b}" stroke-width="19" stroke-linecap="round"/>`;
-  s+=`<path d="M60 70 C40 70 32 84 34 98 C36 110 46 112 52 104 C56 99 64 99 68 104 C74 112 84 110 86 98 C88 84 80 70 60 70 Z" fill="${b}"/>`;
-  s+=`<path d="M40 100 q-14 8 -16 18 q10 -4 14 -2 q-2 -8 6 -10 z" fill="${b}"/>`;
-  s+=`<path d="M80 100 q14 8 16 18 q-10 -4 -14 -2 q2 -8 -6 -10 z" fill="${b}"/>`;
-  s+=`<rect x="50" y="100" width="8" height="20" rx="4" fill="${b}"/><rect x="62" y="100" width="8" height="20" rx="4" fill="${b}"/>`;
+  s+=`<path d="M86 72 C106 64 118 42 112 24" fill="none" stroke="${b}" stroke-width="19" stroke-linecap="round"/>`;
+  s+=`<path d="M60 72 C42 72 34 86 36 100 C38 112 48 114 60 114 C72 114 82 112 84 100 C86 86 78 72 60 72 Z" fill="${b}"/>`;
+  /* びっくりして上げた まるいおてて */
+  s+=`<ellipse cx="30" cy="86" rx="8.5" ry="7" fill="${b}"/><ellipse cx="90" cy="86" rx="8.5" ry="7" fill="${b}"/>`;
+  s+=`<ellipse cx="50" cy="115" rx="8" ry="5.5" fill="${b}"/><ellipse cx="70" cy="115" rx="8" ry="5.5" fill="${b}"/>`;
+  /* びっくりのキラ */
+  s+=`<path d="M22 56 l2.4 5 5 2.4 -5 2.4 -2.4 5 -2.4 -5 -5 -2.4 5 -2.4 Z" fill="#ffe07a"/>`;
+  s+=`<path d="M97 44 l1.8 3.8 3.8 1.8 -3.8 1.8 -1.8 3.8 -1.8 -3.8 -3.8 -1.8 3.8 -1.8 Z" fill="#ffe07a"/>`;
   const pe=_eyeExpr;_eyeExpr="wide";
-  s+=`<circle cx="60" cy="48" r="25" fill="${b}"/>`+catEars2(60,48,25,b,e)+catEyesRound(50,70,49,8.5,[0,0]);_eyeExpr=pe;return s;}
+  s+=`<circle cx="60" cy="46" r="27" fill="${b}"/>`+catEars2(60,46,27,b,e)+catEyesRound(50,70,48,9,[0,0]);_eyeExpr=pe;
+  s+=`<ellipse cx="42" cy="58" rx="4.5" ry="2.8" fill="#ff9db0" opacity=".5"/><ellipse cx="78" cy="58" rx="4.5" ry="2.8" fill="#ff9db0" opacity=".5"/>`;
+  return s;}
 function poseFish(b,e,d){let s='';
   s+=`<path d="M74 112 C102 112 108 72 94 58" fill="none" stroke="${b}" stroke-width="13" stroke-linecap="round"/>`;
   s+=`<path d="M60 118 C32 118 26 90 31 66 C35 46 44 41 60 41 C76 41 85 46 89 66 C94 90 88 118 60 118 Z" fill="${b}"/>`;
@@ -2574,13 +2541,18 @@ function drawStraw(hx,hy,hr,col){const w=hr*1.4,domeW=hr*0.9,brimY=hy-hr*0.5,top
   s+=`<rect x="${hx-domeW-1}" y="${brimY-hr*0.34}" width="${2*domeW+2}" height="${hr*0.34}" fill="${col}"/>`;
   s+=`<ellipse cx="${hx}" cy="${brimY}" rx="${w}" ry="${hr*0.34}" fill="${straw}" stroke="${_dkCol(straw)}" stroke-width="1.2"/>`;
   s+=`<ellipse cx="${hx}" cy="${brimY}" rx="${w*0.6}" ry="${hr*0.2}" fill="none" stroke="${_dkCol(straw)}" stroke-width="1" opacity=".5"/>`;return s;}
-function drawNeckRibbon(nx,ny,u,col){let s='';
-  s+=`<path d="M${nx} ${ny} L${nx-u} ${ny-u*0.7} L${nx-u} ${ny+u*0.7} Z" fill="${col}"/>`;
-  s+=`<path d="M${nx} ${ny} L${nx+u} ${ny-u*0.7} L${nx+u} ${ny+u*0.7} Z" fill="${col}"/>`;
-  s+=`<circle cx="${nx}" cy="${ny}" r="${u*0.34}" fill="${_dkCol(col)}"/>`;return s;}
-function drawScarf(nx,ny,u,col){let s='';
-  s+=`<path d="M${nx-u*1.5} ${ny-u*0.4} Q${nx} ${ny+u*0.5} ${nx+u*1.5} ${ny-u*0.4} L${nx+u*1.2} ${ny+u*0.4} Q${nx} ${ny+u*1.2} ${nx-u*1.2} ${ny+u*0.4} Z" fill="${col}"/>`;
-  s+=`<path d="M${nx-u*0.4} ${ny+u*0.3} L${nx+u*0.4} ${ny+u*0.3} L${nx+u*0.7} ${ny+u*1.8} L${nx} ${ny+u*1.5} L${nx-u*0.7} ${ny+u*1.8} Z" fill="${_dkCol(col)}"/>`;return s;}
+function drawNeckRibbon(nx,ny,u,col){let s='';const dk=_dkCol(col);
+  s+=`<path d="M${nx} ${ny} L${nx-u} ${ny-u*0.7} L${nx-u} ${ny+u*0.7} Z" fill="${col}" stroke="${dk}" stroke-width=".8" stroke-linejoin="round"/>`;
+  s+=`<path d="M${nx} ${ny} L${nx+u} ${ny-u*0.7} L${nx+u} ${ny+u*0.7} Z" fill="${col}" stroke="${dk}" stroke-width=".8" stroke-linejoin="round"/>`;
+  s+=`<path d="M${nx} ${ny} L${nx-u} ${ny-u*0.7} L${nx-u*0.92} ${ny-u*0.1} Z" fill="#fff" opacity=".3"/>`;
+  s+=`<path d="M${nx} ${ny} L${nx+u} ${ny-u*0.7} L${nx+u*0.92} ${ny-u*0.1} Z" fill="#fff" opacity=".3"/>`;
+  s+=`<circle cx="${nx}" cy="${ny}" r="${u*0.34}" fill="${dk}"/>`;
+  s+=`<circle cx="${nx-u*0.1}" cy="${ny-u*0.1}" r="${u*0.11}" fill="#fff" opacity=".55"/>`;return s;}
+function drawScarf(nx,ny,u,col){let s='';const dk=_dkCol(col);
+  s+=`<path d="M${nx-u*1.5} ${ny-u*0.4} Q${nx} ${ny+u*0.5} ${nx+u*1.5} ${ny-u*0.4} L${nx+u*1.2} ${ny+u*0.4} Q${nx} ${ny+u*1.2} ${nx-u*1.2} ${ny+u*0.4} Z" fill="${col}" stroke="${dk}" stroke-width=".8"/>`;
+  s+=`<path d="M${nx-u*1.3} ${ny-u*0.1} Q${nx} ${ny+u*0.75} ${nx+u*1.3} ${ny-u*0.1}" fill="none" stroke="${dk}" stroke-width="${u*0.1}" opacity=".35"/>`;
+  s+=`<path d="M${nx-u*0.4} ${ny+u*0.3} L${nx+u*0.4} ${ny+u*0.3} L${nx+u*0.7} ${ny+u*1.8} L${nx} ${ny+u*1.5} L${nx-u*0.7} ${ny+u*1.8} Z" fill="${dk}"/>`;
+  s+=`<g stroke="${col}" stroke-width="${u*0.12}" stroke-linecap="round"><line x1="${nx-u*0.5}" y1="${ny+u*1.82}" x2="${nx-u*0.55}" y2="${ny+u*2.1}"/><line x1="${nx+u*0.05}" y1="${ny+u*1.62}" x2="${nx+u*0.05}" y2="${ny+u*1.95}"/><line x1="${nx+u*0.55}" y1="${ny+u*1.82}" x2="${nx+u*0.6}" y2="${ny+u*2.1}"/></g>`;return s;}
 /* ===== 追加衣装（高品質） ===== */
 function _lt(c,amt){let h=(c||"#888").replace("#","");if(h.length===3)h=h.split("").map(x=>x+x).join("");let n=parseInt(h,16);amt=amt==null?30:amt;let r=Math.min(255,(n>>16)+amt),g=Math.min(255,((n>>8)&255)+amt),b=Math.min(255,(n&255)+amt);return"#"+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);}
 /* サングラス：目スロット e=[x1,x2,y,r] */
@@ -2609,12 +2581,15 @@ function drawNightcap(hx,hy,hr,col){
   const brimY=hy-hr*0.46, baseW=hr*1.08;
   let s='';
   /* 垂れる本体（右へ流れる） */
-  s+=`<path d="M${hx-baseW*0.7} ${brimY} Q${hx-hr*0.2} ${hy-hr*1.9} ${hx+hr*1.5} ${hy-hr*1.35} Q${hx+hr*1.05} ${hy-hr*0.7} ${hx+baseW*0.75} ${brimY} Z" fill="${col}"/>`;
+  s+=`<path d="M${hx-baseW*0.7} ${brimY} Q${hx-hr*0.2} ${hy-hr*1.9} ${hx+hr*1.5} ${hy-hr*1.35} Q${hx+hr*1.05} ${hy-hr*0.7} ${hx+baseW*0.75} ${brimY} Z" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
   /* 陰影 */
   s+=`<path d="M${hx-baseW*0.7} ${brimY} Q${hx-hr*0.2} ${hy-hr*1.9} ${hx+hr*1.5} ${hy-hr*1.35} Q${hx+hr*0.9} ${hy-hr*1.15} ${hx+hr*0.3} ${hy-hr*1.0} Q${hx-hr*0.1} ${hy-hr*0.8} ${hx-baseW*0.7} ${brimY} Z" fill="${dk}" opacity=".28"/>`;
   /* 折り返しバンド */
   s+=`<rect x="${hx-baseW-1}" y="${brimY-hr*0.16}" width="${2*baseW+2}" height="${hr*0.5}" rx="${hr*0.24}" fill="${lt}"/>`;
   s+=`<rect x="${hx-baseW-1}" y="${brimY+hr*0.06}" width="${2*baseW+2}" height="${hr*0.14}" rx="${hr*0.07}" fill="${dk}" opacity=".25"/>`;
+  /* おやすみの月と星の柄 */
+  s+=`<path d="M${hx-hr*0.05} ${hy-hr*1.0} a${hr*0.2} ${hr*0.2} 0 1 0 ${hr*0.19} ${hr*0.26} a${hr*0.15} ${hr*0.15} 0 1 1 ${-hr*0.19} ${-hr*0.26} Z" fill="#fff3b0" opacity=".95"/>`;
+  s+=`<g fill="#fff3b0" opacity=".9"><circle cx="${hx+hr*0.62}" cy="${hy-hr*1.28}" r="${hr*0.07}"/><circle cx="${hx-hr*0.42}" cy="${hy-hr*1.28}" r="${hr*0.055}"/><circle cx="${hx+hr*0.3}" cy="${hy-hr*0.72}" r="${hr*0.05}"/></g>`;
   /* ポンポン */
   s+=`<circle cx="${hx+hr*1.5}" cy="${hy-hr*1.35}" r="${hr*0.42}" fill="${lt}"/>`;
   s+=`<circle cx="${hx+hr*1.5-hr*0.12}" cy="${hy-hr*1.35-hr*0.12}" r="${hr*0.16}" fill="#ffffff" opacity=".5"/>`;
@@ -2627,17 +2602,19 @@ function drawCrown(hx,hy,hr,col){
   const jew="#ff5f8a", jew2="#5fd0ff";
   let s='';
   /* 冠のギザギザ本体 */
-  s+=`<path d="M${hx-w} ${baseY} L${hx-w} ${topY+hr*0.5} L${hx-w*0.5} ${topY+hr*0.9} L${hx-w*0.5} ${topY} L${hx} ${topY+hr*0.55} L${hx+w*0.5} ${topY} L${hx+w*0.5} ${topY+hr*0.9} L${hx+w} ${topY+hr*0.5} L${hx+w} ${baseY} Z" fill="${col}"/>`;
+  s+=`<path d="M${hx-w} ${baseY} L${hx-w} ${topY+hr*0.5} L${hx-w*0.5} ${topY+hr*0.9} L${hx-w*0.5} ${topY} L${hx} ${topY+hr*0.55} L${hx+w*0.5} ${topY} L${hx+w*0.5} ${topY+hr*0.9} L${hx+w} ${topY+hr*0.5} L${hx+w} ${baseY} Z" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
   /* ハイライト面 */
   s+=`<path d="M${hx-w} ${baseY} L${hx-w} ${topY+hr*0.5} L${hx-w*0.5} ${topY+hr*0.9} L${hx-w*0.5} ${topY} L${hx} ${topY+hr*0.55} L${hx} ${baseY} Z" fill="${lt}" opacity=".5"/>`;
   /* 台座バンド */
-  s+=`<rect x="${hx-w-1}" y="${baseY-hr*0.06}" width="${2*w+2}" height="${hr*0.42}" rx="${hr*0.12}" fill="${col}"/>`;
+  s+=`<rect x="${hx-w-1}" y="${baseY-hr*0.06}" width="${2*w+2}" height="${hr*0.42}" rx="${hr*0.12}" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
   s+=`<rect x="${hx-w-1}" y="${baseY+hr*0.18}" width="${2*w+2}" height="${hr*0.12}" fill="${dk}" opacity=".35"/>`;
   /* 宝石 */
   s+=`<circle cx="${hx-w*0.5}" cy="${topY+hr*0.5}" r="${hr*0.16}" fill="${jew2}"/>`;
   s+=`<circle cx="${hx}" cy="${topY+hr*0.2}" r="${hr*0.2}" fill="${jew}"/>`;
   s+=`<circle cx="${hx+w*0.5}" cy="${topY+hr*0.5}" r="${hr*0.16}" fill="${jew2}"/>`;
   s+=`<circle cx="${hx}" cy="${baseY+hr*0.12}" r="${hr*0.13}" fill="${jew}"/>`;
+  /* 宝石のキラ */
+  s+=`<path d="M${hx-hr*0.07} ${topY+hr*0.2} h${hr*0.14} M${hx} ${topY+hr*0.13} v${hr*0.14}" stroke="#fff" stroke-width="${hr*0.05}" stroke-linecap="round" opacity=".9"/>`;
   return s;
 }
 /* 天使の輪：帽子スロット（浮く光輪） */
@@ -2655,8 +2632,8 @@ function drawHalo(hx,hy,hr,col){
 function drawBowtie(nx,ny,u,col){
   col=col||"#e05b73";const dk=_dkCol(col),lt=_lt(col,26);
   let s='';
-  s+=`<path d="M${nx-u*0.28} ${ny} L${nx-u*1.5} ${ny-u*0.85} Q${nx-u*1.7} ${ny} ${nx-u*1.5} ${ny+u*0.85} Z" fill="${col}"/>`;
-  s+=`<path d="M${nx+u*0.28} ${ny} L${nx+u*1.5} ${ny-u*0.85} Q${nx+u*1.7} ${ny} ${nx+u*1.5} ${ny+u*0.85} Z" fill="${col}"/>`;
+  s+=`<path d="M${nx-u*0.28} ${ny} L${nx-u*1.5} ${ny-u*0.85} Q${nx-u*1.7} ${ny} ${nx-u*1.5} ${ny+u*0.85} Z" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
+  s+=`<path d="M${nx+u*0.28} ${ny} L${nx+u*1.5} ${ny-u*0.85} Q${nx+u*1.7} ${ny} ${nx+u*1.5} ${ny+u*0.85} Z" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
   s+=`<path d="M${nx-u*0.28} ${ny} L${nx-u*1.5} ${ny-u*0.85} Q${nx-u*1.7} ${ny} ${nx-u*1.4} ${ny+u*0.2} Z" fill="${lt}" opacity=".5"/>`;
   s+=`<path d="M${nx+u*0.28} ${ny} L${nx+u*1.5} ${ny-u*0.85} Q${nx+u*1.7} ${ny} ${nx+u*1.4} ${ny+u*0.2} Z" fill="${lt}" opacity=".5"/>`;
   s+=`<rect x="${nx-u*0.34}" y="${ny-u*0.62}" width="${u*0.68}" height="${u*1.24}" rx="${u*0.18}" fill="${dk}"/>`;
@@ -2685,7 +2662,7 @@ function drawSleepcap(hx,hy,hr,col){
   const brimY=hy-hr*0.5, baseW=hr*1.02, tipX=hx+hr*0.95, tipY=hy-hr*2.05;
   let s='';
   /* 本体（先が右にくたっと折れた三角） */
-  s+=`<path d="M${hx-baseW} ${brimY} Q${hx-hr*0.3} ${hy-hr*1.7} ${hx+hr*0.35} ${hy-hr*1.5} Q${hx+hr*0.95} ${hy-hr*1.35} ${tipX} ${tipY} Q${hx+hr*0.55} ${hy-hr*1.15} ${hx+baseW} ${brimY} Z" fill="${col}"/>`;
+  s+=`<path d="M${hx-baseW} ${brimY} Q${hx-hr*0.3} ${hy-hr*1.7} ${hx+hr*0.35} ${hy-hr*1.5} Q${hx+hr*0.95} ${hy-hr*1.35} ${tipX} ${tipY} Q${hx+hr*0.55} ${hy-hr*1.15} ${hx+baseW} ${brimY} Z" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
   /* 陰影 */
   s+=`<path d="M${hx-baseW} ${brimY} Q${hx-hr*0.3} ${hy-hr*1.7} ${hx+hr*0.35} ${hy-hr*1.5} Q${hx+hr*0.0} ${hy-hr*1.25} ${hx-hr*0.2} ${hy-hr*0.95} Q${hx-hr*0.4} ${hy-hr*0.7} ${hx-baseW} ${brimY} Z" fill="${dk}" opacity=".26"/>`;
   /* 折り返しバンド */
@@ -2773,7 +2750,7 @@ function drawCoffee(nx,ny,u,col){
 function drawStarShawl(nx,ny,u,col){
   col=col||"#2b3573";const dk=_dkCol(col),star="#ffe98a";
   let s='';
-  s+=`<path d="M${nx-u*1.9} ${ny-u*0.3} Q${nx} ${ny+u*0.7} ${nx+u*1.9} ${ny-u*0.3} L${nx+u*1.5} ${ny+u*0.7} Q${nx} ${ny+u*1.7} ${nx-u*1.5} ${ny+u*0.7} Z" fill="${col}"/>`;
+  s+=`<path d="M${nx-u*1.9} ${ny-u*0.3} Q${nx} ${ny+u*0.7} ${nx+u*1.9} ${ny-u*0.3} L${nx+u*1.5} ${ny+u*0.7} Q${nx} ${ny+u*1.7} ${nx-u*1.5} ${ny+u*0.7} Z" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
   s+=`<path d="M${nx-u*1.5} ${ny+u*0.6} Q${nx} ${ny+u*1.5} ${nx+u*1.5} ${ny+u*0.6} L${nx+u*1.3} ${ny+u*0.95} Q${nx} ${ny+u*1.75} ${nx-u*1.3} ${ny+u*0.95} Z" fill="${dk}" opacity=".5"/>`;
   /* 月 */
   s+=`<path d="M${nx-u*1.05} ${ny+u*0.35} a${u*0.42} ${u*0.42} 0 1 0 ${u*0.4} ${u*0.55} a${u*0.32} ${u*0.32} 0 1 1 ${-u*0.4} ${-u*0.55} Z" fill="${star}"/>`;
@@ -2782,20 +2759,28 @@ function drawStarShawl(nx,ny,u,col){
   s+=st(nx+u*0.3,ny+u*0.45,u*0.28);
   s+=st(nx+u*1.05,ny+u*0.5,u*0.2);
   s+=st(nx-u*0.4,ny+u*0.9,u*0.18);
+  /* ショールの裾フリンジ */
+  s+=`<g stroke="${col}" stroke-width="${u*0.11}" stroke-linecap="round">`;
+  s+=`<line x1="${nx-u*0.6}" y1="${ny+u*1.55}" x2="${nx-u*0.66}" y2="${ny+u*1.9}"/>`;
+  s+=`<line x1="${nx-u*0.2}" y1="${ny+u*1.68}" x2="${nx-u*0.22}" y2="${ny+u*2.02}"/>`;
+  s+=`<line x1="${nx+u*0.2}" y1="${ny+u*1.68}" x2="${nx+u*0.22}" y2="${ny+u*2.02}"/>`;
+  s+=`<line x1="${nx+u*0.6}" y1="${ny+u*1.55}" x2="${nx+u*0.66}" y2="${ny+u*1.9}"/>`;
+  s+=`</g>`;
   return s;
 }
 /* うさ耳カチューシャ：頭の上に長い耳＋カチューシャ帯（帽子スロット） */
 function drawBunnyEars(hx,hy,hr,col){
   col=col||"#ffffff";const dk=_dkCol(col),inr="#ffb9cf";
-  const topY=hy-hr*0.55;
+  const topY=hy-hr*0.52;
   let s='';
   /* カチューシャ帯 */
-  s+=`<path d="M${hx-hr*0.95} ${topY+hr*0.3} Q${hx} ${topY-hr*0.5} ${hx+hr*0.95} ${topY+hr*0.3}" fill="none" stroke="${col}" stroke-width="${hr*0.2}" stroke-linecap="round"/>`;
-  /* 左右の長い耳 */
-  const ear=(dx0,tilt)=>{const bx=hx+dx0;return `<path d="M${bx} ${topY} q${tilt-hr*0.28} ${-hr*0.9} ${tilt*0.5} ${-hr*1.9} q${tilt*0.55} ${-hr*0.35} ${tilt*0.95} ${hr*0.1} q${hr*0.3} ${hr*1.0} ${hr*0.18} ${hr*1.95} q${-hr*0.35} ${hr*0.3} ${-hr*0.9} ${hr*0.12} Z" fill="${col}" stroke="${dk}" stroke-width=".8"/>`+
-    `<path d="M${bx+tilt*0.28} ${topY-hr*0.25} q${tilt*0.2} ${-hr*0.7} ${tilt*0.5} ${-hr*1.5} q${tilt*0.2} ${hr*0.7} ${-tilt*0.02} ${hr*1.5} Z" fill="${inr}"/>`;};
-  s+=ear(-hr*0.42,-hr*0.18);
-  s+=ear(hr*0.42,hr*0.18);
+  s+=`<path d="M${hx-hr*0.9} ${topY+hr*0.28} Q${hx} ${topY-hr*0.42} ${hx+hr*0.9} ${topY+hr*0.28}" fill="none" stroke="${col}" stroke-width="${hr*0.18}" stroke-linecap="round"/>`;
+  /* 左右の長い耳（すこし外にかたむく） */
+  [[-1,-14],[1,14]].forEach(([sgn,rot])=>{
+    const cx=hx+sgn*hr*0.5, cy=topY-hr*0.95;
+    s+=`<ellipse cx="${cx}" cy="${cy}" rx="${hr*0.3}" ry="${hr*0.95}" fill="${col}" stroke="${dk}" stroke-width=".9" transform="rotate(${rot} ${cx} ${cy})"/>`;
+    s+=`<ellipse cx="${cx}" cy="${cy+hr*0.1}" rx="${hr*0.15}" ry="${hr*0.6}" fill="${inr}" transform="rotate(${rot} ${cx} ${cy})"/>`;
+  });
   return s;
 }
 /* くま耳カチューシャ：丸い耳（帽子スロット） */
@@ -2836,6 +2821,7 @@ function drawTiara(hx,hy,hr,col){
   s+=`<circle cx="${hx+w*0.62}" cy="${baseY-hr*0.02}" r="${hr*0.13}" fill="${gem2}"/>`;
   s+=`<circle cx="${hx-w*0.28}" cy="${baseY-hr*0.06}" r="${hr*0.08}" fill="#fff" opacity=".8"/>`;
   s+=`<circle cx="${hx+w*0.28}" cy="${baseY-hr*0.06}" r="${hr*0.08}" fill="#fff" opacity=".8"/>`;
+  s+=`<path d="M${hx-hr*0.06} ${baseY-hr*0.55} h${hr*0.12} M${hx} ${baseY-hr*0.61} v${hr*0.12}" stroke="#fff" stroke-width="${hr*0.045}" stroke-linecap="round" opacity=".95"/>`;
   return s;
 }
 /* もこもこパジャマ：体スロット c=[cx,topY,botY,w] */
@@ -2844,11 +2830,13 @@ function drawPajama(cx,topY,botY,w,col){
   const h=botY-topY, collarY=topY+h*0.14;
   let s='';
   /* 胴（丸みのあるつなぎ） */
-  s+=`<path d="M${cx-w*0.5} ${topY} Q${cx-w} ${topY+h*0.22} ${cx-w*0.92} ${topY+h*0.55} Q${cx-w*0.85} ${botY} ${cx-w*0.5} ${botY} Q${cx} ${botY+h*0.06} ${cx+w*0.5} ${botY} Q${cx+w*0.85} ${botY} ${cx+w*0.92} ${topY+h*0.55} Q${cx+w} ${topY+h*0.22} ${cx+w*0.5} ${topY} Q${cx} ${collarY+h*0.02} ${cx-w*0.5} ${topY} Z" fill="${col}"/>`;
+  s+=`<path d="M${cx-w*0.5} ${topY} Q${cx-w} ${topY+h*0.22} ${cx-w*0.92} ${topY+h*0.55} Q${cx-w*0.85} ${botY} ${cx-w*0.5} ${botY} Q${cx} ${botY+h*0.06} ${cx+w*0.5} ${botY} Q${cx+w*0.85} ${botY} ${cx+w*0.92} ${topY+h*0.55} Q${cx+w} ${topY+h*0.22} ${cx+w*0.5} ${topY} Q${cx} ${collarY+h*0.02} ${cx-w*0.5} ${topY} Z" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
   /* 左側の陰影 */
   s+=`<path d="M${cx-w*0.5} ${topY} Q${cx-w} ${topY+h*0.22} ${cx-w*0.92} ${topY+h*0.55} Q${cx-w*0.85} ${botY} ${cx-w*0.5} ${botY} Q${cx-w*0.2} ${botY} ${cx-w*0.15} ${botY} L${cx-w*0.15} ${topY+h*0.1} Z" fill="${dk}" opacity=".14"/>`;
   /* えり */
   s+=`<path d="M${cx-w*0.5} ${topY} Q${cx-w*0.28} ${collarY+h*0.06} ${cx} ${collarY+h*0.1} Q${cx+w*0.28} ${collarY+h*0.06} ${cx+w*0.5} ${topY} Q${cx+w*0.34} ${topY-h*0.05} ${cx+w*0.22} ${topY+h*0.02} Q${cx} ${collarY} ${cx-w*0.22} ${topY+h*0.02} Q${cx-w*0.34} ${topY-h*0.05} ${cx-w*0.5} ${topY} Z" fill="${lt}"/>`;
+  /* もこもこ襟のふわ玉 */
+  for(let i=-2;i<=2;i++){const fx=cx+i*w*0.22, fy=collarY+h*0.075 - Math.abs(i)*h*0.012;s+=`<circle cx="${fx.toFixed(1)}" cy="${fy.toFixed(1)}" r="${w*0.085}" fill="${lt}"/>`;}
   /* 前立て＋ボタン */
   s+=`<rect x="${cx-w*0.06}" y="${collarY+h*0.06}" width="${w*0.12}" height="${botY-(collarY+h*0.06)-h*0.06}" rx="${w*0.05}" fill="${lt}" opacity=".8"/>`;
   const bn=4;for(let i=0;i<bn;i++){const by=collarY+h*0.18+ (h*0.6)*(i/(bn-1));s+=`<circle cx="${cx}" cy="${by.toFixed(1)}" r="${w*0.07}" fill="${dk}" opacity=".8"/>`;}
@@ -2857,14 +2845,14 @@ function drawPajama(cx,topY,botY,w,col){
   /* ふわ毛（もこもこ）：えり周りに小さな凹凸 */
   return s;
 }
-function _drawBody(id,c,col){ if(id==="futon")return drawFuton(c[0],c[1],c[2],c[3],col); if(id==="jinbei")return drawJinbei(c[0],c[1],c[2],c[3],col); if(id==="sweater")return drawSweater(c[0],c[1],c[2],c[3],col); if(id==="kotatsu")return drawKotatsu(c[0],c[1],c[2],c[3],col); return drawPajama(c[0],c[1],c[2],c[3],col); }
+function _drawBody(id,c,col,part){ if(id==="sailordress")return drawSailorDress(c[0],c[1],c[2],c[3],col,part); if(id==="ribbondress")return drawRibbonDress(c[0],c[1],c[2],c[3],col,part); if(id==="boacoat")return drawBoaCoat(c[0],c[1],c[2],c[3],col,part); if(id==="argyle")return drawArgyleKnit(c[0],c[1],c[2],c[3],col,part); if(id==="pinafore")return drawPinafore(c[0],c[1],c[2],c[3],col,part); if(id==="dawndress")return drawDawnDress(c[0],c[1],c[2],c[3],col,part); if(id==="futon")return drawFuton(c[0],c[1],c[2],c[3],col); if(id==="jinbei")return drawJinbei(c[0],c[1],c[2],c[3],col); if(id==="sweater")return drawSweater(c[0],c[1],c[2],c[3],col); if(id==="kotatsu")return drawKotatsu(c[0],c[1],c[2],c[3],col); return drawPajama(c[0],c[1],c[2],c[3],col); }
 /* お布団マント：体スロット（肩から羽織る厚い布団） */
 function drawFuton(cx,topY,botY,w,col){
   col=col||"#ffd1dc";const dk=_dkCol(col),lt=_lt(col,20);
   const h=botY-topY;
   let s='';
   /* 布団本体（ふっくら） */
-  s+=`<path d="M${cx-w*0.55} ${topY} Q${cx-w*1.05} ${topY+h*0.2} ${cx-w*1.0} ${topY+h*0.6} Q${cx-w*0.95} ${botY} ${cx-w*0.5} ${botY+h*0.02} Q${cx} ${botY+h*0.08} ${cx+w*0.5} ${botY+h*0.02} Q${cx+w*0.95} ${botY} ${cx+w*1.0} ${topY+h*0.6} Q${cx+w*1.05} ${topY+h*0.2} ${cx+w*0.55} ${topY} Q${cx} ${topY+h*0.12} ${cx-w*0.55} ${topY} Z" fill="${col}"/>`;
+  s+=`<path d="M${cx-w*0.55} ${topY} Q${cx-w*1.05} ${topY+h*0.2} ${cx-w*1.0} ${topY+h*0.6} Q${cx-w*0.95} ${botY} ${cx-w*0.5} ${botY+h*0.02} Q${cx} ${botY+h*0.08} ${cx+w*0.5} ${botY+h*0.02} Q${cx+w*0.95} ${botY} ${cx+w*1.0} ${topY+h*0.6} Q${cx+w*1.05} ${topY+h*0.2} ${cx+w*0.55} ${topY} Q${cx} ${topY+h*0.12} ${cx-w*0.55} ${topY} Z" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
   /* 上辺の折り返し（シーツ） */
   s+=`<path d="M${cx-w*0.6} ${topY+h*0.02} Q${cx} ${topY+h*0.16} ${cx+w*0.6} ${topY+h*0.02} L${cx+w*0.62} ${topY+h*0.2} Q${cx} ${topY+h*0.34} ${cx-w*0.62} ${topY+h*0.2} Z" fill="${lt}"/>`;
   /* キルトのステッチ（斜め格子） */
@@ -2891,6 +2879,10 @@ function drawSakura(hx,hy,hr,col){
   s+=sakura(hx+span*0.02,arcY-hr*0.3,hr*0.5);
   s+=sakura(hx+span*0.48,arcY-hr*0.14,hr*0.44);
   s+=sakura(hx+span*0.9,arcY+hr*0.24,hr*0.36);
+  /* 舞い散る花びら */
+  s+=`<ellipse cx="${hx-span*1.18}" cy="${arcY+hr*0.85}" rx="${hr*0.13}" ry="${hr*0.07}" fill="${col}" opacity=".9" transform="rotate(-32 ${hx-span*1.18} ${arcY+hr*0.85})"/>`;
+  s+=`<ellipse cx="${hx+span*1.12}" cy="${arcY+hr*1.05}" rx="${hr*0.12}" ry="${hr*0.065}" fill="${col}" opacity=".85" transform="rotate(24 ${hx+span*1.12} ${arcY+hr*1.05})"/>`;
+  s+=`<ellipse cx="${hx+span*0.55}" cy="${arcY+hr*1.5}" rx="${hr*0.1}" ry="${hr*0.055}" fill="${col}" opacity=".7" transform="rotate(-14 ${hx+span*0.55} ${arcY+hr*1.5})"/>`;
   return s;
 }
 /* ひまわり（夏・帽子）：頭の横に大きな向日葵 */
@@ -2905,6 +2897,10 @@ function drawSunflower(hx,hy,hr,col){
   s+=`<circle cx="${fx}" cy="${fy}" r="${fr*0.62}" fill="${core}"/>`;
   s+=`<circle cx="${fx}" cy="${fy}" r="${fr*0.62}" fill="none" stroke="${core2}" stroke-width="${fr*0.08}"/>`;
   s+=`<circle cx="${fx-fr*0.2}" cy="${fy-fr*0.2}" r="${fr*0.14}" fill="#a86a34" opacity=".6"/>`;
+  /* 種のつぶつぶ */
+  s+=`<g fill="#5f3a1c" opacity=".7">`;
+  for(let i=0;i<8;i++){const a=i/8*Math.PI*2;const px=fx+Math.cos(a)*fr*0.34,py=fy+Math.sin(a)*fr*0.34;s+=`<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="${fr*0.05}"/>`;}
+  s+=`<circle cx="${fx}" cy="${fy}" r="${fr*0.05}"/></g>`;
   return s;
 }
 /* どんぐり帽（秋・帽子）：どんぐりのかさをかぶる */
@@ -2913,7 +2909,7 @@ function drawAcorn(hx,hy,hr,col){
   const brimY=hy-hr*0.5, top=hy-hr*1.5, w=hr*1.15;
   let s='';
   /* かさ本体 */
-  s+=`<path d="M${hx-w} ${brimY} Q${hx-w} ${top} ${hx} ${top} Q${hx+w} ${top} ${hx+w} ${brimY} Z" fill="${col}"/>`;
+  s+=`<path d="M${hx-w} ${brimY} Q${hx-w} ${top} ${hx} ${top} Q${hx+w} ${top} ${hx+w} ${brimY} Z" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
   /* かさの網目（ドット） */
   s+=`<g fill="${dk}" opacity=".4">`;
   for(let r=0;r<3;r++)for(let c=-3;c<=3;c++){const x=hx+c*w*0.28+ (r%2?w*0.14:0), y=brimY-r*hr*0.34-hr*0.1;if(Math.abs(x-hx)<w*0.95)s+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${w*0.06}"/>`;}
@@ -2935,12 +2931,19 @@ function drawSnowScarf(nx,ny,u,col){
   for(let i=0;i<7;i++){const a=Math.PI*(0.1+0.8*i/6);const px=nx+Math.cos(a)*u*1.5,py=ny+Math.sin(a)*u*0.9;s+=`<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="${u*0.5}"/>`;}
   s+=`</g>`;
   /* マフラー本体 */
-  s+=`<path d="M${nx-u*1.5} ${ny-u*0.1} Q${nx} ${ny+u*0.6} ${nx+u*1.5} ${ny-u*0.1} L${nx+u*1.3} ${ny+u*0.5} Q${nx} ${ny+u*1.1} ${nx-u*1.3} ${ny+u*0.5} Z" fill="${col}"/>`;
+  s+=`<path d="M${nx-u*1.5} ${ny-u*0.1} Q${nx} ${ny+u*0.6} ${nx+u*1.5} ${ny-u*0.1} L${nx+u*1.3} ${ny+u*0.5} Q${nx} ${ny+u*1.1} ${nx-u*1.3} ${ny+u*0.5} Z" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
   /* たれ */
-  s+=`<path d="M${nx+u*0.2} ${ny+u*0.6} L${nx+u*1.0} ${ny+u*0.7} L${nx+u*1.15} ${ny+u*2.0} L${nx+u*0.5} ${ny+u*1.75} Z" fill="${col}"/>`;
+  s+=`<path d="M${nx+u*0.2} ${ny+u*0.6} L${nx+u*1.0} ${ny+u*0.7} L${nx+u*1.15} ${ny+u*2.0} L${nx+u*0.5} ${ny+u*1.75} Z" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
   s+=`<rect x="${nx+u*0.55}" y="${ny+u*1.7}" width="${u*0.7}" height="${u*0.3}" fill="${dk}"/>`;
   /* しま模様 */
   s+=`<g stroke="${dk}" stroke-width="${u*0.14}" opacity=".5"><line x1="${nx-u*1.1}" y1="${ny+u*0.35}" x2="${nx-u*0.9}" y2="${ny+u*0.6}"/><line x1="${nx+u*0.9}" y1="${ny+u*0.35}" x2="${nx+u*1.1}" y2="${ny+u*0.6}"/></g>`;
+  /* たれの先の雪だるまチャーム（名前どおり！） */
+  const sx=nx+u*0.9, sy=ny+u*1.5;
+  s+=`<circle cx="${sx}" cy="${sy+u*0.34}" r="${u*0.4}" fill="#ffffff" stroke="#d9e4ee" stroke-width=".8"/>`;
+  s+=`<circle cx="${sx}" cy="${sy-u*0.18}" r="${u*0.29}" fill="#ffffff" stroke="#d9e4ee" stroke-width=".8"/>`;
+  s+=`<circle cx="${sx-u*0.1}" cy="${sy-u*0.24}" r="${u*0.045}" fill="#333"/><circle cx="${sx+u*0.1}" cy="${sy-u*0.24}" r="${u*0.045}" fill="#333"/>`;
+  s+=`<path d="M${sx} ${sy-u*0.15} l${u*0.16} ${u*0.05} l${-u*0.16} ${u*0.07} Z" fill="#ff9d3c"/>`;
+  s+=`<circle cx="${sx}" cy="${sy+u*0.2}" r="${u*0.045}" fill="#333"/><circle cx="${sx}" cy="${sy+u*0.4}" r="${u*0.045}" fill="#333"/>`;
   return s;
 }
 /* サンタ帽（帽子）：赤い三角帽＋白ファー＋ポンポン */
@@ -2949,7 +2952,7 @@ function drawSantaHat(hx,hy,hr,col){
   const brimY=hy-hr*0.5, top=hy-hr*2.05, tipX=hx+hr*1.05, tipY=hy-hr*1.7, baseW=hr*1.05;
   let s='';
   /* 本体（右に折れる三角） */
-  s+=`<path d="M${hx-baseW} ${brimY} Q${hx-hr*0.2} ${hy-hr*1.75} ${hx+hr*0.4} ${hy-hr*1.55} Q${hx+hr*0.95} ${hy-hr*1.4} ${tipX} ${tipY} Q${hx+hr*0.6} ${hy-hr*1.15} ${hx+baseW} ${brimY} Z" fill="${col}"/>`;
+  s+=`<path d="M${hx-baseW} ${brimY} Q${hx-hr*0.2} ${hy-hr*1.75} ${hx+hr*0.4} ${hy-hr*1.55} Q${hx+hr*0.95} ${hy-hr*1.4} ${tipX} ${tipY} Q${hx+hr*0.6} ${hy-hr*1.15} ${hx+baseW} ${brimY} Z" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
   /* 陰影 */
   s+=`<path d="M${hx-baseW} ${brimY} Q${hx-hr*0.2} ${hy-hr*1.75} ${hx+hr*0.4} ${hy-hr*1.55} Q${hx-hr*0.05} ${hy-hr*1.2} ${hx-hr*0.25} ${hy-hr*0.9} Q${hx-hr*0.45} ${hy-hr*0.68} ${hx-baseW} ${brimY} Z" fill="${dk}" opacity=".25"/>`;
   /* 白ファーのふち */
@@ -2980,11 +2983,11 @@ function drawGiftBow(nx,ny,u,col){
   col=col||"#e0485c";const dk=_dkCol(col),lt=_lt(col,26);
   let s='';
   /* 垂れリボン（下） */
-  s+=`<path d="M${nx-u*0.3} ${ny+u*0.2} L${nx-u*0.8} ${ny+u*1.9} L${nx-u*0.1} ${ny+u*1.5} Z" fill="${col}"/>`;
-  s+=`<path d="M${nx+u*0.3} ${ny+u*0.2} L${nx+u*0.8} ${ny+u*1.9} L${nx+u*0.1} ${ny+u*1.5} Z" fill="${col}"/>`;
+  s+=`<path d="M${nx-u*0.3} ${ny+u*0.2} L${nx-u*0.8} ${ny+u*1.9} L${nx-u*0.1} ${ny+u*1.5} Z" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
+  s+=`<path d="M${nx+u*0.3} ${ny+u*0.2} L${nx+u*0.8} ${ny+u*1.9} L${nx+u*0.1} ${ny+u*1.5} Z" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
   /* 蝶結び（大きめ2枚） */
-  s+=`<path d="M${nx-u*0.32} ${ny} Q${nx-u*1.7} ${ny-u*1.0} ${nx-u*1.75} ${ny} Q${nx-u*1.7} ${ny+u*1.0} ${nx-u*0.32} ${ny} Z" fill="${col}"/>`;
-  s+=`<path d="M${nx+u*0.32} ${ny} Q${nx+u*1.7} ${ny-u*1.0} ${nx+u*1.75} ${ny} Q${nx+u*1.7} ${ny+u*1.0} ${nx+u*0.32} ${ny} Z" fill="${col}"/>`;
+  s+=`<path d="M${nx-u*0.32} ${ny} Q${nx-u*1.7} ${ny-u*1.0} ${nx-u*1.75} ${ny} Q${nx-u*1.7} ${ny+u*1.0} ${nx-u*0.32} ${ny} Z" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
+  s+=`<path d="M${nx+u*0.32} ${ny} Q${nx+u*1.7} ${ny-u*1.0} ${nx+u*1.75} ${ny} Q${nx+u*1.7} ${ny+u*1.0} ${nx+u*0.32} ${ny} Z" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
   /* ハイライト */
   s+=`<path d="M${nx-u*0.32} ${ny} Q${nx-u*1.4} ${ny-u*0.8} ${nx-u*1.6} ${ny-u*0.2} Q${nx-u*1.2} ${ny-u*0.3} ${nx-u*0.32} ${ny} Z" fill="${lt}" opacity=".5"/>`;
   s+=`<path d="M${nx+u*0.32} ${ny} Q${nx+u*1.4} ${ny-u*0.8} ${nx+u*1.6} ${ny-u*0.2} Q${nx+u*1.2} ${ny-u*0.3} ${nx+u*0.32} ${ny} Z" fill="${lt}" opacity=".5"/>`;
@@ -2997,7 +3000,7 @@ function drawGiftBow(nx,ny,u,col){
 function drawJinbei(cx,topY,botY,w,col){
   col=col||"#3b6ea5";const dk=_dkCol(col),lt=_lt(col,26),tie="#f4f4ee";
   const h=botY-topY;let s='';
-  s+=`<path d="M${cx-w*0.55} ${topY} Q${cx-w} ${topY+h*0.2} ${cx-w*0.94} ${topY+h*0.6} Q${cx-w*0.88} ${botY} ${cx-w*0.5} ${botY} Q${cx} ${botY+h*0.05} ${cx+w*0.5} ${botY} Q${cx+w*0.88} ${botY} ${cx+w*0.94} ${topY+h*0.6} Q${cx+w} ${topY+h*0.2} ${cx+w*0.55} ${topY} Q${cx} ${topY+h*0.12} ${cx-w*0.55} ${topY} Z" fill="${col}"/>`;
+  s+=`<path d="M${cx-w*0.55} ${topY} Q${cx-w} ${topY+h*0.2} ${cx-w*0.94} ${topY+h*0.6} Q${cx-w*0.88} ${botY} ${cx-w*0.5} ${botY} Q${cx} ${botY+h*0.05} ${cx+w*0.5} ${botY} Q${cx+w*0.88} ${botY} ${cx+w*0.94} ${topY+h*0.6} Q${cx+w} ${topY+h*0.2} ${cx+w*0.55} ${topY} Q${cx} ${topY+h*0.12} ${cx-w*0.55} ${topY} Z" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
   /* 合わせ（V襟） */
   s+=`<path d="M${cx-w*0.5} ${topY} L${cx} ${topY+h*0.42} L${cx+w*0.5} ${topY} L${cx+w*0.4} ${topY-h*0.03} L${cx} ${topY+h*0.3} L${cx-w*0.4} ${topY-h*0.03} Z" fill="${lt}"/>`;
   /* 白ひも結び */
@@ -3013,7 +3016,7 @@ function drawJinbei(cx,topY,botY,w,col){
 function drawSweater(cx,topY,botY,w,col){
   col=col||"#d98a6a";const dk=_dkCol(col),lt=_lt(col,24);
   const h=botY-topY;let s='';
-  s+=`<path d="M${cx-w*0.55} ${topY} Q${cx-w} ${topY+h*0.2} ${cx-w*0.94} ${topY+h*0.6} Q${cx-w*0.88} ${botY} ${cx-w*0.5} ${botY} Q${cx} ${botY+h*0.05} ${cx+w*0.5} ${botY} Q${cx+w*0.88} ${botY} ${cx+w*0.94} ${topY+h*0.6} Q${cx+w} ${topY+h*0.2} ${cx+w*0.55} ${topY} Q${cx} ${topY+h*0.14} ${cx-w*0.55} ${topY} Z" fill="${col}"/>`;
+  s+=`<path d="M${cx-w*0.55} ${topY} Q${cx-w} ${topY+h*0.2} ${cx-w*0.94} ${topY+h*0.6} Q${cx-w*0.88} ${botY} ${cx-w*0.5} ${botY} Q${cx} ${botY+h*0.05} ${cx+w*0.5} ${botY} Q${cx+w*0.88} ${botY} ${cx+w*0.94} ${topY+h*0.6} Q${cx+w} ${topY+h*0.2} ${cx+w*0.55} ${topY} Q${cx} ${topY+h*0.14} ${cx-w*0.55} ${topY} Z" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
   /* リブ襟 */
   s+=`<path d="M${cx-w*0.55} ${topY} Q${cx} ${topY+h*0.16} ${cx+w*0.55} ${topY} L${cx+w*0.5} ${topY+h*0.1} Q${cx} ${topY+h*0.26} ${cx-w*0.5} ${topY+h*0.1} Z" fill="${lt}"/>`;
   /* 編み目（Vのニット模様） */
@@ -3029,7 +3032,7 @@ function drawSweater(cx,topY,botY,w,col){
 function drawKotatsu(cx,topY,botY,w,col){
   col=col||"#7cae7a";const dk=_dkCol(col),lt=_lt(col,22);
   const h=botY-topY;let s='';
-  s+=`<path d="M${cx-w*0.55} ${topY} Q${cx-w*1.05} ${topY+h*0.2} ${cx-w*1.0} ${topY+h*0.6} Q${cx-w*0.95} ${botY} ${cx-w*0.5} ${botY+h*0.02} Q${cx} ${botY+h*0.08} ${cx+w*0.5} ${botY+h*0.02} Q${cx+w*0.95} ${botY} ${cx+w*1.0} ${topY+h*0.6} Q${cx+w*1.05} ${topY+h*0.2} ${cx+w*0.55} ${topY} Q${cx} ${topY+h*0.12} ${cx-w*0.55} ${topY} Z" fill="${col}"/>`;
+  s+=`<path d="M${cx-w*0.55} ${topY} Q${cx-w*1.05} ${topY+h*0.2} ${cx-w*1.0} ${topY+h*0.6} Q${cx-w*0.95} ${botY} ${cx-w*0.5} ${botY+h*0.02} Q${cx} ${botY+h*0.08} ${cx+w*0.5} ${botY+h*0.02} Q${cx+w*0.95} ${botY} ${cx+w*1.0} ${topY+h*0.6} Q${cx+w*1.05} ${topY+h*0.2} ${cx+w*0.55} ${topY} Q${cx} ${topY+h*0.12} ${cx-w*0.55} ${topY} Z" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
   /* 格子柄 */
   s+=`<g stroke="${dk}" stroke-width="${w*0.05}" opacity=".28">`;
   for(let c=-2;c<=2;c++){const x=cx+c*w*0.42;s+=`<line x1="${x}" y1="${topY+h*0.2}" x2="${x}" y2="${botY}"/>`;}
@@ -3037,19 +3040,25 @@ function drawKotatsu(cx,topY,botY,w,col){
   s+=`</g>`;
   /* 上辺の折り返し */
   s+=`<path d="M${cx-w*0.6} ${topY} Q${cx} ${topY+h*0.16} ${cx+w*0.6} ${topY} L${cx+w*0.62} ${topY+h*0.2} Q${cx} ${topY+h*0.34} ${cx-w*0.62} ${topY+h*0.2} Z" fill="${lt}"/>`;
+  /* こたつと言えば みかん */
+  const mx=cx+w*0.46, my=topY+h*0.1, mr=w*0.15;
+  s+=`<circle cx="${mx}" cy="${my}" r="${mr}" fill="#ff9d2e" stroke="#e07f18" stroke-width=".9"/>`;
+  s+=`<circle cx="${mx-mr*0.3}" cy="${my-mr*0.3}" r="${mr*0.32}" fill="#ffc46e" opacity=".7"/>`;
+  s+=`<circle cx="${mx}" cy="${my-mr*0.95}" r="${mr*0.14}" fill="#7a5a2f"/>`;
+  s+=`<ellipse cx="${mx+mr*0.42}" cy="${my-mr*0.95}" rx="${mr*0.42}" ry="${mr*0.2}" fill="#6fae5f" transform="rotate(-24 ${mx+mr*0.42} ${my-mr*0.95})"/>`;
   return s;
 }
 /* 胸リボン（首・大きめ） */
 function drawChestRibbon(nx,ny,u,col){
   col=col||"#ff6f9d";const dk=_dkCol(col),lt=_lt(col,26);
   let s='';
-  s+=`<path d="M${nx-u*0.3} ${ny} Q${nx-u*1.9} ${ny-u*1.2} ${nx-u*2.0} ${ny+u*0.1} Q${nx-u*1.9} ${ny+u*1.3} ${nx-u*0.3} ${ny} Z" fill="${col}"/>`;
-  s+=`<path d="M${nx+u*0.3} ${ny} Q${nx+u*1.9} ${ny-u*1.2} ${nx+u*2.0} ${ny+u*0.1} Q${nx+u*1.9} ${ny+u*1.3} ${nx+u*0.3} ${ny} Z" fill="${col}"/>`;
+  s+=`<path d="M${nx-u*0.3} ${ny} Q${nx-u*1.9} ${ny-u*1.2} ${nx-u*2.0} ${ny+u*0.1} Q${nx-u*1.9} ${ny+u*1.3} ${nx-u*0.3} ${ny} Z" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
+  s+=`<path d="M${nx+u*0.3} ${ny} Q${nx+u*1.9} ${ny-u*1.2} ${nx+u*2.0} ${ny+u*0.1} Q${nx+u*1.9} ${ny+u*1.3} ${nx+u*0.3} ${ny} Z" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
   s+=`<path d="M${nx-u*0.3} ${ny} Q${nx-u*1.5} ${ny-u*0.9} ${nx-u*1.8} ${ny-u*0.2} Q${nx-u*1.2} ${ny-u*0.4} ${nx-u*0.3} ${ny} Z" fill="${lt}" opacity=".5"/>`;
   s+=`<path d="M${nx+u*0.3} ${ny} Q${nx+u*1.5} ${ny-u*0.9} ${nx+u*1.8} ${ny-u*0.2} Q${nx+u*1.2} ${ny-u*0.4} ${nx+u*0.3} ${ny} Z" fill="${lt}" opacity=".5"/>`;
   /* 垂れ */
-  s+=`<path d="M${nx-u*0.4} ${ny+u*0.3} L${nx-u*0.9} ${ny+u*2.0} L${nx-u*0.1} ${ny+u*1.6} Z" fill="${col}"/>`;
-  s+=`<path d="M${nx+u*0.4} ${ny+u*0.3} L${nx+u*0.9} ${ny+u*2.0} L${nx+u*0.1} ${ny+u*1.6} Z" fill="${col}"/>`;
+  s+=`<path d="M${nx-u*0.4} ${ny+u*0.3} L${nx-u*0.9} ${ny+u*2.0} L${nx-u*0.1} ${ny+u*1.6} Z" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
+  s+=`<path d="M${nx+u*0.4} ${ny+u*0.3} L${nx+u*0.9} ${ny+u*2.0} L${nx+u*0.1} ${ny+u*1.6} Z" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
   s+=`<circle cx="${nx}" cy="${ny}" r="${u*0.5}" fill="${dk}"/>`;
   s+=`<circle cx="${nx-u*0.15}" cy="${ny-u*0.15}" r="${u*0.16}" fill="${lt}" opacity=".6"/>`;
   return s;
@@ -3058,10 +3067,14 @@ function drawChestRibbon(nx,ny,u,col){
 function drawMuffler(nx,ny,u,col){
   col=col||"#c98a3a";const dk=_dkCol(col),lt=_lt(col,22);
   let s='';
-  s+=`<path d="M${nx-u*1.6} ${ny-u*0.3} Q${nx} ${ny+u*0.5} ${nx+u*1.6} ${ny-u*0.3} L${nx+u*1.5} ${ny+u*0.55} Q${nx} ${ny+u*1.3} ${nx-u*1.5} ${ny+u*0.55} Z" fill="${col}"/>`;
+  s+=`<path d="M${nx-u*1.6} ${ny-u*0.3} Q${nx} ${ny+u*0.5} ${nx+u*1.6} ${ny-u*0.3} L${nx+u*1.5} ${ny+u*0.55} Q${nx} ${ny+u*1.3} ${nx-u*1.5} ${ny+u*0.55} Z" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
   s+=`<path d="M${nx-u*1.5} ${ny+u*0.2} Q${nx} ${ny+u*0.95} ${nx+u*1.5} ${ny+u*0.2}" fill="none" stroke="${dk}" stroke-width="${u*0.16}" opacity=".4"/>`;
+  /* 編み目（V模様） */
+  s+=`<g stroke="${lt}" stroke-width="${u*0.1}" opacity=".55" fill="none">`;
+  for(let i=-2;i<=2;i++){const x=nx+i*u*0.55;s+=`<path d="M${x-u*0.18} ${ny+u*0.35} L${x} ${ny+u*0.52} L${x+u*0.18} ${ny+u*0.35}"/>`;}
+  s+=`</g>`;
   /* たれ2本 */
-  s+=`<path d="M${nx+u*0.3} ${ny+u*0.6} L${nx+u*1.1} ${ny+u*0.75} L${nx+u*1.25} ${ny+u*2.1} L${nx+u*0.55} ${ny+u*1.9} Z" fill="${col}"/>`;
+  s+=`<path d="M${nx+u*0.3} ${ny+u*0.6} L${nx+u*1.1} ${ny+u*0.75} L${nx+u*1.25} ${ny+u*2.1} L${nx+u*0.55} ${ny+u*1.9} Z" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
   s+=`<g stroke="${lt}" stroke-width="${u*0.12}" opacity=".6"><line x1="${nx+u*0.55}" y1="${ny+u*1.85}" x2="${nx+u*1.2}" y2="${ny+u*2.0}"/><line x1="${nx+u*0.5}" y1="${ny+u*1.55}" x2="${nx+u*1.15}" y2="${ny+u*1.7}"/></g>`;
   /* フリンジ */
   s+=`<g stroke="${col}" stroke-width="${u*0.14}" stroke-linecap="round">`;for(let i=0;i<4;i++){const x=nx+u*0.6+i*u*0.2;s+=`<line x1="${x}" y1="${ny+u*2.05}" x2="${x}" y2="${ny+u*2.4}"/>`;}s+=`</g>`;
@@ -3071,7 +3084,7 @@ function drawMuffler(nx,ny,u,col){
 function drawFloat(nx,ny,u,col){
   col=col||"#ff5a5a";const white="#fff",dk=_dkCol(col);
   const ry=u*1.15;let s='';
-  s+=`<ellipse cx="${nx}" cy="${ny+u*0.5}" rx="${u*2.0}" ry="${ry}" fill="${col}"/>`;
+  s+=`<ellipse cx="${nx}" cy="${ny+u*0.5}" rx="${u*2.0}" ry="${ry}" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
   /* 白セグメント */
   s+=`<g fill="${white}">`;
   [[-1.35,0.15],[0,-0.05],[1.35,0.15]].forEach(([dx,dy])=>{s+=`<ellipse cx="${nx+dx*u}" cy="${ny+u*0.5+dy*u}" rx="${u*0.55}" ry="${ry*0.62}" /`+'>';});
@@ -3081,40 +3094,313 @@ function drawFloat(nx,ny,u,col){
   s+=`<ellipse cx="${nx-u*0.6}" cy="${ny}" rx="${u*0.5}" ry="${u*0.22}" fill="#fff" opacity=".4"/>`;
   return s;
 }
+/* あかつきのドレス：最上級レア（体スロット）朝焼けの光をまとうドレス */
+function drawDawnDress(cx,topY,botY,w,col,part){
+  col=col||"#ffd7e6";const dk=_dkCol(col),lace="#fff7fb",gold="#f2c24e";
+  const h=botY-topY;let s='';const TP=part!=="skirt",SK=part!=="top";
+  const BASE=`M${cx-w*0.55} ${topY} Q${cx-w} ${topY+h*0.2} ${cx-w*0.94} ${topY+h*0.6} Q${cx-w*0.88} ${botY} ${cx-w*0.5} ${botY} Q${cx} ${botY+h*0.05} ${cx+w*0.5} ${botY} Q${cx+w*0.88} ${botY} ${cx+w*0.94} ${topY+h*0.6} Q${cx+w} ${topY+h*0.2} ${cx+w*0.55} ${topY} Q${cx} ${topY+h*0.12} ${cx-w*0.55} ${topY} Z`;
+  if(TP)s+=`<path d="${BASE}" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
+  if(SK)s+=`<path d="${BASE}" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
+  if(SK){
+    s+=`<path d="M${cx-w*0.9} ${botY-h*0.34} Q${cx} ${botY-h*0.24} ${cx+w*0.9} ${botY-h*0.34} L${cx+w*0.92} ${botY-h*0.12} Q${cx} ${botY-h*0.02} ${cx-w*0.92} ${botY-h*0.12} Z" fill="#b9a7f0" opacity=".45"/>`;
+    s+=`<path d="M${cx-w*0.92} ${botY-h*0.18} Q${cx} ${botY-h*0.08} ${cx+w*0.92} ${botY-h*0.18} L${cx+w*0.9} ${botY-h*0.02} Q${cx} ${botY+h*0.06} ${cx-w*0.9} ${botY-h*0.02} Z" fill="#ffb27a" opacity=".5"/>`;
+    s+=`<path d="M${cx-w*0.9} ${botY-h*0.045} Q${cx} ${botY+h*0.05} ${cx+w*0.9} ${botY-h*0.045}" fill="none" stroke="${gold}" stroke-width="${h*0.035}"/>`;
+    for(let i=-3;i<=3;i++){const fx=cx+i*w*0.26, fy=botY-h*0.075 - Math.abs(i)*h*0.008;s+=`<circle cx="${fx.toFixed(1)}" cy="${fy.toFixed(1)}" r="${w*0.1}" fill="${lace}" opacity=".9"/>`;}
+  }
+  if(TP){
+    s+=`<path d="M${cx-w*0.5} ${topY} Q${cx} ${topY+h*0.22} ${cx+w*0.5} ${topY} L${cx+w*0.42} ${topY-h*0.02} Q${cx} ${topY+h*0.15} ${cx-w*0.42} ${topY-h*0.02} Z" fill="${lace}"/>`;
+    s+=`<g fill="${lace}"><circle cx="${cx-w*0.3}" cy="${topY+h*0.12}" r="${w*0.05}"/><circle cx="${cx-w*0.15}" cy="${topY+h*0.17}" r="${w*0.05}"/><circle cx="${cx}" cy="${topY+h*0.19}" r="${w*0.05}"/><circle cx="${cx+w*0.15}" cy="${topY+h*0.17}" r="${w*0.05}"/><circle cx="${cx+w*0.3}" cy="${topY+h*0.12}" r="${w*0.05}"/></g>`;
+    s+=`<circle cx="${cx}" cy="${topY+h*0.3}" r="${w*0.11}" fill="${gold}" stroke="#d9a92e" stroke-width=".8"/>`;
+    s+=`<circle cx="${cx}" cy="${topY+h*0.3}" r="${w*0.05}" fill="#ff6f9d"/>`;
+    s+=`<path d="M${cx-w*0.045} ${topY+h*0.215} h${w*0.09} M${cx} ${topY+h*0.19} v${h*0.045}" stroke="#fff" stroke-width="${w*0.025}" stroke-linecap="round"/>`;
+    s+=`<path d="M${cx-w*0.16} ${topY+h*0.46} Q${cx-w*0.4} ${topY+h*0.38} ${cx-w*0.42} ${topY+h*0.52} Q${cx-w*0.36} ${topY+h*0.6} ${cx-w*0.16} ${topY+h*0.5} Z" fill="${dk}" opacity=".85"/>`;
+    s+=`<path d="M${cx+w*0.16} ${topY+h*0.46} Q${cx+w*0.4} ${topY+h*0.38} ${cx+w*0.42} ${topY+h*0.52} Q${cx+w*0.36} ${topY+h*0.6} ${cx+w*0.16} ${topY+h*0.5} Z" fill="${dk}" opacity=".85"/>`;
+    s+=`<circle cx="${cx}" cy="${topY+h*0.485}" r="${w*0.07}" fill="${dk}"/>`;
+    const spark=(x,y,r)=>`<path d="M${x-r} ${y} h${2*r} M${x} ${y-r} v${2*r}" stroke="#fff" stroke-width="${r*0.5}" stroke-linecap="round" opacity=".9"/>`;
+    s+=spark(cx-w*0.55,topY+h*0.62,w*0.055);
+    s+=spark(cx+w*0.5,topY+h*0.72,w*0.045);
+    s+=spark(cx-w*0.2,topY+h*0.8,w*0.04);
+    s+=spark(cx+w*0.62,topY+h*0.5,w*0.035);
+  }
+  return s;
+}
+/* ===== エフェクト（fxスロット）：オリジナルSVG＋SMILアニメ ===== */
+/* 4方向にとがるダイヤ型のきらめき */
+function _sparklePath(x,y,r,fill,extra){
+  return `<path d="M${x} ${y-r} Q${x+r*0.22} ${y-r*0.22} ${x+r} ${y} Q${x+r*0.22} ${y+r*0.22} ${x} ${y+r} Q${x-r*0.22} ${y+r*0.22} ${x-r} ${y} Q${x-r*0.22} ${y-r*0.22} ${x} ${y-r} Z" fill="${fill}"${extra||""}/>`;
+}
+/* きらめきのオーラ：まわりで大小のきらめきが明滅 */
+function drawFxSparkle(cx,cy,R,col){
+  col=col||"#ffd34a";let s='';
+  const pts=[[-0.95,-0.35,0.16,0],[0.9,-0.5,0.13,0.6],[-0.55,-0.95,0.11,1.2],[0.55,0.85,0.14,0.3],[-0.85,0.6,0.1,0.9],[0.95,0.15,0.09,1.5],[0.1,-1.05,0.12,1.8]];
+  pts.forEach(([px,py,pr,dl])=>{
+    const x=cx+px*R, y=cy+py*R, r=R*pr;
+    s+=`<g opacity="0">${_sparklePath(x,y,r,col)}${_sparklePath(x,y,r*0.45,"#ffffff")}<animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.2;.7;1" dur="2.2s" begin="${dl}s" repeatCount="indefinite"/></g>`;
+  });
+  return s;
+}
+/* はなびらのまい：花びらがひらひら舞い落ちる */
+function drawFxPetals(cx,cy,R,col){
+  col=col||"#ffc0d5";let s='';
+  const petal=(r)=>`<path d="M0 0 C${r*0.55} ${-r*0.3} ${r*0.55} ${-r*1.05} 0 ${-r*1.4} C${-r*0.55} ${-r*1.05} ${-r*0.55} ${-r*0.3} 0 0 Z" fill="${col}"/>`;
+  const cfg=[[-0.8,-0.9,0.15,0,4.2,26],[0.2,-1.1,0.13,1.1,3.8,-32],[0.85,-0.8,0.16,2.0,4.6,40],[-0.3,-1.05,0.11,2.8,4.0,-20],[0.55,-1.0,0.12,0.6,4.4,14]];
+  cfg.forEach(([px,py,pr,dl,du,rot])=>{
+    const x=cx+px*R, y=cy+py*R, r=R*pr, fall=R*1.7, sway=R*0.22;
+    s+=`<g opacity="0" transform="translate(${x} ${y})">`+
+       `<g>${petal(r)}<animateTransform attributeName="transform" type="rotate" values="0;${rot};0" dur="${du}s" begin="${dl}s" repeatCount="indefinite"/></g>`+
+       `<animateTransform attributeName="transform" type="translate" values="${x} ${y};${x+sway} ${y+fall*0.5};${x-sway*0.6} ${y+fall}" keyTimes="0;.5;1" dur="${du}s" begin="${dl}s" repeatCount="indefinite" additive="replace"/>`+
+       `<animate attributeName="opacity" values="0;.95;.9;0" keyTimes="0;.12;.75;1" dur="${du}s" begin="${dl}s" repeatCount="indefinite"/></g>`;
+  });
+  return s;
+}
+/* ほしのめぐり：星たちが猫のまわりを回る */
+function drawFxStars(cx,cy,R,col){
+  col=col||"#a9c6ff";let s='';
+  s+=`<g>`;
+  const orb=[[0,-1.02,0.15],[0.88,0.5,0.12],[-0.88,0.5,0.1]];
+  orb.forEach(([px,py,pr])=>{
+    const x=cx+px*R, y=cy+py*R, r=R*pr;
+    s+=_sparklePath(x,y,r,col)+_sparklePath(x,y,r*0.42,"#ffffff");
+  });
+  s+=`<animateTransform attributeName="transform" type="rotate" from="0 ${cx} ${cy}" to="360 ${cx} ${cy}" dur="9s" repeatCount="indefinite"/></g>`;
+  /* 逆回りの小さな星 */
+  s+=`<g>${_sparklePath(cx+R*0.6,cy-R*0.6,R*0.07,col)}${_sparklePath(cx-R*0.62,cy-R*0.35,R*0.06,col)}<animateTransform attributeName="transform" type="rotate" from="360 ${cx} ${cy}" to="0 ${cx} ${cy}" dur="13s" repeatCount="indefinite"/></g>`;
+  return s;
+}
+/* あさひのオーラ：足元から朝の光がたちのぼる */
+function drawFxDawn(cx,cy,R,col){
+  col=col||"#ffb066";const glow="#ffdca0";let s='';
+  /* 足元のひかりだまり */
+  s+=`<ellipse cx="${cx}" cy="${cy+R*0.92}" rx="${R*1.02}" ry="${R*0.24}" fill="${glow}" opacity=".38"><animate attributeName="opacity" values=".3;.5;.3" dur="3.4s" repeatCount="indefinite"/></ellipse>`;
+  /* たちのぼる光のすじ */
+  const wisps=[[-0.75,0.16,0],[ -0.3,0.2,1.1],[0.25,0.18,0.5],[0.72,0.14,1.7]];
+  wisps.forEach(([px,pw,dl])=>{
+    const x=cx+px*R, w=R*pw, rise=R*1.15;
+    s+=`<g opacity="0"><rect x="${x-w/2}" y="${cy+R*0.55}" width="${w}" height="${R*0.55}" rx="${w/2}" fill="${col}"/>`+
+       `<animateTransform attributeName="transform" type="translate" values="0 0;0 ${-rise}" dur="3.2s" begin="${dl}s" repeatCount="indefinite"/>`+
+       `<animate attributeName="opacity" values="0;.75;0" keyTimes="0;.3;1" dur="3.2s" begin="${dl}s" repeatCount="indefinite"/></g>`;
+  });
+  /* ちいさなきらめき */
+  s+=`<g opacity="0">${_sparklePath(cx+R*0.5,cy-R*0.2,R*0.09,glow)}<animate attributeName="opacity" values="0;1;0" dur="2.6s" begin=".8s" repeatCount="indefinite"/></g>`;
+  s+=`<g opacity="0">${_sparklePath(cx-R*0.55,cy+R*0.1,R*0.07,glow)}<animate attributeName="opacity" values="0;1;0" dur="2.6s" begin="1.9s" repeatCount="indefinite"/></g>`;
+  return s;
+}
+function _drawFx(id,cx,cy,R,col){
+  if(id==="fxpetal")return drawFxPetals(cx,cy,R,col);
+  if(id==="fxstars")return drawFxStars(cx,cy,R,col);
+  if(id==="fxdawn")return drawFxDawn(cx,cy,R,col);
+  return drawFxSparkle(cx,cy,R,col);
+}
+/* ===== シンプルな装飾 ===== */
+/* 鈴の首輪：細いバンド＋金の鈴（首） */
+function drawBellCollar(nx,ny,u,col){
+  col=col||"#e0607f";const dk=_dkCol(col),gold="#f2c24e",goldD="#c9962e";
+  let s='';
+  s+=`<path d="M${nx-u*1.35} ${ny-u*0.25} Q${nx} ${ny+u*0.35} ${nx+u*1.35} ${ny-u*0.25} L${nx+u*1.28} ${ny+u*0.12} Q${nx} ${ny+u*0.72} ${nx-u*1.28} ${ny+u*0.12} Z" fill="${col}" stroke="${dk}" stroke-width=".8"/>`;
+  s+=`<circle cx="${nx}" cy="${ny+u*0.85}" r="${u*0.42}" fill="${gold}" stroke="${goldD}" stroke-width=".9"/>`;
+  s+=`<line x1="${nx-u*0.36}" y1="${ny+u*0.85}" x2="${nx+u*0.36}" y2="${ny+u*0.85}" stroke="${goldD}" stroke-width="${u*0.09}"/>`;
+  s+=`<circle cx="${nx}" cy="${ny+u*1.06}" r="${u*0.08}" fill="${goldD}"/>`;
+  s+=`<circle cx="${nx-u*0.13}" cy="${ny+u*0.72}" r="${u*0.09}" fill="#fff" opacity=".8"/>`;
+  return s;
+}
+/* ほしのピン：耳もとにちいさな星（帽子スロット） */
+function drawStarPin(hx,hy,hr,col){
+  col=col||"#ffd34a";const dk=_dkCol(col);
+  const x=hx+hr*0.62, y=hy-hr*0.72, r=hr*0.3;
+  let s='';let p='';
+  for(let i=0;i<10;i++){const a=i/10*Math.PI*2-Math.PI/2;const rr=(i%2===0)?r:r*0.45;p+=(i?'L':'M')+(x+Math.cos(a)*rr).toFixed(1)+' '+(y+Math.sin(a)*rr).toFixed(1)+' ';}
+  s+=`<path d="${p}Z" fill="${col}" stroke="${dk}" stroke-width=".8" stroke-linejoin="round"/>`;
+  s+=`<circle cx="${x-r*0.22}" cy="${y-r*0.25}" r="${r*0.16}" fill="#fff" opacity=".85"/>`;
+  return s;
+}
+/* お花のピン：耳もとに一輪（帽子スロット） */
+function drawFlowerPin(hx,hy,hr,col){
+  col=col||"#ff9ec4";const dk=_dkCol(col),ctr="#ffe07a";
+  const x=hx-hr*0.6, y=hy-hr*0.7, r=hr*0.3;
+  let s='';
+  for(let i=0;i<5;i++){const a=i/5*Math.PI*2-Math.PI/2;s+=`<circle cx="${(x+Math.cos(a)*r*0.75).toFixed(1)}" cy="${(y+Math.sin(a)*r*0.75).toFixed(1)}" r="${r*0.5}" fill="${col}" stroke="${dk}" stroke-width=".6"/>`;}
+  s+=`<circle cx="${x}" cy="${y}" r="${r*0.42}" fill="${ctr}"/>`;
+  return s;
+}
+/* しっぽの鈴：しっぽの先にちいさな鈴＋リボン（しっぽスロット） */
+function drawTailBell(tx,ty,u,col){
+  col=col||"#f2c24e";const dk=_dkCol(col),rib="#e0607f";
+  let s='';
+  s+=`<path d="M${tx-u*0.7} ${ty-u*0.5} L${tx} ${ty-u*0.05} L${tx-u*0.7} ${ty+u*0.4} Z" fill="${rib}" stroke="${_dkCol(rib)}" stroke-width=".6"/>`;
+  s+=`<path d="M${tx+u*0.7} ${ty-u*0.5} L${tx} ${ty-u*0.05} L${tx+u*0.7} ${ty+u*0.4} Z" fill="${rib}" stroke="${_dkCol(rib)}" stroke-width=".6"/>`;
+  s+=`<circle cx="${tx}" cy="${ty+u*0.55}" r="${u*0.5}" fill="${col}" stroke="${dk}" stroke-width=".8"/>`;
+  s+=`<line x1="${tx-u*0.42}" y1="${ty+u*0.55}" x2="${tx+u*0.42}" y2="${ty+u*0.55}" stroke="${dk}" stroke-width="${u*0.1}"/>`;
+  s+=`<circle cx="${tx}" cy="${ty+u*0.8}" r="${u*0.09}" fill="${dk}"/>`;
+  s+=`<circle cx="${tx-u*0.15}" cy="${ty+u*0.4}" r="${u*0.1}" fill="#fff" opacity=".8"/>`;
+  return s;
+}
+function _drawTail(id,tx,ty,u,col){ if(id==="tailbell")return drawTailBell(tx,ty,u,col); return drawTailRibbon(tx,ty,u,col); }
+/* ===== 参考画像インスパイアのガーリー服シリーズ（体スロット） ===== */
+/* セーラーワンピ：大きなセーラーカラー＋胸リボン＋プリーツすそ */
+function drawSailorDress(cx,topY,botY,w,col,part){
+  col=col||"#3d4e6b";const dk=_dkCol(col),base="#f6f1e6",baseD="#e3dac6",rib="#b5495b";
+  const h=botY-topY;let s='';const TP=part!=="skirt",SK=part!=="top";
+  if(TP){
+    s+=`<path d="M${cx-w*0.55} ${topY} Q${cx-w} ${topY+h*0.2} ${cx-w*0.94} ${topY+h*0.6} Q${cx-w*0.88} ${botY} ${cx-w*0.5} ${botY} Q${cx} ${botY+h*0.05} ${cx+w*0.5} ${botY} Q${cx+w*0.88} ${botY} ${cx+w*0.94} ${topY+h*0.6} Q${cx+w} ${topY+h*0.2} ${cx+w*0.55} ${topY} Q${cx} ${topY+h*0.12} ${cx-w*0.55} ${topY} Z" fill="${base}" stroke="${baseD}" stroke-width=".9"/>`;
+  }
+  if(SK){
+    s+=`<path d="M${cx-w*0.92} ${botY-h*0.3} Q${cx} ${botY-h*0.2} ${cx+w*0.92} ${botY-h*0.3} L${cx+w*0.9} ${botY} Q${cx} ${botY+h*0.06} ${cx-w*0.9} ${botY} Z" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
+    s+=`<g stroke="${dk}" stroke-width="1.4" opacity=".55">`;
+    for(let i=-3;i<=3;i++){const x1=cx+i*w*0.24, x2=cx+i*w*0.28;s+=`<line x1="${x1.toFixed(1)}" y1="${(botY-h*0.27).toFixed(1)}" x2="${x2.toFixed(1)}" y2="${(botY+h*0.01).toFixed(1)}"/>`;}
+    s+=`</g>`;
+    s+=`<path d="M${cx-w*0.9} ${botY-h*0.24} Q${cx} ${botY-h*0.14} ${cx+w*0.9} ${botY-h*0.24}" fill="none" stroke="#ffffff" stroke-width="${h*0.03}" opacity=".9"/>`;
+  }
+  if(TP){
+    s+=`<path d="M${cx-w*0.55} ${topY} L${cx} ${topY+h*0.36} L${cx+w*0.55} ${topY} L${cx+w*0.64} ${topY+h*0.16} L${cx} ${topY+h*0.48} L${cx-w*0.64} ${topY+h*0.16} Z" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
+    s+=`<path d="M${cx-w*0.58} ${topY+h*0.08} L${cx} ${topY+h*0.42} L${cx+w*0.58} ${topY+h*0.08}" fill="none" stroke="#ffffff" stroke-width="${h*0.025}" opacity=".95"/>`;
+    s+=`<path d="M${cx-w*0.52} ${topY+h*0.03} L${cx} ${topY+h*0.36} L${cx+w*0.52} ${topY+h*0.03}" fill="none" stroke="#ffffff" stroke-width="${h*0.02}" opacity=".8"/>`;
+    s+=`<path d="M${cx-w*0.05} ${topY+h*0.42} L${cx-w*0.24} ${topY+h*0.34} Q${cx-w*0.3} ${topY+h*0.44} ${cx-w*0.22} ${topY+h*0.5} Z" fill="${rib}" stroke="${_dkCol(rib)}" stroke-width=".7"/>`;
+    s+=`<path d="M${cx+w*0.05} ${topY+h*0.42} L${cx+w*0.24} ${topY+h*0.34} Q${cx+w*0.3} ${topY+h*0.44} ${cx+w*0.22} ${topY+h*0.5} Z" fill="${rib}" stroke="${_dkCol(rib)}" stroke-width=".7"/>`;
+    s+=`<path d="M${cx-w*0.05} ${topY+h*0.44} L${cx-w*0.12} ${topY+h*0.62} L${cx-w*0.02} ${topY+h*0.58} Z" fill="${rib}"/>`;
+    s+=`<path d="M${cx+w*0.05} ${topY+h*0.44} L${cx+w*0.12} ${topY+h*0.62} L${cx+w*0.02} ${topY+h*0.58} Z" fill="${rib}"/>`;
+    s+=`<circle cx="${cx}" cy="${topY+h*0.43}" r="${w*0.06}" fill="${_dkCol(rib)}"/>`;
+  }
+  return s;
+}
+/* クラシカルリボンワンピ：大きな前リボン＋ふんわり袖＋レースすそ */
+function drawRibbonDress(cx,topY,botY,w,col,part){
+  col=col||"#e2c9bc";const dk=_dkCol(col),lt=_lt(col,20),rib="#6b4e3d",ribD="#54402f",lace="#fdf9f2";
+  const h=botY-topY;let s='';const TP=part!=="skirt",SK=part!=="top";
+  const BASE=`M${cx-w*0.55} ${topY} Q${cx-w} ${topY+h*0.2} ${cx-w*0.94} ${topY+h*0.6} Q${cx-w*0.88} ${botY} ${cx-w*0.5} ${botY} Q${cx} ${botY+h*0.05} ${cx+w*0.5} ${botY} Q${cx+w*0.88} ${botY} ${cx+w*0.94} ${topY+h*0.6} Q${cx+w} ${topY+h*0.2} ${cx+w*0.55} ${topY} Q${cx} ${topY+h*0.12} ${cx-w*0.55} ${topY} Z`;
+  if(TP)s+=`<path d="${BASE}" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
+  if(SK)s+=`<path d="${BASE}" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
+  if(TP){
+    s+=`<path d="M${cx-w*0.55} ${topY+h*0.02} Q${cx-w*0.86} ${topY+h*0.1} ${cx-w*0.8} ${topY+h*0.3}" fill="none" stroke="${lt}" stroke-width="${h*0.04}" stroke-linecap="round" opacity=".8"/>`;
+    s+=`<path d="M${cx+w*0.55} ${topY+h*0.02} Q${cx+w*0.86} ${topY+h*0.1} ${cx+w*0.8} ${topY+h*0.3}" fill="none" stroke="${lt}" stroke-width="${h*0.04}" stroke-linecap="round" opacity=".8"/>`;
+    s+=`<g stroke="${dk}" stroke-width="1.1" opacity=".3" fill="none"><path d="M${cx-w*0.4} ${topY+h*0.5} Q${cx-w*0.36} ${botY-h*0.24} ${cx-w*0.42} ${botY-h*0.1}"/><path d="M${cx+w*0.4} ${topY+h*0.5} Q${cx+w*0.36} ${botY-h*0.24} ${cx+w*0.42} ${botY-h*0.1}"/></g>`;
+    s+=`<g fill="${ribD}"><circle cx="${cx}" cy="${topY+h*0.56}" r="${w*0.045}"/><circle cx="${cx}" cy="${topY+h*0.68}" r="${w*0.045}"/></g>`;
+    s+=`<path d="M${cx-w*0.07} ${topY+h*0.3} Q${cx-w*0.46} ${topY+h*0.1} ${cx-w*0.5} ${topY+h*0.32} Q${cx-w*0.46} ${topY+h*0.5} ${cx-w*0.07} ${topY+h*0.36} Z" fill="${rib}" stroke="${ribD}" stroke-width=".9"/>`;
+    s+=`<path d="M${cx+w*0.07} ${topY+h*0.3} Q${cx+w*0.46} ${topY+h*0.1} ${cx+w*0.5} ${topY+h*0.32} Q${cx+w*0.46} ${topY+h*0.5} ${cx+w*0.07} ${topY+h*0.36} Z" fill="${rib}" stroke="${ribD}" stroke-width=".9"/>`;
+    s+=`<path d="M${cx-w*0.06} ${topY+h*0.38} L${cx-w*0.16} ${topY+h*0.78} L${cx-w*0.03} ${topY+h*0.7} Z" fill="${rib}" stroke="${ribD}" stroke-width=".7"/>`;
+    s+=`<path d="M${cx+w*0.06} ${topY+h*0.38} L${cx+w*0.16} ${topY+h*0.78} L${cx+w*0.03} ${topY+h*0.7} Z" fill="${rib}" stroke="${ribD}" stroke-width=".7"/>`;
+    s+=`<rect x="${cx-w*0.09}" y="${topY+h*0.27}" width="${w*0.18}" height="${h*0.13}" rx="${w*0.05}" fill="${ribD}"/>`;
+    s+=`<rect x="${cx-w*0.09}" y="${topY+h*0.3}" width="${w*0.18}" height="${h*0.03}" fill="${_lt(rib,30)}" opacity=".5"/>`;
+  }
+  if(SK){
+    for(let i=-3;i<=3;i++){const fx=cx+i*w*0.27, fy=botY-h*0.02 - Math.abs(i)*h*0.008;s+=`<circle cx="${fx.toFixed(1)}" cy="${fy.toFixed(1)}" r="${w*0.11}" fill="${lace}"/>`;}
+    s+=`<path d="M${cx-w*0.86} ${botY-h*0.1} Q${cx} ${botY-h*0.02} ${cx+w*0.86} ${botY-h*0.1}" fill="none" stroke="${lace}" stroke-width="${h*0.025}" opacity=".9"/>`;
+  }
+  return s;
+}
+/* もこもこ襟コート：ボアえり＋トグルボタン＋すそボア */
+function drawBoaCoat(cx,topY,botY,w,col,part){
+  col=col||"#efe6d5";const dk=_dkCol(col),boa="#fdfaf4",boaD="#e8ddc9",toggle="#8a6a4a";
+  const h=botY-topY;let s='';const TP=part!=="skirt",SK=part!=="top";
+  const BASE=`M${cx-w*0.55} ${topY} Q${cx-w} ${topY+h*0.2} ${cx-w*0.94} ${topY+h*0.6} Q${cx-w*0.88} ${botY} ${cx-w*0.5} ${botY} Q${cx} ${botY+h*0.05} ${cx+w*0.5} ${botY} Q${cx+w*0.88} ${botY} ${cx+w*0.94} ${topY+h*0.6} Q${cx+w} ${topY+h*0.2} ${cx+w*0.55} ${topY} Q${cx} ${topY+h*0.12} ${cx-w*0.55} ${topY} Z`;
+  if(TP)s+=`<path d="${BASE}" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
+  if(SK)s+=`<path d="${BASE}" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
+  if(TP){
+    s+=`<line x1="${cx}" y1="${topY+h*0.24}" x2="${cx}" y2="${botY-h*0.14}" stroke="${dk}" stroke-width="1.4" opacity=".5"/>`;
+    s+=`<path d="M${cx-w*0.55} ${topY} Q${cx-w} ${topY+h*0.2} ${cx-w*0.94} ${topY+h*0.6} Q${cx-w*0.88} ${botY} ${cx-w*0.5} ${botY} L${cx-w*0.2} ${botY} L${cx-w*0.2} ${topY+h*0.08} Z" fill="${dk}" opacity=".1"/>`;
+    [[0.36],[0.56],[0.76]].forEach(([t])=>{
+      const y=topY+h*t;
+      s+=`<line x1="${cx-w*0.22}" y1="${y}" x2="${cx+w*0.22}" y2="${y}" stroke="${toggle}" stroke-width="1.6" opacity=".7"/>`;
+      s+=`<rect x="${cx-w*0.14}" y="${(y-h*0.028).toFixed(1)}" width="${w*0.28}" height="${h*0.056}" rx="${h*0.028}" fill="${toggle}" stroke="${_dkCol(toggle)}" stroke-width=".7"/>`;
+      s+=`<rect x="${cx-w*0.14}" y="${(y-h*0.028).toFixed(1)}" width="${w*0.28}" height="${h*0.022}" rx="${h*0.011}" fill="${_lt(toggle,35)}" opacity=".6"/>`;
+    });
+    for(let i=-3;i<=3;i++){const fx=cx+i*w*0.19, fy=topY+h*0.1 - Math.abs(i)*h*0.02;s+=`<circle cx="${fx.toFixed(1)}" cy="${fy.toFixed(1)}" r="${w*0.13}" fill="${boa}" stroke="${boaD}" stroke-width=".8"/>`;}
+    for(let i=-2;i<=2;i++){const fx=cx+i*w*0.2, fy=topY+h*0.19;s+=`<circle cx="${fx.toFixed(1)}" cy="${fy.toFixed(1)}" r="${w*0.1}" fill="${boa}"/>`;}
+  }
+  if(SK){
+    for(let i=-4;i<=4;i++){const fx=cx+i*w*0.21;s+=`<circle cx="${fx.toFixed(1)}" cy="${(botY-h*0.05).toFixed(1)}" r="${w*0.1}" fill="${boa}" stroke="${boaD}" stroke-width=".7"/>`;}
+  }
+  return s;
+}
+/* アーガイルニット：Vネック＋ひし柄＋リブ */
+function drawArgyleKnit(cx,topY,botY,w,col,part){
+  col=col||"#8fa382";const dk=_dkCol(col),lt=_lt(col,26),dia="#5f7355",dia2="#f2ead8";
+  const h=botY-topY;let s='';const TP=part!=="skirt",SK=part!=="top";
+  const BASE=`M${cx-w*0.55} ${topY} Q${cx-w} ${topY+h*0.2} ${cx-w*0.94} ${topY+h*0.6} Q${cx-w*0.88} ${botY} ${cx-w*0.5} ${botY} Q${cx} ${botY+h*0.05} ${cx+w*0.5} ${botY} Q${cx+w*0.88} ${botY} ${cx+w*0.94} ${topY+h*0.6} Q${cx+w} ${topY+h*0.2} ${cx+w*0.55} ${topY} Q${cx} ${topY+h*0.12} ${cx-w*0.55} ${topY} Z`;
+  if(TP)s+=`<path d="${BASE}" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
+  if(SK)s+=`<path d="${BASE}" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
+  if(TP){
+    s+=`<path d="M${cx-w*0.5} ${topY} L${cx} ${topY+h*0.3} L${cx+w*0.5} ${topY} L${cx+w*0.42} ${topY-h*0.02} L${cx} ${topY+h*0.22} L${cx-w*0.42} ${topY-h*0.02} Z" fill="${lt}" stroke="${dk}" stroke-width=".7"/>`;
+    const dm=(x,y,rw,rh,c)=>`<path d="M${x} ${y-rh} L${x+rw} ${y} L${x} ${y+rh} L${x-rw} ${y} Z" fill="${c}"/>`;
+    s+=dm(cx,topY+h*0.56,w*0.2,h*0.14,dia);
+    s+=dm(cx-w*0.42,topY+h*0.56,w*0.2,h*0.14,dia2);
+    s+=dm(cx+w*0.42,topY+h*0.56,w*0.2,h*0.14,dia2);
+    s+=dm(cx-w*0.21,topY+h*0.78,w*0.2,h*0.14,dia2);
+    s+=dm(cx+w*0.21,topY+h*0.78,w*0.2,h*0.14,dia);
+    s+=`<g stroke="#ffffff" stroke-width="1" opacity=".65" stroke-dasharray="2.5 2">`;
+    s+=`<line x1="${cx-w*0.7}" y1="${topY+h*0.42}" x2="${cx+w*0.7}" y2="${topY+h*0.92}"/>`;
+    s+=`<line x1="${cx+w*0.7}" y1="${topY+h*0.42}" x2="${cx-w*0.7}" y2="${topY+h*0.92}"/>`;
+    s+=`<line x1="${cx-w*0.7}" y1="${topY+h*0.7}" x2="${cx+w*0.7}" y2="${topY+h*0.42}"/>`;
+    s+=`<line x1="${cx+w*0.7}" y1="${topY+h*0.7}" x2="${cx-w*0.7}" y2="${topY+h*0.42}"/>`;
+    s+=`</g>`;
+  }
+  if(SK){
+    s+=`<rect x="${cx-w*0.88}" y="${botY-h*0.1}" width="${w*1.76}" height="${h*0.09}" rx="${h*0.04}" fill="${lt}"/>`;
+    s+=`<g stroke="${dk}" stroke-width="1" opacity=".4">`;
+    for(let i=-6;i<=6;i++){const x=cx+i*w*0.13;s+=`<line x1="${x.toFixed(1)}" y1="${(botY-h*0.095).toFixed(1)}" x2="${x.toFixed(1)}" y2="${(botY-h*0.02).toFixed(1)}"/>`;}
+    s+=`</g>`;
+  }
+  return s;
+}
+/* エプロンワンピ：肩ひも＋胸あて＋ポケットのジャンパースカート */
+function drawPinafore(cx,topY,botY,w,col,part){
+  col=col||"#8a7460";const dk=_dkCol(col),base="#f6f1e6",baseD="#e3dac6",lt=_lt(col,22);
+  const h=botY-topY;let s='';const TP=part!=="skirt",SK=part!=="top";
+  if(TP){
+    s+=`<path d="M${cx-w*0.55} ${topY} Q${cx-w} ${topY+h*0.2} ${cx-w*0.94} ${topY+h*0.6} Q${cx-w*0.88} ${botY} ${cx-w*0.5} ${botY} Q${cx} ${botY+h*0.05} ${cx+w*0.5} ${botY} Q${cx+w*0.88} ${botY} ${cx+w*0.94} ${topY+h*0.6} Q${cx+w} ${topY+h*0.2} ${cx+w*0.55} ${topY} Q${cx} ${topY+h*0.12} ${cx-w*0.55} ${topY} Z" fill="${base}" stroke="${baseD}" stroke-width=".9"/>`;
+  }
+  if(SK){
+    s+=`<path d="M${cx-w*0.6} ${topY+h*0.46} Q${cx} ${topY+h*0.54} ${cx+w*0.6} ${topY+h*0.46} L${cx+w*0.88} ${botY-h*0.02} Q${cx} ${botY+h*0.07} ${cx-w*0.88} ${botY-h*0.02} Z" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
+    s+=`<path d="M${cx-w*0.8} ${botY-h*0.07} Q${cx} ${botY} ${cx+w*0.8} ${botY-h*0.07}" fill="none" stroke="${lt}" stroke-width="1.2" stroke-dasharray="3 2.5" opacity=".85"/>`;
+    s+=`<path d="M${cx-w*0.14} ${topY+h*0.66} L${cx+w*0.14} ${topY+h*0.66} L${cx+w*0.12} ${topY+h*0.84} Q${cx} ${topY+h*0.88} ${cx-w*0.12} ${topY+h*0.84} Z" fill="${lt}" stroke="${dk}" stroke-width=".8"/>`;
+    s+=`<path d="M${cx} ${topY+h*0.76} q-${w*0.05} -${h*0.045} -${w*0.05} 0 q0 ${h*0.04} ${w*0.05} ${h*0.06} q${w*0.05} -${h*0.02} ${w*0.05} -${h*0.06} q0 -${h*0.045} -${w*0.05} 0 Z" fill="#c96a6a" opacity=".9"/>`;
+  }
+  if(TP){
+    s+=`<rect x="${cx-w*0.24}" y="${topY+h*0.18}" width="${w*0.48}" height="${h*0.32}" rx="${w*0.06}" fill="${col}" stroke="${dk}" stroke-width=".9"/>`;
+    s+=`<rect x="${cx-w*0.18}" y="${topY+h*0.22}" width="${w*0.36}" height="${h*0.24}" rx="${w*0.04}" fill="none" stroke="${lt}" stroke-width="1.1" stroke-dasharray="2.5 2" opacity=".8"/>`;
+    s+=`<path d="M${cx-w*0.2} ${topY+h*0.2} L${cx-w*0.44} ${topY-h*0.02}" stroke="${col}" stroke-width="${w*0.11}" stroke-linecap="round"/>`;
+    s+=`<path d="M${cx+w*0.2} ${topY+h*0.2} L${cx+w*0.44} ${topY-h*0.02}" stroke="${col}" stroke-width="${w*0.11}" stroke-linecap="round"/>`;
+    s+=`<circle cx="${cx-w*0.2}" cy="${topY+h*0.23}" r="${w*0.045}" fill="${_lt(col,45)}" stroke="${dk}" stroke-width=".6"/>`;
+    s+=`<circle cx="${cx+w*0.2}" cy="${topY+h*0.23}" r="${w*0.045}" fill="${_lt(col,45)}" stroke="${dk}" stroke-width=".6"/>`;
+  }
+  return s;
+}
 function drawTailRibbon(tx,ty,u,col){return drawNeckRibbon(tx,ty,u*0.8,col);}
 const POSE_ANCHORS={
   sit:{h:[60,46,27],n:[60,72],t:[92,58],e:[51,69,47,9],c:[60,58,118,37]},
-  stand:{h:[36,64,22],n:[42,82],e:[30,42,64,6],c:[64,64,108,44]},
+  stand:{h:[36,60,25],n:[42,80],e:[28,44,62,7],c:[66,64,108,44]},
   bow:{h:[30,90,19],n:[40,98],e:[24,36,90,6],c:[57,70,110,46]},
-  lie:{h:[40,70,21],n:[52,86],e:[34,46,71,6.5],c:[62,78,116,50]},
-  sitFluffy:{h:[60,58,23],n:[60,84],t:[96,86],e:[51,69,59,8],c:[60,72,120,38]},
+  lie:{h:[40,76,25],n:[52,94],e:[31,49,78,7.5],c:[66,82,116,44]},
+  sitFluffy:{h:[60,52,27],n:[60,82],t:[96,82],e:[50,70,54,8.5],c:[60,70,120,36]},
   stare:{h:[60,44,24],n:[60,70],e:[50,70,45,9.5],c:[60,66,118,28]},
-  stand4:{h:[40,56,21],n:[52,76],t:[104,66],e:[31,49,57,7],c:[62,60,106,40]},
+  stand4:{h:[40,52,24],n:[52,74],t:[106,64],e:[31,49,54,7.5],c:[64,62,106,40]},
   turn:{h:[64,42,21],n:[62,64],e:[55,73,43,7.5],c:[60,58,120,32]},
-  surprise:{h:[60,48,25],n:[60,76],e:[50,70,49,8.5],c:[60,76,112,32]},
+  surprise:{h:[60,46,27],n:[60,76],e:[50,70,48,9],c:[60,78,114,30]},
   fish:{h:[60,46,27],n:[60,72],e:[51,69,44,8],c:[60,58,118,37]},
   box:{h:[60,52,22],n:[60,73],e:[51,69,53,7.5]},
   bag:{h:[60,46,21],n:[60,66],e:[51,69,50,7]},
   jar:{h:[60,46,21],n:[60,66],e:[51,69,47,7.5]},
-  sack:{h:[60,46,21],n:[60,66],e:[51,69,47,7.5]},
+  sack:{h:[60,44,24],n:[60,66],e:[50,70,46,8]},
   bowl:{h:[60,50,22],n:[60,70],e:[51,69,50,8]},
-  sleep:{h:[60,71,17],n:[60,88],e:[54,66,77,6],c:[60,74,116,50]}
+  sleep:{h:[60,74,16],n:[60,92],e:[52,68,86,10],c:[60,70,122,48]}
 };
 /* 体スロットのクリップ用シルエット（各ポーズの胴パス） */
 const POSE_BODY={
   sit:'<path d="M60 118 C32 118 26 90 31 66 C35 46 44 41 60 41 C76 41 85 46 89 66 C94 90 88 118 60 118 Z"/>',
   fish:'<path d="M60 118 C32 118 26 90 31 66 C35 46 44 41 60 41 C76 41 85 46 89 66 C94 90 88 118 60 118 Z"/>',
-  sitFluffy:'<path d="M60 120 C34 120 28 96 30 78 Q26 74 30 70 Q34 72 34 70 Q38 60 50 58 Q56 50 60 56 Q64 50 70 58 Q82 60 86 70 Q86 72 90 70 Q94 74 90 78 C92 96 86 120 60 120 Z"/>',
+  sitFluffy:'<path d="M60 120 C36 120 30 102 32 88 C33 78 40 71 48 68 Q54 62 60 66 Q66 62 72 68 C80 71 87 78 88 88 C90 102 84 120 60 120 Z"/>',
   stare:'<path d="M60 120 C42 120 38 100 40 80 C42 62 50 54 60 54 C70 54 78 62 80 80 C82 100 78 120 60 120 Z"/>',
-  surprise:'<path d="M60 70 C40 70 32 84 34 98 C36 110 46 112 52 104 C56 99 64 99 68 104 C74 112 84 110 86 98 C88 84 80 70 60 70 Z"/>',
-  stand:'<ellipse cx="64" cy="86" rx="38" ry="20"/>',
+  surprise:'<path d="M60 72 C42 72 34 86 36 100 C38 112 48 114 60 114 C72 114 82 112 84 100 C86 86 78 72 60 72 Z"/>',
+  stand:'<ellipse cx="66" cy="86" rx="37" ry="22"/>',
   bow:'<path d="M30 104 C20 102 18 88 28 82 C44 72 62 70 80 72 C92 73 96 84 92 96 C88 106 78 106 70 102 C62 98 54 98 46 102 C40 105 34 106 30 104 Z"/>',
-  lie:'<ellipse cx="62" cy="98" rx="44" ry="17"/>',
-  stand4:'<ellipse cx="62" cy="84" rx="34" ry="20"/>',
+  lie:'<ellipse cx="66" cy="99" rx="42" ry="19"/>',
+  stand4:'<ellipse cx="64" cy="84" rx="34" ry="22"/>',
   turn:'<path d="M58 120 C40 120 36 98 40 82 C44 68 54 62 64 64 C76 66 84 78 84 94 C84 112 72 120 58 120 Z"/>',
-  sleep:'<ellipse cx="60" cy="92" rx="48" ry="28"/>'
+  sleep:'<ellipse cx="60" cy="94" rx="46" ry="30"/>'
 };
 let _clipSeq=0;
+/* 本物のドレスだけ裾が大きくはみ出す。他はフィット＋少しの凹凸 */
+const DRESS_FLARE=new Set(["ribbondress","dawndress"]);
+const DRESS_SNUG=new Set(["sailordress","boacoat","argyle","pinafore"]);
 function _drawHat(id,hx,hy,hr,col){
   if(id==="straw")return drawStraw(hx,hy,hr,col);
   if(id==="nightcap")return drawNightcap(hx,hy,hr,col);
@@ -3128,6 +3414,8 @@ function _drawHat(id,hx,hy,hr,col){
   if(id==="bearears")return drawBearEars(hx,hy,hr,col);
   if(id==="foxears")return drawFoxEars(hx,hy,hr,col);
   if(id==="tiara")return drawTiara(hx,hy,hr,col);
+  if(id==="starpin")return drawStarPin(hx,hy,hr,col);
+  if(id==="flowerpin")return drawFlowerPin(hx,hy,hr,col);
   if(id==="sakura")return drawSakura(hx,hy,hr,col);
   if(id==="sunflower")return drawSunflower(hx,hy,hr,col);
   if(id==="acorn")return drawAcorn(hx,hy,hr,col);
@@ -3146,17 +3434,36 @@ function _drawNeck(id,nx,ny,u,col){
   if(id==="chestribbon")return drawChestRibbon(nx,ny,u,col);
   if(id==="muffler")return drawMuffler(nx,ny,u,col);
   if(id==="float")return drawFloat(nx,ny,u,col);
+  if(id==="bellcollar")return drawBellCollar(nx,ny,u,col);
   return drawNeckRibbon(nx,ny,u,col);
 }
 function _drawEyes(id,e,col){ if(id==="glasses")return drawGlasses(e[0],e[1],e[2],e[3],col); return drawSunglasses(e[0],e[1],e[2],e[3],col); }
 function costumeSVG(cos,pose,body,ear,dir){
   if(!cos)return"";const a=POSE_ANCHORS[pose];if(!a)return"";let s="";
-  if(cos.tail&&a.t)s+=drawTailRibbon(a.t[0],a.t[1],a.h[2]*0.34,cos.tail.col);
+  if(cos.tail&&a.t)s+=_drawTail(cos.tail.id,a.t[0],a.t[1],a.h[2]*0.34,cos.tail.col);
   if(cos.body&&a.c){
-    const drawn=_drawBody(cos.body.id,a.c,cos.body.col);
+    const flare=DRESS_FLARE.has(cos.body.id), snug=DRESS_SNUG.has(cos.body.id);
     const cp=POSE_BODY[pose];
-    if(cp){const cid="bc"+(++_clipSeq);s+=`<clipPath id="${cid}">${cp}</clipPath><g clip-path="url(#${cid})">${drawn}</g>`;}
-    else s+=drawn;
+    if((flare||snug)&&cp){
+      /* 服を「上」と「スカート」に分割描画：
+         上＝体シルエットにクリップ（体は絶対はみ出ない）／スカート＝Aラインゾーンで自然に広がる */
+      const hemY=a.c[1]+(a.c[2]-a.c[1])*(flare?0.8:0.94);
+      const waist=a.c[1]+(hemY-a.c[1])*(flare?0.45:0.6);
+      const cid="bc"+(++_clipSeq);
+      s+=`<clipPath id="${cid}">${cp}</clipPath><g clip-path="url(#${cid})">${_drawBody(cos.body.id,[a.c[0],a.c[1],hemY,a.c[3]],cos.body.col,"top")}</g>`;
+      let zone;
+      if(flare){
+        const zx=a.c[0], hb=hemY+(hemY-a.c[1])*0.1, t=a.c[3]*0.76, b=a.c[3]*0.98;
+        zone=`<path d="M${(zx-t).toFixed(1)} ${waist.toFixed(1)} L${(zx+t).toFixed(1)} ${waist.toFixed(1)} L${(zx+b).toFixed(1)} ${hb.toFixed(1)} L${(zx-b).toFixed(1)} ${hb.toFixed(1)} Z"/>`;
+      }else{
+        zone=`<rect x="-20" y="${waist.toFixed(1)}" width="160" height="220"/>`;
+      }
+      const zid="bz"+(++_clipSeq);
+      s+=`<clipPath id="${zid}">${zone}</clipPath><g clip-path="url(#${zid})">${_drawBody(cos.body.id,[a.c[0],a.c[1],hemY,a.c[3]*(flare?1.05:1.03)],cos.body.col,"skirt")}</g>`;
+    }else if(cp){
+      const drawn=_drawBody(cos.body.id,a.c,cos.body.col);
+      const cid="bc"+(++_clipSeq);s+=`<clipPath id="${cid}">${cp}</clipPath><g clip-path="url(#${cid})">${drawn}</g>`;
+    }else s+=_drawBody(cos.body.id,a.c,cos.body.col);
     /* 服の上に頭・耳・目を再描画して、顔を手前に出す */
     if(body&&a.h){
       s+=`<circle cx="${a.h[0]}" cy="${a.h[1]}" r="${a.h[2]}" fill="${body}"/>`;
@@ -3167,6 +3474,7 @@ function costumeSVG(cos,pose,body,ear,dir){
   if(cos.neck&&a.n)s+=_drawNeck(cos.neck.id,a.n[0],a.n[1],a.h[2]*0.34,cos.neck.col);
   if(cos.hat&&a.h)s+=_drawHat(cos.hat.id,a.h[0],a.h[1],a.h[2],cos.hat.col);
   if(cos.eyes&&a.e)s+=_drawEyes(cos.eyes.id,a.e,cos.eyes.col);
+  if(cos.fx){const fcx=a.c?a.c[0]:60, fcy=a.c?((a.c[1]+a.c[2])/2):78;s+=_drawFx(cos.fx.id,fcx,fcy,50,cos.fx.col);}
   return s;
 }
 /* ===== 衣装 状態 ===== */
@@ -3202,13 +3510,27 @@ const ITEMS=[
   {id:"muffler",name:"マフラー",slot:"neck",def:"#c98a3a",star:1},
   {id:"float",name:"浮き輪",slot:"neck",def:"#ff5a5a",star:2},
   {id:"tailribbon",name:"しっぽリボン",slot:"tail",def:"#ffb3d0",star:2},
+  {id:"tailbell",name:"しっぽの鈴",slot:"tail",def:"#f2c24e",star:1},
+  {id:"bellcollar",name:"鈴の首輪",slot:"neck",def:"#e0607f",star:1},
+  {id:"starpin",name:"ほしのピン",slot:"hat",def:"#ffd34a",star:1},
+  {id:"flowerpin",name:"お花のピン",slot:"hat",def:"#ff9ec4",star:1},
   {id:"sunglasses",name:"サングラス",slot:"eyes",def:"#22242e",star:2},
   {id:"glasses",name:"だて眼鏡",slot:"eyes",def:"#4a3b2f",star:1},
   {id:"pajama",name:"もこもこパジャマ",slot:"body",def:"#b7d3f0",star:2},
   {id:"futon",name:"お布団マント",slot:"body",def:"#ffd1dc",star:3},
   {id:"jinbei",name:"甚平",slot:"body",def:"#3b6ea5",star:2},
   {id:"sweater",name:"手編みセーター",slot:"body",def:"#d98a6a",star:2},
-  {id:"kotatsu",name:"こたつ布団",slot:"body",def:"#7cae7a",star:3}
+  {id:"kotatsu",name:"こたつ布団",slot:"body",def:"#7cae7a",star:3},
+  {id:"dawndress",name:"あかつきのドレス",slot:"body",def:"#ffd7e6",star:3},
+  {id:"sailordress",name:"セーラーワンピ",slot:"body",def:"#3d4e6b",star:2},
+  {id:"ribbondress",name:"クラシカルリボン",slot:"body",def:"#e2c9bc",star:3},
+  {id:"boacoat",name:"もこもこ襟コート",slot:"body",def:"#efe6d5",star:2},
+  {id:"argyle",name:"アーガイルニット",slot:"body",def:"#8fa382",star:2},
+  {id:"pinafore",name:"エプロンワンピ",slot:"body",def:"#8a7460",star:2},
+  {id:"fxsparkle",name:"きらめきのオーラ",slot:"fx",def:"#ffd34a",star:2},
+  {id:"fxpetal",name:"はなびらのまい",slot:"fx",def:"#ffc0d5",star:2},
+  {id:"fxstars",name:"ほしのめぐり",slot:"fx",def:"#a9c6ff",star:3},
+  {id:"fxdawn",name:"あさひのオーラ",slot:"fx",def:"#ffb066",star:3}
 ];
 function itemById(id){return ITEMS.find(x=>x.id===id);}
 /* ===== ポーズ（ガチャで解放、衣装パネルで1つ装備） ===== */
@@ -3246,7 +3568,7 @@ function setItemColor(id,c){const m=getItemColors();m[id]=c;localStorage.setItem
 function itemColor(id){return getItemColors()[id]||itemById(id).def;}
 function getEquippedCostume(){
   const e=getEquip(),out={};
-  ["hat","neck","tail","eyes","body"].forEach(s=>{if(e[s]&&(itemCount(e[s])>0||_devUnlockAll))out[s]={id:e[s],col:itemColor(e[s])};});
+  ["hat","neck","tail","eyes","body","fx"].forEach(s=>{if(e[s]&&(itemCount(e[s])>0||_devUnlockAll))out[s]={id:e[s],col:itemColor(e[s])};});
   return Object.keys(out).length?out:null;
 }
 function catInner(body,ear,pose,dir,expr,cos){
@@ -3608,10 +3930,7 @@ function openNotif(){
    ========================================================= */
 const JST_OH=6,JST_OM=0,JST_CH=8,JST_CM=0;
 const LONG_MS=4000,SK_OV="radio_stamp_time_override";
-const DL_KEY="radio_dl_date",UP_KEY="radio_up_date",DONE_KEY="radio_done_dates",WAKELOG_KEY="radio_wakelog",PLEDGE_KEY="radio_pledge",PLEDGE_SEEN_KEY="radio_pledge_seen";
-function getPledge(){try{const v=JSON.parse(localStorage.getItem(PLEDGE_KEY)||"null");return(v&&v.forDate)?v:null;}catch(_){return null;}}
-function setPledge(dk){localStorage.setItem(PLEDGE_KEY,JSON.stringify({forDate:dk,at:Date.now()}));}
-function clearPledge(){localStorage.removeItem(PLEDGE_KEY);}
+const DL_KEY="radio_dl_date",UP_KEY="radio_up_date",DONE_KEY="radio_done_dates",WAKELOG_KEY="radio_wakelog";
 function getWakeLog(){try{const v=JSON.parse(localStorage.getItem(WAKELOG_KEY)||"{}");return(v&&typeof v==="object")?v:{};}catch(_){return{};}}
 function skyGradientForHour(h){
   if(h>=5&&h<10)return "linear-gradient(180deg,#bfe6ff,#d8f0ff 50%,#fff1e2)";      /* 朝 */
@@ -4192,14 +4511,6 @@ function pushStamp(xr,yr){
     if(r.newStamp)toast("✨ あたらしいスタンプGET！");
     else if(current>1)toast(`🔥 ${current}日連続！`);
     else toast("今日のスタンプ、おつかれさま！");
-    /* 寝る前の宣言を守れた？ */
-    try{
-      const pl=getPledge();
-      if(pl && pl.forDate===jstKey()){
-        clearPledge();
-        setTimeout(()=>{ toast("🌟 寝る前の宣言、達成！ えらい！"); try{playRareFanfare();gachaSparkle();setTimeout(()=>{try{gachaSparkle();}catch(_){}} ,180);if(navigator.vibrate)navigator.vibrate([0,30,55,45]);}catch(_){} },1200);
-      }
-    }catch(_){}
   }
 }
 function undoS(){if(!stamps.length)return;redo.push(stamps.pop());renderStamps();updHistory();}
@@ -4798,31 +5109,7 @@ function refreshHome(){
   try{const ml=document.querySelector(".modeLabel");if(ml)ml.textContent=todayDone()?"スタンプ済み":"はじめる";}catch(_){}
   try{checkCatLetter(current);}catch(_){}
   try{refreshBuddyCount();}catch(_){}
-  try{refreshPledgeUI();}catch(_){}
 }
-/* ===== 寝る前予約（宣言） ===== */
-function tomorrowKey(){return addDays(jstKey(),1);}
-function refreshPledgeUI(){
-  const card=$("pledgeCard");if(!card)return;
-  const h=jstParts().h;
-  const{h:wh,m:wm}=profileWakeHM();
-  const wt=wh+":"+String(wm).padStart(2,"0");
-  const tk=tomorrowKey(), today=jstKey(), pl=getPledge();
-  const setDone=(txt)=>{card.hidden=false;card.classList.add("done");$("pledgeText").innerHTML=txt;fitText($("pledgeText"),12,8);};
-  if(pl && pl.forDate===tk){ setDone(`🌙 あした <b>${wt}</b> に 起きる宣言ずみ！ おやすみ`); return; }
-  if(pl && pl.forDate===today && !todayDone()){ setDone(`🌟 きょうは 宣言の日！ <b>${wt}</b> に 起きよう`); return; }
-  const isNight=(h>=19||h<4);
-  const seen=localStorage.getItem(PLEDGE_SEEN_KEY);
-  if(isNight && !todayDone() && seen!==today){
-    card.hidden=false;card.classList.remove("done");
-    $("pledgeText").innerHTML=`🌙 あした <b>${wt}</b> に 起きる？`;
-    fitText($("pledgeText"),12,8);
-    return;
-  }
-  card.hidden=true;
-}
-$("pledgeBtn").addEventListener("click",()=>{playClick();setPledge(tomorrowKey());localStorage.setItem(PLEDGE_SEEN_KEY,jstKey());try{playMeow("happy");}catch(_){}refreshPledgeUI();});
-$("pledgeSkip").addEventListener("click",()=>{playClick();localStorage.setItem(PLEDGE_SEEN_KEY,jstKey());refreshPledgeUI();});
 /* ===== みんなの起床人数（今日／いま） ===== */
 async function recordCheckin(){
   try{
@@ -4871,7 +5158,7 @@ const LETTERS=[
 function getDeliveredLetters(){try{const a=JSON.parse(localStorage.getItem(LETTER_KEY)||"[]");return new Set(Array.isArray(a)?a:[]);}catch(_){return new Set();}}
 function checkCatLetter(streak){
   if(!$("selectScreen")||$("selectScreen").classList.contains("hidden"))return;   /* ホーム表示中のみ */
-  if(_firstMeetActive||document.getElementById("storyIntro")?.classList.contains("show"))return;
+  if(_firstMeetActive)return;
   if($("letterPopup").classList.contains("show"))return;
   const done=getDeliveredLetters();
   let pick=null;
@@ -4938,7 +5225,7 @@ function buildDex(){
   POOL.forEach((src,i)=>{
     const got=col.has(src),p=w[i]/total,stars=p<0.12?3:p<0.22?2:1;
     const cell=document.createElement("div");
-    cell.className="dexCell"+(got?" got":" locked")+(got&&stars>=3?" rare":"");
+    cell.className="dexCell"+(got?" got":" locked")+(stars>=3?" rare":"");
     const sc=document.createElement("div");sc.className="dexStars";sc.textContent="★".repeat(stars);cell.appendChild(sc);
     const img=document.createElement("img");img.src=src;img.alt="";cell.appendChild(img);
     if(got){
@@ -4972,7 +5259,7 @@ function buildCostumeDex(){
   ITEMS.forEach(it=>{
     const owned=itemCount(it.id)>0, stars=it.star||1; if(owned)got++;
     const cell=document.createElement("div");
-    cell.className="dexCell"+(owned?" got":" locked")+(owned&&stars>=3?" rare":"");
+    cell.className="dexCell"+(owned?" got":" locked")+(stars>=3?" rare":"");
     const sc=document.createElement("div");sc.className="dexStars";sc.textContent="★".repeat(stars);cell.appendChild(sc);
     const cos={};cos[it.slot]={id:it.id,col:it.def};
     cell.appendChild(_dexMiniSVG(catFigureHTML(body,ear,"sit",[0,0],"normal",cos)));
@@ -4989,7 +5276,7 @@ function buildPoseDex(){
   POSES.forEach(p=>{
     const owned=ownsPose(p.id), stars=p.star||1; if(owned)got++;
     const cell=document.createElement("div");
-    cell.className="dexCell"+(owned?" got":" locked")+(owned&&stars>=3?" rare":"");
+    cell.className="dexCell"+(owned?" got":" locked")+(stars>=3?" rare":"");
     const sc=document.createElement("div");sc.className="dexStars";sc.textContent="★".repeat(stars);cell.appendChild(sc);
     cell.appendChild(_dexMiniSVG(catFigureHTML(body,ear,p.id,[0,0],"normal",{})));
     if(!owned){const q=document.createElement("div");q.className="dexQ";q.textContent="？";cell.appendChild(q);}
@@ -5084,7 +5371,7 @@ function renderProfileBar(){
 function openProfileSetup(edit){
   const p=getProfile()||{};
   $("psTitle").textContent=edit?"MY猫を編集":"MY猫をつくろう";
-  $("psName").value=(!edit&&_storyNamed&&_storyCatName)?_storyCatName:(p.name||"");
+  $("psName").value=p.name||"";
   wpSet(Number.isFinite(p.wakeHour)?p.wakeHour:6,Number.isFinite(p.wakeMin)?p.wakeMin:0);
   $("psWake").value=Number.isFinite(p.wakeHour)?p.wakeHour:6;
   $("psWakeMin").value=Number.isFinite(p.wakeMin)?p.wakeMin:0;
@@ -5657,7 +5944,7 @@ function _curlCos(cos,b,e){
 }
 function _backCos(cos,b,e){
   if(!cos)return"";const a=POSE_ANCHORS.sit;let s="";
-  if(cos.tail&&a.t)s+=drawTailRibbon(a.t[0],a.t[1],a.h[2]*0.34,cos.tail.col);
+  if(cos.tail&&a.t)s+=_drawTail(cos.tail.id,a.t[0],a.t[1],a.h[2]*0.34,cos.tail.col);
   if(cos.body&&a.c){const drawn=_drawBody(cos.body.id,a.c,cos.body.col);const cp=POSE_BODY.sit;const cid="cb"+(++_clipSeq);s+=`<clipPath id="${cid}">${cp}</clipPath><g clip-path="url(#${cid})">${drawn}</g>`;s+=`<circle cx="${a.h[0]}" cy="${a.h[1]}" r="${a.h[2]}" fill="${b}"/>`+catEars2(a.h[0],a.h[1],a.h[2],b,b);}
   if(cos.hat&&a.h)s+=_drawHat(cos.hat.id,a.h[0],a.h[1],a.h[2],cos.hat.col);
   return s;
@@ -5902,32 +6189,95 @@ ${stars}
 ${celes}
 <ellipse cx="${winX+44}" cy="${winY+winH-40}" rx="34" ry="20" fill="${hillCol}"/><ellipse cx="${winX+winW-50}" cy="${winY+winH-32}" rx="40" ry="22" fill="${hillCol2}"/>
 ${showClouds?`<g fill="#ffffff" opacity="0.95"><ellipse cx="${winX+54}" cy="${winY+54}" rx="22" ry="9"/><ellipse cx="${winX+72}" cy="${winY+48}" rx="15" ry="8"/></g>`:""}
+<g stroke="#ffffff" stroke-width="7" stroke-linecap="round" opacity=".32"><line x1="${winX+winW*0.22}" y1="${winY+winH*0.62}" x2="${winX+winW*0.46}" y2="${winY+winH*0.18}"/><line x1="${winX+winW*0.34}" y1="${winY+winH*0.72}" x2="${winX+winW*0.52}" y2="${winY+winH*0.4}"/></g>
 <rect x="${winX+winW/2-4}" y="${winY+9}" width="8" height="${winH-18}" fill="#ffffff"/><rect x="${winX+9}" y="${winY+winH/2-4}" width="${winW-18}" height="8" fill="#ffffff"/>
 <path d="M${winX-2} ${winY} q-12 ${winH*0.3} 0 ${winH*0.55} q-14 ${winH*0.25} 2 ${winH*0.45} l10 0 l0 ${-winH} Z" fill="#ffc2d6"/>
+<g stroke="#f0a8c2" stroke-width="2" fill="none" opacity=".7"><path d="M${winX+1} ${winY+6} q-7 ${winH*0.28} -1 ${winH*0.5}"/><path d="M${winX+5} ${winY+6} q-4 ${winH*0.3} 0 ${winH*0.52}"/></g>
+<rect x="${winX-9}" y="${winY+winH*0.6}" width="16" height="8" rx="4" fill="#e58aa6"/>
 <path d="M${winX+winW+2} ${winY} q12 ${winH*0.3} 0 ${winH*0.55} q14 ${winH*0.25} -2 ${winH*0.45} l-10 0 l0 ${-winH} Z" fill="#ffc2d6"/>
+<g stroke="#f0a8c2" stroke-width="2" fill="none" opacity=".7"><path d="M${winX+winW-1} ${winY+6} q7 ${winH*0.28} 1 ${winH*0.5}"/><path d="M${winX+winW-5} ${winY+6} q4 ${winH*0.3} 0 ${winH*0.52}"/></g>
+<rect x="${winX+winW-7}" y="${winY+winH*0.6}" width="16" height="8" rx="4" fill="#e58aa6"/>
 <rect x="${winX-10}" y="${winY+winH}" width="${winW+20}" height="11" rx="5" fill="#f2d6bf"/>
 </g>
 ${garland}
-<g><circle cx="${W*0.40}" cy="${H*0.12}" r="${Math.min(26,W*0.05)}" fill="#fff" stroke="#e8c7a0" stroke-width="4"/><circle cx="${W*0.40}" cy="${H*0.12}" r="2.5" fill="#9c7c5b"/><line x1="${W*0.40}" y1="${H*0.12}" x2="${W*0.40}" y2="${H*0.12-13}" stroke="#9c7c5b" stroke-width="2.4" stroke-linecap="round"/><line x1="${W*0.40}" y1="${H*0.12}" x2="${W*0.40+9}" y2="${H*0.12+5}" stroke="#9c7c5b" stroke-width="2.4" stroke-linecap="round"/></g>
-<g><rect x="${W*0.50}" y="${H*0.085}" width="${Math.min(82,W*0.15)}" height="${Math.min(64,H*0.11)}" rx="7" fill="#fff" stroke="#e8c7a0" stroke-width="5"/><path d="M${W*0.50+12} ${H*0.085+Math.min(64,H*0.11)-12} l16 -22 12 13 11 -15 16 24 Z" fill="#a9dc8f"/><circle cx="${W*0.50+Math.min(82,W*0.15)-18}" cy="${H*0.085+18}" r="7" fill="#ffe39c"/></g>
-<g><rect x="${W*0.62}" y="${H*0.30}" width="${Math.min(120,W*0.2)}" height="9" rx="3" fill="#e2bd91"/><rect x="${W*0.64}" y="${H*0.30-26}" width="20" height="26" rx="3" fill="#e58aa6"/><g fill="#7fc88f"><ellipse cx="${W*0.64+10}" cy="${H*0.30-34}" rx="6" ry="14"/><ellipse cx="${W*0.64+2}" cy="${H*0.30-28}" rx="5" ry="11" transform="rotate(-30 ${W*0.64+2} ${H*0.30-28})"/><ellipse cx="${W*0.64+18}" cy="${H*0.30-28}" rx="5" ry="11" transform="rotate(30 ${W*0.64+18} ${H*0.30-28})"/></g><rect x="${W*0.64+34}" y="${H*0.30-20}" width="14" height="20" rx="3" fill="#bcd6ff"/></g>
+<g>${(()=>{const ccx=W*0.40,ccy=H*0.12,cr=Math.min(26,W*0.05);let c=`<circle cx="${ccx}" cy="${ccy}" r="${cr}" fill="#fff" stroke="#e8c7a0" stroke-width="4"/>`;
+for(let i=0;i<12;i++){const a=i/12*Math.PI*2;const r1=(i%3===0)?cr*0.78:cr*0.86;c+=`<line x1="${(ccx+Math.cos(a)*r1).toFixed(1)}" y1="${(ccy+Math.sin(a)*r1).toFixed(1)}" x2="${(ccx+Math.cos(a)*cr*0.92).toFixed(1)}" y2="${(ccy+Math.sin(a)*cr*0.92).toFixed(1)}" stroke="#c8a87e" stroke-width="${i%3===0?2:1.2}"/>`;}
+c+=`<line x1="${ccx}" y1="${ccy}" x2="${ccx}" y2="${ccy-cr*0.52}" stroke="#9c7c5b" stroke-width="2.6" stroke-linecap="round"/><line x1="${ccx}" y1="${ccy}" x2="${(ccx+cr*0.38).toFixed(1)}" y2="${(ccy+cr*0.2).toFixed(1)}" stroke="#9c7c5b" stroke-width="2.6" stroke-linecap="round"/>`;
+c+=`<line x1="${ccx}" y1="${(ccy+cr*0.14).toFixed(1)}" x2="${(ccx-cr*0.34).toFixed(1)}" y2="${(ccy-cr*0.42).toFixed(1)}" stroke="#e0607f" stroke-width="1.4" stroke-linecap="round"/>`;
+c+=`<circle cx="${ccx}" cy="${ccy}" r="2.6" fill="#9c7c5b"/>`;return c;})()}</g>
+<g>${(()=>{const px=W*0.50,py=H*0.085,pw=Math.min(82,W*0.15),ph=Math.min(64,H*0.11);let c='';
+c+=`<path d="M${px+6} ${py} L${px+pw/2} ${py-14} L${px+pw-6} ${py}" fill="none" stroke="#b09070" stroke-width="1.8"/><circle cx="${px+pw/2}" cy="${py-15}" r="2.6" fill="#9c7c5b"/>`;
+c+=`<rect x="${px}" y="${py}" width="${pw}" height="${ph}" rx="7" fill="#fff" stroke="#e8c7a0" stroke-width="5"/>`;
+c+=`<rect x="${px+8}" y="${py+8}" width="${pw-16}" height="${ph-16}" rx="4" fill="#dff1ff"/>`;
+c+=`<path d="M${px+12} ${py+ph-12} l16 -22 12 13 11 -15 14 24 Z" fill="#a9dc8f"/>`;
+c+=`<path d="M${px+12} ${py+ph-12} l16 -22 6 5 -12 17 Z" fill="#8fc978"/>`;
+c+=`<circle cx="${px+pw-18}" cy="${py+18}" r="6.5" fill="#ffe39c"/><circle cx="${px+pw-20}" cy="${py+16}" r="2.4" fill="#fff3c8"/>`;
+return c;})()}</g>
+<g>${(()=>{const sx=W*0.62,sy=H*0.30,sw=Math.min(120,W*0.2);let c='';
+c+=`<rect x="${sx}" y="${sy}" width="${sw}" height="9" rx="3" fill="#e2bd91"/><rect x="${sx}" y="${sy+7}" width="${sw}" height="3" fill="#c9a271" opacity=".7"/>`;
+/* 植木鉢＋受け皿 */
+const potX=sx+8;
+c+=`<ellipse cx="${potX+12}" cy="${sy-1}" rx="15" ry="3.4" fill="#c98a5a"/>`;
+c+=`<path d="M${potX} ${sy-22} L${potX+24} ${sy-22} L${potX+21} ${sy-2} L${potX+3} ${sy-2} Z" fill="#e0975f" stroke="#c47f47" stroke-width="1.2"/>`;
+c+=`<rect x="${potX-1}" y="${sy-24}" width="26" height="5" rx="2" fill="#eaa76e"/>`;
+c+=`<g fill="#7fc88f"><ellipse cx="${potX+12}" cy="${sy-36}" rx="5.5" ry="13"/><ellipse cx="${potX+4}" cy="${sy-30}" rx="4.5" ry="10" transform="rotate(-30 ${potX+4} ${sy-30})"/><ellipse cx="${potX+20}" cy="${sy-30}" rx="4.5" ry="10" transform="rotate(30 ${potX+20} ${sy-30})"/></g>`;
+c+=`<path d="M${potX+12} ${sy-24} L${potX+12} ${sy-34}" stroke="#5fa06f" stroke-width="1.6"/>`;
+/* 本3冊（背表紙＋タイトル線、1冊はななめ） */
+const bx=potX+34;
+c+=`<rect x="${bx}" y="${sy-27}" width="12" height="27" rx="2" fill="#e58aa6" stroke="#c9698a" stroke-width="1"/><line x1="${bx+6}" y1="${sy-22}" x2="${bx+6}" y2="${sy-12}" stroke="#fff" stroke-width="1.6" opacity=".8"/>`;
+c+=`<rect x="${bx+13}" y="${sy-23}" width="11" height="23" rx="2" fill="#8fd0b0" stroke="#6cb18f" stroke-width="1"/><line x1="${bx+18.5}" y1="${sy-19}" x2="${bx+18.5}" y2="${sy-10}" stroke="#fff" stroke-width="1.5" opacity=".8"/>`;
+c+=`<g transform="rotate(9 ${bx+34} ${sy})"><rect x="${bx+27}" y="${sy-25}" width="11" height="25" rx="2" fill="#b9a7f0" stroke="#9787d0" stroke-width="1"/><line x1="${bx+32.5}" y1="${sy-20}" x2="${bx+32.5}" y2="${sy-10}" stroke="#fff" stroke-width="1.5" opacity=".8"/></g>`;
+return c;})()}</g>
 <ellipse cx="${towerCx}" cy="${floorY+10}" rx="${tw*0.6}" ry="14" fill="#6b4636" opacity="0.15"/>
 <rect x="${towerCx-tw/2}" y="${floorY-18}" width="${tw}" height="28" rx="10" fill="#caa478"/><rect x="${towerCx-tw/2}" y="${floorY-18}" width="${tw}" height="10" rx="6" fill="#d8b98e"/>
-<g><rect x="${towerCx-tw/2+6}" y="${floorY-18-tw*0.62}" width="${tw*0.62}" height="${tw*0.62}" rx="10" fill="#dcbf95" stroke="#c8a673" stroke-width="3"/><circle cx="${towerCx-tw/2+6+tw*0.31}" cy="${floorY-18-tw*0.31}" r="${tw*0.2}" fill="#7a5a3c"/></g>
+<g><rect x="${towerCx-tw/2+6}" y="${floorY-18-tw*0.62}" width="${tw*0.62}" height="${tw*0.62}" rx="10" fill="#dcbf95" stroke="#c8a673" stroke-width="3"/><circle cx="${towerCx-tw/2+6+tw*0.31}" cy="${floorY-18-tw*0.31}" r="${tw*0.2}" fill="#7a5a3c"/>
+<circle cx="${towerCx-tw/2+6+tw*0.31}" cy="${(floorY-18-tw*0.31+tw*0.04).toFixed(1)}" r="${tw*0.15}" fill="#5c4028"/>
+<path d="M${(towerCx-tw/2+6+tw*0.31-tw*0.16).toFixed(1)} ${(floorY-18-tw*0.31-tw*0.1).toFixed(1)} a${tw*0.19} ${tw*0.19} 0 0 1 ${(tw*0.32).toFixed(1)} 0" fill="none" stroke="#e8cba0" stroke-width="2.4" stroke-linecap="round" opacity=".8"/></g>
 <rect x="${towerCx+tw*0.12}" y="${towerTopY+10}" width="30" height="${floorY-towerTopY-2}" rx="8" fill="#d9b88c"/>
 <g stroke="#c19a6a" stroke-width="2.4" opacity="0.6">${(()=>{let l="";for(let y=towerTopY+24;y<floorY-12;y+=16)l+=`<line x1="${towerCx+tw*0.12}" y1="${y}" x2="${towerCx+tw*0.12+30}" y2="${y+12}"/>`;return l;})()}</g>
 <rect x="${towerCx-tw*0.1}" y="${tMid}" width="${tw*0.7}" height="20" rx="9" fill="#b98e63"/>
 <ellipse cx="${towerCx}" cy="${towerTopY}" rx="${tw*0.5}" ry="${tw*0.2}" fill="#e8b98a"/>
 <path d="M${towerCx-tw*0.5} ${towerTopY} a${tw*0.5} ${tw*0.2} 0 0 1 ${tw} 0 a${tw*0.5} ${tw*0.12} 0 0 1 ${-tw} 0" fill="#ffd9b0"/>
 <ellipse cx="${towerCx}" cy="${towerTopY}" rx="${tw*0.38}" ry="${tw*0.12}" fill="#ffb3c6"/>
+<ellipse cx="${towerCx}" cy="${towerTopY}" rx="${tw*0.3}" ry="${tw*0.085}" fill="none" stroke="#ff8fae" stroke-width="2" stroke-dasharray="5 5" opacity=".8"/>
 <line x1="${towerCx-tw*0.34}" y1="${tMid}" x2="${towerCx-tw*0.42}" y2="${tMid+54}" stroke="#cfa9d6" stroke-width="3"/><circle cx="${towerCx-tw*0.42}" cy="${tMid+60}" r="11" fill="#c39be0"/><g stroke="#d9b3ec" stroke-width="2.6" stroke-linecap="round"><line x1="${towerCx-tw*0.42}" y1="${tMid+60}" x2="${towerCx-tw*0.5}" y2="${tMid+50}"/><line x1="${towerCx-tw*0.42}" y1="${tMid+60}" x2="${towerCx-tw*0.34}" y2="${tMid+50}"/></g>
 <ellipse cx="${rugCx0.toFixed(0)}" cy="${(rugCy+8).toFixed(0)}" rx="${(rugRx*1.04).toFixed(0)}" ry="${(rugRy*1.04).toFixed(0)}" fill="#6b4636" opacity="0.10"/>
 <ellipse cx="${rugCx0.toFixed(0)}" cy="${rugCy.toFixed(0)}" rx="${rugRx}" ry="${rugRy.toFixed(0)}" fill="#ffc8db"/>
 <ellipse cx="${rugCx0.toFixed(0)}" cy="${rugCy.toFixed(0)}" rx="${(rugRx*0.8).toFixed(0)}" ry="${(rugRy*0.8).toFixed(0)}" fill="none" stroke="#ffe1ec" stroke-width="6"/>
+<ellipse cx="${rugCx0.toFixed(0)}" cy="${rugCy.toFixed(0)}" rx="${(rugRx*0.92).toFixed(0)}" ry="${(rugRy*0.92).toFixed(0)}" fill="none" stroke="#ff9fbe" stroke-width="2" stroke-dasharray="7 6" opacity=".8"/>
+<ellipse cx="${rugCx0.toFixed(0)}" cy="${rugCy.toFixed(0)}" rx="${(rugRx*0.55).toFixed(0)}" ry="${(rugRy*0.55).toFixed(0)}" fill="none" stroke="#ffd4e4" stroke-width="3" stroke-dasharray="3 6" opacity=".9"/>
 <ellipse cx="${cushCx}" cy="${(cushCy+6).toFixed(0)}" rx="${(cushRx*1.05).toFixed(0)}" ry="${(cushRx*0.4).toFixed(0)}" fill="#6b4636" opacity="0.12"/>
 <ellipse cx="${cushCx}" cy="${cushCy.toFixed(0)}" rx="${cushRx}" ry="${(cushRx*0.42).toFixed(0)}" fill="#a9d6ff"/>
 <ellipse cx="${cushCx}" cy="${(cushCy-6).toFixed(0)}" rx="${(cushRx*0.78).toFixed(0)}" ry="${(cushRx*0.32).toFixed(0)}" fill="#cfe9ff"/>
-<g id="roomFood" style="cursor:pointer"><ellipse cx="${foodX+foodR*1.5}" cy="${(foodY+4).toFixed(0)}" rx="${(foodR*1.1).toFixed(0)}" ry="${(foodR*0.4).toFixed(1)}" fill="#6b4636" opacity="0.12"/><ellipse cx="${foodX}" cy="${foodY.toFixed(0)}" rx="${foodR}" ry="${(foodR*0.42).toFixed(1)}" fill="#9fd4f0"/><ellipse cx="${foodX}" cy="${(foodY-3).toFixed(0)}" rx="${foodR}" ry="${(foodR*0.42).toFixed(1)}" fill="#bfe6ff"/><path d="M${foodX-foodR*0.55} ${(foodY-4).toFixed(0)} q${foodR*0.55} -${foodR*0.4} ${foodR*1.1} 0" fill="#ffcaa0"/><ellipse cx="${foodX+foodR*2.5}" cy="${foodY.toFixed(0)}" rx="${(foodR*0.85).toFixed(0)}" ry="${(foodR*0.36).toFixed(1)}" fill="#cdeaf8"/><ellipse cx="${foodX+foodR*2.5}" cy="${(foodY-2).toFixed(0)}" rx="${(foodR*0.7).toFixed(0)}" ry="${(foodR*0.28).toFixed(1)}" fill="#8fd0ee"/><circle cx="${foodX+foodR}" cy="${foodY.toFixed(0)}" r="${(foodR*2).toFixed(0)}" fill="transparent"/></g>
+<g stroke="#9cc2e8" stroke-width="2" opacity=".7" fill="none"><path d="M${cushCx-cushRx*0.5} ${(cushCy-14).toFixed(0)} Q${cushCx} ${(cushCy-2).toFixed(0)} ${cushCx+cushRx*0.5} ${(cushCy-14).toFixed(0)}"/><path d="M${cushCx-cushRx*0.32} ${(cushCy-22).toFixed(0)} Q${cushCx} ${(cushCy-12).toFixed(0)} ${cushCx+cushRx*0.32} ${(cushCy-22).toFixed(0)}"/></g>
+<circle cx="${cushCx}" cy="${(cushCy-8).toFixed(0)}" r="4" fill="#7fb0dc"/>
+<g id="roomFood" style="cursor:pointer">${(()=>{const fx=foodX,fy=foodY,fr=foodR;let c='';
+/* 影 */
+c+=`<ellipse cx="${fx+fr*1.5}" cy="${(fy+4).toFixed(0)}" rx="${(fr*1.15).toFixed(0)}" ry="${(fr*0.4).toFixed(1)}" fill="#6b4636" opacity="0.12"/>`;
+/* ごはんボウル（ふち→内側の影→カリカリ） */
+c+=`<ellipse cx="${fx}" cy="${(fy+2.5).toFixed(1)}" rx="${fr}" ry="${(fr*0.42).toFixed(1)}" fill="#6fa3c6"/>`;
+c+=`<ellipse cx="${fx}" cy="${fy.toFixed(0)}" rx="${fr}" ry="${(fr*0.42).toFixed(1)}" fill="#9fd4f0"/>`;
+c+=`<ellipse cx="${fx}" cy="${(fy-1.5).toFixed(1)}" rx="${(fr*0.8).toFixed(1)}" ry="${(fr*0.3).toFixed(1)}" fill="#5d89ab"/>`;
+c+=`<path d="M${(fx-fr*0.6).toFixed(1)} ${(fy-3).toFixed(1)} q${(fr*0.6).toFixed(1)} ${(-fr*0.45).toFixed(1)} ${(fr*1.2).toFixed(1)} 0 q${(-fr*0.28).toFixed(1)} ${(fr*0.22).toFixed(1)} ${(-fr*1.2).toFixed(1)} 0 Z" fill="#d9a066"/>`;
+c+=`<g fill="#b97f42">`;
+c+=`<circle cx="${(fx-fr*0.32).toFixed(1)}" cy="${(fy-4.5).toFixed(1)}" r="${(fr*0.09).toFixed(1)}"/>`;
+c+=`<circle cx="${fx}" cy="${(fy-6).toFixed(1)}" r="${(fr*0.09).toFixed(1)}"/>`;
+c+=`<circle cx="${(fx+fr*0.3).toFixed(1)}" cy="${(fy-4.5).toFixed(1)}" r="${(fr*0.09).toFixed(1)}"/>`;
+c+=`<circle cx="${(fx-fr*0.12).toFixed(1)}" cy="${(fy-3.4).toFixed(1)}" r="${(fr*0.08).toFixed(1)}"/>`;
+c+=`<circle cx="${(fx+fr*0.14).toFixed(1)}" cy="${(fy-3.2).toFixed(1)}" r="${(fr*0.08).toFixed(1)}"/>`;
+c+=`</g>`;
+/* ボウル正面の肉球マーク */
+c+=`<g fill="#eef8ff" opacity=".9"><circle cx="${fx}" cy="${(fy+fr*0.22).toFixed(1)}" r="${(fr*0.1).toFixed(1)}"/><circle cx="${(fx-fr*0.14).toFixed(1)}" cy="${(fy+fr*0.13).toFixed(1)}" r="${(fr*0.05).toFixed(1)}"/><circle cx="${fx}" cy="${(fy+fr*0.09).toFixed(1)}" r="${(fr*0.05).toFixed(1)}"/><circle cx="${(fx+fr*0.14).toFixed(1)}" cy="${(fy+fr*0.13).toFixed(1)}" r="${(fr*0.05).toFixed(1)}"/></g>`;
+/* おみずボウル（水面のゆらぎ＋ツヤ） */
+const wx=fx+fr*2.5;
+c+=`<ellipse cx="${wx.toFixed(1)}" cy="${(fy+2).toFixed(1)}" rx="${(fr*0.85).toFixed(1)}" ry="${(fr*0.36).toFixed(1)}" fill="#9db9c9"/>`;
+c+=`<ellipse cx="${wx.toFixed(1)}" cy="${fy.toFixed(0)}" rx="${(fr*0.85).toFixed(1)}" ry="${(fr*0.36).toFixed(1)}" fill="#cdeaf8"/>`;
+c+=`<ellipse cx="${wx.toFixed(1)}" cy="${(fy-1.5).toFixed(1)}" rx="${(fr*0.68).toFixed(1)}" ry="${(fr*0.26).toFixed(1)}" fill="#8fd0ee"/>`;
+c+=`<ellipse cx="${wx.toFixed(1)}" cy="${(fy-1.5).toFixed(1)}" rx="${(fr*0.5).toFixed(1)}" ry="${(fr*0.18).toFixed(1)}" fill="#aee0f7"/>`;
+c+=`<path d="M${(wx-fr*0.34).toFixed(1)} ${(fy-2.6).toFixed(1)} q${(fr*0.2).toFixed(1)} ${(-fr*0.08).toFixed(1)} ${(fr*0.4).toFixed(1)} 0" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" opacity=".8"/>`;
+/* タップ判定 */
+c+=`<circle cx="${(fx+fr).toFixed(1)}" cy="${fy.toFixed(0)}" r="${(fr*2).toFixed(0)}" fill="transparent"/>`;
+return c;})()}</g>
 <rect x="0" y="0" width="${W}" height="${H}" fill="url(#rmGlow)"/>
 ${tint}
 ${drawBedObj(bedX,bedY,bedS)}
@@ -6871,6 +7221,10 @@ function itemAloneSVG(id){const col=itemColor(id);let inner="";
   else if(id==="muffler")inner=drawMuffler(40,34,11,col);
   else if(id==="float")inner=drawFloat(40,36,12,col);
   else if(id==="tailribbon")inner=drawTailRibbon(40,42,15,col);
+  else if(id==="tailbell")inner=drawTailBell(40,36,14,col);
+  else if(id==="bellcollar")inner=drawBellCollar(40,36,13,col);
+  else if(id==="starpin")inner=drawStarPin(40,62,26,col);
+  else if(id==="flowerpin")inner=drawFlowerPin(56,62,26,col);
   else if(id==="sunglasses")inner=drawSunglasses(30,50,42,10,col);
   else if(id==="glasses")inner=drawGlasses(30,50,42,10,col);
   else if(id==="pajama")inner=drawPajama(40,30,66,22,col);
@@ -6878,6 +7232,16 @@ function itemAloneSVG(id){const col=itemColor(id);let inner="";
   else if(id==="jinbei")inner=drawJinbei(40,28,66,22,col);
   else if(id==="sweater")inner=drawSweater(40,28,66,22,col);
   else if(id==="kotatsu")inner=drawKotatsu(40,30,66,24,col);
+  else if(id==="dawndress")inner=drawDawnDress(40,26,68,22,col);
+  else if(id==="sailordress")inner=drawSailorDress(40,26,68,22,col);
+  else if(id==="ribbondress")inner=drawRibbonDress(40,26,68,22,col);
+  else if(id==="boacoat")inner=drawBoaCoat(40,26,68,22,col);
+  else if(id==="argyle")inner=drawArgyleKnit(40,26,68,22,col);
+  else if(id==="pinafore")inner=drawPinafore(40,26,68,22,col);
+  else if(id==="fxsparkle")inner=drawFxSparkle(40,40,30,col);
+  else if(id==="fxpetal")inner=drawFxPetals(40,52,26,col);
+  else if(id==="fxstars")inner=drawFxStars(40,40,28,col);
+  else if(id==="fxdawn")inner=drawFxDawn(40,38,28,col);
   return `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`;
 }
 function refreshCostumeEverywhere(){
@@ -6972,6 +7336,20 @@ function _applyRareFx(pick){
   if(!rays){rays=document.createElement("div");rays.id="gachaRays";gr.insertBefore(rays,gr.firstChild);}
   rays.innerHTML=star>=2?_raysSVG(star):"";
   return star;
+}
+/* 初日プレゼント：衣装2種×各2個のお披露目 */
+function firstMeetRevealGifts(picks,nm){
+  const head=`<div style="font-size:13px;font-weight:800;color:#6f9fb6;margin-bottom:3px;">\u{1F338} ${escHtml(nm)}が、はじめての おみやげを くれた！</div>`;
+  $("gachaRevealInner").innerHTML=`<div style="display:flex;gap:2px;justify-content:center;align-items:center;height:100%;">
+    <div style="width:47%;">${itemAloneSVG(picks[0].id)}</div>
+    <div style="width:47%;">${itemAloneSVG(picks[1].id)}</div></div>`;
+  $("gachaRevealName").innerHTML=head+
+    `${escHtml(picks[0].name)} と ${escHtml(picks[1].name)}`+
+    `<div style="font-size:13px;font-weight:800;color:#e0608f;margin:4px 0;">\u{1F3A8} それぞれ 2こずつ もらったよ！</div>`+
+    `<div class="dupHint">クローゼットで いろが かえられます</div>`;
+  try{ playRareFanfare(); gachaSparkle(); setTimeout(()=>{try{gachaSparkle();}catch(_){}} ,220); if(navigator.vibrate)navigator.vibrate([0,35,55,40]); }catch(_){}
+  $("gachaReveal").classList.add("show");
+  refreshCostumeEverywhere();
 }
 function outingRevealGift(pick,headText){
   const nm=(typeof catName==="function"&&catName())?catName():"ねこ";
@@ -7227,341 +7605,9 @@ function placeRandomToy(){
 }
 
 /* ===== 初めての出会い（初回プレイの物語イベント） ===== */
-const STORY_KEY="radio_story_seen";
-function storySeen(){return localStorage.getItem(STORY_KEY)==="1";}
 const FIRSTMEET_KEY="radio_firstmeet";
 function firstMeetDone(){return localStorage.getItem(FIRSTMEET_KEY)==="1";}
-let _storyStage=0, _storySkip=false;
-let _storyCatName="", _storyNamed=false, _storyAdvOK=true;
-function storyName(){ return _storyCatName || "この子"; }
-const STORY=[
-  {type:"img", fb:"s1", src:"1_transparent.png", text:"毎朝の さんぽが、わたしと 愛犬（あいけん）の たからものだった。"},
-  {type:"text", meow:"curious", lines:["ニャー……"]},
-  {type:"img", fb:"s2", src:"2_transparent.png", text:"ふと 草むらに 視線を やると——ちいさな 子ねこが、こちらを 見ていた。"},
-  {type:"img", fb:"s3", src:"3_transparent.png", text:"気づけば うちの子みたいに、犬の となりを ついてくるように なっていた。"},
-  {type:"img", fb:"s4", src:"4_transparent.png", pos:"bottom", text:"月日は 流れ——春も 夏も、秋も 冬も。"},
-  {type:"img", fb:"s5", src:"5_transparent.png", text:"いつしか 愛犬は 年老いて、さんぽに 行くことも なくなった。"},
-  {type:"img", fb:"s6", src:"6_transparent.png", text:"それでも この子は、毎日のように 会いに 来てくれる。<br>彼女の 親代わりだったのかも しれない。"},
-  {type:"img", fb:"s7", src:"7_transparent.png", hold:2000, text:""},
-  {type:"img", fb:"s8", src:"8_transparent.png", text:"愛犬の 帰りを 待つように、入口に よく いる この子。<br>おみやげを 片手に。"},
-  {type:"img", fb:"s9", src:"9_transparent.png", text:"見えなくても、そばに いてくれる。"},
-  {type:"name", src:"2_transparent.png"},
-  {type:"text", lines:["また、あした。"]}
-];
-function storyBlackCat(cx,cy,withGift,happy,sc){
-  sc=sc||1;
-  let s=`<g transform="translate(${cx.toFixed(1)},${cy.toFixed(1)}) scale(${sc}) translate(${(-cx).toFixed(1)},${(-cy).toFixed(1)})">`;
-  s+=`<ellipse cx="${cx}" cy="${cy+6}" rx="26" ry="6" fill="#000" opacity="0.28"/>`;
-  s+=`<path d="M${cx-18} ${cy} C${cx-27} ${cy-30} ${cx-14} ${cy-44} ${cx} ${cy-44} C${cx+14} ${cy-44} ${cx+27} ${cy-30} ${cx+18} ${cy} Z" fill="#0e0b14"/>`;
-  s+=`<path d="M${cx+15} ${cy-6} C${cx+34} ${cy-10} ${cx+34} ${cy-34} ${cx+24} ${cy-38}" fill="none" stroke="#0e0b14" stroke-width="9" stroke-linecap="round"/>`;
-  s+=`<circle cx="${cx}" cy="${cy-50}" r="16" fill="#0e0b14"/>`;
-  s+=`<path d="M${cx-15} ${cy-57} L${cx-21} ${cy-75} L${cx-4} ${cy-62} Z" fill="#0e0b14"/><path d="M${cx+15} ${cy-57} L${cx+21} ${cy-75} L${cx+4} ${cy-62} Z" fill="#0e0b14"/>`;
-  if(happy){
-    s+=`<path d="M${cx-9} ${cy-50} q3 4 6 0" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>`+
-       `<path d="M${cx+3} ${cy-50} q3 4 6 0" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>`;
-  }else{
-    s+=`<ellipse cx="${cx-6}" cy="${cy-50}" rx="3" ry="4.4" fill="#bfe6a0"/><ellipse cx="${cx+6}" cy="${cy-50}" rx="3" ry="4.4" fill="#bfe6a0"/>`;
-  }
-  s+=`</g>`;return s;
-}
-function storyDog(cx,cy,sc){
-  sc=sc||1;const c="#c9a878",c2="#b1935f",m="#5a4a3e";
-  let s=`<g transform="translate(${cx.toFixed(1)},${cy.toFixed(1)}) scale(${sc})">`;
-  s+=`<ellipse cx="0" cy="6" rx="36" ry="7" fill="#000" opacity="0.15"/>`;
-  s+=`<rect x="-20" y="-14" width="8" height="20" rx="4" fill="${c2}"/><rect x="12" y="-14" width="8" height="20" rx="4" fill="${c2}"/>`;
-  s+=`<ellipse cx="0" cy="-24" rx="32" ry="18" fill="${c}"/>`;
-  s+=`<path d="M30 -28 Q46 -36 42 -20" fill="none" stroke="${c}" stroke-width="8" stroke-linecap="round"/>`;
-  s+=`<circle cx="-30" cy="-32" r="16" fill="${c}"/>`;
-  s+=`<path d="M-40 -42 Q-52 -34 -45 -18 Q-36 -26 -35 -38 Z" fill="${c2}"/>`;
-  s+=`<ellipse cx="-42" cy="-27" rx="9" ry="7" fill="#e3cda9"/>`;
-  s+=`<circle cx="-49" cy="-28" r="2.6" fill="${m}"/>`;
-  s+=`<path d="M-35 -34 q3 3 6 0" fill="none" stroke="${m}" stroke-width="2" stroke-linecap="round"/>`;
-  s+=`</g>`;return s;
-}
-function storyMe(cx,cy,sc){
-  sc=sc||1;const c="#25222e";
-  let s=`<g transform="translate(${cx.toFixed(1)},${cy.toFixed(1)}) scale(${sc})">`;
-  s+=`<ellipse cx="0" cy="6" rx="15" ry="5" fill="#000" opacity="0.15"/>`;
-  s+=`<path d="M-3 -34 L-8 2" stroke="${c}" stroke-width="9" stroke-linecap="round"/>`;
-  s+=`<path d="M3 -34 L8 2" stroke="${c}" stroke-width="9" stroke-linecap="round"/>`;
-  s+=`<path d="M0 -66 Q-11 -60 -8 -34 L8 -34 Q11 -60 0 -66 Z" fill="${c}"/>`;
-  s+=`<path d="M6 -58 Q18 -50 22 -38" stroke="${c}" stroke-width="7" stroke-linecap="round" fill="none"/>`;
-  s+=`<circle cx="0" cy="-75" r="10" fill="${c}"/>`;
-  s+=`</g>`;return s;
-}
-function storyMouse(cx,cy,sc){
-  sc=sc||1;
-  let s=`<g transform="translate(${cx.toFixed(1)},${cy.toFixed(1)}) scale(${sc})">`;
-  s+=`<ellipse cx="0" cy="0" rx="9" ry="6" fill="#9a97a2"/>`;
-  s+=`<circle cx="-6" cy="-3" r="4.4" fill="#9a97a2"/>`;
-  s+=`<circle cx="-8" cy="-6" r="2.6" fill="#b8b4be"/>`;
-  s+=`<path d="M8 1 q11 1 13 8" fill="none" stroke="#9a97a2" stroke-width="1.6" stroke-linecap="round"/>`;
-  s+=`<circle cx="-9" cy="-2" r="0.9" fill="#3a3740"/>`;
-  s+=`</g>`;return s;
-}
-function storyGrass(x,y,sc){
-  sc=sc||1;const g="#6fb85c",g2="#88cd72";
-  return `<g transform="translate(${x},${y}) scale(${sc})">`+
-    `<path d="M0 0 Q-5 -15 -9 -22 Q-3 -13 -1 0Z" fill="${g}"/>`+
-    `<path d="M1 0 Q1 -18 -1 -27 Q4 -15 3 0Z" fill="${g2}"/>`+
-    `<path d="M2 0 Q7 -14 11 -20 Q6 -12 4 0Z" fill="${g}"/></g>`;
-}
-function storyWalk(scene){
-  let s=`<svg viewBox="0 0 360 240" xmlns="http://www.w3.org/2000/svg">`;
-  if(scene==="seasons"){
-    s+=`<rect width="360" height="240" fill="#f6efe0"/>`;
-    s+=`<ellipse cx="180" cy="216" rx="160" ry="12" fill="#000" opacity="0.05"/>`;
-    /* 落ち葉と雪＝季節がめぐる */
-    const leaf=(x,y,col)=>`<path d="M${x} ${y} q6 -4 10 2 q-6 4 -10 -2Z" fill="${col}"/>`;
-    s+=leaf(60,50,"#e0912f")+leaf(120,90,"#d46a3a")+leaf(300,60,"#e0a83f")+leaf(250,110,"#cf7a35")+leaf(200,44,"#e0912f");
-    s+=`<circle cx="90" cy="130" r="2.2" fill="#fff"/><circle cx="330" cy="120" r="2.2" fill="#fff"/><circle cx="160" cy="150" r="2" fill="#fff"/>`;
-    s+=storyMe(120,206,1.0);
-    s+=storyDog(188,206,0.98);
-    s+=`<path d="M141,168 Q160,155 162,176" fill="none" stroke="#6a5240" stroke-width="2" stroke-linecap="round"/>`;
-    s+=storyBlackCat(250,212,false,false,0.48);
-    s+=`</svg>`;return s;
-  }
-  if(scene==="walk2"){
-    /* くさむらから子ねこがひょっこり（猫単体） */
-    s+=`<rect width="360" height="240" fill="#eef6ea"/>`;
-    s+=`<ellipse cx="180" cy="220" rx="170" ry="14" fill="#cfe8bf"/>`;
-    s+=storyBlackCat(180,196,false,false,0.8);
-    /* 手前の草むらで下半身をかくして"ひょっこり" */
-    for(let x=70;x<=290;x+=22)s+=storyGrass(x,214,1.0+((x/60)%1)*0.3);
-    s+=storyGrass(150,206,1.5)+storyGrass(178,208,1.7)+storyGrass(206,206,1.5);
-    s+=`<text x="150" y="150" font-size="15">✨</text><text x="214" y="140" font-size="18">✨</text>`;
-    s+=`</svg>`;return s;
-  }
-  /* 通常の散歩：背景シンプル、人は犬の横 */
-  s+=`<rect width="360" height="240" fill="#eef4ee"/>`;
-  s+=`<ellipse cx="180" cy="216" rx="160" ry="12" fill="#000" opacity="0.05"/>`;
-  s+=storyMe(128,206,1.0);
-  s+=storyDog(196,206,1.0);
-  s+=`<path d="M149,168 Q168,155 170,176" fill="none" stroke="#6a5240" stroke-width="2" stroke-linecap="round"/>`;
-  if(scene==="walk3")s+=storyBlackCat(262,212,false,false,0.5);
-  s+=`</svg>`;return s;
-}
-function storyIndoor(scene){
-  const warm=(scene==="grown");
-  const wall=warm?"#f3e2cf":"#dce4ee", floor=warm?"#e6cba8":"#cdd0da";
-  let s=`<svg viewBox="0 0 360 240" xmlns="http://www.w3.org/2000/svg">`;
-  s+=`<rect width="360" height="240" fill="${wall}"/>`;
-  s+=`<rect y="168" width="360" height="72" fill="${floor}"/>`;
-  /* 窓（外の空が見える） */
-  s+=`<rect x="214" y="40" width="118" height="98" rx="7" fill="#bfe6ff"/>`;
-  s+=`<circle cx="300" cy="66" r="12" fill="#fff2b0" opacity="0.85"/>`;
-  s+=`<line x1="273" y1="40" x2="273" y2="138" stroke="#e6d3b8" stroke-width="5"/><line x1="214" y1="89" x2="332" y2="89" stroke="#e6d3b8" stroke-width="5"/>`;
-  s+=`<rect x="210" y="134" width="126" height="8" rx="3" fill="#d8c3a8"/>`;
-  if(scene==="window"||scene==="gift"){
-    s+=`<ellipse cx="110" cy="196" rx="60" ry="18" fill="#d9b38a"/><ellipse cx="110" cy="194" rx="50" ry="12" fill="#c99e73"/>`;
-    s+=storyDog(104,194,0.9);
-    /* 猫は窓の外（家に入らない） */
-    s+=storyBlackCat(285,112,false,false,0.42);
-    if(scene==="gift")s+=storyMouse(300,120,0.8);
-  }else if(scene==="alone"){
-    s+=`<ellipse cx="110" cy="198" rx="58" ry="16" fill="#d9b38a" opacity="0.4"/>`;
-    s+=storyBlackCat(285,112,false,false,0.42);
-  }else if(scene==="grown"){
-    /* 成長した猫：窓辺に大きく */
-    s+=storyBlackCat(273,110,false,true,0.62);
-  }
-  s+=`</svg>`;return s;
-}
-function storyRoomSVG(scene){
-  if(scene==="walk"||scene==="walk2"||scene==="walk3"||scene==="seasons")return storyWalk(scene);
-  return storyIndoor(scene);
-}
-/* ===== 画像が読めない時のフォールバック（図形で描いた物語シーン・オレンジ猫） ===== */
-function storyCatO(cx,cy,sc,pose){
-  sc=sc||1;const o="#f0a24a",o2="#df8a2c",p="#eda0ad",m="#6a4a24";
-  let s=`<g transform="translate(${cx.toFixed(1)},${cy.toFixed(1)}) scale(${sc})">`;
-  s+=`<ellipse cx="0" cy="5" rx="30" ry="5" fill="#000" opacity="0.12"/>`;
-  if(pose==="sit"){
-    s+=`<path d="M22 -8 Q40 -14 30 -30" fill="none" stroke="${o}" stroke-width="7" stroke-linecap="round"/>`;
-    s+=`<path d="M-20 0 C-24 -30 -12 -44 2 -44 C16 -44 26 -30 22 0 Z" fill="${o}"/>`;
-    s+=`<path d="M-6 -30 q0 16 0 26M6 -30 q0 16 0 26" stroke="${o2}" stroke-width="2" fill="none"/>`;
-    s+=`<circle cx="0" cy="-50" r="14" fill="${o}"/>`;
-    s+=`<path d="M-13 -56 L-17 -70 L-3 -60 Z" fill="${o}"/><path d="M13 -56 L17 -70 L3 -60 Z" fill="${o}"/>`;
-    s+=`<circle cx="-5" cy="-51" r="1.7" fill="${m}"/><circle cx="5" cy="-51" r="1.7" fill="${m}"/><path d="M-2 -45 q2 2 4 0" stroke="${p}" stroke-width="1.6" fill="none"/>`;
-  }else{
-    s+=`<path d="M24 -16 Q42 -30 34 -48" fill="none" stroke="${o}" stroke-width="7" stroke-linecap="round"/>`;
-    s+=`<rect x="-17" y="-16" width="6" height="16" rx="3" fill="${o2}"/><rect x="-5" y="-16" width="6" height="16" rx="3" fill="${o2}"/><rect x="7" y="-16" width="6" height="16" rx="3" fill="${o2}"/><rect x="17" y="-16" width="6" height="16" rx="3" fill="${o2}"/>`;
-    s+=`<ellipse cx="2" cy="-24" rx="26" ry="13" fill="${o}"/>`;
-    s+=`<path d="M-8 -34 q0 10 0 18M2 -35 q0 11 0 19M12 -34 q0 10 0 18" stroke="${o2}" stroke-width="2" fill="none"/>`;
-    s+=`<circle cx="-26" cy="-28" r="12" fill="${o}"/>`;
-    s+=`<path d="M-34 -37 L-37 -49 L-27 -41 Z" fill="${o}"/><path d="M-20 -39 L-16 -50 L-13 -40 Z" fill="${o}"/>`;
-    s+=`<circle cx="-31" cy="-29" r="1.6" fill="${m}"/><circle cx="-37" cy="-26" r="1.6" fill="${p}"/>`;
-  }
-  s+=`</g>`;return s;
-}
-function storyFB(key){
-  const W=320,H=300,gy=238;
-  const open=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg"><rect width="${W}" height="${H}" fill="#fdf9f0"/>`;
-  const grd=`<ellipse cx="160" cy="250" rx="150" ry="12" fill="#000" opacity="0.05"/>`;
-  const leash=(x1,y1,x2,y2)=>`<path d="M${x1} ${y1} Q${(x1+x2)/2} ${Math.min(y1,y2)-12} ${x2} ${y2}" fill="none" stroke="#c94a3a" stroke-width="2.4" stroke-linecap="round"/>`;
-  if(key==="s1"){ return open+grd+storyMe(120,gy,1)+storyDog(206,gy,1)+leash(141,200,186,206)+`</svg>`; }
-  if(key==="s2"){ let g=""; for(let x=54;x<=120;x+=20)g+=storyGrass(x,224,1.1); g+=storyGrass(74,214,1.6)+storyGrass(96,216,1.7);
-    return open+grd+storyMe(214,gy,1)+storyDog(150,gy+4,0.96)+storyBlackCat(86,214,false,false,0.5)+g+`</svg>`; }
-  if(key==="s3"){ return open+grd+storyMe(120,gy,1)+storyDog(200,gy,1)+leash(141,200,182,206)+storyBlackCat(266,gy+4,false,false,0.55)+`</svg>`; }
-  if(key==="s4"){ const leaf=(x,y,c)=>`<path d="M${x} ${y} q6 -4 10 2 q-6 4 -10 -2Z" fill="${c}"/>`;
-    return open.replace("#fdf9f0","#fdf6ea")+grd+leaf(56,54,"#e0912f")+leaf(150,44,"#7fbf5a")+`<path d="M264 52 l3 8 8 3 -8 3 -3 8 -3 -8 -8 -3 8 -3Z" fill="#8fc0e6"/>`+leaf(96,96,"#cf7a35")
-      +storyMe(120,gy,1)+storyDog(200,gy,1)+leash(141,200,182,206)+storyBlackCat(266,gy+4,false,false,0.55)+`</svg>`; }
-  if(key==="s5"){ // 老犬をなでる＋見てる猫
-    let s=open+grd;
-    s+=`<ellipse cx="120" cy="228" rx="66" ry="24" fill="#d8bd8f"/><ellipse cx="150" cy="222" rx="26" ry="16" fill="#c9a878"/>`; // 伏せる犬
-    s+=`<circle cx="150" cy="220" r="6" fill="#5a4a3e" opacity="0.5"/>`;
-    s+=`<path d="M188 236 Q196 196 214 196 Q232 196 232 236 Z" fill="#25222e"/><circle cx="210" cy="188" r="10" fill="#25222e"/>`; // かがむ人
-    s+=`<path d="M186 214 q-14 6 -24 8" stroke="#25222e" stroke-width="7" fill="none" stroke-linecap="round"/>`; // なでる腕
-    s+=storyBlackCat(278,236,false,false,0.5);
-    return s+`</svg>`; }
-  if(key==="s6"){ // 窓：外に猫／中で犬が寝る
-    let s=open+grd;
-    s+=`<rect x="96" y="70" width="150" height="150" rx="6" fill="#eaf4fb" stroke="#8a6a48" stroke-width="7"/>`;
-    s+=`<line x1="171" y1="70" x2="171" y2="220" stroke="#8a6a48" stroke-width="6"/><line x1="96" y1="145" x2="246" y2="145" stroke="#8a6a48" stroke-width="6"/>`;
-    s+=`<ellipse cx="200" cy="196" rx="42" ry="16" fill="#b9c2d6"/><ellipse cx="200" cy="190" rx="30" ry="14" fill="#c9a878"/><circle cx="188" cy="192" r="6" fill="#5a4a3e" opacity="0.5"/>`; // 寝る犬
-    s+=storyBlackCat(120,214,false,false,0.46);
-    return s+`</svg>`; }
-  if(key==="s7"){ // 空のベッド
-    let s=open+`<ellipse cx="160" cy="212" rx="120" ry="20" fill="#000" opacity="0.05"/>`;
-    s+=`<ellipse cx="160" cy="196" rx="96" ry="42" fill="#5b7bbf"/><ellipse cx="160" cy="188" rx="76" ry="30" fill="#eef1f6"/><ellipse cx="160" cy="192" rx="66" ry="22" fill="#e2e6ef"/>`;
-    return s+`</svg>`; }
-  if(key==="s8"){ // ドアの前の猫＋おはな
-    let s=open+grd;
-    s+=`<rect x="150" y="54" width="120" height="180" rx="4" fill="#cbb08a"/>`;
-    s+=`<rect x="164" y="70" width="92" height="150" rx="4" fill="none" stroke="#a98a5f" stroke-width="4"/><circle cx="176" cy="150" r="5" fill="#a98a5f"/>`;
-    s+=storyBlackCat(110,236,false,false,0.62);
-    s+=`<circle cx="150" cy="196" r="5" fill="#e58ab0"/><path d="M150 201 q2 8 -2 14" stroke="#6fae5a" stroke-width="2" fill="none"/>`; // 花
-    return s+`</svg>`; }
-  if(key==="s9"){ // ゴースト犬＋人＋猫
-    return open+grd+`<g opacity="0.4">`+storyDog(80,gy,0.95)+`</g>`+storyMe(170,gy,1)+storyBlackCat(250,gy+4,false,false,0.55)+`</svg>`; }
-  return open+grd+`</svg>`;
-}
-function storyImgErr(img,key){ try{ const w=img&&img.parentNode; if(w&&key){ w.innerHTML=storyFB(key); } else if(img){ img.style.opacity=0; } }catch(_){ try{img.style.opacity=0;}catch(e){} } }
-try{ window.storyImgErr=storyImgErr; }catch(_){}
-function showStory(){
-  _storyStage=0; _storySkip=false;
-  let m=document.getElementById("storyIntro");
-  if(!m){m=document.createElement("div");m.id="storyIntro";document.body.appendChild(m);}
-  try{switchBGM("room.mp3");}catch(_){}   /* 物語のBGM＝ねこの部屋と同じ */
-  m.classList.add("show");renderStory();
-}
-function showStoryNamingOnly(){
-  _storySkip=true;
-  const idx=STORY.findIndex(c=>c.type==="name");
-  _storyStage=idx<0?0:idx;
-  let m=document.getElementById("storyIntro");
-  if(!m){m=document.createElement("div");m.id="storyIntro";document.body.appendChild(m);}
-  try{switchBGM("room.mp3");}catch(_){}
-  m.classList.add("show");renderStory();
-}
-function renderStory(){
-  const m=document.getElementById("storyIntro");if(!m)return;
-  const st=STORY[_storyStage];
-  if(!st){endStory();return;}
-  if(st.meow){try{playMeow(st.meow);}catch(_){}}
-  const total=STORY.length, last=(_storyStage>=total-1), first=(_storyStage===0);
-  const sub=(t)=>String(t||"").replace(/\{NAME\}/g, escHtml(storyName()));
-  m.className="show storyBook";
-  let inner="", isName=(st.type==="name");
-  if(st.type==="text"){
-    if(first){
-      inner=`<div class="stPageInner stCover"><div class="stKicker">ものがたり</div>`+
-        `<div class="stLine big">${st.lines.map(l=>`<div>${sub(l)}</div>`).join("")}</div>`+
-        `<div class="stCoverRule"></div></div>`;
-    }else{
-      inner=`<div class="stPageInner"><div class="stLine big">${st.lines.map(l=>`<div>${sub(l)}</div>`).join("")}</div></div>`;
-    }
-  }else if(isName){
-    inner=`<div class="stPageInner">`+
-      `<div class="stPic"><img id="stKitten" class="stKitten" src="${st.src}" alt="" onerror="storyImgErr(this,'s2')"></div>`+
-      `<div class="stHint" id="stKittenHint">タップして よんでみよう</div>`+
-      `<div class="stLine">この子に、名前を つけてあげよう。</div>`+
-      `<div class="stNameRow"><input id="stNameInput" type="text" maxlength="12" placeholder="なまえ" value="${escHtml(_storyCatName)}"><button id="stNameOk" type="button">きめた</button></div>`+
-      `</div>`;
-  }else if(st.type==="reach"){
-    inner=`<div class="stPageInner posT">`+
-      `<div class="stLine" id="stReachLine">${sub(st.text)}</div>`+
-      `<div class="stPic"><img id="stReachImg" src="${st.src}" alt="" onerror="storyImgErr(this,'${st.fb||''}')"></div>`+
-      `<div class="stNameRow"><button id="stReachBtn" type="button">そっと 手を さしのべる</button></div>`+
-      `</div>`;
-  }else if(st.type==="stretch"){
-    inner=`<div class="stPageInner">`+
-      `<div class="stLine big" id="stStretchLine">いっしょに、<br>のびを してみよう。</div>`+
-      `<div class="stNameRow"><button id="stStretchBtn" type="button">せーの、のび〜</button></div>`+
-      `</div>`;
-  }else{
-    const pos=st.pos||"top";
-    const line=st.text?`<div class="stLine">${sub(st.text)}</div>`:"";
-    const pic=`<div class="stPic"><img src="${st.src}" alt="" onerror="storyImgErr(this,'${st.fb||''}')"></div>`;
-    inner=`<div class="stPageInner ${pos==="bottom"?"posB":"posT"}">`+(pos==="bottom"?pic+line:line+pic)+`</div>`;
-  }
-  const folio=_storySkip?"":`<div class="stFolio">${_storyStage+1} / ${total}</div>`;
-  const chev=(isName||st.type==="reach"||st.type==="stretch")?"":`<div class="stChev stChevL ${first?"off":""}">\u2039</div><div class="stChev stChevR">${last?"はじめる \u203a":"\u203a"}</div>`;
-  const skip=_storySkip?"":`<div class="stSkip">スキップ</div>`;
-  m.innerHTML=`<div class="stPage">${inner}${folio}${chev}</div>${skip}`;
-  _storyAdvOK=true;
-  if(st.hold){ _storyAdvOK=false; const pg=m.querySelector(".stPage"); if(pg)pg.classList.add("stHold"); setTimeout(()=>{ _storyAdvOK=true; if(pg)pg.classList.remove("stHold"); },st.hold); }
-  const floatHeart=(host,x,y)=>{ try{ const h=document.createElement("div");h.className="stHeart";h.textContent="\u2661";h.style.left=(x||50)+"%";h.style.top=(y||52)+"%";host.querySelector(".stPage").appendChild(h);setTimeout(()=>h.remove(),1500);}catch(_){}};
-  if(isName){
-    const inp=m.querySelector("#stNameInput"), ok=m.querySelector("#stNameOk"), kit=m.querySelector("#stKitten"), hint=m.querySelector("#stKittenHint");
-    if(kit)kit.onclick=(e)=>{ e.stopPropagation(); kit.classList.remove("stWiggle"); void kit.offsetWidth; kit.classList.add("stWiggle"); try{playMeow("curious");}catch(_){}; floatHeart(m,52,46); if(hint)hint.textContent="にゃ♪"; };
-    const commit=()=>{ const v=(inp.value||"").trim(); _storyCatName=v.slice(0,12); _storyNamed=!!_storyCatName; try{playClick();}catch(_){}; if(_storySkip)endStory(); else nextStory(); };
-    if(ok)ok.onclick=(e)=>{e.stopPropagation();commit();};
-    if(inp){ inp.onclick=(e)=>e.stopPropagation(); inp.onkeydown=(e)=>{ if(e.key==="Enter")commit(); }; setTimeout(()=>{try{inp.focus();}catch(_){}} ,300); }
-    m.onclick=(ev)=>{ if(ev.target&&ev.target.classList&&ev.target.classList.contains("stSkip")){_skipStory();} };
-    return;
-  }
-  if(st.type==="reach"){
-    const btn=m.querySelector("#stReachBtn"), lineEl=m.querySelector("#stReachLine"), img=m.querySelector("#stReachImg");
-    let stg=0;
-    if(btn)btn.onclick=(e)=>{ e.stopPropagation();
-      if(stg===0){ stg=1; try{playMeow("love");}catch(_){}; try{playPurr(1.6,0.09);}catch(_){}; if(img)img.classList.add("stNuzzle"); floatHeart(m,54,50); setTimeout(()=>floatHeart(m,48,44),260);
-        if(lineEl)lineEl.innerHTML="すり、と "+escHtml(storyName())+"が 頬を よせてきた。<br>——さあ、また 歩きはじめよう。";
-        btn.textContent="つぎへ \u203a";
-      }else{ try{playClick();}catch(_){}; nextStory(); }
-    };
-    m.onclick=(ev)=>{ if(ev.target&&ev.target.classList&&ev.target.classList.contains("stSkip")){_skipStory();} };
-    return;
-  }
-  if(st.type==="stretch"){
-    const btn=m.querySelector("#stStretchBtn"), lineEl=m.querySelector("#stStretchLine");
-    let stg=0;
-    if(btn)btn.onclick=(e)=>{ e.stopPropagation();
-      if(stg===0){ stg=1; try{playMeow("happy");}catch(_){}; floatHeart(m,50,42); setTimeout(()=>floatHeart(m,43,38),220); setTimeout(()=>floatHeart(m,57,40),400);
-        if(lineEl)lineEl.innerHTML="んーっ！<br>"+escHtml(storyName())+"が、うれしそうに 目を ほそめた。";
-        btn.textContent="はじめる \u203a";
-      }else{ try{playClick();}catch(_){}; endStory(); }
-    };
-    m.onclick=(ev)=>{ if(ev.target&&ev.target.classList&&ev.target.classList.contains("stSkip")){_skipStory();} };
-    return;
-  }
-  m.onclick=(ev)=>{
-    if(ev.target && ev.target.classList && ev.target.classList.contains("stSkip")){_skipStory();return;}
-    if(!_storyAdvOK)return;   /* 溜め中はタップ無効 */
-    try{playClick();}catch(_){}
-    const x=ev.clientX||0, W=window.innerWidth||360;
-    if(x < W*0.3 && _storyStage>0) prevStory(); else nextStory();
-  };
-}
-function prevStory(){ if(_storyStage>0){_storyStage--; renderStory();} }
 
-function nextStory(){_storyStage++;if(_storyStage>=STORY.length)endStory();else renderStory();}
-/* スキップ：まだ名前を付けていなければ名前ページへ、付けていれば終了 */
-function _skipStory(){
-  try{playClick();}catch(_){}
-  if(_storyNamed && _storyCatName){ endStory(); return; }
-  const idx=STORY.findIndex(c=>c.type==="name");
-  if(idx<0){ endStory(); return; }
-  _storySkip=true;            /* 名前決定で物語を終える */
-  _storyStage=idx; renderStory();
-}
-function endStory(){
-  const m=document.getElementById("storyIntro");if(m)m.classList.remove("show");
-  _storySkip=false;
-  localStorage.setItem(STORY_KEY,"1");
-  try{switchBGM("bgm11.mp3");}catch(_){}   /* 通常BGMに戻す */
-  try{ if(getProfile()){showSelect();updateTop();} else openProfileSetup(false); }catch(_){}   /* 物語のあと→マイ猫の設定へ */
-}
 /* ===== はじめての対面（設定のあと・窓から入ってくる／初プレゼント／かばんへ誘導） ===== */
 let _firstMeetPick=null, _firstMeetActive=false, _firstMeetGuideSendoff=false, _firstOutingSpecial=false, _sendoffAnimating=false;
 /* 次の「目標の起きる時間」までのms（初回だけ、おでかけ時間をこれにする） */
@@ -7627,7 +7673,11 @@ async function firstMeetPresent(){
   try{ $("roomScene").innerHTML=""; }catch(_){}   /* 念のため猫を消しておく */
   await _wait(500);
   const nm=(typeof catName==="function"&&catName())?catName():"ねこ";
-  const pick=outingPick();          /* 衣装かポーズ（＝着せ替えできる物） */
+  /* 初日は必ず衣装2種×各2個（＝どちらも色替え解禁） */
+  const _p1i=Math.floor(Math.random()*ITEMS.length);
+  let _p2i=Math.floor(Math.random()*(ITEMS.length-1)); if(_p2i>=_p1i)_p2i++;
+  const picks=[{type:"item",id:ITEMS[_p1i].id,name:ITEMS[_p1i].name},{type:"item",id:ITEMS[_p2i].id,name:ITEMS[_p2i].name}];
+  const pick=picks[0];
   _firstMeetPick=pick;
   _outingBusy=true;                 /* アイドル再描画に邪魔されないように */
   try{ if(typeof roomBubble==="function")roomBubble("…あれ？"); }catch(_){}
@@ -7636,9 +7686,9 @@ async function firstMeetPresent(){
   catch(e){ console.warn("初対面演出:",e&&e.stack||e); }
   _outingBusy=false;
   _firstMeetActive=false;           /* 以後は通常表示 */
-  try{ grantOutingPick(pick); }catch(_){}
+  try{ picks.forEach(p=>{addItem(p.id);addItem(p.id);}); }catch(_){}
   try{ playMeow("love"); }catch(_){}
-  try{ outingRevealGift(pick, `\u{1F338} ${escHtml(nm)}が、はじめての おみやげを くれた！`); }catch(_){}
+  try{ firstMeetRevealGifts(picks,nm); }catch(_){}
   try{ renderRoom(); }catch(_){}
   try{ if(outingPhase()==="none"){scheduleIdle();startNeedDrift();} }catch(_){}
 }
@@ -7796,7 +7846,7 @@ function ensureDevHomeBtn(){
     const sb=document.createElement("button");
     sb.id="devStoryBtn";sb.type="button";sb.textContent="▶物語";
     sb.style.cssText="position:fixed;left:10px;bottom:calc(48px + env(safe-area-inset-bottom));z-index:300;border:none;border-radius:999px;padding:7px 12px;font-size:11px;font-weight:800;background:#cdbcff;color:#4b3a82;box-shadow:0 4px 12px rgba(0,0,0,.18);cursor:pointer;";
-    sb.addEventListener("click",()=>{try{playClick();}catch(_){}showStory();});
+    sb.addEventListener("click",()=>{try{playClick();}catch(_){}});
     document.body.appendChild(sb);
   }
   if(!document.getElementById("devIntroBtn")){           /* 【テスト用】初回を頭から通しで再生（説明→物語→設定→初対面） */
@@ -7809,7 +7859,6 @@ function ensureDevHomeBtn(){
 }
 function devReplayIntro(){
   try{
-    localStorage.removeItem(STORY_KEY);
     localStorage.removeItem(FIRSTMEET_KEY);
     localStorage.removeItem(PROF_KEY);
     try{setOutingLocal(null);}catch(_){}
@@ -7820,7 +7869,7 @@ function devReplayIntro(){
     try{$("catRoom").classList.remove("visible");}catch(_){}
     try{$("profilePanel").classList.remove("visible");}catch(_){}
     try{if(typeof closeProfileSetup==="function")closeProfileSetup();}catch(_){}
-    const si=document.getElementById("storyIntro");if(si)si.classList.remove("show");
+    
     const ss=document.getElementById("selectScreen");if(ss)ss.classList.remove("visible");
     const ts=document.getElementById("titleScreen");if(ts)ts.classList.remove("visible");
   }catch(_){}
@@ -8201,12 +8250,12 @@ $("tutNext").addEventListener("click",()=>{playClick();tutGo(_tutPage+1);});
 $("tutStart").addEventListener("click",()=>{
   playClick();
   $("tutorial").classList.remove("visible");
-  if(_tutMode!=="help"){ if(!storySeen())showStory(); else openProfileSetup(false); }
+  if(_tutMode!=="help"){ try{ if(getProfile()){showSelect();updateTop();} else openProfileSetup(false); }catch(_){ openProfileSetup(false); } }
 });
 $("tutSkip").addEventListener("click",()=>{
   playClick();
   $("tutorial").classList.remove("visible");
-  if(!storySeen())showStoryNamingOnly(); else openProfileSetup(false);   /* スキップ：名づけだけ見せて設定へ */
+  try{ if(getProfile()){showSelect();updateTop();} else openProfileSetup(false); }catch(_){ openProfileSetup(false); }
 });
 $("helpBtn").addEventListener("click",()=>{playClick();showTutorial("help");});
 $("nyanShot").addEventListener("click",()=>{playClick();if(!_photoMode)enterPhotoMode();});
@@ -8222,7 +8271,7 @@ let _autoTimer=null;
 function doTitlePlay(){
   $("titleScreen").classList.remove("visible");
   if(getProfile()){showSelect();updateTop();}   /* 2回目以降：そのままホームへ */
-  else if(!storySeen()){ showTutorial("first"); }  /* 初回：まず ゲーム説明 → はじめる で物語へ */
+  else if(!getProfile()){ showTutorial("first"); }  /* 初回：まず ゲーム説明 → はじめる で物語へ */
   else { openProfileSetup(false); }                /* 説明・物語は見た → 設定へ */
 }
 function startAutoPlay(){

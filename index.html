@@ -145,7 +145,7 @@ button,input{font:inherit;}
 @keyframes catHop{0%,100%{transform:translateY(0);}30%{transform:translateY(-9px);}55%{transform:translateY(0);}}
 .catFig.hop{animation:catHop .62s ease-in-out infinite;}
 @media (prefers-reduced-motion:reduce){.catFig.hop{animation:none;}}
-.catPose{display:block;transition:opacity .5s;transform-origin:50% 92%;animation:catIdle 4.6s ease-in-out infinite;}
+.catPose{display:block;position:relative;transition:opacity .5s;transform-origin:50% 92%;animation:catIdle 4.6s ease-in-out infinite;}
 @keyframes catIdle{0%,100%{transform:translateY(0) rotate(0deg);}25%{transform:translateY(-1px) rotate(-1.1deg);}50%{transform:translateY(0.5px) rotate(0deg);}75%{transform:translateY(-1px) rotate(1.1deg);}}
 @media (prefers-reduced-motion:reduce){.catPose{animation:none;}}
 .catSvg{width:76px;height:auto;display:block;filter:drop-shadow(0 6px 8px rgba(40,50,70,.22));}
@@ -1655,15 +1655,16 @@ button,input{font:inherit;}
 .crChair{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:58px;z-index:1;filter:drop-shadow(0 5px 5px rgba(120,90,50,.25));}
 .crChair svg{width:100%;display:block;}
 .crCatWrap{position:absolute;left:50%;bottom:30px;transform:translateX(-50%);width:70px;z-index:2;}
-.crCatFig{width:70px;animation:crBob 3.2s ease-in-out infinite;}
+.crCatFig{width:70px;position:relative;animation:crBob 3.2s ease-in-out infinite;}
 .crCatFig .catSvg{width:100%;height:auto;display:block;filter:drop-shadow(0 3px 4px rgba(90,60,30,.2));}
 .crCatWrap.talking .crCatFig{animation:crBobTalk .5s ease-in-out infinite;}
 @keyframes crBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
 @keyframes crBobTalk{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.5px)}}
-.crMouth{position:absolute;left:50%;top:52%;transform:translate(-50%,0) scaleY(.12);transform-origin:center;
-  width:20%;height:15%;border-radius:50%;background:#4a2f2a;box-shadow:inset 0 -3px 0 rgba(255,150,150,.5);opacity:0;pointer-events:none;}
-.crMouth.flap{animation:crFlap .19s ease-out;}
-@keyframes crFlap{0%{opacity:1;transform:translate(-50%,0) scaleY(.15)}45%{opacity:1;transform:translate(-50%,0) scaleY(1)}100%{opacity:1;transform:translate(-50%,0) scaleY(.3)}}
+.crMouth,.spkMouth{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%) scaleY(.14);transform-origin:center;
+  width:23%;height:21%;border-radius:50%;background:#3a2622;box-shadow:inset 0 -3px 0 rgba(255,150,150,.55);opacity:0;pointer-events:none;z-index:4;}
+.spkMouth.on{opacity:1;}
+.crMouth.flap,.spkMouth.flap{animation:crFlap .19s ease-out;}
+@keyframes crFlap{0%{opacity:1;transform:translate(-50%,-50%) scaleY(.18)}45%{opacity:1;transform:translate(-50%,-50%) scaleY(1)}100%{opacity:1;transform:translate(-50%,-50%) scaleY(.4)}}
 .crName{position:absolute;left:50%;bottom:-14px;transform:translateX(-50%);font-size:9px;font-weight:800;color:#5c4326;background:rgba(255,255,255,.75);border-radius:8px;padding:0 6px;white-space:nowrap;z-index:3;}
 .crBubble{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:2px;z-index:5;
   background:#fff;border-radius:13px;padding:5px 11px;font-size:12.5px;font-weight:800;color:#5a4530;white-space:nowrap;
@@ -2675,7 +2676,13 @@ function catSpeakBubble(catEl,text){
   let b=catEl.querySelector(".spkBubble");
   if(!b){b=document.createElement("div");b.className="spkBubble";catEl.appendChild(b);}
   b.textContent="";b.classList.add("show");
-  speakHiragana(text,soFar=>{b.textContent=soFar;},()=>{setTimeout(()=>{if(b)b.classList.remove("show");},1400);});
+  const fig=catEl.querySelector(".catPose")||catEl.querySelector(".crCatFig");   /* 顔に口を重ねる */
+  let m=null;
+  if(fig){m=fig.querySelector(".spkMouth");if(!m){m=document.createElement("div");m.className="spkMouth";fig.appendChild(m);}m.classList.add("on");}
+  speakHiragana(text,(soFar,voiced)=>{
+    b.textContent=soFar;
+    if(voiced&&m){m.classList.remove("flap");void m.offsetWidth;m.classList.add("flap");}
+  },()=>{setTimeout(()=>{if(b)b.classList.remove("show");if(m)m.classList.remove("on","flap");},1300);});
 }
 function _schedBuf(ctx,out,buf,offset,dur,t){
   dur=Math.max(0.06,dur);const fi=0.012,fo=Math.min(0.05,dur*0.35);
@@ -2790,8 +2797,7 @@ async function openClubroom(){
     el.innerHTML=
       '<div class="crBubble" hidden></div>'+
       '<div class="crCatWrap" style="transform:scaleX('+dir+')">'+
-        '<div class="crCatFig">'+catFigureHTML(c.catBody,c.color,"sit",[0,0],"normal",null)+'</div>'+
-        '<div class="crMouth"></div>'+
+        '<div class="crCatFig">'+catFigureHTML(c.catBody,c.color,"sit",[0,0],"normal",null)+'<div class="crMouth"></div></div>'+
       '</div>'+
       '<div class="crChair"><svg viewBox="0 0 60 70" xmlns="http://www.w3.org/2000/svg"><rect x="12" y="6" width="7" height="40" rx="2.5" fill="#c99a63"/><rect x="10" y="30" width="40" height="9" rx="3" fill="#e0b673"/><rect x="13" y="39" width="6" height="26" rx="2.5" fill="#b98a53"/><rect x="41" y="39" width="6" height="26" rx="2.5" fill="#b98a53"/></svg></div>'+
       '<div class="crName">'+escHtml(c.name)+'</div>';
@@ -3361,7 +3367,7 @@ async function likePost(po,btn){
     /* ここまで来て初めて成功扱い */
     playPop();
     if(po.uid)markLiked(po.uid);
-    btn.classList.add("done");btn.textContent="ありがとう♡";btn.onclick=null;
+    btn.classList.add("done");btn.textContent=(po.thanks||"ありがとう")+"♡";btn.onclick=null;
     try{catSpeakBubble(btn.closest(".hillCat"),po.thanks||"ありがとう");}catch(_){}   /* いいねのお礼を読み上げ */
   }catch(e){
     console.warn("like failed",e);
@@ -4889,7 +4895,7 @@ function renderHillPage(){
     }
     fig.querySelector(".catPose").style.animationDelay=(-Math.random()*4.6).toFixed(2)+"s";
     fig.style.cursor="pointer";
-    fig.addEventListener("click",e=>{e.stopPropagation();try{catSpeakBubble(el,po.thanks||"ありがとう");}catch(_){}});   /* 猫タップで読み上げ */
+    fig.addEventListener("click",e=>{e.stopPropagation();const say=(comment&&comment.trim())?comment:(po.thanks||"ありがとう");try{catSpeakBubble(el,say);}catch(_){}});   /* 猫タップでコメント読み上げ */
     const rot=Math.max(-7,Math.min(7,(i-center)*2.6));
     fig.style.transform=`rotate(${rot}deg)`;
     cont.appendChild(el);

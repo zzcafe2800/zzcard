@@ -96,8 +96,13 @@ button,input{font:inherit;}
 .hill{position:absolute;left:50%;transform:translateX(-50%);border-radius:50%;z-index:0;}
 #hillCats{position:absolute;left:0;right:0;bottom:86px;z-index:0;pointer-events:none;
   display:flex;justify-content:center;align-items:flex-end;gap:8px;padding:0 10px;flex-wrap:nowrap;}
-.hillCat{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;pointer-events:auto;
-  width:74px;flex:0 0 auto;}
+.spkBubble{position:absolute;bottom:100%;left:50%;transform:translateX(-50%) translateY(-4px) scale(.9);opacity:0;z-index:20;pointer-events:none;
+  background:#fff;border-radius:13px;padding:5px 11px;font-size:12.5px;font-weight:800;color:#5a4530;white-space:nowrap;
+  box-shadow:0 5px 14px rgba(90,60,30,.24);min-width:14px;min-height:15px;text-align:center;font-family:"Yomogi","Kosugi Maru",sans-serif;
+  transition:opacity .2s,transform .2s;}
+.spkBubble.show{opacity:1;transform:translateX(-50%) translateY(0) scale(1);}
+.spkBubble::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:7px solid transparent;border-top-color:#fff;}
+.hillCat{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;pointer-events:auto;width:74px;flex:0 0 auto;}
 .hillArrow{position:absolute;bottom:34px;z-index:6;width:34px;height:34px;border-radius:50%;border:none;
   background:rgba(255,255,255,.9);box-shadow:0 4px 12px rgba(80,150,190,.28);color:#5c93ad;
   font-size:20px;font-weight:900;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;}
@@ -2247,6 +2252,7 @@ button,input{font:inherit;}
       <div class="psStepTitle">プロフィール</div>
       <div class="psStepArt"><svg viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg"><rect x="26" y="22" width="68" height="44" rx="14" fill="#fff" stroke="#9fd4f0" stroke-width="3"/><path d="M44 66 l-2 12 14 -10 Z" fill="#fff" stroke="#9fd4f0" stroke-width="3" stroke-linejoin="round"/><circle cx="46" cy="44" r="4.5" fill="#7fd0ff"/><circle cx="60" cy="44" r="4.5" fill="#7fd0ff"/><circle cx="74" cy="44" r="4.5" fill="#7fd0ff"/><path d="M30 86 q30 -16 60 0" fill="none" stroke="#bfe6ff" stroke-width="4" stroke-linecap="round"/></svg></div>
       <label class="psField"><span>ひとことコメント</span><input id="psComment" type="text" maxlength="40" placeholder="よろしくね"></label>
+      <label class="psField"><span>いいねされたら 言うこと（ひらがな）</span><input id="psThanks" type="text" maxlength="12" placeholder="ありがとう" inputmode="kana"></label>
       <label class="psField psRow"><span>プロフィール非公開</span><input id="psPrivate" type="checkbox"></label>
       <div class="psNav"><button class="psBackBtn" id="psBack3" type="button">◀ 戻る</button><button class="psNextBtn" id="psNext3" type="button">次へ ▶</button></div>
     </div>
@@ -2657,6 +2663,19 @@ async function loadVoiceChar(ch){
   }catch(_){return null;}
 }
 const VOICE_BOOST=1.9;
+/* 最初のタップでオーディオを起こす（全画面の読み上げが鳴るように） */
+(function voiceUnlock(){
+  function u(){try{const c=ensureCtx();if(c){if(c.state==="suspended")c.resume();const b=c.createBuffer(1,1,22050),s=c.createBufferSource();s.buffer=b;s.connect(c.destination);try{s.start(0);}catch(_){}}}catch(_){}}
+  window.addEventListener("pointerdown",u);window.addEventListener("touchstart",u);
+})();
+/* 猫の頭上に吹き出しを出して読み上げ（丘・部屋 共通） */
+function catSpeakBubble(catEl,text){
+  if(!catEl||!text)return;
+  let b=catEl.querySelector(".spkBubble");
+  if(!b){b=document.createElement("div");b.className="spkBubble";catEl.appendChild(b);}
+  b.textContent="";b.classList.add("show");
+  speakHiragana(text,soFar=>{b.textContent=soFar;},()=>{setTimeout(()=>{if(b)b.classList.remove("show");},1400);});
+}
 async function speakHiragana(text,onChar,onDone){
   const toks=tokenizeKana(text).slice(0,40);
   const keys=[...new Set(toks.map(voiceKey).filter(Boolean))];
@@ -2665,15 +2684,25 @@ async function speakHiragana(text,onChar,onDone){
   if(ctx.state==="suspended"){try{await ctx.resume();}catch(_){}}
   const out=sfxOut(ctx)||ctx.destination;
   const step=0.30;   /* 読み上げのテンポ */
-  let t=ctx.currentTime+0.06,disp="";
+  let t=ctx.currentTime+0.06,disp="",lastInfo=null;
   toks.forEach(tok=>{
     const key=voiceKey(tok);let gap=step,voiced=false;
-    if(tok==="っ")gap=step*0.55;
-    else if(tok==="ー")gap=step*0.9;
-    else if(tok==="　"||tok===" ")gap=step*0.7;
+    if(tok==="ー"){                       /* 一つ前の音を伸ばす（母音の後半を再生・複数で長く） */
+      if(lastInfo&&lastInfo.buf){voiced=true;
+        const src=ctx.createBufferSource();src.buffer=lastInfo.buf;
+        const g=ctx.createGain();src.connect(g);g.connect(out);
+        const vOff=lastInfo.offset+lastInfo.dur*0.45,vDur=Math.max(0.12,lastInfo.dur*0.5),fi=0.02,fo=Math.min(0.05,vDur*0.4);
+        g.gain.setValueAtTime(0.0001,t);g.gain.linearRampToValueAtTime(VOICE_BOOST,t+fi);
+        g.gain.setValueAtTime(VOICE_BOOST,t+Math.max(fi,vDur-fo));g.gain.linearRampToValueAtTime(0.0001,t+vDur);
+        try{src.start(t,vOff,vDur);}catch(_){}
+        gap=vDur*0.85;
+      }else gap=step*0.7;
+    }
+    else if(tok==="っ"){gap=step*0.55;}
+    else if(tok==="　"||tok===" "){gap=step*0.7;lastInfo=null;}
     else{
       const info=_voiceBuf[key];
-      if(info&&info.buf){voiced=true;
+      if(info&&info.buf){voiced=true;lastInfo=info;
         const src=ctx.createBufferSource();src.buffer=info.buf;   /* ピッチはいじらない（等倍） */
         const g=ctx.createGain();src.connect(g);g.connect(out);
         const dur=info.dur,fi=0.012,fo=Math.min(0.05,dur*0.35);
@@ -2683,7 +2712,7 @@ async function speakHiragana(text,onChar,onDone){
         g.gain.linearRampToValueAtTime(0.0001,t+dur);
         try{src.start(t,info.offset,dur);}catch(_){try{src.start(t);}catch(__){}}
         gap=Math.min(0.36,Math.max(0.20,dur*0.82));   /* 長い音は少し長く＝自然な間 */
-      }
+      }else lastInfo=null;
     }
     disp+=tok;const d=disp;
     const when=Math.max(0,(t-ctx.currentTime)*1000);
@@ -2699,7 +2728,11 @@ async function speakHiragana(text,onChar,onDone){
 const CLUBROOM_WORDS_KEY="radio_clubroom_words";
 function getMyWords(){try{const a=JSON.parse(localStorage.getItem(CLUBROOM_WORDS_KEY)||"[]");return Array.isArray(a)?a.slice(0,5):[];}catch(_){return[];}}
 function setMyWords(a){try{localStorage.setItem(CLUBROOM_WORDS_KEY,JSON.stringify((a||[]).slice(0,5)));}catch(_){}}
-function hiraOnly(s){s=String(s||"").replace(/[\u30a1-\u30f6]/g,c=>String.fromCharCode(c.charCodeAt(0)-0x60));return s.replace(/[^\u3041-\u3096ー　 ]/g,"");}
+const THANKS_KEY="radio_thanks_word";
+function getThanksWord(){try{const v=localStorage.getItem(THANKS_KEY);return (v&&v.trim())?v:"ありがとう";}catch(_){return "ありがとう";}}
+function setThanksWord(v){try{localStorage.setItem(THANKS_KEY,v||"");}catch(_){}}
+const VOICE_CHARS="あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽゃゅょー";
+function hiraOnly(s){s=String(s||"").replace(/[\u30a1-\u30f6]/g,c=>String.fromCharCode(c.charCodeAt(0)-0x60));return [...s].filter(c=>VOICE_CHARS.indexOf(c)>=0).join("");}   /* ファイルにある文字＋伸ばし棒ーだけ許可 */
 function jstDayOf(ts){const d=new Date((ts||0)+9*3600*1000);return d.getUTCFullYear()+"-"+(d.getUTCMonth()+1)+"-"+d.getUTCDate();}
 async function syncClubroomPresence(){
   try{
@@ -3229,7 +3262,7 @@ async function postToday(anon,comment){
     const{ref,set}=await import(FB_DB);
     const date=jstKey();
     await set(ref(db,"posts/"+getUid()+"_"+date),{
-      uid:getUid(),name:anon?"匿名さん":(p.name||"匿名さん"),color:p.color||"#8fdcff",catBody:p.catBody||"#1c1c1c",date,stamp,createdAt:Date.now(),wakeHour:Number.isFinite(p.wakeHour)?p.wakeHour:null,wakeMin:Number.isFinite(p.wakeMin)?p.wakeMin:0,streak:calcStreak().current,comment:(comment||"").slice(0,30),pose:getEquippedPose()
+      uid:getUid(),name:anon?"匿名さん":(p.name||"匿名さん"),color:p.color||"#8fdcff",catBody:p.catBody||"#1c1c1c",date,stamp,createdAt:Date.now(),wakeHour:Number.isFinite(p.wakeHour)?p.wakeHour:null,wakeMin:Number.isFinite(p.wakeMin)?p.wakeMin:0,streak:calcStreak().current,comment:(comment||"").slice(0,30),pose:getEquippedPose(),thanks:getThanksWord()
     });
   }catch(e){console.warn("post failed",e);}
 }
@@ -3316,6 +3349,7 @@ async function likePost(po,btn){
     playPop();
     if(po.uid)markLiked(po.uid);
     btn.classList.add("done");btn.textContent="ありがとう♡";btn.onclick=null;
+    try{catSpeakBubble(btn.closest(".hillCat"),po.thanks||"ありがとう");}catch(_){}   /* いいねのお礼を読み上げ */
   }catch(e){
     console.warn("like failed",e);
     btn.dataset.sending="";   /* 失敗→押し直せるように戻す */
@@ -4767,7 +4801,7 @@ async function loadHillCats(){
         wakeHour:selfPost.wakeHour,wakeMin:selfPost.wakeMin,
         createdAt:selfPost.createdAt||Date.now(),
         streak:Number.isFinite(selfPost.streak)?selfPost.streak:calcStreak().current,
-        comment:selfPost.comment||""};
+        comment:selfPost.comment||"",thanks:getThanksWord()};
     }else{
       self={uid:me,isSelf:true,needsPost:true,name:p.name||"あなた",catBody:profileBody(),color:profileColor(),
         createdAt:0,comment:"",streak:calcStreak().current};
@@ -4841,6 +4875,8 @@ function renderHillPage(){
       el.appendChild(lab);el.appendChild(btn);el.appendChild(fig);
     }
     fig.querySelector(".catPose").style.animationDelay=(-Math.random()*4.6).toFixed(2)+"s";
+    fig.style.cursor="pointer";
+    fig.addEventListener("click",e=>{e.stopPropagation();try{catSpeakBubble(el,po.thanks||"ありがとう");}catch(_){}});   /* 猫タップで読み上げ */
     const rot=Math.max(-7,Math.min(7,(i-center)*2.6));
     fig.style.transform=`rotate(${rot}deg)`;
     cont.appendChild(el);
@@ -6780,6 +6816,7 @@ function openProfileSetup(edit){
   $("psWakeMin").value=Number.isFinite(p.wakeMin)?p.wakeMin:0;
   refreshWakeLimit();
   $("psComment").value=p.comment||"";
+  {const t=$("psThanks");if(t)t.value=getThanksWord();}
   $("psPrivate").checked=(p.isPublic!==undefined)?!p.isPublic:false;
   psBody=p.catBody||"#1c1c1c";psEar=p.color||"#8fdcff";
   $("psBodyInput").value=psBody;$("psEarInput").value=psEar;
@@ -6807,6 +6844,7 @@ function saveFromSetup(){
     wakeHour:wake,wakeMin:wmin,isPublic:!$("psPrivate").checked,id,pw
   };
   saveProfile(p);
+  try{setThanksWord(hiraOnly(($("psThanks").value||"").trim()));}catch(_){}
   ensureWakeStart();   /* 「始める」を押した日を起点に3日間 */
   closeProfileSetup();
   renderProfileBar();refreshHome();loadHillCats();publishProfile();
@@ -9792,6 +9830,7 @@ $("crWordsBtn").addEventListener("click",()=>{playClick();openWordsEditor();});
 $("crWordsCancel").addEventListener("click",()=>{playClick();$("crWordsEditor").classList.remove("visible");});
 $("crWordsSave").addEventListener("click",()=>{playClick();saveWordsEditor();});
 for(let i=0;i<5;i++){const inp=$("crWord"+i);if(inp)inp.addEventListener("input",()=>{const c=inp.selectionStart;inp.value=hiraOnly(inp.value);try{inp.setSelectionRange(c,c);}catch(_){}});}
+{const t=$("psThanks");if(t)t.addEventListener("input",()=>{const c=t.selectionStart;t.value=hiraOnly(t.value);try{t.setSelectionRange(c,c);}catch(_){}});}
 $("memberPopClose").addEventListener("click",()=>{playClick();$("memberPop").classList.remove("visible");});
 $("memberPop").addEventListener("click",e=>{if(e.target===$("memberPop"))$("memberPop").classList.remove("visible");});
 /* フレンド / リクエスト */

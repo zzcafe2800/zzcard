@@ -98,6 +98,15 @@ button,input{font:inherit;}
   display:flex;justify-content:center;align-items:flex-end;gap:8px;padding:0 10px;flex-wrap:nowrap;}
 .hillCat{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;pointer-events:auto;
   width:74px;flex:0 0 auto;}
+.hillArrow{position:absolute;bottom:34px;z-index:6;width:34px;height:34px;border-radius:50%;border:none;
+  background:rgba(255,255,255,.9);box-shadow:0 4px 12px rgba(80,150,190,.28);color:#5c93ad;
+  font-size:20px;font-weight:900;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.hillArrow:active{transform:scale(.92);}
+.hillArrowL{left:8px;}
+.hillArrowR{right:8px;}
+.hillDots{position:absolute;bottom:6px;left:0;right:0;display:flex;justify-content:center;gap:5px;pointer-events:none;}
+.hillDot{width:6px;height:6px;border-radius:50%;background:rgba(120,160,185,.35);}
+.hillDot.on{background:#5c93ad;}
 .catLabel{display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1.2;text-align:center;
   background:rgba(255,255,255,.92);border:1.5px solid rgba(143,220,255,.5);border-radius:13px;padding:5px 9px;
   backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);box-shadow:0 6px 16px rgba(111,205,255,.24);width:116px;cursor:pointer;}
@@ -122,6 +131,10 @@ button,input{font:inherit;}
   background:linear-gradient(135deg,#ffa6c8,#ff86b4);color:#fff;box-shadow:0 4px 10px rgba(255,140,180,.34);white-space:nowrap;}
 .catLike.done{background:rgba(143,220,255,.5);color:#fff;cursor:default;box-shadow:none;}
 .catSelfTag{cursor:default;}
+.catSelfPost{background:linear-gradient(135deg,#ffc46b,#ff9e4d);box-shadow:0 4px 10px rgba(255,150,80,.36);cursor:pointer;animation:selfPostPulse 1.8s ease-in-out infinite;}
+.catSelfPost:active{transform:scale(.94);}
+@keyframes selfPostPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.06);}}
+@media (prefers-reduced-motion:reduce){.catSelfPost{animation:none;}}
 .catFig{position:relative;transition:opacity .5s;will-change:opacity;}
 @keyframes catHop{0%,100%{transform:translateY(0);}30%{transform:translateY(-9px);}55%{transform:translateY(0);}}
 .catFig.hop{animation:catHop .62s ease-in-out infinite;}
@@ -144,7 +157,7 @@ button,input{font:inherit;}
 .catComment::after{content:"";position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);
   border-left:6px solid transparent;border-right:6px solid transparent;border-top:6px solid #fff5fb;}
 #hillCats.empty{bottom:96px;}
-#nyanShot{display:none !important;position:absolute;bottom:18px;right:16px;z-index:106;width:50px;height:50px;border:none;border-radius:50%;
+#nyanShot{position:absolute;bottom:18px;right:16px;z-index:106;width:50px;height:50px;border:none;border-radius:50%;
   background:rgba(255,255,255,.8);cursor:pointer;box-shadow:0 8px 20px rgba(111,205,255,.28);
   display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
 #nyanShot .nyanCam svg{width:26px;height:26px;}
@@ -164,14 +177,14 @@ button,input{font:inherit;}
   opacity:0;transform:translate(0,0) scale(.4);pointer-events:none;
   transition:transform .34s cubic-bezier(.2,1.3,.4,1),opacity .26s;}
 .fabItem .fi{width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.92);box-shadow:0 6px 16px rgba(80,150,190,.3);display:flex;align-items:center;justify-content:center;font-size:22px;line-height:1;}
+.fabItem .fi svg{width:26px;height:26px;color:#5c93ad;}
 .fabItem .fl{font-size:9.5px;font-weight:800;color:#4d7790;background:rgba(255,255,255,.8);padding:1px 6px;border-radius:999px;white-space:nowrap;}
 .sky-night .fabItem .fl,.sky-evening .fabItem .fl{color:#eef2ff;background:rgba(70,82,130,.6);}
 #fabWrap.open .fabItem{opacity:1;pointer-events:auto;}
-#fabWrap.open #fabDex{transform:translate(-104px,-64px) scale(1);}
-#fabWrap.open #fabRoom{transform:translate(-38px,-104px) scale(1);}
-#fabWrap.open #fabCam{transform:translate(38px,-104px) scale(1);}
-#fabWrap.open #fabCloset{transform:translate(104px,-64px) scale(1);}
-#fabDex{transition-delay:.02s;}#fabRoom{transition-delay:.06s;}#fabCam{transition-delay:.10s;}#fabCloset{transition-delay:.14s;}
+#fabWrap.open #fabDex{transform:translate(-96px,-58px) scale(1);}
+#fabWrap.open #fabRoom{transform:translate(0,-112px) scale(1);}
+#fabWrap.open #fabCloset{transform:translate(96px,-58px) scale(1);}
+#fabDex{transition-delay:.02s;}#fabRoom{transition-delay:.07s;}#fabCloset{transition-delay:.12s;}
 #fabWrap .fabItem #bagBadge{position:absolute;top:-2px;right:2px;}
 #fabBackdrop{position:fixed;inset:0;z-index:105;background:transparent;display:none;}
 #fabBackdrop.show{display:block;}
@@ -1000,7 +1013,8 @@ button,input{font:inherit;}
 #tpbAvatar{width:32px;height:32px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;}
 .avatarCat{width:100%;height:100%;display:block;overflow:visible;}
 #tpbName{font-size:13px;font-weight:700;color:#4d7790;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-#tpbBell{position:relative;font-size:15px;margin-left:2px;}
+#tpbBell{position:relative;font-size:15px;margin-left:2px;display:inline-flex;align-items:center;}
+#tpbBell svg{width:20px;height:20px;}
 #tpbBell.ring{animation:bellRing .6s ease;}
 @keyframes bellRing{0%,100%{transform:rotate(0)}20%{transform:rotate(16deg)}40%{transform:rotate(-13deg)}60%{transform:rotate(9deg)}80%{transform:rotate(-5deg)}}
 #tpbCount{position:absolute;top:-7px;right:-9px;min-width:16px;height:16px;padding:0 4px;border-radius:999px;
@@ -1096,7 +1110,9 @@ button,input{font:inherit;}
 #outingBig .obTime{font-family:"Yomogi","Kosugi Maru",cursive;font-size:30px;font-weight:800;color:#4f88a4;text-shadow:0 2px 4px rgba(255,255,255,.7);}
 #outingHomeChip{position:fixed;left:50%;transform:translateX(-50%);top:calc(10px + env(safe-area-inset-top));z-index:120;
   background:rgba(255,255,255,.92);border:2px solid #bfe6ff;border-radius:999px;padding:5px 14px;font-size:12px;font-weight:800;color:#5c93ad;
-  box-shadow:0 4px 12px rgba(0,0,0,.08);pointer-events:none;display:flex;align-items:center;gap:6px;}
+  box-shadow:0 4px 12px rgba(0,0,0,.08);pointer-events:auto;cursor:pointer;display:flex;align-items:center;gap:6px;}
+#outingHomeChip:active{transform:translateX(-50%) scale(.96);}
+.ohcGo{color:#e0608f;font-weight:800;}
 #outingHomeChip[hidden]{display:none;}
 .outingFlyer{position:fixed;z-index:190;width:120px;height:124px;pointer-events:none;opacity:1;
   transition:transform 1.3s cubic-bezier(.5,0,.55,1),opacity 1.3s ease;}
@@ -1447,10 +1463,9 @@ button,input{font:inherit;}
   <button id="catShutter" type="button" aria-label="撮影"></button>
   <div id="fabBackdrop"></div>
   <div id="fabWrap">
-    <button class="fabItem" id="fabDex" type="button" aria-label="ずかん"><span class="fi">📖</span><span class="fl">ずかん</span></button>
-    <button class="fabItem" id="fabRoom" type="button" aria-label="おへや"><span class="fi">🏠</span><span class="fl">おへや</span></button>
-    <button class="fabItem" id="fabCam" type="button" aria-label="カメラ"><span class="fi">📷</span><span class="fl">カメラ</span></button>
-    <button class="fabItem" id="fabCloset" type="button" aria-label="きせかえ"><span class="fi">👗</span><span class="fl">きせかえ</span><span id="bagBadge" class="coinBadge" hidden></span></button>
+    <button class="fabItem" id="fabDex" type="button" aria-label="ずかん"><span class="fi"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M16 8 Q11 5 5 6 L5 25 Q11 24 16 27 Q21 24 27 25 L27 6 Q21 5 16 8 Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M16 8 L16 27" fill="none" stroke="currentColor" stroke-width="2.2"/></svg></span><span class="fl">ずかん</span></button>
+    <button class="fabItem" id="fabRoom" type="button" aria-label="おへや"><span class="fi"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M6 15 L16 6 L26 15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/><path d="M8 14 L8 26 L24 26 L24 14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M13 26 L13 19 L19 19 L19 26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg></span><span class="fl">おへや</span></button>
+    <button class="fabItem" id="fabCloset" type="button" aria-label="きせかえ"><span class="fi"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M16 6 Q13 6 13 9 Q13 11 11 12 L5 20 Q4 21 5 22 L9 25 Q10 26 11 24 L13 21 L13 26 L19 26 L19 21 L21 24 Q22 26 23 25 L27 22 Q28 21 27 20 L21 12 Q19 11 19 9 Q19 6 16 6 Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg></span><span class="fl">きせかえ</span><span id="bagBadge" class="coinBadge" hidden></span></button>
     <button id="homeFab" type="button" aria-label="メニュー"><span class="fabRing"></span><span class="fabCore"></span></button>
   </div>
   <button id="groundPostBtn" type="button" hidden>📮 今日の結果を投稿</button>
@@ -1715,7 +1730,7 @@ button,input{font:inherit;}
 <button id="topProfileBar" type="button">
   <span id="tpbAvatar"></span>
   <span id="tpbName">匿名さん</span>
-  <span id="tpbBell">🔔<span id="tpbCount">0</span></span>
+  <span id="tpbBell"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-label="おしらせ"><path d="M12 3 Q8 3 8 8 Q8 13 5 16 L19 16 Q16 13 16 8 Q16 3 12 3 Z" fill="none" stroke="#7a9db0" stroke-width="1.8" stroke-linejoin="round"/><path d="M10 19 Q12 21 14 19" fill="none" stroke="#7a9db0" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="2.5" r="1.1" fill="#7a9db0"/></svg><span id="tpbCount">0</span></span>
 </button>
 <div id="topLeftStack">
   <div id="buddyCount" hidden></div>
@@ -3653,25 +3668,33 @@ async function loadHillCats(){
     if(!db)return;     /* DB未設定：自分の猫のまま */
     const{ref,get}=await import(FB_DB);
     const snap=await _withTimeout(get(ref(db,"posts")),4500);
-    if(!snap||!snap.exists())return;
+    const val=(snap&&snap.exists())?snap.val():{};
     const me=getUid();
     const dayMs=24*3600*1000,now=Date.now();
     const minDate=addDays(jstKey(),-2);
     const byUid={};
-    Object.entries(snap.val()).forEach(([pid,v])=>{
+    Object.entries(val).forEach(([pid,v])=>{
       if(!v||v.uid===me)return;
       if(_recentRange===1){ if(!(v.createdAt&&(now-v.createdAt)<=dayMs))return; }
       else { if((v.date||"")<minDate)return; }
       if(!byUid[v.uid]||(v.createdAt||0)>(byUid[v.uid].createdAt||0))byUid[v.uid]=Object.assign({pid},v);
     });
-    const cats=Object.values(byUid).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,5);
-    if(cats.length){
-      const p=getProfile()||{};
-      const wh=profileWakeHM();
-      const self={uid:me,isSelf:true,name:p.name||"あなた",catBody:profileBody(),color:profileColor(),
-        wakeHour:wh.h,wakeMin:wh.m,createdAt:Date.now(),streak:calcStreak().current,comment:p.comment||""};
-      renderCats([self,...cats]);   /* 自分の猫も一緒に表示（いいねは付かない） */
+    const cats=Object.values(byUid).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,24);
+    const p=getProfile()||{};
+    /* 自分の“今日の投稿”を取得。あれば投稿済み＝実際のひとこと・起床時間を表示、なければ「投稿する」ボタン */
+    const selfPost=val[me+"_"+jstKey()]||null;
+    let self;
+    if(selfPost){
+      self={uid:me,isSelf:true,name:p.name||"あなた",catBody:profileBody(),color:profileColor(),
+        wakeHour:selfPost.wakeHour,wakeMin:selfPost.wakeMin,
+        createdAt:selfPost.createdAt||Date.now(),
+        streak:Number.isFinite(selfPost.streak)?selfPost.streak:calcStreak().current,
+        comment:selfPost.comment||""};
+    }else{
+      self={uid:me,isSelf:true,needsPost:true,name:p.name||"あなた",catBody:profileBody(),color:profileColor(),
+        createdAt:0,comment:"",streak:calcStreak().current};
     }
+    renderCats([self,...cats]);   /* 自分の猫は常に表示（未投稿なら投稿ボタン／投稿済みなら実データ・いいねは付かない） */
   }catch(e){console.warn("hill cats:",e&&e.message);}   /* 失敗時も自分の猫が残る */
 }
 function buildCatFig(body,ear,cos,pose){
@@ -3680,12 +3703,19 @@ function buildCatFig(body,ear,cos,pose){
   return fig;
 }
 function renderCats(cats){
+  _hillAllCats=cats||[];_hillPage=0;
+  renderHillPage();
+}
+let _hillAllCats=[],_hillPage=0;
+function renderHillPage(){
   const cont=$("hillCats");cont.className="";cont.innerHTML="";
-  /* ラベルが重ならないよう、画面幅に応じて表示数とすき間を自動調整 */
+  /* スマホは3匹固定表示。4匹以上（自分含む）なら ‹ › でページ切替 */
   const catW=74,labelW=118;
-  const avail=Math.max(280,(cont.clientWidth||window.innerWidth||360)-24);
-  const maxN=Math.max(1,Math.floor(avail/labelW));
-  cats=cats.slice(0,maxN);
+  const perPage=3;
+  const all=_hillAllCats;
+  const pages=Math.max(1,Math.ceil(all.length/perPage));
+  if(_hillPage>=pages)_hillPage=0;
+  const cats=all.slice(_hillPage*perPage,_hillPage*perPage+perPage);
   cont.style.gap=Math.max(8,labelW-catW)+"px";
   _hillCatsData=cats.map(c=>({body:c.catBody||"#1c1c1c",ear:c.color||"#8fdcff",name:c.name||"匿名さん"}));
   const n=cats.length,center=(n-1)/2;
@@ -3710,8 +3740,19 @@ function renderCats(cats){
     const pose=po.isSelf?getEquippedPose():(po.pose||"sit");
     const fig=buildCatFig(body,ear,po.isSelf?getEquippedCostume():null,pose);
     if(po.isSelf){
-      const me=document.createElement("div");me.className="catLike catSelfTag";me.textContent="じぶん";
-      el.appendChild(lab);el.appendChild(me);el.appendChild(fig);
+      if(po.needsPost){
+        /* まだ今日の投稿をしていない：タップで投稿画面へ */
+        const pb=document.createElement("button");pb.className="catLike catSelfPost";pb.type="button";pb.textContent="投稿する";
+        pb.addEventListener("click",e=>{
+          e.stopPropagation();try{playClick();}catch(_){}
+          if(!todayStamp()){toast("先に今日のラジオ体操をしてね🌱");return;}
+          showPostConfirm(false);
+        });
+        el.appendChild(lab);el.appendChild(pb);el.appendChild(fig);
+      }else{
+        const me=document.createElement("div");me.className="catLike catSelfTag";me.textContent="じぶん";
+        el.appendChild(lab);el.appendChild(me);el.appendChild(fig);
+      }
     }else{
       const btn=document.createElement("button");btn.className="catLike";btn.type="button";
       if(likedToday(po.uid)){btn.classList.add("done");btn.textContent="いいね済み";}
@@ -3727,6 +3768,20 @@ function renderCats(cats){
   _catFigs=figs;
   startCatLife(figs);
   startCommentCycle(figs);
+  /* 収まりきらない時は ‹ › でページ切り替え */
+  if(pages>1){
+    const mk=(dir,txt)=>{
+      const b=document.createElement("button");b.type="button";b.className="hillArrow "+(dir<0?"hillArrowL":"hillArrowR");
+      b.textContent=txt;b.style.pointerEvents="auto";
+      b.addEventListener("click",e=>{e.stopPropagation();try{playClick();}catch(_){}_hillPage=(_hillPage+dir+pages)%pages;renderHillPage();});
+      return b;
+    };
+    cont.appendChild(mk(-1,"‹"));
+    cont.appendChild(mk(1,"›"));
+    const dots=document.createElement("div");dots.className="hillDots";
+    for(let p=0;p<pages;p++){const d=document.createElement("span");d.className="hillDot"+(p===_hillPage?" on":"");dots.appendChild(d);}
+    cont.appendChild(dots);
+  }
 }
 function renderEmptyCat(){
   const cont=$("hillCats");cont.className="empty";cont.innerHTML="";
@@ -4757,6 +4812,7 @@ $("postYes").addEventListener("click",async()=>{
   $("postConfirm").classList.remove("visible");
   await postToday($("postAnon").checked,c);
   markPosted();refreshSaveBtn();refreshGroundPost();
+  try{ if(!$("selectScreen").classList.contains("hidden"))loadHillCats(); }catch(_){}   /* 投稿後、ホームの自分の枠を即更新 */
   const away=(typeof outingPhase==="function"&&outingPhase()==="away");
   if(away){ /* おでかけ中：投稿したらスタンプラリーに戻る（見送りなし） */ }
   else{ showSendoffChoice(true); }   /* 投稿後→やめる/見送り */
@@ -5116,12 +5172,13 @@ async function recordCheckin(){
     const db=await getDB();if(!db)return;
     const{ref,set}=await import(FB_DB);
     await set(ref(db,"checkins/"+jstKey()+"/"+getUid()),Date.now());
+    try{await refreshBuddyCount(true);}catch(_){}   /* 自分のチェックイン後、人数を即再取得（スロットル無視）→自分が反映される */
   }catch(_){}
 }
 let _buddyLast=0;
-async function refreshBuddyCount(){
+async function refreshBuddyCount(force){
   const el=$("buddyCount");if(!el)return;
-  if(Date.now()-_buddyLast<45000 && el.dataset.loaded)return;   /* 45秒に1回まで */
+  if(!force && Date.now()-_buddyLast<45000 && el.dataset.loaded)return;   /* 45秒に1回まで（force時は無視） */
   _buddyLast=Date.now();
   try{
     const db=await getDB();if(!db)return;
@@ -7800,10 +7857,13 @@ function refreshHomeOutingChip(){
   const show=back;   /* おでかけ中の「あと◯分」チップは廃止（バーの帰宅マーカーで表示） */
   if(!chip){
     if(!show)return;
-    chip=document.createElement("div");chip.id="outingHomeChip";document.body.appendChild(chip);
+    chip=document.createElement("div");chip.id="outingHomeChip";
+    chip.style.cursor="pointer";
+    chip.addEventListener("click",()=>{try{playClick();}catch(_){}openRoom();});
+    document.body.appendChild(chip);
   }
   chip.hidden=!show;
-  if(back)chip.innerHTML=`🐈 ねこが かえってくるよ！`;
+  if(back)chip.innerHTML=`🐈 ねこが かえってきたよ！<span class="ohcGo">おへやへ ›</span>`;
 }
 
 /* 部屋の下に出すボタン（投稿済み→いってらっしゃい／帰宅可→おかえり） */
@@ -7965,7 +8025,6 @@ function toggleFab(){const w=$("fabWrap");if(!w)return;const willOpen=!w.classLi
 $("homeFab").addEventListener("click",(e)=>{e.stopPropagation();playClick();toggleFab();});
 $("fabBackdrop").addEventListener("click",()=>{playClick();closeFab();});
 $("fabRoom").addEventListener("click",()=>{playClick();closeFab();openRoom();});
-$("fabCam").addEventListener("click",()=>{playClick();closeFab();if(!_photoMode)enterPhotoMode();});
 $("fabCloset").addEventListener("click",()=>{playClick();closeFab();const wasGuide=!!_firstMeetPick;clearBagGuide();openProfilePanel(true);if(wasGuide)_firstMeetGuideSendoff=true;});
 $("roomBag").addEventListener("click",()=>{playClick();const wasGuide=!!_firstMeetPick;clearBagGuide();openProfilePanel(true);if(wasGuide)_firstMeetGuideSendoff=true;});
 $("roomCam").addEventListener("click",()=>{playClick();roomCapture();});

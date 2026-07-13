@@ -2638,7 +2638,7 @@ async function loadVoiceChar(ch){
   _voiceBuf[ch]=null;
   try{
     const ctx=ensureCtx();if(!ctx)return null;
-    const res=await fetch(VOICE_DIR+encodeURIComponent(ch)+".wav");
+    const res=await fetch(VOICE_DIR+ch+".wav");   /* card.png / stamp100.png と同じく そのままの名前で参照（例：あ.wav） */
     if(!res.ok)return null;
     const ab=await res.arrayBuffer();
     const buf=await ctx.decodeAudioData(ab);

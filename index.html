@@ -2650,6 +2650,7 @@ async function speakHiragana(text,onChar,onDone){
   const keys=[...new Set(toks.map(voiceKey).filter(Boolean))];
   try{await Promise.all(keys.map(loadVoiceChar));}catch(_){}
   const ctx=ensureCtx();if(!ctx){if(onDone)onDone();return 0;}
+  if(ctx.state==="suspended"){try{await ctx.resume();}catch(_){}}
   const out=sfxOut(ctx)||ctx.destination;
   const step=0.19,rate=1.12,dur=0.23;
   let t=ctx.currentTime+0.06,disp="";
@@ -2708,6 +2709,8 @@ async function loadClubroomCats(){
 let _clubroomCats=[],_crSpeakTimer=null;
 async function openClubroom(){
   $("clubroom").classList.add("visible");
+  try{const c=ensureCtx();if(c){if(c.state==="suspended"){await c.resume().catch(()=>{});}
+    const bb=c.createBuffer(1,1,22050),s=c.createBufferSource();s.buffer=bb;s.connect(c.destination);try{s.start(0);}catch(_){}}}catch(_){}   /* タップでオーディオを起こす */
   const stage=$("clubroomSeats");if(stage)stage.innerHTML="";
   _clubroomCats=[];
   try{await syncClubroomPresence();}catch(_){}
@@ -2739,14 +2742,15 @@ function closeClubroom(){
   if(_crSpeakTimer)clearTimeout(_crSpeakTimer);
   _crSpeakTimer=null;
 }
-function startClubroomLife(){ scheduleClubroomSpeak(); }
+function startClubroomLife(){ if(_crSpeakTimer)clearTimeout(_crSpeakTimer); _crSpeakTimer=setTimeout(fireClubroomSpeak,900); }
+function fireClubroomSpeak(){
+  const ws=_clubroomCats.filter(c=>c.data.words&&c.data.words.length);
+  if(ws.length){const cat=ws[Math.floor(Math.random()*ws.length)];const w=cat.data.words[Math.floor(Math.random()*cat.data.words.length)];clubroomSay(cat,w);}
+  scheduleClubroomSpeak();
+}
 function scheduleClubroomSpeak(){
   if(_crSpeakTimer)clearTimeout(_crSpeakTimer);
-  _crSpeakTimer=setTimeout(()=>{
-    const ws=_clubroomCats.filter(c=>c.data.words&&c.data.words.length);
-    if(ws.length){const cat=ws[Math.floor(Math.random()*ws.length)];const w=cat.data.words[Math.floor(Math.random()*cat.data.words.length)];clubroomSay(cat,w);}
-    scheduleClubroomSpeak();
-  },2400+Math.random()*3200);
+  _crSpeakTimer=setTimeout(fireClubroomSpeak,2400+Math.random()*3200);
 }
 function clubroomSay(cat,text){
   if(!cat||!cat.bubble)return;

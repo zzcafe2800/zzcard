@@ -131,6 +131,7 @@ button,input{font:inherit;}
   background:linear-gradient(135deg,#ffa6c8,#ff86b4);color:#fff;box-shadow:0 4px 10px rgba(255,140,180,.34);white-space:nowrap;}
 .catLike.done{background:rgba(143,220,255,.5);color:#fff;cursor:default;box-shadow:none;}
 .catSelfTag{cursor:default;}
+.catPosted{background:rgba(180,235,205,.7)!important;color:#2f9e6a!important;box-shadow:none!important;}
 .catSelfPost{background:linear-gradient(135deg,#ffc46b,#ff9e4d);box-shadow:0 4px 10px rgba(255,150,80,.36);cursor:pointer;animation:selfPostPulse 1.8s ease-in-out infinite;}
 .catSelfPost:active{transform:scale(.94);}
 @keyframes selfPostPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.06);}}
@@ -1219,6 +1220,15 @@ button,input{font:inherit;}
 #tpbName{font-size:13px;font-weight:700;color:#4d7790;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 #tpbBell{position:relative;font-size:15px;margin-left:2px;display:inline-flex;align-items:center;}
 #tpbBell svg{width:20px;height:20px;}
+#volBtn{position:relative;display:inline-flex;align-items:center;cursor:pointer;margin-left:2px;}
+#volBtn svg{width:20px;height:20px;}
+#volPanel{position:fixed;top:60px;left:16px;z-index:130;background:#fff;border-radius:16px;padding:13px 15px;
+  box-shadow:0 12px 28px rgba(111,205,255,.3);display:flex;flex-direction:column;gap:11px;width:min(240px,80vw);}
+#volPanel[hidden]{display:none;}
+.vpRow{display:flex;align-items:center;gap:9px;}
+.vpLbl{font-size:12px;font-weight:800;color:#5c93ad;width:42px;flex:0 0 auto;}
+.vpRow input[type=range]{flex:1;min-width:0;accent-color:#63ccff;}
+.vpVal{font-size:11px;font-weight:800;color:#9db6c6;width:36px;text-align:right;flex:0 0 auto;}
 #tpbBell.ring{animation:bellRing .6s ease;}
 @keyframes bellRing{0%,100%{transform:rotate(0)}20%{transform:rotate(16deg)}40%{transform:rotate(-13deg)}60%{transform:rotate(9deg)}80%{transform:rotate(-5deg)}}
 #tpbCount{position:absolute;top:-7px;right:-9px;min-width:16px;height:16px;padding:0 4px;border-radius:999px;
@@ -1267,12 +1277,12 @@ button,input{font:inherit;}
 #backGuide .bkHint{position:absolute;top:64px;right:14px;width:min(70vw,240px);text-align:center;font-family:"Yomogi","Kosugi Maru",cursive;font-size:14px;font-weight:800;line-height:1.8;color:#fff8ee;background:rgba(90,60,40,.6);border:1.5px solid rgba(255,255,255,.35);border-radius:16px;padding:12px 14px;}
 #backGuide .bkHint::after{content:"";position:absolute;top:-9px;right:16px;border:7px solid transparent;border-bottom-color:rgba(90,60,40,.6);}
 #catRoom.awayMode #roomStatus,#catRoom.awayMode #affBar{display:none !important;}
-#outingBottomCard{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom));z-index:30;
-  width:min(340px,90vw);background:rgba(255,255,255,.95);border:2px solid #bfe6ff;border-radius:20px;padding:12px 18px 13px;
+#outingBottomCard{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(30px + env(safe-area-inset-bottom));z-index:30;
+  width:min(360px,92vw);max-width:92vw;box-sizing:border-box;background:rgba(255,255,255,.95);border:2px solid #bfe6ff;border-radius:20px;padding:12px 18px 13px;
   box-shadow:0 10px 26px rgba(0,0,0,.14);text-align:center;animation:outingBtnIn .4s cubic-bezier(.2,1.3,.4,1) both;}
 #outingBottomCard[hidden]{display:none;}
 #outingBottomCard .obcTitle{font-family:"Yomogi","Kosugi Maru",cursive;font-size:13px;font-weight:800;color:#6f9fb6;}
-#outingBottomCard .obcTime{font-family:"Yomogi","Kosugi Maru",cursive;font-size:27px;font-weight:800;color:#4f88a4;line-height:1.2;}
+#outingBottomCard .obcTime{font-family:"Yomogi","Kosugi Maru",cursive;font-size:clamp(20px,6.8vw,27px);font-weight:800;color:#4f88a4;line-height:1.2;white-space:nowrap;}
 #outingHelp{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(86px + env(safe-area-inset-bottom));z-index:31;
   width:min(330px,88vw);background:rgba(255,255,255,.97);border:2px solid #bfe6ff;border-radius:18px;padding:13px 16px 12px;
   box-shadow:0 10px 26px rgba(0,0,0,.14);text-align:center;animation:outingBtnIn .4s cubic-bezier(.2,1.3,.4,1) both;}
@@ -1284,7 +1294,7 @@ button,input{font:inherit;}
 #outingIntro{position:fixed;inset:0;z-index:2600;display:none;align-items:center;justify-content:center;padding:20px;
   background:rgba(120,150,170,.34);backdrop-filter:blur(3px);}
 #outingIntro.show{display:flex;}
-#outingIntro .oiCard{width:min(340px,90vw);background:#fff;border:2px solid #cdeaff;border-radius:24px;padding:16px 18px 20px;
+#outingIntro .oiCard{width:min(340px,90vw);max-height:90vh;overflow-y:auto;background:#fff;border:2px solid #cdeaff;border-radius:24px;padding:16px 18px 20px;
   box-shadow:0 18px 44px rgba(60,100,130,.28);text-align:center;animation:outingBtnIn .45s cubic-bezier(.2,1.3,.4,1) both;}
 #outingIntro .oiArt{width:100%;background:linear-gradient(#eaf7ff,#f6fbff);border:1.5px solid #e2f3ff;border-radius:16px;padding:8px 6px;margin-bottom:13px;}
 #outingIntro .oiArt svg{width:100%;height:auto;display:block;}
@@ -1612,20 +1622,23 @@ button,input{font:inherit;}
   background:rgba(143,220,255,.16);color:#8aa7b8;font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;}
 #modeChoiceClose:active{transform:scale(.92);}
 #modeChoiceTitle{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:17px;font-weight:900;color:#4d7790;letter-spacing:.04em;margin-top:6px;}
+#modeChoiceGuide{font-size:12px;font-weight:800;color:#a7c0cf;margin-top:-6px;}
 #modeChoiceRow{display:flex;gap:12px;width:100%;}
-.mcCard{flex:1;border:none;border-radius:20px;padding:18px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:9px;
-  box-shadow:0 6px 16px rgba(120,180,220,.14);transition:transform .15s;}
+.mcCard{flex:1;border:2px solid transparent;border-radius:20px;padding:20px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:10px;
+  box-shadow:0 6px 16px rgba(120,180,220,.16);transition:transform .15s,box-shadow .15s;}
 .mcCard:active{transform:scale(.96);}
-#mcRally{background:linear-gradient(180deg,#fff2f6,#ffe6ef);}
-#mcPost{background:linear-gradient(180deg,#eef7ff,#e0eeff);}
-.mcIcon{width:50px;height:50px;display:flex;align-items:center;justify-content:center;}
+#mcRally{background:linear-gradient(180deg,#fff2f6,#ffe6ef);border-color:#ffd4e0;}
+#mcPost{background:linear-gradient(180deg,#eef7ff,#e0eeff);border-color:#cfe6f7;}
+.mcIcon{width:54px;height:54px;display:flex;align-items:center;justify-content:center;}
 .mcIcon svg{width:100%;height:100%;}
-.mcName{font-size:15px;font-weight:900;color:#4d7790;}
+.mcName{font-size:15.5px;font-weight:900;color:#4d7790;}
+#modeChoiceDiv{display:flex;align-items:center;gap:9px;width:100%;color:#bcccd7;font-size:10.5px;font-weight:800;letter-spacing:.06em;margin-top:2px;}
+#modeChoiceDiv::before,#modeChoiceDiv::after{content:"";flex:1;height:1px;background:rgba(150,180,200,.25);}
 #modeChoiceRow2{display:flex;gap:10px;width:100%;}
-.mcMini{flex:1;border:none;border-radius:999px;padding:11px 8px;font-size:13px;font-weight:800;cursor:pointer;
-  background:rgba(143,220,255,.16);color:#5c93ad;transition:transform .15s;}
+.mcMini{flex:1;border:none;border-radius:999px;padding:10px 8px;font-size:12.5px;font-weight:800;cursor:pointer;
+  background:rgba(143,220,255,.13);color:#7aa0b3;transition:transform .15s;}
 .mcMini:active{transform:scale(.96);}
-#mcSendoff{background:rgba(255,198,107,.2);color:#c98a3a;}
+#mcNone{background:rgba(180,195,205,.16);color:#8a9aa5;}
 #postConfirmBtns{display:flex;gap:10px;}
 #postYes,#postNo{flex:1;height:48px;border:none;border-radius:999px;cursor:pointer;font-size:15px;font-weight:700;}
 #postYes{background:linear-gradient(135deg,#7fd8b0,#5ec79a);color:#fff;box-shadow:0 8px 20px rgba(94,199,154,.34);}
@@ -1967,6 +1980,7 @@ button,input{font:inherit;}
   <div id="modeChoiceBox">
     <button id="modeChoiceClose" type="button" aria-label="とじる">✕</button>
     <div id="modeChoiceTitle">きょうは どっちにする？</div>
+    <div id="modeChoiceGuide">スタンプラリー か 投稿 を えらんでね</div>
     <div id="modeChoiceRow">
       <button class="mcCard" id="mcRally" type="button">
         <span class="mcIcon"><svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><circle cx="24" cy="22" r="15" fill="none" stroke="#e8536b" stroke-width="3.4"/><path d="M17 22 L22 27 L31 17" fill="none" stroke="#e8536b" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 40 L34 40" stroke="#e8536b" stroke-width="3.4" stroke-linecap="round"/></svg></span>
@@ -1977,9 +1991,10 @@ button,input{font:inherit;}
         <span class="mcName">投稿</span>
       </button>
     </div>
+    <div id="modeChoiceDiv"><span>そのほか</span></div>
     <div id="modeChoiceRow2">
-      <button class="mcMini" id="mcBoth" type="button">両方</button>
-      <button class="mcMini" id="mcSendoff" type="button">見送りだけ</button>
+      <button class="mcMini" id="mcBoth" type="button">両方する</button>
+      <button class="mcMini" id="mcNone" type="button">どれもしない</button>
     </div>
   </div>
 </div>
@@ -1990,7 +2005,12 @@ button,input{font:inherit;}
   <span id="tpbAvatar"></span>
   <span id="tpbName">匿名さん</span>
   <span id="tpbBell"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-label="おしらせ"><path d="M12 3 Q8 3 8 8 Q8 13 5 16 L19 16 Q16 13 16 8 Q16 3 12 3 Z" fill="none" stroke="#7a9db0" stroke-width="1.8" stroke-linejoin="round"/><path d="M10 19 Q12 21 14 19" fill="none" stroke="#7a9db0" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="2.5" r="1.1" fill="#7a9db0"/></svg><span id="tpbCount">0</span></span>
+  <span id="volBtn" role="button" tabindex="0" aria-label="音量"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 9.5 L4 14.5 L8 14.5 L13 18.5 L13 5.5 L8 9.5 Z" fill="#7a9db0"/><path d="M15.5 9 Q17.5 12 15.5 15" fill="none" stroke="#7a9db0" stroke-width="1.8" stroke-linecap="round"/><path d="M18 7 Q21 12 18 17" fill="none" stroke="#7a9db0" stroke-width="1.8" stroke-linecap="round"/></svg></span>
 </button>
+<div id="volPanel" hidden>
+  <div class="vpRow"><span class="vpLbl">BGM</span><input id="volBgm" type="range" min="0" max="100" step="1"/><span class="vpVal" id="volBgmVal">0%</span></div>
+  <div class="vpRow"><span class="vpLbl">効果音</span><input id="volSfx" type="range" min="0" max="100" step="1"/><span class="vpVal" id="volSfxVal">0%</span></div>
+</div>
 <div id="topLeftStack">
   <div id="buddyCount" hidden></div>
 </div>
@@ -3001,7 +3021,9 @@ function catEyeBars(lx,rx,y,w){
 }
 const EYE_DIRS=[[0,0],[0,0],[1,0],[-1,0],[1,-0.6],[-1,-0.6],[0,-0.7],[0.6,0.5]];
 function catEyesRound(lx,rx,y,r,dir){
-  dir=dir||[0,0];const W=_eyeWhite,b=_eyeBody,ex=_eyeExpr;
+  dir=dir||[0,0];
+  dir=[Number.isFinite(dir[0])?dir[0]:0, Number.isFinite(dir[1])?dir[1]:0];   /* NaN防止（視線がゼロ除算のとき） */
+  const W=_eyeWhite,b=_eyeBody,ex=_eyeExpr;
   if(ex==="content"){
     const rr=r*0.72;
     return `<path d="M${(lx-rr).toFixed(1)} ${y} Q${lx} ${(y+rr*1.2).toFixed(1)} ${(lx+rr).toFixed(1)} ${y}" fill="none" stroke="${W}" stroke-width="3.4" stroke-linecap="round"/>`+
@@ -4481,7 +4503,7 @@ function renderHillPage(){
         });
         el.appendChild(lab);el.appendChild(pb);el.appendChild(fig);
       }else{
-        const me=document.createElement("div");me.className="catLike catSelfTag";me.textContent="じぶん";
+        const me=document.createElement("div");me.className="catLike catSelfTag catPosted";me.textContent="投稿済み";
         el.appendChild(lab);el.appendChild(me);el.appendChild(fig);
       }
     }else{
@@ -4806,6 +4828,9 @@ let activeWin=false,uploaded=null,stamps=[],redo=[];
 let pDown=false,pId=null,pAnim=false,pStart=0,pPt=null,pTimer=null,rAF=null;
 let ovOpen=false;
 let bgmVol=0.10,bgmDrag=false,bgmMuted=false,bgmStarted=false;
+let _sfxVol=0.8,_sfxMaster=null;
+try{const _bv=parseFloat(localStorage.getItem("radio_bgm_vol"));if(Number.isFinite(_bv))bgmVol=Math.max(0,Math.min(1,_bv));}catch(_){}
+try{const _sv=parseFloat(localStorage.getItem("radio_sfx_vol"));if(Number.isFinite(_sv))_sfxVol=Math.max(0,Math.min(1,_sv));}catch(_){}
 let _devUnlockAll=false;   /* テストモード中は全アイテム解放 */
 try{ if(localStorage.getItem("radio_unlock_all")==="1")_devUnlockAll=true; }catch(_){}
 let todIsNight=false;
@@ -4835,6 +4860,19 @@ function switchBGM(src){
 }
 
 function playClick(){clickSnd.currentTime=0;clickSnd.play().catch(()=>{});}
+/* 効果音マスター音量（Web Audio）＋ファイル音（stamp/click）にも反映 */
+function sfxOut(ctx){
+  if(!ctx)return null;
+  if(!_sfxMaster||_sfxMaster.context!==ctx){_sfxMaster=ctx.createGain();_sfxMaster.gain.value=_sfxVol;_sfxMaster.connect(ctx.destination);}
+  return _sfxMaster;
+}
+function setSfxVol(v){
+  _sfxVol=Math.max(0,Math.min(1,v));
+  try{localStorage.setItem("radio_sfx_vol",String(_sfxVol));}catch(_){}
+  if(_sfxMaster)try{_sfxMaster.gain.value=_sfxVol;}catch(_){}
+  try{stampSnd.volume=_sfxVol;clickSnd.volume=_sfxVol;}catch(_){}
+}
+try{stampSnd.volume=_sfxVol;clickSnd.volume=_sfxVol;}catch(_){}
 /* Web Audioで効果音を生成（ファイル不要） */
 function ensureCtx(){
   if(!audioCtx){try{audioCtx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){return null;}}
@@ -4851,7 +4889,7 @@ function buzz(){
     g.gain.setValueAtTime(0.0001,now+t);
     g.gain.exponentialRampToValueAtTime(0.20,now+t+0.012);
     g.gain.exponentialRampToValueAtTime(0.0001,now+t+0.14);
-    o.connect(g);g.connect(ctx.destination);
+    o.connect(g);g.connect(sfxOut(ctx));
     o.start(now+t);o.stop(now+t+0.16);
   });
 }
@@ -4868,7 +4906,7 @@ function playShutter(){
     g.gain.setValueAtTime(0.0001,now+t);
     g.gain.exponentialRampToValueAtTime(pk,now+t+0.004);
     g.gain.exponentialRampToValueAtTime(0.0001,now+t+dec);
-    src.connect(bp);bp.connect(g);g.connect(ctx.destination);
+    src.connect(bp);bp.connect(g);g.connect(sfxOut(ctx));
     src.start(now+t);src.stop(now+t+0.18);
   });
 }
@@ -4879,7 +4917,7 @@ function rouletteTick(){
   o.type="square";o.frequency.value=880;
   g.gain.setValueAtTime(0.06,t);
   g.gain.exponentialRampToValueAtTime(0.0001,t+0.03);
-  o.connect(g);g.connect(ctx.destination);
+  o.connect(g);g.connect(sfxOut(ctx));
   o.start(t);o.stop(t+0.04);
 }
 /* 回転中、減速に合わせてカチ音の間隔を広げながら鳴らす */
@@ -4905,13 +4943,13 @@ function playPop(){
   g.gain.setValueAtTime(0.0001,t);
   g.gain.exponentialRampToValueAtTime(0.22,t+0.02);
   g.gain.exponentialRampToValueAtTime(0.0001,t+0.2);
-  o.connect(g);g.connect(ctx.destination);o.start(t);o.stop(t+0.22);
+  o.connect(g);g.connect(sfxOut(ctx));o.start(t);o.stop(t+0.22);
   /* キラッと上のせ */
   const o2=ctx.createOscillator(),g2=ctx.createGain();
   o2.type="triangle";o2.frequency.setValueAtTime(1568,t+0.05);
   g2.gain.setValueAtTime(0.0001,t+0.05);g2.gain.exponentialRampToValueAtTime(0.12,t+0.07);
   g2.gain.exponentialRampToValueAtTime(0.0001,t+0.22);
-  o2.connect(g2);g2.connect(ctx.destination);o2.start(t+0.05);o2.stop(t+0.24);
+  o2.connect(g2);g2.connect(sfxOut(ctx));o2.start(t+0.05);o2.stop(t+0.24);
 }
 function winSound(){
   const ctx=ensureCtx();if(!ctx)return;
@@ -4922,7 +4960,7 @@ function winSound(){
     g.gain.setValueAtTime(0.0001,st);
     g.gain.exponentialRampToValueAtTime(0.18,st+0.02);
     g.gain.exponentialRampToValueAtTime(0.0001,st+0.32);
-    o.connect(g);g.connect(ctx.destination);
+    o.connect(g);g.connect(sfxOut(ctx));
     o.start(st);o.stop(st+0.34);
   });
 }
@@ -4932,8 +4970,10 @@ function setBGM(v){
   bgmFill.style.width=`${bgmVol*100}%`;
   bgmThumb.style.left=`${bgmVol*100}%`;
   bgmPct.textContent=`${Math.round(bgmVol*100)}%`;
+  try{const s=$("volBgm");if(s&&Number(s.value)!==Math.round(bgmVol*100))s.value=Math.round(bgmVol*100);}catch(_){}
+  try{localStorage.setItem("radio_bgm_vol",String(bgmVol));}catch(_){}
 }
-setBGM(0.10);
+setBGM(bgmVol);
 bgmIcon.addEventListener("click",()=>{
   playClick();bgmMuted=!bgmMuted;
   bgmAudio.volume=bgmMuted?0:bgmVol;
@@ -5411,11 +5451,10 @@ function hideModeChoice(){ $("modeChoice").classList.remove("visible"); }
 function chooseRally(){ hideModeChoice(); startRally(); }
 function choosePost(){ hideModeChoice(); doPostOnly(); }
 function chooseBoth(){ hideModeChoice(); startRally(); }   /* 両方＝スタンプラリー（最後に投稿できる） */
-function chooseSendoff(){   /* 見送りだけ：猫のいってらっしゃい画面へ。外出中なら説明して終わり */
+function chooseNone(){   /* どれもしない：体操も投稿もせず、猫の部屋に行くだけ */
   hideModeChoice();
-  const phase=(typeof outingPhase==="function")?outingPhase():"none";
-  if(phase==="away"){ toast("ねこは いま おでかけ中だよ。帰ってきたら 見送れるよ"); return; }
-  goToCatRoomAfterPost();
+  try{ if(typeof showSelect==="function")showSelect(); }catch(_){}
+  try{ openRoom(); }catch(_){}
 }
 /* スタンプラリー本体：演出 → ルーレット → カード準備 */
 function startRally(){
@@ -7426,7 +7465,7 @@ function playSqueak(){
     const o=ctx.createOscillator(),gn=ctx.createGain();o.type="square";
     o.frequency.setValueAtTime(420,t);o.frequency.exponentialRampToValueAtTime(920,t+0.09);o.frequency.exponentialRampToValueAtTime(500,t+0.2);
     gn.gain.setValueAtTime(0.0001,t);gn.gain.exponentialRampToValueAtTime(0.13,t+0.02);gn.gain.exponentialRampToValueAtTime(0.0001,t+0.24);
-    o.connect(gn);gn.connect(ctx.destination);o.start(t);o.stop(t+0.26);
+    o.connect(gn);gn.connect(sfxOut(ctx));o.start(t);o.stop(t+0.26);
   }catch(e){}
 }
 /* 気持ちによって変わる「ニャー」（母音 m→ya→a を擬似的に） */
@@ -7442,7 +7481,7 @@ function playMeow(mood){
       case "angry":  base=320;peak=360;end=210;dur=0.55;vol=0.17;det=10;break;
       default:       base=520;peak=760;end=500;dur=0.45;vol=0.16;det=5;
     }
-    const master=ctx.createGain();master.gain.value=1;master.connect(ctx.destination);
+    const master=ctx.createGain();master.gain.value=1;master.connect(sfxOut(ctx));
     /* 声帯っぽい鋸波を2本（微デチューン）＋鼻に抜ける口の開き（ローパスのスイープ） */
     const lp=ctx.createBiquadFilter();lp.type="lowpass";lp.Q.value=8;
     lp.frequency.setValueAtTime(500,t);                          /* m（口閉じ） */
@@ -7475,7 +7514,7 @@ function playPurr(dur,vol){
     const la=ctx.createGain();la.gain.value=0.10*vol;
     const env=ctx.createGain();env.gain.setValueAtTime(0.0001,t);
     env.gain.linearRampToValueAtTime(1,t+0.25);env.gain.setValueAtTime(1,t+dur-0.3);env.gain.linearRampToValueAtTime(0.0001,t+dur);
-    o.connect(lp);lp.connect(g);g.connect(env);env.connect(ctx.destination);
+    o.connect(lp);lp.connect(g);g.connect(env);env.connect(sfxOut(ctx));
     lfo.connect(la);la.connect(g.gain);
     o.start(t);o.stop(t+dur+0.02);lfo.start(t);lfo.stop(t+dur+0.02);
   }catch(e){}
@@ -7963,11 +8002,11 @@ function playGachaTurnSound(){   /* カプセルを回す「ガチャガチャ�
     for(let i=0;i<6;i++){const o=ctx.createOscillator(),g=ctx.createGain(),t=now+i*0.1;
       o.type="square";o.frequency.value=170+i*12;
       g.gain.setValueAtTime(0.0001,t);g.gain.linearRampToValueAtTime(0.07,t+0.005);g.gain.exponentialRampToValueAtTime(0.0001,t+0.05);
-      o.connect(g);g.connect(ctx.destination);o.start(t);o.stop(t+0.06);}
+      o.connect(g);g.connect(sfxOut(ctx));o.start(t);o.stop(t+0.06);}
     const w=ctx.createOscillator(),wg=ctx.createGain();
     w.type="sawtooth";w.frequency.setValueAtTime(120,now);w.frequency.exponentialRampToValueAtTime(440,now+0.6);
     wg.gain.setValueAtTime(0.0001,now);wg.gain.linearRampToValueAtTime(0.045,now+0.05);wg.gain.exponentialRampToValueAtTime(0.0001,now+0.62);
-    w.connect(wg);wg.connect(ctx.destination);w.start(now);w.stop(now+0.64);
+    w.connect(wg);wg.connect(sfxOut(ctx));w.start(now);w.stop(now+0.64);
   }catch(e){}
 }
 function playNotifSound(){   /* 新着いいねの通知音（やさしい2音） */
@@ -7975,7 +8014,7 @@ function playNotifSound(){   /* 新着いいねの通知音（やさしい2音�
     [880,1174.7].forEach((f,i)=>{const o=ctx.createOscillator(),g=ctx.createGain(),t=now+i*0.13;
       o.type="sine";o.frequency.value=f;
       g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.16,t+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t+0.3);
-      o.connect(g);g.connect(ctx.destination);o.start(t);o.stop(t+0.32);});
+      o.connect(g);g.connect(sfxOut(ctx));o.start(t);o.stop(t+0.32);});
   }catch(e){}
 }
 /* ねこを送り出す音（やさしく下降・行ってらっしゃい） */
@@ -7984,7 +8023,7 @@ function playSendOff(){
     [784.0,659.3,523.3].forEach((f,i)=>{const o=ctx.createOscillator(),g=ctx.createGain(),t=now+i*0.12;
       o.type="sine";o.frequency.value=f;
       g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.16,t+0.03);g.gain.exponentialRampToValueAtTime(0.0001,t+0.34);
-      o.connect(g);g.connect(ctx.destination);o.start(t);o.stop(t+0.36);});
+      o.connect(g);g.connect(sfxOut(ctx));o.start(t);o.stop(t+0.36);});
   }catch(e){}
   try{if(navigator.vibrate)navigator.vibrate(18);}catch(_){}
 }
@@ -7994,7 +8033,7 @@ function playWelcomeHome(){
     [523.3,659.3,880.0].forEach((f,i)=>{const o=ctx.createOscillator(),g=ctx.createGain(),t=now+i*0.10;
       o.type="triangle";o.frequency.value=f;
       g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.18,t+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t+0.3);
-      o.connect(g);g.connect(ctx.destination);o.start(t);o.stop(t+0.32);});
+      o.connect(g);g.connect(sfxOut(ctx));o.start(t);o.stop(t+0.32);});
   }catch(e){}
   try{if(navigator.vibrate)navigator.vibrate([0,20,40,20]);}catch(_){}
 }
@@ -8004,11 +8043,11 @@ function playRareFanfare(){
     [523.3,659.3,784.0,1046.5,1318.5,1568.0].forEach((f,i)=>{const o=ctx.createOscillator(),g=ctx.createGain(),t=now+i*0.075;
       o.type="triangle";o.frequency.value=f;
       g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.22,t+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t+0.34);
-      o.connect(g);g.connect(ctx.destination);o.start(t);o.stop(t+0.36);});
+      o.connect(g);g.connect(sfxOut(ctx));o.start(t);o.stop(t+0.36);});
     const s=ctx.createOscillator(),sg=ctx.createGain();s.type="sine";
     s.frequency.setValueAtTime(1568,now+0.45);s.frequency.linearRampToValueAtTime(2349,now+0.8);
     sg.gain.setValueAtTime(0.0001,now+0.45);sg.gain.exponentialRampToValueAtTime(0.12,now+0.5);sg.gain.exponentialRampToValueAtTime(0.0001,now+0.95);
-    s.connect(sg);sg.connect(ctx.destination);s.start(now+0.45);s.stop(now+0.98);
+    s.connect(sg);sg.connect(sfxOut(ctx));s.start(now+0.45);s.stop(now+0.98);
   }catch(e){}
 }
 function playGachaWinSound(){   /* 当たり！の華やかなファンファーレ */
@@ -8016,11 +8055,11 @@ function playGachaWinSound(){   /* 当たり！の華やかなファンファー
     [523.25,659.25,783.99,1046.5,1318.5].forEach((f,i)=>{const o=ctx.createOscillator(),g=ctx.createGain(),t=now+i*0.08;
       o.type="triangle";o.frequency.value=f;
       g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.2,t+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t+0.3);
-      o.connect(g);g.connect(ctx.destination);o.start(t);o.stop(t+0.32);});
+      o.connect(g);g.connect(sfxOut(ctx));o.start(t);o.stop(t+0.32);});
     const s=ctx.createOscillator(),sg=ctx.createGain();s.type="sine";
     s.frequency.setValueAtTime(1568,now+0.3);s.frequency.linearRampToValueAtTime(2093,now+0.52);
     sg.gain.setValueAtTime(0.0001,now+0.3);sg.gain.exponentialRampToValueAtTime(0.1,now+0.34);sg.gain.exponentialRampToValueAtTime(0.0001,now+0.6);
-    s.connect(sg);sg.connect(ctx.destination);s.start(now+0.3);s.stop(now+0.62);
+    s.connect(sg);sg.connect(sfxOut(ctx));s.start(now+0.3);s.stop(now+0.62);
   }catch(e){}
 }
 async function doGachaSpin(){
@@ -9007,6 +9046,27 @@ let _followT=0;
 })();
 $("photoCancelBtn").addEventListener("click",()=>{playClick();exitPhotoMode();});
 $("tpbBell").addEventListener("click",e=>{e.stopPropagation();playClick();openNotif();});
+/* 音量パネル（BGM / 効果音・ローカル保存） */
+function toggleVolPanel(){
+  const p=$("volPanel");if(!p)return;
+  if(p.hidden){
+    $("volBgm").value=Math.round(bgmVol*100);$("volBgmVal").textContent=Math.round(bgmVol*100)+"%";
+    $("volSfx").value=Math.round(_sfxVol*100);$("volSfxVal").textContent=Math.round(_sfxVol*100)+"%";
+    p.hidden=false;
+  }else p.hidden=true;
+}
+$("volBtn").addEventListener("click",e=>{e.stopPropagation();playClick();toggleVolPanel();});
+$("volBgm").addEventListener("input",e=>{
+  const v=Number(e.target.value)/100;
+  if(bgmMuted){bgmMuted=false;try{bgmIcon.classList.remove("muted");}catch(_){}}
+  setBGM(v);$("volBgmVal").textContent=Math.round(v*100)+"%";
+});
+$("volSfx").addEventListener("input",e=>{const v=Number(e.target.value)/100;setSfxVol(v);$("volSfxVal").textContent=Math.round(v*100)+"%";});
+$("volSfx").addEventListener("change",()=>{try{playPop();}catch(_){}});   /* 離したら試聴 */
+document.addEventListener("click",e=>{
+  const p=$("volPanel");if(!p||p.hidden)return;
+  if(!p.contains(e.target)&&!$("volBtn").contains(e.target))p.hidden=true;
+});
 $("notifClose").addEventListener("click",()=>{playClick();$("notifPanel").classList.remove("visible");});
 $("notifPanel").addEventListener("click",e=>{if(e.target===$("notifPanel"))$("notifPanel").classList.remove("visible");});
 $("commentPopClose").addEventListener("click",()=>{playClick();$("commentPop").classList.remove("visible");});
@@ -9150,7 +9210,7 @@ $("recClose").addEventListener("click",()=>{playClick();closeRecord();});
 $("mcRally").addEventListener("click",()=>{playClick();chooseRally();});
 $("mcPost").addEventListener("click",()=>{playClick();choosePost();});
 $("mcBoth").addEventListener("click",()=>{playClick();chooseBoth();});
-$("mcSendoff").addEventListener("click",()=>{playClick();chooseSendoff();});
+$("mcNone").addEventListener("click",()=>{playClick();chooseNone();});
 $("modeChoiceClose").addEventListener("click",()=>{playClick();hideModeChoice();});
 $("modeChoice").addEventListener("click",e=>{if(e.target===$("modeChoice"))hideModeChoice();});
 /* 横幅が変わったら丘の猫を並べ直す（PCでウィンドウをリサイズしたとき） */

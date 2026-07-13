@@ -1627,49 +1627,51 @@ button,input{font:inherit;}
 #postComment:focus{border-color:#7fd8b0;background:#fff;}
 #postComment::placeholder{color:#a8c6d6;font-weight:600;}
 #postAnonRow input{width:17px;height:17px;accent-color:#7fd8b0;}
-/* ===== 部室（ぶしつ） ===== */
-#clubroom{position:fixed;inset:0;z-index:230;display:none;overflow:hidden;
-  background:linear-gradient(180deg,#efe0c9 0%,#e8d6bb 52%,#ddc9a9 100%);}
+/* ===== 部室（ぶしつ）：教室で椅子に座って会話 ===== */
+#clubroom{position:fixed;inset:0;z-index:230;display:none;overflow:hidden;background:#cfe0ea;}
 #clubroom.visible{display:block;}
-#crWindow{position:absolute;top:7%;left:50%;transform:translateX(-50%);width:42%;max-width:340px;height:30%;border-radius:10px;overflow:hidden;
-  background:linear-gradient(180deg,#bfe6f6 0%,#daf1fb 55%,#eef9ff 100%);border:9px solid #c9ad86;box-shadow:0 10px 26px rgba(120,90,50,.22),inset 0 0 0 3px #b89a72;}
-.crWinSun{position:absolute;top:14%;right:16%;width:44px;height:44px;border-radius:50%;background:radial-gradient(circle,#fff2c2,#ffe08a);box-shadow:0 0 26px 8px rgba(255,224,138,.7);}
-.crWinGrid{position:absolute;inset:0;background:linear-gradient(90deg,transparent 49.4%,#c9ad86 49.4% 50.6%,transparent 50.6%),linear-gradient(0deg,transparent 49.4%,#c9ad86 49.4% 50.6%,transparent 50.6%);}
-#crShelfL,#crShelfR{position:absolute;top:0;bottom:0;width:17%;
-  background:#b58f5f;
-  box-shadow:inset 0 0 0 6px #a67c4d;}
-#crShelfL{left:0;}#crShelfR{right:0;}
-#crShelfL::before,#crShelfR::before{content:"";position:absolute;inset:10px 8px;border-radius:2px;
+#crRoom{position:absolute;inset:0;}
+#crWindows{position:absolute;top:8%;left:5%;right:5%;height:38%;border-radius:6px;
   background:
-   repeating-linear-gradient(90deg,#d9695f 0 11px,#e6a94b 11px 20px,#7fb98f 20px 31px,#6a9fd0 31px 40px,#c98fbf 40px 50px,#e6c34b 50px 60px);
-  background-size:100% 21%;
-  box-shadow:inset 0 0 0 100px transparent;}
-#crShelfL::after,#crShelfR::after{content:"";position:absolute;inset:10px 8px;
-  background:repeating-linear-gradient(0deg,transparent 0 18%,rgba(120,90,50,.55) 18% 20%);}
-#crFloor{position:absolute;left:0;right:0;bottom:0;height:22%;background:linear-gradient(180deg,#e7d3af,#dcc59a);
-  box-shadow:inset 0 6px 14px rgba(150,110,60,.18);}
-#crTableWrap{position:absolute;left:50%;bottom:4%;transform:translateX(-50%);width:84%;max-width:620px;height:46%;}
-#crTableTop{position:absolute;inset:0;border-radius:24px/54px;
-  background:linear-gradient(180deg,#e0b072 0%,#d1a463 46%,#c0914f 100%);
-  box-shadow:0 20px 44px rgba(90,60,30,.3),inset 0 5px 12px rgba(255,238,205,.5),inset 0 -8px 16px rgba(120,80,40,.25);}
-#crTableTop::before{content:"";position:absolute;inset:5% 4%;border-radius:20px/44px;box-shadow:inset 0 0 0 2px rgba(255,240,210,.35);}
-#clubroomTable{position:absolute;inset:8% 6% 12% 6%;}
-.crCat{position:absolute;left:50%;top:50%;width:60px;margin-left:-30px;pointer-events:none;}
-.crCatFig{width:60px;transform-origin:bottom center;transition:transform 1.8s ease-in-out;}
-.crCatFig .catSvg{width:100%;height:auto;display:block;filter:drop-shadow(0 4px 5px rgba(90,60,30,.28));}
-.crName{text-align:center;font-size:9px;font-weight:800;color:#5c4326;background:rgba(255,255,255,.72);border-radius:8px;padding:0 5px;margin:-3px auto 0;width:fit-content;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.crBubble{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:6px;z-index:5;
+    linear-gradient(180deg,#bfe6f6 0%,#d9f0fa 55%,#eafaff 100%);
+  border:8px solid #e2e8ec;box-shadow:inset 0 0 0 3px #cdd6dc,0 5px 16px rgba(90,120,140,.16);}
+#crWindows::before{content:"";position:absolute;inset:0;
+  background:
+    linear-gradient(90deg,transparent 0 24%,#e2e8ec 24% 26%,transparent 26% 49%,#e2e8ec 49% 51%,transparent 51% 74%,#e2e8ec 74% 76%,transparent 76%),
+    linear-gradient(0deg,transparent 0 47%,#e2e8ec 47% 49%,transparent 49%);}
+#crWindows::after{content:"";position:absolute;left:6%;bottom:8%;width:16%;height:36%;border-radius:50% 50% 46% 46%;background:#a8d6a0;opacity:.5;
+  box-shadow:28% 2% 0 -2% #93c98b,56% 8% 0 -3% #a8d6a0,80% 3% 0 -4% #93c98b;}
+#crWainscot{position:absolute;left:0;right:0;top:49%;height:16%;background:linear-gradient(180deg,#e7dcc8,#ddcfb6);box-shadow:inset 0 3px 0 rgba(255,255,255,.4),0 3px 8px rgba(120,100,70,.14);}
+#crFloor{position:absolute;left:0;right:0;bottom:0;height:35%;background:linear-gradient(180deg,#e6d2ad 0%,#dcc79c 100%);
+  box-shadow:inset 0 5px 12px rgba(150,110,60,.16);}
+#crFloor::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 58px,rgba(150,110,60,.14) 58px 60px);}
+#clubroomSeats{position:absolute;left:0;right:0;bottom:9%;height:46%;}
+.crSeat{position:absolute;bottom:0;width:96px;margin-left:-48px;text-align:center;}
+.crChair{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:58px;z-index:1;filter:drop-shadow(0 5px 5px rgba(120,90,50,.25));}
+.crChair svg{width:100%;display:block;}
+.crCatWrap{position:absolute;left:50%;bottom:30px;transform:translateX(-50%);width:70px;z-index:2;}
+.crCatFig{width:70px;animation:crBob 3.2s ease-in-out infinite;}
+.crCatFig .catSvg{width:100%;height:auto;display:block;filter:drop-shadow(0 3px 4px rgba(90,60,30,.2));}
+.crCatWrap.talking .crCatFig{animation:crBobTalk .5s ease-in-out infinite;}
+@keyframes crBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes crBobTalk{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.5px)}}
+.crMouth{position:absolute;left:50%;top:52%;transform:translate(-50%,0) scaleY(.12);transform-origin:center;
+  width:20%;height:15%;border-radius:50%;background:#4a2f2a;box-shadow:inset 0 -3px 0 rgba(255,150,150,.5);opacity:0;pointer-events:none;}
+.crMouth.flap{animation:crFlap .19s ease-out;}
+@keyframes crFlap{0%{opacity:1;transform:translate(-50%,0) scaleY(.15)}45%{opacity:1;transform:translate(-50%,0) scaleY(1)}100%{opacity:1;transform:translate(-50%,0) scaleY(.3)}}
+.crName{position:absolute;left:50%;bottom:-14px;transform:translateX(-50%);font-size:9px;font-weight:800;color:#5c4326;background:rgba(255,255,255,.75);border-radius:8px;padding:0 6px;white-space:nowrap;z-index:3;}
+.crBubble{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:2px;z-index:5;
   background:#fff;border-radius:13px;padding:5px 11px;font-size:12.5px;font-weight:800;color:#5a4530;white-space:nowrap;
   box-shadow:0 5px 14px rgba(90,60,30,.24);min-width:14px;min-height:15px;text-align:center;font-family:"Yomogi","Kosugi Maru",sans-serif;}
 .crBubble[hidden]{display:none;}
 .crBubble::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:7px solid transparent;border-top-color:#fff;}
 #crHead{position:absolute;top:max(14px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:6;
-  font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:18px;font-weight:900;color:#6b4e2a;background:rgba(255,255,255,.6);border-radius:999px;padding:5px 20px;}
+  font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:18px;font-weight:900;color:#4f6b56;background:rgba(255,255,255,.66);border-radius:999px;padding:5px 20px;}
 #crClose{position:absolute;top:max(12px,env(safe-area-inset-top));right:14px;z-index:6;width:40px;height:40px;border:none;border-radius:50%;cursor:pointer;
-  background:rgba(255,255,255,.8);color:#8a6b46;font-size:18px;box-shadow:0 4px 12px rgba(120,90,50,.2);}
+  background:rgba(255,255,255,.85);color:#5c7a66;font-size:18px;box-shadow:0 4px 12px rgba(90,120,100,.2);}
 #crClose:active{transform:scale(.92);}
 #crWordsBtn{position:absolute;bottom:max(16px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);z-index:6;border:none;border-radius:999px;cursor:pointer;
-  padding:11px 26px;font-size:14px;font-weight:900;color:#fff;background:linear-gradient(135deg,#f0b46a,#e88f4d);box-shadow:0 7px 18px rgba(200,130,60,.4);font-family:inherit;}
+  padding:11px 26px;font-size:14px;font-weight:900;color:#fff;background:linear-gradient(135deg,#7fc4a0,#5db98a);box-shadow:0 7px 18px rgba(93,185,138,.4);font-family:inherit;}
 #crWordsBtn:active{transform:translateX(-50%) scale(.95);}
 #crWordsEditor{position:fixed;inset:0;z-index:240;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(110,85,55,.4);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);}
 #crWordsEditor.visible{display:flex;}
@@ -2063,14 +2065,12 @@ button,input{font:inherit;}
 
 <!-- ===================== 部室（ぶしつ） ===================== -->
 <div id="clubroom">
-  <div id="crWindow"><div class="crWinSun"></div><div class="crWinGrid"></div></div>
-  <div id="crShelfL"></div>
-  <div id="crShelfR"></div>
-  <div id="crFloor"></div>
-  <div id="crTableWrap">
-    <div id="crTableTop"></div>
-    <div id="clubroomTable"></div>
+  <div id="crRoom">
+    <div id="crWindows"></div>
+    <div id="crWainscot"></div>
+    <div id="crFloor"></div>
   </div>
+  <div id="clubroomSeats"></div>
   <div id="crHead">ぶしつ</div>
   <button id="crClose" type="button" aria-label="とじる">✕</button>
   <button id="crWordsBtn" type="button">ひとこと</button>
@@ -2616,13 +2616,22 @@ function refreshClubJoinBtn(){
 }
 /* ===== ひらがな読み上げ（録音した50音を1文字ずつ自然につなぐ） =====
    音声ファイル：voiceフォルダに あ.wav〜ん.wav（普通46）と が.wav〜ぽ.wav（濁音25）を置く */
-const VOICE_DIR="voice/";
+const VOICE_DIR="";   /* wavは radio.html と同じ場所（リポジトリ直下）に置いてある */
 const _voiceBuf={};
 const _voiceSmall={"ぁ":"あ","ぃ":"い","ぅ":"う","ぇ":"え","ぉ":"お","ゃ":"や","ゅ":"ゆ","ょ":"よ","ゎ":"わ","ゕ":"か","ゖ":"け"};
-function voiceKey(ch){
-  if(ch==="っ"||ch==="ー"||ch==="　"||ch===" ")return null;
-  if(_voiceSmall[ch])return _voiceSmall[ch];
-  return ch;
+function tokenizeKana(text){
+  const chars=[...String(text||"")];const small=new Set(["ゃ","ゅ","ょ"]);const toks=[];
+  for(let i=0;i<chars.length;i++){
+    if(i+1<chars.length&&small.has(chars[i+1])){toks.push(chars[i]+chars[i+1]);i++;}
+    else toks.push(chars[i]);
+  }
+  return toks;
+}
+function voiceKey(tok){
+  if(tok.length===2)return tok;   /* 拗音：きゃ.wav などがある */
+  if(tok==="っ"||tok==="ー"||tok==="　"||tok===" ")return null;
+  if(_voiceSmall[tok])return _voiceSmall[tok];
+  return tok;
 }
 async function loadVoiceChar(ch){
   if(ch in _voiceBuf)return _voiceBuf[ch];
@@ -2637,29 +2646,30 @@ async function loadVoiceChar(ch){
   }catch(_){return null;}
 }
 async function speakHiragana(text,onChar,onDone){
-  const chars=[...String(text||"")].slice(0,40);
-  const keys=[...new Set(chars.map(voiceKey).filter(Boolean))];
+  const toks=tokenizeKana(text).slice(0,40);
+  const keys=[...new Set(toks.map(voiceKey).filter(Boolean))];
   try{await Promise.all(keys.map(loadVoiceChar));}catch(_){}
   const ctx=ensureCtx();if(!ctx){if(onDone)onDone();return 0;}
   const out=sfxOut(ctx)||ctx.destination;
   const step=0.19,rate=1.12,dur=0.23;
-  let t=ctx.currentTime+0.06;
-  chars.forEach((ch,i)=>{
-    const key=voiceKey(ch);let gap=step;
-    if(ch==="っ")gap=step*0.7;
-    else if(ch==="ー")gap=step*0.95;
-    else if(ch==="　"||ch===" ")gap=step*0.8;
+  let t=ctx.currentTime+0.06,disp="";
+  toks.forEach(tok=>{
+    const key=voiceKey(tok);let gap=step,voiced=false;
+    if(tok==="っ")gap=step*0.7;
+    else if(tok==="ー")gap=step*0.95;
+    else if(tok==="　"||tok===" ")gap=step*0.8;
     else{
       const buf=_voiceBuf[key];
-      if(buf){
+      if(buf){voiced=true;
         const src=ctx.createBufferSource();src.buffer=buf;src.playbackRate.value=rate;
         const g=ctx.createGain();src.connect(g);g.connect(out);
         g.gain.setValueAtTime(1,t);g.gain.setValueAtTime(1,t+dur*0.62);g.gain.linearRampToValueAtTime(0,t+dur);
         try{src.start(t);src.stop(t+dur+0.03);}catch(_){}
       }
     }
+    disp+=tok;const d=disp;
     const when=Math.max(0,(t-ctx.currentTime)*1000);
-    if(onChar)setTimeout(()=>onChar(chars.slice(0,i+1).join("")),when);
+    if(onChar)setTimeout(()=>onChar(d,voiced),when);
     t+=gap;
   });
   const total=Math.max(0,(t-ctx.currentTime)*1000);
@@ -2695,55 +2705,61 @@ async function loadClubroomCats(){
   }catch(_){}
   return out;
 }
-let _clubroomCats=[],_crMoveTimer=null,_crSpeakTimer=null;
+let _clubroomCats=[],_crSpeakTimer=null;
 async function openClubroom(){
   $("clubroom").classList.add("visible");
-  const stage=$("clubroomTable");if(stage)stage.innerHTML="";
+  const stage=$("clubroomSeats");if(stage)stage.innerHTML="";
   _clubroomCats=[];
   try{await syncClubroomPresence();}catch(_){}
   let cats=await loadClubroomCats();
   if(!cats.length){const p=getProfile()||{};cats=[{uid:getUid(),name:p.name||"あなた",catBody:profileBody(),color:profileColor(),words:getMyWords()}];}
-  cats.slice(0,12).forEach(c=>{
-    const el=document.createElement("div");el.className="crCat";
-    el.innerHTML='<div class="crBubble" hidden></div><div class="crCatFig">'+catFigureHTML(c.catBody,c.color,"sit",[0,0],"normal",null)+'</div><div class="crName">'+escHtml(c.name)+'</div>';
+  cats=cats.slice(0,10);
+  const n=cats.length;
+  cats.forEach((c,i)=>{
+    const el=document.createElement("div");el.className="crSeat";
+    /* 横一列に等間隔・端に寄りすぎない */
+    const x=n===1?50:(10+ (i/(n-1))*80);
+    el.style.left=x+"%";
+    const dir=(x<50)?1:-1;   /* 中央を向いて会話してる感じ */
+    el.innerHTML=
+      '<div class="crBubble" hidden></div>'+
+      '<div class="crCatWrap" style="transform:scaleX('+dir+')">'+
+        '<div class="crCatFig">'+catFigureHTML(c.catBody,c.color,"sit",[0,0],"normal",null)+'</div>'+
+        '<div class="crMouth"></div>'+
+      '</div>'+
+      '<div class="crChair"><svg viewBox="0 0 60 70" xmlns="http://www.w3.org/2000/svg"><rect x="12" y="6" width="7" height="40" rx="2.5" fill="#c99a63"/><rect x="10" y="30" width="40" height="9" rx="3" fill="#e0b673"/><rect x="13" y="39" width="6" height="26" rx="2.5" fill="#b98a53"/><rect x="41" y="39" width="6" height="26" rx="2.5" fill="#b98a53"/></svg></div>'+
+      '<div class="crName">'+escHtml(c.name)+'</div>';
     stage.appendChild(el);
-    const cat={el,data:c,bubble:el.querySelector(".crBubble"),fig:el.querySelector(".crCatFig")};
-    _clubroomCats.push(cat);moveCatRandom(cat,true);
+    _clubroomCats.push({el,data:c,bubble:el.querySelector(".crBubble"),mouth:el.querySelector(".crMouth"),wrap:el.querySelector(".crCatWrap")});
   });
   startClubroomLife();
 }
 function closeClubroom(){
   $("clubroom").classList.remove("visible");
-  if(_crMoveTimer)clearInterval(_crMoveTimer);
   if(_crSpeakTimer)clearTimeout(_crSpeakTimer);
-  _crMoveTimer=_crSpeakTimer=null;
+  _crSpeakTimer=null;
 }
-function moveCatRandom(cat,instant){
-  const x=9+Math.random()*80,y=14+Math.random()*64;
-  const prev=parseFloat(cat.el.dataset.px);const face=(!isNaN(prev)&&x<prev)?-1:1;
-  cat.el.dataset.px=x;
-  const sc=0.72+(y/100)*0.5;
-  cat.el.style.transition=instant?"none":"left 2.4s ease-in-out,top 2.4s ease-in-out";
-  cat.el.style.left=x+"%";cat.el.style.top=y+"%";cat.el.style.zIndex=Math.round(y*10);
-  if(cat.fig)cat.fig.style.transform="scale("+sc.toFixed(2)+") scaleX("+face+")";
-}
-function startClubroomLife(){
-  if(_crMoveTimer)clearInterval(_crMoveTimer);
-  _crMoveTimer=setInterval(()=>{_clubroomCats.forEach(c=>{if(Math.random()<0.5)moveCatRandom(c,false);});},2600);
-  scheduleClubroomSpeak();
-}
+function startClubroomLife(){ scheduleClubroomSpeak(); }
 function scheduleClubroomSpeak(){
   if(_crSpeakTimer)clearTimeout(_crSpeakTimer);
   _crSpeakTimer=setTimeout(()=>{
     const ws=_clubroomCats.filter(c=>c.data.words&&c.data.words.length);
     if(ws.length){const cat=ws[Math.floor(Math.random()*ws.length)];const w=cat.data.words[Math.floor(Math.random()*cat.data.words.length)];clubroomSay(cat,w);}
     scheduleClubroomSpeak();
-  },2400+Math.random()*3000);
+  },2400+Math.random()*3200);
 }
 function clubroomSay(cat,text){
   if(!cat||!cat.bubble)return;
   cat.bubble.hidden=false;cat.bubble.textContent="";cat.el.style.zIndex=9999;
-  speakHiragana(text,soFar=>{cat.bubble.textContent=soFar;},()=>{setTimeout(()=>{if(cat.bubble)cat.bubble.hidden=true;},1500);});
+  if(cat.wrap)cat.wrap.classList.add("talking");
+  speakHiragana(text,(soFar,voiced)=>{
+    cat.bubble.textContent=soFar;
+    if(voiced&&cat.mouth){cat.mouth.classList.remove("flap");void cat.mouth.offsetWidth;cat.mouth.classList.add("flap");}
+  },()=>{
+    if(cat.wrap)cat.wrap.classList.remove("talking");
+    if(cat.mouth)cat.mouth.classList.remove("flap");
+    setTimeout(()=>{if(cat.bubble)cat.bubble.hidden=true;cat.el.style.zIndex="";},1400);
+  });
 }
 function openWordsEditor(){
   const w=getMyWords();for(let i=0;i<5;i++){const inp=$("crWord"+i);if(inp)inp.value=w[i]||"";}

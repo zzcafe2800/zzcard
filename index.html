@@ -1657,14 +1657,7 @@ button,input{font:inherit;}
 .crCatWrap{position:absolute;left:50%;bottom:30px;transform:translateX(-50%);width:70px;z-index:2;}
 .crCatFig{width:70px;position:relative;animation:crBob 3.2s ease-in-out infinite;}
 .crCatFig .catSvg{width:100%;height:auto;display:block;filter:drop-shadow(0 3px 4px rgba(90,60,30,.2));}
-.crCatWrap.talking .crCatFig{animation:crBobTalk .5s ease-in-out infinite;}
 @keyframes crBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
-@keyframes crBobTalk{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.5px)}}
-.crMouth,.spkMouth{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%) scaleY(.14);transform-origin:center;
-  width:23%;height:21%;border-radius:50%;background:#3a2622;box-shadow:inset 0 -3px 0 rgba(255,150,150,.55);opacity:0;pointer-events:none;z-index:4;}
-.spkMouth.on{opacity:1;}
-.crMouth.flap,.spkMouth.flap{animation:crFlap .19s ease-out;}
-@keyframes crFlap{0%{opacity:1;transform:translate(-50%,-50%) scaleY(.18)}45%{opacity:1;transform:translate(-50%,-50%) scaleY(1)}100%{opacity:1;transform:translate(-50%,-50%) scaleY(.4)}}
 .crName{position:absolute;left:50%;bottom:-14px;transform:translateX(-50%);font-size:9px;font-weight:800;color:#5c4326;background:rgba(255,255,255,.75);border-radius:8px;padding:0 6px;white-space:nowrap;z-index:3;}
 .crBubble{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:2px;z-index:5;
   background:#fff;border-radius:13px;padding:5px 11px;font-size:12.5px;font-weight:800;color:#5a4530;white-space:nowrap;
@@ -2113,7 +2106,7 @@ button,input{font:inherit;}
       <div class="taisoCard" id="tsPostCard">
         <div class="tsCardTitle">とうこう</div>
         <div id="tsPostPreview"></div>
-        <textarea id="tsComment" maxlength="30" rows="2" placeholder="ひとこと（にんい）"></textarea>
+        <textarea id="tsComment" maxlength="20" rows="2" placeholder="ひとこと（ひらがな）" inputmode="kana"></textarea>
         <label class="tsAnonRow"><input type="checkbox" id="tsAnon"/> 匿名で投稿する</label>
         <div class="tsFoot">
           <button class="tsPost" id="tsPostBtn" type="button">投稿する</button>
@@ -2672,17 +2665,14 @@ const VOICE_BOOST=1.9;
 })();
 /* 猫の頭上に吹き出しを出して読み上げ（丘・部屋 共通） */
 function catSpeakBubble(catEl,text){
-  if(!catEl||!text)return;
+  if(!catEl)return;
   let b=catEl.querySelector(".spkBubble");
   if(!b){b=document.createElement("div");b.className="spkBubble";catEl.appendChild(b);}
-  b.textContent="";b.classList.add("show");
-  const fig=catEl.querySelector(".catPose")||catEl.querySelector(".crCatFig");   /* 顔に口を重ねる */
-  let m=null;
-  if(fig){m=fig.querySelector(".spkMouth");if(!m){m=document.createElement("div");m.className="spkMouth";fig.appendChild(m);}m.classList.add("on");}
-  speakHiragana(text,(soFar,voiced)=>{
-    b.textContent=soFar;
-    if(voiced&&m){m.classList.remove("flap");void m.offsetWidth;m.classList.add("flap");}
-  },()=>{setTimeout(()=>{if(b)b.classList.remove("show");if(m)m.classList.remove("on","flap");},1300);});
+  const disp=(text||"").trim(),ny=(!disp||_hasEmoji(text));
+  const done=()=>{setTimeout(()=>{if(b)b.classList.remove("show");},1300);};
+  b.classList.add("show");
+  if(ny){b.textContent=disp||"にゃーー";speakHiragana("にゃーー",null,done);}
+  else{b.textContent="";speakHiragana(disp,soFar=>{b.textContent=soFar;},done);}
 }
 function _schedBuf(ctx,out,buf,offset,dur,t){
   dur=Math.max(0.06,dur);const fi=0.012,fo=Math.min(0.05,dur*0.35);
@@ -2752,7 +2742,9 @@ const THANKS_KEY="radio_thanks_word";
 function getThanksWord(){try{const v=localStorage.getItem(THANKS_KEY);return (v&&v.trim())?v:"ありがとう";}catch(_){return "ありがとう";}}
 function setThanksWord(v){try{localStorage.setItem(THANKS_KEY,v||"");}catch(_){}}
 const VOICE_CHARS="あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽゃゅょぁぃぅぇぉっー";
-function hiraOnly(s){s=String(s||"").replace(/[\u30a1-\u30f6]/g,c=>String.fromCharCode(c.charCodeAt(0)-0x60));return [...s].filter(c=>VOICE_CHARS.indexOf(c)>=0).join("");}   /* ファイルにある文字＋伸ばし棒ーだけ許可 */
+function _isEmoji(c){return /\p{Extended_Pictographic}/u.test(c)||/[\u200D\uFE0F\u20E3]/.test(c)||/[\u{1F1E6}-\u{1F1FF}\u{1F3FB}-\u{1F3FF}]/u.test(c);}
+function _hasEmoji(s){try{return /\p{Extended_Pictographic}/u.test(String(s||""));}catch(_){return false;}}
+function hiraOnly(s){s=String(s||"").replace(/[\u30a1-\u30f6]/g,c=>String.fromCharCode(c.charCodeAt(0)-0x60));let o="";for(const c of s){if(VOICE_CHARS.indexOf(c)>=0||_isEmoji(c))o+=c;}return o;}   /* ファイルにある文字＋ー＋絵文字だけ許可 */
 function jstDayOf(ts){const d=new Date((ts||0)+9*3600*1000);return d.getUTCFullYear()+"-"+(d.getUTCMonth()+1)+"-"+d.getUTCDate();}
 async function syncClubroomPresence(){
   try{
@@ -2797,12 +2789,12 @@ async function openClubroom(){
     el.innerHTML=
       '<div class="crBubble" hidden></div>'+
       '<div class="crCatWrap" style="transform:scaleX('+dir+')">'+
-        '<div class="crCatFig">'+catFigureHTML(c.catBody,c.color,"sit",[0,0],"normal",null)+'<div class="crMouth"></div></div>'+
+        '<div class="crCatFig">'+catFigureHTML(c.catBody,c.color,"sit",[0,0],"normal",null)+'</div>'+
       '</div>'+
       '<div class="crChair"><svg viewBox="0 0 60 70" xmlns="http://www.w3.org/2000/svg"><rect x="12" y="6" width="7" height="40" rx="2.5" fill="#c99a63"/><rect x="10" y="30" width="40" height="9" rx="3" fill="#e0b673"/><rect x="13" y="39" width="6" height="26" rx="2.5" fill="#b98a53"/><rect x="41" y="39" width="6" height="26" rx="2.5" fill="#b98a53"/></svg></div>'+
       '<div class="crName">'+escHtml(c.name)+'</div>';
     stage.appendChild(el);
-    _clubroomCats.push({el,data:c,bubble:el.querySelector(".crBubble"),mouth:el.querySelector(".crMouth"),wrap:el.querySelector(".crCatWrap")});
+    _clubroomCats.push({el,data:c,bubble:el.querySelector(".crBubble")});
   });
   startClubroomLife();
 }
@@ -2823,16 +2815,11 @@ function scheduleClubroomSpeak(){
 }
 function clubroomSay(cat,text){
   if(!cat||!cat.bubble)return;
-  cat.bubble.hidden=false;cat.bubble.textContent="";cat.el.style.zIndex=9999;
-  if(cat.wrap)cat.wrap.classList.add("talking");
-  speakHiragana(text,(soFar,voiced)=>{
-    cat.bubble.textContent=soFar;
-    if(voiced&&cat.mouth){cat.mouth.classList.remove("flap");void cat.mouth.offsetWidth;cat.mouth.classList.add("flap");}
-  },()=>{
-    if(cat.wrap)cat.wrap.classList.remove("talking");
-    if(cat.mouth)cat.mouth.classList.remove("flap");
-    setTimeout(()=>{if(cat.bubble)cat.bubble.hidden=true;cat.el.style.zIndex="";},1400);
-  });
+  cat.el.style.zIndex=9999;cat.bubble.hidden=false;
+  const disp=(text||"").trim(),ny=(!disp||_hasEmoji(text));
+  const done=()=>{setTimeout(()=>{if(cat.bubble)cat.bubble.hidden=true;cat.el.style.zIndex="";},1400);};
+  if(ny){cat.bubble.textContent=disp||"にゃーー";speakHiragana("にゃーー",null,done);}
+  else{cat.bubble.textContent="";speakHiragana(disp,soFar=>{cat.bubble.textContent=soFar;},done);}
 }
 function openWordsEditor(){
   const w=getMyWords();for(let i=0;i<5;i++){const inp=$("crWord"+i);if(inp)inp.value=w[i]||"";}
@@ -4895,7 +4882,7 @@ function renderHillPage(){
     }
     fig.querySelector(".catPose").style.animationDelay=(-Math.random()*4.6).toFixed(2)+"s";
     fig.style.cursor="pointer";
-    fig.addEventListener("click",e=>{e.stopPropagation();const say=(comment&&comment.trim())?comment:(po.thanks||"ありがとう");try{catSpeakBubble(el,say);}catch(_){}});   /* 猫タップでコメント読み上げ */
+    fig.addEventListener("click",e=>{e.stopPropagation();try{catSpeakBubble(el,comment||"");}catch(_){}});   /* 猫タップでコメント読み上げ（空ならにゃーー） */
     const rot=Math.max(-7,Math.min(7,(i-center)*2.6));
     fig.style.transform=`rotate(${rot}deg)`;
     cont.appendChild(el);
@@ -5883,8 +5870,10 @@ async function renderAutoCard(a,cardNo){
   for(let i=0;i<a.length&&i<9;i++){
     const cx=AUTO_SLOTS[i][0],cy=AUTO_SLOTS[i][1];
     try{const st=await loadImg(a[i].src);const s=AUTO_CR*1.9;ctx.drawImage(st,cx-s/2,cy-s/2,s,s);}catch(_){}
-    ctx.fillStyle="#2f7fb0";ctx.font="bold 42px 'Yomogi','Kosugi Maru',sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";
-    ctx.fillText(a[i].date,cx,cy+AUTO_CR+36);
+    ctx.fillStyle="#eaf6ff";ctx.font="bold 46px 'Yomogi','Kosugi Maru',sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";
+    ctx.shadowColor="rgba(18,45,78,.55)";ctx.shadowBlur=7;ctx.shadowOffsetY=1;   /* 背景の青に埋もれないよう明るい色＋影 */
+    ctx.fillText(a[i].date,cx,cy+AUTO_CR+38);
+    ctx.shadowColor="transparent";ctx.shadowBlur=0;ctx.shadowOffsetY=0;
   }
   if(cardNo){   /* 何枚目か（左下） */
     ctx.fillStyle="rgba(255,255,255,.92)";ctx.font="bold 44px 'Yomogi','Kosugi Maru',sans-serif";ctx.textAlign="left";ctx.textBaseline="alphabetic";
@@ -5988,7 +5977,7 @@ function tsResetPost(){
 async function tsDoPost(){
   if(postedToday())return;
   const b=$("tsPostBtn");if(b)b.disabled=true;
-  const c=($("tsComment").value||"").trim();
+  const c=hiraOnly(($("tsComment").value||"").trim());
   try{
     await postToday($("tsAnon").checked,c);
     markPosted();refreshSaveBtn();refreshGroundPost();
@@ -9862,7 +9851,7 @@ $("tabRequests").addEventListener("click",()=>{playClick();switchFriendTab("requ
 $("recClose").addEventListener("click",()=>{playClick();closeRecord();});
 $("tsLoadInput").addEventListener("change",e=>{const f=e.target.files&&e.target.files[0];tsLoadPrevious(f);e.target.value="";});
 $("tsDownloadBtn").addEventListener("click",()=>{playClick();if(_autoCardUrl)dlCard(_autoCardUrl,"radio-card.png");});
-$("tsComment").addEventListener("input",tsUpdatePreview);
+$("tsComment").addEventListener("input",()=>{const c=$("tsComment").selectionStart;$("tsComment").value=hiraOnly($("tsComment").value);try{$("tsComment").setSelectionRange(c,c);}catch(_){}tsUpdatePreview();});
 $("tsAnon").addEventListener("change",tsUpdatePreview);
 $("tsPostBtn").addEventListener("click",()=>{playClick();tsDoPost();});
 $("tsNextBtn").addEventListener("click",()=>{playClick();taisoNext();});

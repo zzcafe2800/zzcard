@@ -908,12 +908,14 @@ button,input{font:inherit;}
 #clubClose svg{width:20px;height:20px;}
 #clubClose:active{transform:translateY(-50%) scale(.92);}
 #clubTitle{font-size:19px;font-weight:900;color:#4d7790;letter-spacing:.06em;}
-#clubJoinBtn{position:absolute;right:14px;top:50%;transform:translateY(-50%);border:none;border-radius:999px;
-  padding:9px 20px;font-size:13px;font-weight:900;cursor:pointer;
+#clubJoinWrap{flex:0 0 auto;display:flex;justify-content:center;padding:2px 16px 10px;}
+#clubJoinBtn{border:none;border-radius:999px;
+  padding:10px 30px;font-size:14px;font-weight:900;cursor:pointer;
   background:linear-gradient(135deg,#ffc46b,#ff9e4d);color:#fff;box-shadow:0 6px 14px rgba(255,150,80,.35);transition:transform .15s;}
-#clubJoinBtn:active{transform:translateY(-50%) scale(.93);}
+#clubJoinBtn:active{transform:scale(.93);}
 #clubJoinBtn.joined{background:rgba(255,255,255,.82);color:#a9becb;box-shadow:0 4px 12px rgba(111,205,255,.14);}
-#clubScroll{flex:1 1 auto;overflow-y:auto;padding:8px 16px 26px;}
+#clubScroll{flex:1 1 auto;overflow-y:auto;padding:8px 16px 26px;display:flex;flex-direction:column;align-items:center;}
+#clubScroll>*{width:100%;max-width:480px;}
 /* 今日の1番（早起き） */
 #earlyBird{margin:2px 0 16px;}
 #earlyBird[hidden]{display:none;}
@@ -922,6 +924,10 @@ button,input{font:inherit;}
 .ebCard::before{content:"";position:absolute;top:-34px;right:-24px;width:120px;height:120px;border-radius:50%;
   background:radial-gradient(circle,rgba(255,255,255,.6),rgba(255,255,255,0) 70%);}
 .ebCrown{position:absolute;top:13px;right:16px;width:26px;height:26px;color:#f3a83a;opacity:.9;}
+.ebCard.ebTarget{background:linear-gradient(135deg,#e4f3ff,#cfe9ff);box-shadow:0 12px 26px rgba(80,160,220,.24);}
+.ebCard.ebTarget .ebCrown{color:#4f9fca;}
+.ebCard.ebTarget .ebLabel{color:#3f88b0;}
+.ebCard+.ebCard{margin-top:9px;}
 .ebAvatar{flex:0 0 auto;width:60px;height:60px;border-radius:50%;overflow:hidden;background:rgba(255,255,255,.7);
   display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(220,150,60,.25);}
 .ebAvatar svg{width:100%;height:100%;}
@@ -988,8 +994,8 @@ button,input{font:inherit;}
   cursor:pointer;background:rgba(255,255,255,.7);color:#7aa5bc;position:relative;transition:background .15s,color .15s;}
 .friendTab.on{background:linear-gradient(135deg,#8fdcff,#63ccff);color:#fff;border-color:transparent;box-shadow:0 5px 13px rgba(99,204,255,.3);}
 .friendTab .tabCoin{background:linear-gradient(135deg,#ff8f5e,#ff5a7a);}
-#friendListBox,#requestListBox{flex:1 1 auto;overflow-y:auto;padding:4px 16px 26px;display:flex;flex-direction:column;gap:9px;}
-.frRow{display:flex;align-items:center;gap:11px;width:100%;border:1px solid rgba(143,220,255,.3);
+#friendListBox,#requestListBox{flex:1 1 auto;overflow-y:auto;padding:4px 16px 26px;display:flex;flex-direction:column;align-items:center;gap:9px;}
+.frRow{display:flex;align-items:center;gap:11px;width:100%;max-width:480px;border:1px solid rgba(143,220,255,.3);
   background:rgba(255,255,255,.74);border-radius:18px;padding:10px 14px;box-shadow:0 5px 14px rgba(111,205,255,.12);}
 .frAvatar{flex:0 0 auto;width:46px;height:46px;border-radius:50%;overflow:hidden;background:rgba(143,220,255,.15);
   display:flex;align-items:center;justify-content:center;}
@@ -1385,6 +1391,13 @@ button,input{font:inherit;}
 #gachaRevealInner svg{width:100%;height:100%;}
 @keyframes revealPop{0%{transform:scale(.2) rotate(-20deg);opacity:0;}60%{transform:scale(1.12) rotate(6deg);opacity:1;}100%{transform:scale(1) rotate(0);}}
 #gachaRevealName{font-family:"Yomogi","Kosugi Maru",cursive;font-size:22px;font-weight:800;color:#e0608f;animation:revealPop .6s .1s both;}
+.grBuddy{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:12px;padding:10px 14px;background:rgba(255,255,255,.9);border:2px solid #ffe0ec;border-radius:16px;box-shadow:0 6px 16px rgba(224,96,143,.14);animation:revealPop .5s .3s both;}
+.grBuddyCat{width:44px;height:44px;flex:0 0 auto;display:inline-flex;}
+.grBuddyCat svg{width:100%;height:100%;}
+.grBuddyTxt{text-align:left;}
+.grBuddyName{font-size:12px;font-weight:800;color:#7aa0b3;}
+.grBuddyGift{font-size:13px;font-weight:800;color:#e0608f;margin-top:3px;line-height:1.4;}
+.grBuddyGift b{color:#d1477f;}
 #gachaRevealOk{border:none;border-radius:999px;padding:12px 36px;font-family:inherit;font-size:15px;font-weight:800;cursor:pointer;
   color:#fff;background:linear-gradient(135deg,#7fd8b0,#5ec79a);box-shadow:0 8px 20px rgba(94,199,154,.4);}
 .gachaSparkle{position:fixed;font-size:26px;pointer-events:none;z-index:2710;animation:gSpark 1s ease-out forwards;}
@@ -1639,6 +1652,21 @@ button,input{font:inherit;}
   background:rgba(143,220,255,.13);color:#7aa0b3;transition:transform .15s;}
 .mcMini:active{transform:scale(.96);}
 #mcNone{background:rgba(180,195,205,.16);color:#8a9aa5;}
+#autoStampRow{display:flex;align-items:center;justify-content:center;gap:8px;font-size:12.5px;font-weight:800;color:#7aa0b3;cursor:pointer;margin-top:-2px;}
+#autoStampRow input{width:17px;height:17px;accent-color:#63ccff;}
+#autoPreview{position:fixed;inset:0;z-index:2620;display:none;align-items:center;justify-content:center;padding:18px;
+  background:rgba(120,150,170,.4);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);}
+#autoPreview.visible{display:flex;}
+#autoPreviewBox{background:#fff;border-radius:24px;padding:18px 18px 16px;box-shadow:0 18px 44px rgba(60,100,130,.3);
+  width:min(560px,94vw);display:flex;flex-direction:column;align-items:center;gap:14px;}
+#autoPreviewTitle{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:16px;font-weight:900;color:#4d7790;}
+#autoPreviewImg{width:100%;border-radius:14px;box-shadow:0 6px 16px rgba(0,0,0,.12);background:#eaf3f8;aspect-ratio:1920/1200;object-fit:contain;}
+#autoPreviewBtns{display:flex;gap:10px;width:100%;}
+#autoPreviewBtns button{flex:1;border:none;border-radius:999px;padding:13px 6px;font-size:14px;font-weight:900;cursor:pointer;transition:transform .15s;}
+#autoPreviewBtns button:active{transform:scale(.95);}
+#autoSaveBtn{background:linear-gradient(135deg,#8fd0ef,#6bb8e0);color:#fff;}
+#autoPostBtn{background:linear-gradient(135deg,#ffc46b,#ff9e4d);color:#fff;}
+#autoDoneBtn{background:rgba(143,220,255,.16);color:#7aa0b3;}
 #postConfirmBtns{display:flex;gap:10px;}
 #postYes,#postNo{flex:1;height:48px;border:none;border-radius:999px;cursor:pointer;font-size:15px;font-weight:700;}
 #postYes{background:linear-gradient(135deg,#7fd8b0,#5ec79a);color:#fff;box-shadow:0 8px 20px rgba(94,199,154,.34);}
@@ -1991,10 +2019,24 @@ button,input{font:inherit;}
         <span class="mcName">投稿</span>
       </button>
     </div>
+    <label id="autoStampRow"><input type="checkbox" id="autoStampToggle"/> スタンプを自動で押す</label>
     <div id="modeChoiceDiv"><span>そのほか</span></div>
     <div id="modeChoiceRow2">
       <button class="mcMini" id="mcBoth" type="button">両方する</button>
       <button class="mcMini" id="mcNone" type="button">どれもしない</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 自動スタンプのプレビュー ===================== -->
+<div id="autoPreview">
+  <div id="autoPreviewBox">
+    <div id="autoPreviewTitle">きょうのカード</div>
+    <img id="autoPreviewImg" alt="ラジオ体操カード"/>
+    <div id="autoPreviewBtns">
+      <button id="autoSaveBtn" type="button">保存</button>
+      <button id="autoPostBtn" type="button">投稿</button>
+      <button id="autoDoneBtn" type="button">終わる</button>
     </div>
   </div>
 </div>
@@ -2271,8 +2313,8 @@ button,input{font:inherit;}
   <div id="clubHead">
     <button id="clubClose" type="button" aria-label="もどる"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 L8 12 L15 19"/></svg></button>
     <div id="clubTitle">ラジオ体操部</div>
-    <button id="clubJoinBtn" type="button">入部</button>
   </div>
+  <div id="clubJoinWrap"><button id="clubJoinBtn" type="button">入部</button></div>
   <div id="clubScroll">
     <div id="earlyBird" hidden></div>
     <div id="clubCount"></div>
@@ -2507,19 +2549,37 @@ async function loadEarlyBird(){
     const snap=await get(ref(db,"posts"));
     if(!snap.exists())return;
     const today=jstKey();
-    let best=null;
+    let best=null, near=null, nearDiff=Infinity;
     Object.values(snap.val()).forEach(v=>{
       if(!v||v.date!==today||!v.createdAt)return;
       if(!best||v.createdAt<best.createdAt)best=v;
+      if(Number.isFinite(v.wakeHour)){
+        const d=new Date(v.createdAt);
+        const actual=d.getHours()+d.getMinutes()/60;
+        const target=v.wakeHour+((v.wakeMin||0)/60);
+        const diff=Math.abs(actual-target);
+        if(diff<nearDiff){nearDiff=diff;near=v;}
+      }
     });
-    if(!best)return;
-    const d=new Date(best.createdAt);
-    const hm=d.getHours()+":"+String(d.getMinutes()).padStart(2,"0");
-    box.innerHTML='<div class="ebCard">'+
-      '<svg class="ebCrown" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18 L3.4 8.4 L8.4 12 L12 5.4 L15.6 12 L20.6 8.4 L21 18 Z"/><rect x="3" y="18.4" width="18" height="2.6" rx="1"/></svg>'+
-      '<span class="ebAvatar">'+catFaceSvg(best.catBody||"#1c1c1c",best.color||"#8fdcff",null)+'</span>'+
-      '<span class="ebInfo"><span class="ebLabel">今日の1番</span><span class="ebName">'+escHtml(best.name||"匿名さん")+'</span><span class="ebTime">'+hm+' 起き</span></span></div>';
-    box.hidden=false;
+    const crown='<svg class="ebCrown" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18 L3.4 8.4 L8.4 12 L12 5.4 L15.6 12 L20.6 8.4 L21 18 Z"/><rect x="3" y="18.4" width="18" height="2.6" rx="1"/></svg>';
+    const target='<svg class="ebCrown" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/></svg>';
+    let html="";
+    if(best){
+      const d=new Date(best.createdAt);
+      const hm=d.getHours()+":"+String(d.getMinutes()).padStart(2,"0");
+      html+='<div class="ebCard">'+crown+
+        '<span class="ebAvatar">'+catFaceSvg(best.catBody||"#1c1c1c",best.color||"#8fdcff",null)+'</span>'+
+        '<span class="ebInfo"><span class="ebLabel">今日の1番</span><span class="ebName">'+escHtml(best.name||"匿名さん")+'</span><span class="ebTime">'+hm+' 起き</span></span></div>';
+    }
+    if(near){
+      const dm=Math.round(nearDiff*60);
+      const near_hm=(()=>{const d=new Date(near.createdAt);return d.getHours()+":"+String(d.getMinutes()).padStart(2,"0");})();
+      html+='<div class="ebCard ebTarget">'+target+
+        '<span class="ebAvatar">'+catFaceSvg(near.catBody||"#1c1c1c",near.color||"#8fdcff",null)+'</span>'+
+        '<span class="ebInfo"><span class="ebLabel">目標賞</span><span class="ebName">'+escHtml(near.name||"匿名さん")+'</span><span class="ebTime">'+(dm<=0?"目標ぴったり":"目標まで "+dm+"分")+'</span></span></div>';
+    }
+    if(!html)return;
+    box.innerHTML=html;box.hidden=false;
   }catch(e){console.warn("earlybird:",e&&e.message);}
 }
 async function loadRoster(){
@@ -2571,7 +2631,7 @@ async function loadRoster(){
         if(_friendSet.has(m.uid)){act.textContent="フレンド";act.classList.add("isfriend");}
         else if(sentSet().has(m.uid)){act.textContent="申請中";act.classList.add("pending");}
         else{
-          act.textContent="申請";
+          act.textContent="フレンド申請";
           act.addEventListener("click",async e=>{
             e.stopPropagation();try{playClick();}catch(_){}
             act.disabled=true;
@@ -2672,9 +2732,19 @@ async function loadFriends(){
     if(!list.length){box.innerHTML='<div class="ppListMsg">まだフレンドがいないよ。<br>部員一覧から申請してみよう</div>';return;}
     box.innerHTML="";
     list.forEach(f=>{
-      const row=document.createElement("div");row.className="frRow";
+      const row=document.createElement("div");row.className="frRow";row.style.cursor="pointer";
       row.innerHTML='<span class="frAvatar">'+catFaceSvg(f.catBody||"#1c1c1c",f.color||"#8fdcff",null)+'</span>'+
         '<span class="frName">'+escHtml(f.name||"匿名さん")+'</span>';
+      row.addEventListener("click",async()=>{
+        try{playClick();}catch(_){}
+        try{
+          const db2=await getDB();if(!db2){showMemberProfile(f);return;}
+          const{ref,get}=await import(FB_DB);
+          const s=await get(ref(db2,"members/"+f.uid));
+          if(s.exists())showMemberProfile(Object.assign({uid:f.uid},s.val()));
+          else showMemberProfile(f);
+        }catch(_){ showMemberProfile(f); }
+      });
       box.appendChild(row);
     });
   }catch(e){console.warn("friends:",e&&e.message);box.innerHTML='<div class="ppListMsg">よみこみに失敗したみたい</div>';}
@@ -2686,9 +2756,10 @@ async function loadRequests(){
   if(!db){box.innerHTML='<div class="ppListMsg">つながらなかったみたい</div>';return;}
   try{
     const{ref,get}=await import(FB_DB);
-    const snap=await get(ref(db,"requests/"+getUid()));
+    const[snap,fsnap]=await Promise.all([get(ref(db,"requests/"+getUid())),get(ref(db,"friends/"+getUid()))]);
     const data=snap.exists()?snap.val():{};
-    const list=Object.entries(data).map(([uid,r])=>Object.assign({uid},r||{})).sort((a,b)=>(b.at||0)-(a.at||0));
+    const fset=new Set(fsnap.exists()?Object.keys(fsnap.val()):[]);
+    const list=Object.entries(data).map(([uid,r])=>Object.assign({uid},r||{})).filter(r=>!fset.has(r.uid)).sort((a,b)=>(b.at||0)-(a.at||0));
     if(!list.length){box.innerHTML='<div class="ppListMsg">今は届いているリクエストがないよ</div>';return;}
     box.innerHTML="";
     list.forEach(r=>{
@@ -2901,7 +2972,7 @@ async function postToday(anon,comment){
     const{ref,set}=await import(FB_DB);
     const date=jstKey();
     await set(ref(db,"posts/"+getUid()+"_"+date),{
-      uid:getUid(),name:anon?"匿名さん":(p.name||"匿名さん"),color:p.color||"#8fdcff",catBody:p.catBody||"#1c1c1c",date,stamp,createdAt:Date.now(),wakeHour:Number.isFinite(p.wakeHour)?p.wakeHour:null,streak:calcStreak().current,comment:(comment||"").slice(0,30),pose:getEquippedPose()
+      uid:getUid(),name:anon?"匿名さん":(p.name||"匿名さん"),color:p.color||"#8fdcff",catBody:p.catBody||"#1c1c1c",date,stamp,createdAt:Date.now(),wakeHour:Number.isFinite(p.wakeHour)?p.wakeHour:null,wakeMin:Number.isFinite(p.wakeMin)?p.wakeMin:0,streak:calcStreak().current,comment:(comment||"").slice(0,30),pose:getEquippedPose()
     });
   }catch(e){console.warn("post failed",e);}
 }
@@ -5442,11 +5513,51 @@ function showDailyIntro(onDone){
   },560);
   setTimeout(finish,2150);
 }
+/* ===== スタンプ自動化（テンプレ1920×1200固定・5×2の円・9マス。Taiso Pro枠は使わない） ===== */
+const AUTO_STAMP_KEY="radio_auto_stamp";     /* 自動モード ON/OFF */
+const AUTO_CARD_KEY="radio_auto_card";       /* 押したスタンプ配列 [{src,date}] */
+const AUTO_CW=1920,AUTO_CH=1200,AUTO_CR=156;
+const AUTO_SLOTS=[[240,426],[602,426],[965,426],[1326,426],[1688,426],[240,794],[602,794],[965,794],[1326,794]];
+function isAutoStamp(){return localStorage.getItem(AUTO_STAMP_KEY)==="1";}
+function setAutoStamp(v){try{localStorage.setItem(AUTO_STAMP_KEY,v?"1":"0");}catch(_){}}
+function getAutoCard(){try{const a=JSON.parse(localStorage.getItem(AUTO_CARD_KEY)||"[]");return Array.isArray(a)?a:[];}catch(_){return[];}}
+function setAutoCard(a){try{localStorage.setItem(AUTO_CARD_KEY,JSON.stringify(a));}catch(_){}}
+function autoAddStamp(src,dateLabel){
+  let a=getAutoCard();
+  if(a.length&&a[a.length-1].date===dateLabel)return a;   /* きょうは もう押してある */
+  if(a.length>=9)a=[];                                    /* 9マス埋まったら新しいカードへ */
+  a.push({src,date:dateLabel});setAutoCard(a);return a;
+}
+async function renderAutoCard(a){
+  const cv=document.createElement("canvas");cv.width=AUTO_CW;cv.height=AUTO_CH;
+  const ctx=cv.getContext("2d");
+  try{const bg=await loadImg(RAND_CARD);ctx.drawImage(bg,0,0,AUTO_CW,AUTO_CH);}catch(_){ctx.fillStyle="#4a86a8";ctx.fillRect(0,0,AUTO_CW,AUTO_CH);}
+  for(let i=0;i<a.length&&i<9;i++){
+    const cx=AUTO_SLOTS[i][0],cy=AUTO_SLOTS[i][1];
+    try{const st=await loadImg(a[i].src);const s=AUTO_CR*1.9;ctx.drawImage(st,cx-s/2,cy-s/2,s,s);}catch(_){}
+    ctx.fillStyle="#2f7fb0";ctx.font="bold 42px 'Yomogi','Kosugi Maru',sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";
+    ctx.fillText(a[i].date,cx,cy+AUTO_CR+36);
+  }
+  return cv.toDataURL("image/png");
+}
+let _autoCardUrl="";
+async function autoStampFlow(){
+  const src=stampPath;
+  if(!src){ openCardMenu(); return; }   /* 念のため手動へフォールバック */
+  try{markTodayDone();}catch(_){}
+  const p=jstKey().split("-"),dateLabel=(+p[1])+"/"+(+p[2]);
+  const a=autoAddStamp(src,dateLabel);
+  try{refreshHome();}catch(_){}
+  let url="";try{url=await renderAutoCard(a);}catch(_){}
+  _autoCardUrl=url;showAutoPreview(url);
+}
+function showAutoPreview(url){const img=$("autoPreviewImg");if(img)img.src=url||"";$("autoPreview").classList.add("visible");}
+function afterStampReady(){ if(isAutoStamp())autoStampFlow(); else openCardMenu(); }
 function startRandomMode(){
   _startedOnce=true;   /* このセッションで一度始めた（次回から確認カードを省略） */
   showModeChoice();    /* 「スタンプラリー」か「投稿」を選ぶ（どっちでもOK） */
 }
-function showModeChoice(){ $("modeChoice").classList.add("visible"); }
+function showModeChoice(){ try{const t=$("autoStampToggle");if(t)t.checked=isAutoStamp();}catch(_){} $("modeChoice").classList.add("visible"); }
 function hideModeChoice(){ $("modeChoice").classList.remove("visible"); }
 function chooseRally(){ hideModeChoice(); startRally(); }
 function choosePost(){ hideModeChoice(); doPostOnly(); }
@@ -5473,7 +5584,7 @@ function startRally(){
     /* 二回目以降：ルーレット演出をスキップして、そのままカード準備へ（スタンプは固定） */
     stampPath=decided;ghostImg.src=decided;
     refreshTodayPreview();
-    openCardMenu();
+    afterStampReady();
     return;
   }
   /* 初回：短い演出 → ルーレット（目標から離れるほど「はずれ」が増える。はずれは保存せず再挑戦可） */
@@ -5488,13 +5599,13 @@ function startRally(){
         try{ gsrc=await toGrayDataURL(gbase); }catch(_){ gsrc=gbase; }
         stampPath=gsrc; ghostImg.src=gsrc;
         refreshTodayPreview();
-        openCardMenu();
+        afterStampReady();
         return;
       }
       assignTodayStamp(idx);   /* 初回だけ保存 */
       stampPath=picked;ghostImg.src=picked;
       refreshTodayPreview();
-      openCardMenu();
+      afterStampReady();
     },mFrac);
   });
 }
@@ -8180,6 +8291,21 @@ function serverNow(){return Date.now()+_srvOffset;}
 
 function getOutingLocal(){try{const v=JSON.parse(localStorage.getItem(OUTING_KEY)||"null");return(v&&v.startAt)?v:null;}catch(e){return null;}}
 function setOutingLocal(st){if(st)localStorage.setItem(OUTING_KEY,JSON.stringify(st));else localStorage.removeItem(OUTING_KEY);}
+/* おでかけの相方（フレンド）: 送り出し時に1人ランダムで決めて、帰宅時に2匹＆おすそわけ */
+const OUTING_BUDDY_KEY="radio_outing_buddy";
+function getOutingBuddy(){try{return JSON.parse(localStorage.getItem(OUTING_BUDDY_KEY)||"null");}catch(_){return null;}}
+function setOutingBuddy(b){try{if(b)localStorage.setItem(OUTING_BUDDY_KEY,JSON.stringify(b));else localStorage.removeItem(OUTING_BUDDY_KEY);}catch(_){}}
+async function pickOutingBuddy(){
+  try{
+    const db=await getDB();if(!db)return null;
+    const{ref,get}=await import(FB_DB);
+    const snap=await get(ref(db,"friends/"+getUid()));
+    if(!snap.exists())return null;
+    const v=snap.val(),keys=Object.keys(v||{});if(!keys.length)return null;
+    const k=keys[Math.floor(Math.random()*keys.length)],f=v[k]||{};
+    return{uid:k,name:f.name||"フレンド",catBody:f.catBody||"#1c1c1c",color:f.color||"#8fdcff"};
+  }catch(_){return null;}
+}
 function outingPhase(){const st=getOutingLocal();if(!st)return"none";const dur=st.dur||outingDurMs();return(st.startAt+dur-serverNow()>0)?"away":"back";}
 function outingRemainingMs(){const st=getOutingLocal();if(!st)return 0;const dur=st.dur||outingDurMs();return Math.max(0,st.startAt+dur-serverNow());}
 function fmtRemain(ms){const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000);return h>0?`${h}時間${m}分`:`${m}分`;}
@@ -8261,8 +8387,9 @@ function firstMeetRevealGifts(picks,nm){
   $("gachaReveal").classList.add("show");
   refreshCostumeEverywhere();
 }
-function outingRevealGift(pick,headText){
+function outingRevealGift(pick,headText,buddy,bonus){
   const nm=(typeof catName==="function"&&catName())?catName():"ねこ";
+  if(buddy&&!headText)headText=`${escHtml(buddy.name)}ちゃんの ねこと いっしょに かえってきたよ！`;
   const star=_applyRareFx(pick);
   const rareTag=star>=3?`<div class="grRareTag">\u2728 レア！ \u2728</div>`:(star>=2?`<div class="grRareTag r2">めずらしい！</div>`:"");
   const head=headText?`<div style="font-size:13px;font-weight:800;color:#6f9fb6;margin-bottom:3px;">${headText}</div>`:`<div style="font-size:13px;font-weight:800;color:#6f9fb6;margin-bottom:3px;">${escHtml(nm)}ちゃんが もって かえってきたよ！</div>`;
@@ -8282,6 +8409,13 @@ function outingRevealGift(pick,headText){
     $("gachaRevealName").innerHTML=head+escHtml(pick.name);
   }
   const nmEl=$("gachaRevealName");if(nmEl&&rareTag)nmEl.innerHTML=rareTag+nmEl.innerHTML;
+  if(buddy){   /* 相方の猫＋おすそわけ */
+    const bcat=catFaceSvg(buddy.catBody||"#1c1c1c",buddy.color||"#8fdcff",null);
+    const bn=escHtml(buddy.name||"フレンド");
+    const gift=bonus?`<div class="grBuddyGift">${bn}ちゃんから<br><b>${escHtml(bonus.name)}</b> を おすそわけ！</div>`:"";
+    const block=`<div class="grBuddy"><span class="grBuddyCat">${bcat}</span><div class="grBuddyTxt"><div class="grBuddyName">${bn}ちゃんと ふたりで おでかけ</div>${gift}</div></div>`;
+    const el=$("gachaRevealName");if(el)el.innerHTML+=block;
+  }
   try{
     if(star>=3){ playRareFanfare(); gachaSparkle(); setTimeout(()=>{try{gachaSparkle();}catch(_){}} ,200); setTimeout(()=>{try{gachaSparkle();}catch(_){}} ,420); if(navigator.vibrate)navigator.vibrate([0,40,60,45,60,50]); }
     else if(star>=2){ playGachaWinSound(); gachaSparkle(); if(navigator.vibrate)navigator.vibrate(30); }
@@ -8297,7 +8431,10 @@ async function outingClaim(pick){
   grantOutingPick(pick);          /* 先に確実に付与（ガチャアイテムをもらえる） */
   setOutingLocal(null);
   try{const db=await getDB();if(db){const{ref,remove}=await import(FB_DB);await remove(ref(db,"outings/"+getUid()));}}catch(_){}
-  outingRevealGift(pick);
+  const buddy=getOutingBuddy();
+  let bonus=null;
+  if(buddy){ bonus=outingPick(); grantOutingPick(bonus); setOutingBuddy(null); }   /* 相方からのおすそわけ */
+  outingRevealGift(pick,null,buddy,bonus);
   refreshOutingUI();
   if($("catRoom").classList.contains("visible"))renderRoom();
 }
@@ -8470,6 +8607,7 @@ async function doSendOff(){
     const special=_firstOutingSpecial;
     if(special){ _firstOutingSpecial=false; }
     await startOuting(msUntilReturn());
+    try{ const _bud=await pickOutingBuddy(); setOutingBuddy(_bud); }catch(_){}   /* フレンドから相方を1人 */
     refreshOutingUI();
     if($("catRoom").classList.contains("visible"))renderRoom();
     startOutingTick();
@@ -9211,6 +9349,10 @@ $("mcRally").addEventListener("click",()=>{playClick();chooseRally();});
 $("mcPost").addEventListener("click",()=>{playClick();choosePost();});
 $("mcBoth").addEventListener("click",()=>{playClick();chooseBoth();});
 $("mcNone").addEventListener("click",()=>{playClick();chooseNone();});
+$("autoStampToggle").addEventListener("change",e=>{setAutoStamp(e.target.checked);});
+$("autoSaveBtn").addEventListener("click",()=>{playClick();if(_autoCardUrl)dlCard(_autoCardUrl,"radio-card.png");});
+$("autoPostBtn").addEventListener("click",()=>{playClick();$("autoPreview").classList.remove("visible");showPostConfirm(false);});
+$("autoDoneBtn").addEventListener("click",()=>{playClick();$("autoPreview").classList.remove("visible");try{showSelect();}catch(_){}});
 $("modeChoiceClose").addEventListener("click",()=>{playClick();hideModeChoice();});
 $("modeChoice").addEventListener("click",e=>{if(e.target===$("modeChoice"))hideModeChoice();});
 /* 横幅が変わったら丘の猫を並べ直す（PCでウィンドウをリサイズしたとき） */
@@ -9222,6 +9364,7 @@ window.addEventListener("resize",()=>{
   },250);
 });
 try{refreshFriendBadge();}catch(_){}
+setInterval(()=>{try{refreshFriendBadge();}catch(_){}},45000);   /* リクエストが来たら数字を反映 */
 $("nyanShot").addEventListener("click",()=>{playClick();if(!_photoMode)enterPhotoMode();});
 $("catShutter").addEventListener("click",()=>{playClick();nyanCapture();exitPhotoMode();});
 $("recentLabel").addEventListener("click",()=>{

@@ -2616,7 +2616,7 @@ function refreshClubJoinBtn(){
 }
 /* ===== ひらがな読み上げ（録音した50音を1文字ずつ自然につなぐ） =====
    音声ファイル：voiceフォルダに あ.wav〜ん.wav（普通46）と が.wav〜ぽ.wav（濁音25）を置く */
-const VOICE_DIR="";   /* wavは radio.html と同じ場所（リポジトリ直下）に置いてある */
+const VOICE_DIR="https://raw.githubusercontent.com/zzcafe2800/zzcard/main/";   /* wavを確実に配信できる場所から直接読む（CORS許可済み・例：あ.wav） */
 const _voiceBuf={};
 const _voiceSmall={"ぁ":"あ","ぃ":"い","ぅ":"う","ぇ":"え","ぉ":"お","ゃ":"や","ゅ":"ゆ","ょ":"よ","ゎ":"わ","ゕ":"か","ゖ":"け"};
 function tokenizeKana(text){

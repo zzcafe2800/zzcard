@@ -181,9 +181,10 @@ button,input{font:inherit;}
 .fabItem .fl{font-size:9.5px;font-weight:800;color:#4d7790;background:rgba(255,255,255,.8);padding:1px 6px;border-radius:999px;white-space:nowrap;}
 .sky-night .fabItem .fl,.sky-evening .fabItem .fl{color:#eef2ff;background:rgba(70,82,130,.6);}
 #fabWrap.open .fabItem{opacity:1;pointer-events:auto;}
-#fabWrap.open #fabDex{transform:translate(-96px,-58px) scale(1);}
-#fabWrap.open #fabRoom{transform:translate(0,-112px) scale(1);}
-#fabWrap.open #fabCloset{transform:translate(96px,-58px) scale(1);}
+#fabWrap.open #fabDex{transform:translate(-104px,-49px) scale(1);}
+#fabWrap.open #fabRoom{transform:translate(-66px,-97px) scale(1);}
+#fabWrap.open #fabCloset{transform:translate(66px,-97px) scale(1);}
+#fabWrap.open #fabRecord{transform:translate(104px,-49px) scale(1);}
 #fabDex{transition-delay:.02s;}#fabRoom{transition-delay:.07s;}#fabCloset{transition-delay:.12s;}
 #fabWrap .fabItem #bagBadge{position:absolute;top:-2px;right:2px;}
 #fabBackdrop{position:fixed;inset:0;z-index:105;background:transparent;display:none;}
@@ -229,6 +230,10 @@ button,input{font:inherit;}
 #recentLabel:active{transform:scale(.94);}
 #recentLabel .recentCat{width:22px;height:22px;}
 .sky-night #recentLabel{background:rgba(70,82,130,.62);color:#eef2ff;}
+#recentPostCount{position:absolute;left:18px;bottom:52px;z-index:103;font-size:11px;font-weight:700;
+  color:#5c93ad;opacity:.5;pointer-events:none;white-space:nowrap;text-shadow:0 1px 3px rgba(255,255,255,.6);}
+#recentPostCount:empty{display:none;}
+.sky-night #recentPostCount{color:#eef2ff;text-shadow:0 1px 3px rgba(0,0,0,.4);}
 #selectInner{pointer-events:none;}
 #selectInner .modeCard{pointer-events:auto;}
 .hillBack{width:180vw;height:280px;bottom:-160px;background:#c7e3b8;}
@@ -409,6 +414,42 @@ button,input{font:inherit;}
 .rmReturn24 .lab{position:absolute;bottom:calc(100% + 5px);left:50%;transform:translateX(-50%);font-size:11px;font-weight:800;color:#fff;background:#2fb47a;padding:3px 10px;border-radius:999px;box-shadow:0 3px 10px rgba(47,180,122,.45);white-space:nowrap;}
 .rmReturn24 .lab::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#2fb47a;}
 .rmReturn24[hidden]{display:none;}
+.rmDone24{position:absolute;top:-3px;bottom:-3px;transform:translateX(-50%);z-index:5;}
+.rmDone24 .bar{position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);width:5px;border-radius:3px;background:#ff9e4d;box-shadow:0 0 0 2px #fff,0 0 8px rgba(255,158,77,.6);}
+.rmDone24 .lab{position:absolute;top:calc(100% + 6px);left:50%;transform:translateX(-50%);font-size:10.5px;font-weight:800;color:#fff;background:#ff9e4d;padding:2px 9px;border-radius:999px;box-shadow:0 3px 10px rgba(255,158,77,.45);white-space:nowrap;z-index:2;}
+.rmDone24 .lab::after{content:"";position:absolute;bottom:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-bottom-color:#ff9e4d;}
+#doneHint{display:flex;align-items:center;justify-content:center;gap:5px;font-size:12px;font-weight:800;color:#34a672;letter-spacing:.03em;margin:0 0 5px;pointer-events:none;}
+#doneHint svg{width:14px;height:14px;flex:0 0 auto;}
+#doneHint[hidden]{display:none;}
+.rmDone24[hidden]{display:none;}
+/* きょう初回の 体操スタート演出：ラジオ体操カード（昨日/今日/明日） */
+#dailyIntro{position:fixed;inset:0;z-index:160;display:none;align-items:center;justify-content:center;
+  background:linear-gradient(180deg,#bfe6ff 0%,#dff0ff 45%,#fff1e2 100%);opacity:0;transition:opacity .3s;}
+#dailyIntro.show{display:flex;opacity:1;}
+#diCard{background:#fffdf7;border-radius:24px;padding:22px 20px 18px;box-shadow:0 18px 44px rgba(120,160,190,.28);
+  display:flex;flex-direction:column;align-items:center;gap:14px;width:min(340px,88vw);
+  background-image:repeating-linear-gradient(0deg,rgba(143,220,255,.05) 0 23px,rgba(143,220,255,.13) 23px 24px);}
+#diHead{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:16px;font-weight:900;color:#5c93ad;letter-spacing:.06em;}
+#diRow{display:flex;gap:12px;align-items:flex-start;}
+.diDay{display:flex;flex-direction:column;align-items:center;gap:6px;}
+.diCap{font-size:11px;font-weight:800;color:#9db6c6;}
+.diCapT{color:#ff8f5e;}
+.diDate{font-size:12px;font-weight:900;color:#7aa5bc;}
+.diSlot{width:64px;height:64px;border-radius:16px;background:#f2f7fb;border:2px dashed #cfe2ef;
+  display:flex;align-items:center;justify-content:center;position:relative;}
+.diTodayCol .diSlot{border-color:#ffcf9e;background:#fff6ec;}
+.diSlot.dim{opacity:.55;}
+.diStamp{width:52px;height:52px;border-radius:50%;border:3px solid #e8536b;color:#e8536b;
+  display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;
+  font-family:"Yomogi","Kosugi Maru",serif;transform:rotate(-8deg);box-shadow:inset 0 0 0 2px rgba(232,83,107,.22);}
+.diStamp.press{animation:diStampIn .5s cubic-bezier(.2,1.6,.35,1) both;}
+@keyframes diStampIn{0%{transform:translateY(-46px) scale(2) rotate(-16deg);opacity:0;}
+  60%{transform:translateY(3px) scale(.92) rotate(-8deg);opacity:1;}100%{transform:translateY(0) scale(1) rotate(-8deg);opacity:1;}}
+.diRipple{position:absolute;inset:0;border-radius:50%;border:2px solid rgba(232,83,107,.5);opacity:0;pointer-events:none;}
+.diRipple.go{animation:diRip .6s ease-out both;}
+@keyframes diRip{0%{transform:scale(.4);opacity:.7;}100%{transform:scale(1.7);opacity:0;}}
+#diMsg{font-size:13px;font-weight:800;color:#5c93ad;text-align:center;min-height:18px;}
+@media (prefers-reduced-motion:reduce){.diStamp.press{animation:none;}.diRipple.go{animation:none;}}
 .rmTicks24{position:relative;height:14px;margin-top:5px;}
 .rmTicks24 span{position:absolute;transform:translateX(-50%);font-size:9px;font-weight:700;color:#9bb0c0;white-space:nowrap;}
 #dexTabs{display:flex;gap:6px;justify-content:center;margin-bottom:12px;}
@@ -837,6 +878,169 @@ button,input{font:inherit;}
   background:rgba(255,255,255,.7);color:#5c93ad;font-size:19px;font-weight:700;cursor:pointer;
   box-shadow:0 6px 16px rgba(111,205,255,.22);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
 .sky-night #helpBtn{background:rgba(70,82,130,.55);color:#eef2ff;}
+/* ===== ラジオ体操部（部活） ===== */
+#joinBtn{height:40px;padding:0 15px;border:1.5px solid rgba(255,255,255,.85);border-radius:999px;pointer-events:auto;
+  background:rgba(255,255,255,.72);color:#5c93ad;font-size:14px;font-weight:800;cursor:pointer;
+  box-shadow:0 7px 18px rgba(120,180,220,.16);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  white-space:nowrap;display:flex;align-items:center;gap:4px;transition:transform .2s,box-shadow .2s;}
+#joinBtn:hover{transform:translateY(-2px);box-shadow:0 11px 24px rgba(120,180,220,.26);}
+#joinBtn:active{transform:scale(.94);}
+.sky-night #joinBtn{background:rgba(70,82,130,.5);border-color:rgba(255,255,255,.4);color:#eef2ff;}
+#friendBtn{position:relative;flex:0 0 auto;width:40px;height:40px;border:1.5px solid rgba(255,255,255,.85);border-radius:50%;
+  pointer-events:auto;background:rgba(255,255,255,.72);cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 7px 18px rgba(120,180,220,.16);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  transition:transform .2s,box-shadow .2s;}
+#friendBtn svg{width:24px;height:24px;color:#5c93ad;}
+#friendBtn:hover{transform:translateY(-2px);box-shadow:0 11px 24px rgba(120,180,220,.26);}
+#friendBtn:active{transform:scale(.94);}
+.sky-night #friendBtn{background:rgba(70,82,130,.5);border-color:rgba(255,255,255,.4);}
+.sky-night #friendBtn svg{color:#eef2ff;}
+#friendBadge{position:absolute;top:-5px;right:-5px;}
+#clubScreen{position:fixed;inset:0;z-index:222;display:none;flex-direction:column;
+  background:linear-gradient(180deg,#eef7ff 0%,#f5fafe 45%,#fff6ee 100%);
+  padding:max(14px,env(safe-area-inset-top)) 0 0;overflow:hidden;}
+#clubScreen.visible{display:flex;}
+#clubHead{flex:0 0 auto;position:relative;height:52px;display:flex;align-items:center;justify-content:center;padding:0 66px;}
+#clubClose{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:38px;height:38px;border:none;border-radius:50%;
+  background:rgba(255,255,255,.82);color:#5c93ad;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 12px rgba(111,205,255,.18);}
+#clubClose svg{width:20px;height:20px;}
+#clubClose:active{transform:translateY(-50%) scale(.92);}
+#clubTitle{font-size:19px;font-weight:900;color:#4d7790;letter-spacing:.06em;}
+#clubJoinBtn{position:absolute;right:14px;top:50%;transform:translateY(-50%);border:none;border-radius:999px;
+  padding:9px 20px;font-size:13px;font-weight:900;cursor:pointer;
+  background:linear-gradient(135deg,#ffc46b,#ff9e4d);color:#fff;box-shadow:0 6px 14px rgba(255,150,80,.35);transition:transform .15s;}
+#clubJoinBtn:active{transform:translateY(-50%) scale(.93);}
+#clubJoinBtn.joined{background:rgba(255,255,255,.82);color:#a9becb;box-shadow:0 4px 12px rgba(111,205,255,.14);}
+#clubScroll{flex:1 1 auto;overflow-y:auto;padding:8px 16px 26px;}
+/* 今日の1番（早起き） */
+#earlyBird{margin:2px 0 16px;}
+#earlyBird[hidden]{display:none;}
+.ebCard{position:relative;display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:24px;overflow:hidden;
+  background:linear-gradient(135deg,#fff3dc,#ffe6c2);box-shadow:0 12px 26px rgba(255,170,80,.28);}
+.ebCard::before{content:"";position:absolute;top:-34px;right:-24px;width:120px;height:120px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.6),rgba(255,255,255,0) 70%);}
+.ebCrown{position:absolute;top:13px;right:16px;width:26px;height:26px;color:#f3a83a;opacity:.9;}
+.ebAvatar{flex:0 0 auto;width:60px;height:60px;border-radius:50%;overflow:hidden;background:rgba(255,255,255,.7);
+  display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(220,150,60,.25);}
+.ebAvatar svg{width:100%;height:100%;}
+.ebInfo{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:3px;}
+.ebLabel{font-size:11px;font-weight:900;color:#d0913a;letter-spacing:.06em;}
+.ebName{font-size:18px;font-weight:900;color:#8a5518;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ebTime{font-size:13px;font-weight:800;color:#c1853a;}
+#clubCount{font-size:11px;font-weight:800;color:#9bb3c1;letter-spacing:.04em;padding:0 4px 8px;}
+#clubRosterBox{display:flex;flex-direction:column;gap:8px;}
+.rosterRow{display:flex;align-items:center;gap:12px;width:100%;cursor:pointer;
+  background:#fff;border-radius:20px;padding:11px 14px;box-shadow:0 6px 16px rgba(120,180,220,.1);transition:transform .12s;}
+.rosterRow:active{transform:scale(.985);}
+.rosterRow.isSelf{background:linear-gradient(135deg,#fff6ec,#fff);box-shadow:0 6px 16px rgba(255,170,90,.2);}
+.rosterRank{flex:0 0 auto;width:24px;height:24px;display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:900;color:#b6c6d2;}
+.rosterRank.top{color:#fff;border-radius:50%;box-shadow:0 3px 7px rgba(0,0,0,.12);}
+.rosterRank.r1{background:linear-gradient(135deg,#ffd75e,#f5b21e);}
+.rosterRank.r2{background:linear-gradient(135deg,#dbe3ec,#b4c0cf);}
+.rosterRank.r3{background:linear-gradient(135deg,#f0b98a,#d98f52);}
+.rosterAvatar{flex:0 0 auto;width:44px;height:44px;border-radius:50%;overflow:hidden;background:rgba(143,220,255,.14);
+  display:flex;align-items:center;justify-content:center;}
+.rosterAvatar svg{width:100%;height:100%;}
+.rosterAvatar.hidden-av{background:rgba(224,231,237,.7);}
+.rosterInfo{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:3px;}
+.rosterName{font-size:14.5px;font-weight:800;color:#43718c;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rosterName.hidden-name{color:#a7bccb;}
+.rosterName .selfTag{font-size:10px;color:#ff9e4d;margin-left:6px;font-weight:900;}
+.rosterStreak{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:900;color:#ff8a4a;}
+.rosterStreak svg{width:11px;height:12px;flex:0 0 auto;}
+#memberPop{position:fixed;inset:0;z-index:232;display:none;align-items:center;justify-content:center;
+  background:rgba(180,205,220,.4);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);padding:20px;}
+#memberPop.visible{display:flex;}
+#memberPopBox{width:min(320px,88vw);border-radius:24px;padding:22px 22px 18px;text-align:center;
+  background:#fff;box-shadow:0 18px 44px rgba(120,160,190,.32);}
+#memberPopAvatar{width:100px;height:100px;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;}
+#memberPopAvatar svg{width:100%;height:100%;}
+#memberPopName{font-size:18px;font-weight:900;color:#4d7790;}
+#memberPopStreak{font-size:13px;font-weight:800;color:#ff7a3c;margin-top:6px;}
+#memberPopComment{font-size:13px;font-weight:700;color:#6f9fb6;margin-top:11px;line-height:1.6;word-break:break-word;
+  background:#f4faff;border-radius:14px;padding:10px 12px;}
+#memberPopComment:empty{display:none;}
+#memberPopWake{font-size:12px;font-weight:700;color:#8aa7b8;margin-top:10px;}
+#memberPopWake:empty{display:none;}
+#memberPopClose{margin-top:18px;height:42px;padding:0 26px;border:none;border-radius:999px;cursor:pointer;
+  background:linear-gradient(135deg,#8fdcff,#63ccff);color:#fff;font-size:14px;font-weight:800;box-shadow:0 6px 14px rgba(99,204,255,.34);}
+#memberPopClose:active{transform:scale(.95);}
+/* ===== フレンド / リクエスト ===== */
+.rosterAction{flex:0 0 auto;border:none;border-radius:999px;padding:6px 13px;font-size:11px;font-weight:800;cursor:pointer;
+  background:linear-gradient(135deg,#8fdcff,#63ccff);color:#fff;box-shadow:0 4px 10px rgba(99,204,255,.34);white-space:nowrap;}
+.rosterAction:active{transform:scale(.94);}
+.rosterAction.pending{background:rgba(143,220,255,.4);color:#5c93ad;box-shadow:none;cursor:default;}
+.rosterAction.isfriend{background:rgba(180,235,205,.6);color:#3a9068;box-shadow:none;cursor:default;}
+#friendScreen{position:fixed;inset:0;z-index:224;display:none;flex-direction:column;
+  background:linear-gradient(180deg,#eaf6ff 0%,#f3f9fd 60%,#fff4ea 100%);
+  padding:max(14px,env(safe-area-inset-top)) 0 max(14px,env(safe-area-inset-bottom));overflow:hidden;}
+#friendScreen.visible{display:flex;}
+#friendHead{flex:0 0 auto;text-align:center;padding:8px 20px 10px;position:relative;}
+#friendClose{position:absolute;top:6px;left:12px;border:none;background:rgba(255,255,255,.72);border-radius:999px;
+  padding:8px 15px;font-size:13px;font-weight:800;color:#5c93ad;cursor:pointer;box-shadow:0 4px 12px rgba(111,205,255,.2);}
+#friendClose:active{transform:scale(.95);}
+#friendTitle{font-size:20px;font-weight:900;color:#4d7790;letter-spacing:.04em;margin-top:32px;}
+#friendTabs{flex:0 0 auto;display:flex;gap:8px;justify-content:center;padding:6px 16px 12px;}
+.friendTab{flex:0 0 auto;border:1.5px solid rgba(143,220,255,.4);border-radius:999px;padding:8px 22px;font-size:13px;font-weight:800;
+  cursor:pointer;background:rgba(255,255,255,.7);color:#7aa5bc;position:relative;transition:background .15s,color .15s;}
+.friendTab.on{background:linear-gradient(135deg,#8fdcff,#63ccff);color:#fff;border-color:transparent;box-shadow:0 5px 13px rgba(99,204,255,.3);}
+.friendTab .tabCoin{background:linear-gradient(135deg,#ff8f5e,#ff5a7a);}
+#friendListBox,#requestListBox{flex:1 1 auto;overflow-y:auto;padding:4px 16px 26px;display:flex;flex-direction:column;gap:9px;}
+.frRow{display:flex;align-items:center;gap:11px;width:100%;border:1px solid rgba(143,220,255,.3);
+  background:rgba(255,255,255,.74);border-radius:18px;padding:10px 14px;box-shadow:0 5px 14px rgba(111,205,255,.12);}
+.frAvatar{flex:0 0 auto;width:46px;height:46px;border-radius:50%;overflow:hidden;background:rgba(143,220,255,.15);
+  display:flex;align-items:center;justify-content:center;}
+.frAvatar svg{width:100%;height:100%;}
+.frName{flex:1 1 auto;min-width:0;font-size:14px;font-weight:800;color:#43718c;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.frBtns{flex:0 0 auto;display:flex;gap:7px;}
+.frBtn{border:none;border-radius:999px;padding:7px 14px;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap;}
+.frBtn.ok{background:linear-gradient(135deg,#7fd8b0,#5ec79a);color:#fff;box-shadow:0 4px 10px rgba(94,199,154,.4);}
+.frBtn.no{background:rgba(230,236,240,.9);color:#8aa1ad;}
+.frBtn:active{transform:scale(.94);}
+/* ===== きろく（起床データ） ===== */
+#recordScreen{position:fixed;inset:0;z-index:226;display:none;flex-direction:column;
+  background:
+   radial-gradient(circle at 12px 12px, rgba(143,220,255,.09) 1.4px, transparent 1.6px) 0 0/22px 22px,
+   linear-gradient(180deg,#fff8f0,#fdf5ec 60%,#fff3f7);
+  padding:max(14px,env(safe-area-inset-top)) 0 0;overflow:hidden;}
+#recordScreen.visible{display:flex;}
+#recHead{flex:0 0 auto;position:relative;height:52px;display:flex;align-items:center;justify-content:center;padding:0 66px;}
+#recClose{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:38px;height:38px;border:none;border-radius:50%;
+  background:rgba(255,255,255,.85);color:#5c93ad;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 12px rgba(111,205,255,.2);}
+#recClose svg{width:20px;height:20px;}
+#recClose:active{transform:translateY(-50%) scale(.92);}
+#recTitle{font-size:19px;font-weight:900;color:#4d7790;letter-spacing:.08em;}
+#recScroll{flex:1 1 auto;overflow-y:auto;padding:6px 16px 26px;display:flex;flex-direction:column;align-items:center;gap:15px;}
+.recCard{background:#fffdf8;border-radius:20px;padding:15px 16px 14px;box-shadow:0 8px 20px rgba(120,170,210,.14);position:relative;width:100%;max-width:440px;}
+.recEye{font-size:11px;font-weight:800;letter-spacing:.05em;color:#9db6c6;margin-bottom:9px;display:flex;align-items:center;gap:6px;}
+.recEyeDot{width:8px;height:8px;border-radius:50%;flex:0 0 auto;}
+.recTape{position:absolute;top:-9px;left:38px;width:70px;height:20px;opacity:.85;border-radius:2px;transform:rotate(-4deg);
+  background:repeating-linear-gradient(45deg,rgba(255,255,255,.35) 0 6px,rgba(255,255,255,0) 6px 12px),rgba(255,198,107,.55);
+  box-shadow:0 2px 6px rgba(180,140,80,.16);}
+.recSum{display:flex;gap:10px;}
+.recSumBox{flex:1;background:#f4faff;border-radius:16px;padding:11px 6px;text-align:center;}
+.recSumBox.p{background:#fff0f6;}
+.recSumBox.o{background:#fff4e8;}
+.recSumLbl{font-size:10.5px;font-weight:800;color:#9db6c6;}
+.recSumVal{font-size:20px;font-weight:900;color:#4d7790;margin-top:3px;line-height:1;}
+.recSumBox.p .recSumVal{color:#d4537e;}
+.recUnit{font-size:11px;font-weight:800;}
+.recNote{margin-top:10px;font-size:12px;font-weight:800;color:#5aa06f;background:#eefaf0;border-radius:12px;padding:8px 12px;display:inline-block;}
+.recEmpty{text-align:center;font-size:12px;font-weight:700;color:#b7c7d2;line-height:1.7;padding:22px 8px;}
+#recCal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:4px;}
+.rcH{font-size:9.5px;font-weight:800;color:#b7c7d2;text-align:center;padding-bottom:2px;}
+.rcH.sun{color:#e79ab0;}.rcH.sat{color:#8bb6e0;}
+.rcCell{aspect-ratio:1;border-radius:9px;background:#f3f6f9;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#c4d0d9;}
+.rcCell.blank{background:none;}
+.rcCell.on{color:#fff;}
+.rcCell.fut{opacity:.4;}
+.rcCell.today{outline:2.5px solid #ffb37a;outline-offset:-2.5px;color:#8a5518;}
+.recLegend{display:flex;gap:12px;margin-top:9px;font-size:10px;font-weight:800;color:#9db6c6;align-items:center;flex-wrap:wrap;}
+.recLegend .rl{display:flex;align-items:center;gap:4px;}
+.recLegend .rlDot{width:9px;height:9px;border-radius:50%;flex:0 0 auto;}
 #tutPages{width:min(360px,90vw);}
 /* ===== 猫のおうち（部屋）===== */
 #catRoom{position:fixed;inset:0;z-index:115;display:none;overflow:hidden;
@@ -1371,6 +1575,8 @@ button,input{font:inherit;}
 .ppTopChip .avt{width:26px;height:26px;}
 .ppTopChip .nm{font-size:12px;font-weight:700;color:#4d7790;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .ppCatWrap{width:88px;height:90px;}
+.ppSub{font-size:11px;font-weight:800;color:#5c93ad;background:rgba(143,220,255,.18);border-radius:999px;padding:3px 12px;margin-bottom:6px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;}
+.ppSub.isComment{color:#d46a9a;background:#fff0f6;white-space:normal;max-width:170px;line-height:1.35;text-align:center;}
 .ppCatWrap .catSvg{width:100%;height:100%;}
 .ppComment{max-width:150px;background:#fff5fb;border:1.5px solid rgba(255,150,200,.5);border-radius:12px;padding:4px 10px;
   font-size:11px;font-weight:700;color:#d46a9a;text-align:center;word-break:break-word;}
@@ -1396,6 +1602,30 @@ button,input{font:inherit;}
 #postComment:focus{border-color:#7fd8b0;background:#fff;}
 #postComment::placeholder{color:#a8c6d6;font-weight:600;}
 #postAnonRow input{width:17px;height:17px;accent-color:#7fd8b0;}
+/* きょうは どっち？（スタンプラリー / 投稿 / 両方 / 見送りだけ） */
+#modeChoice{position:fixed;inset:0;z-index:208;display:none;align-items:center;justify-content:center;
+  background:rgba(180,205,220,.42);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);padding:20px;}
+#modeChoice.visible{display:flex;}
+#modeChoiceBox{position:relative;background:#fff;border-radius:26px;padding:22px 20px 20px;box-shadow:0 18px 44px rgba(120,160,190,.3);
+  width:min(360px,92vw);display:flex;flex-direction:column;align-items:center;gap:14px;}
+#modeChoiceClose{position:absolute;top:12px;right:12px;width:30px;height:30px;border:none;border-radius:50%;
+  background:rgba(143,220,255,.16);color:#8aa7b8;font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;}
+#modeChoiceClose:active{transform:scale(.92);}
+#modeChoiceTitle{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:17px;font-weight:900;color:#4d7790;letter-spacing:.04em;margin-top:6px;}
+#modeChoiceRow{display:flex;gap:12px;width:100%;}
+.mcCard{flex:1;border:none;border-radius:20px;padding:18px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:9px;
+  box-shadow:0 6px 16px rgba(120,180,220,.14);transition:transform .15s;}
+.mcCard:active{transform:scale(.96);}
+#mcRally{background:linear-gradient(180deg,#fff2f6,#ffe6ef);}
+#mcPost{background:linear-gradient(180deg,#eef7ff,#e0eeff);}
+.mcIcon{width:50px;height:50px;display:flex;align-items:center;justify-content:center;}
+.mcIcon svg{width:100%;height:100%;}
+.mcName{font-size:15px;font-weight:900;color:#4d7790;}
+#modeChoiceRow2{display:flex;gap:10px;width:100%;}
+.mcMini{flex:1;border:none;border-radius:999px;padding:11px 8px;font-size:13px;font-weight:800;cursor:pointer;
+  background:rgba(143,220,255,.16);color:#5c93ad;transition:transform .15s;}
+.mcMini:active{transform:scale(.96);}
+#mcSendoff{background:rgba(255,198,107,.2);color:#c98a3a;}
 #postConfirmBtns{display:flex;gap:10px;}
 #postYes,#postNo{flex:1;height:48px;border:none;border-radius:999px;cursor:pointer;font-size:15px;font-weight:700;}
 #postYes{background:linear-gradient(135deg,#7fd8b0,#5ec79a);color:#fff;box-shadow:0 8px 20px rgba(94,199,154,.34);}
@@ -1438,6 +1668,7 @@ button,input{font:inherit;}
   #topProfileBar #tpbName{max-width:58px;font-size:12px;}
   #tpbBell{display:inline-block;font-size:14px;}
   #helpBtn{top:13px;width:34px;height:34px;}
+  #joinBtn{height:33px;padding:0 13px;font-size:12.5px;}
   /* はじめるカードを小さくして、猫の上のコメント/ラベルと被らないように */
   .modeCard{width:min(214px,64%);margin:2px 0 8px;}
   .modeLabel{font-size:13.5px;padding:9px 20px;}
@@ -1466,9 +1697,11 @@ button,input{font:inherit;}
     <button class="fabItem" id="fabDex" type="button" aria-label="ずかん"><span class="fi"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M16 8 Q11 5 5 6 L5 25 Q11 24 16 27 Q21 24 27 25 L27 6 Q21 5 16 8 Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M16 8 L16 27" fill="none" stroke="currentColor" stroke-width="2.2"/></svg></span><span class="fl">ずかん</span></button>
     <button class="fabItem" id="fabRoom" type="button" aria-label="おへや"><span class="fi"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M6 15 L16 6 L26 15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/><path d="M8 14 L8 26 L24 26 L24 14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M13 26 L13 19 L19 19 L19 26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg></span><span class="fl">おへや</span></button>
     <button class="fabItem" id="fabCloset" type="button" aria-label="きせかえ"><span class="fi"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M16 6 Q13 6 13 9 Q13 11 11 12 L5 20 Q4 21 5 22 L9 25 Q10 26 11 24 L13 21 L13 26 L19 26 L19 21 L21 24 Q22 26 23 25 L27 22 Q28 21 27 20 L21 12 Q19 11 19 9 Q19 6 16 6 Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg></span><span class="fl">きせかえ</span><span id="bagBadge" class="coinBadge" hidden></span></button>
+    <button class="fabItem" id="fabRecord" type="button" aria-label="きろく"><span class="fi"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M6 6 L6 26 L26 26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="10" y="16" width="3.4" height="7" rx="1.2" fill="currentColor"/><rect x="15.3" y="11" width="3.4" height="12" rx="1.2" fill="currentColor"/><rect x="20.6" y="18" width="3.4" height="5" rx="1.2" fill="currentColor"/></svg></span><span class="fl">きろく</span></button>
     <button id="homeFab" type="button" aria-label="メニュー"><span class="fabRing"></span><span class="fabCore"></span></button>
   </div>
   <button id="groundPostBtn" type="button" hidden>📮 今日の結果を投稿</button>
+  <div id="recentPostCount"></div>
   <div id="recentLabel"><svg class="recentCat" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg"><circle cx="40" cy="45" r="24" fill="#1c1c1c"/><path d="M24 31 L19 11 L40 27 Z" fill="#1c1c1c" stroke="#1c1c1c" stroke-width="6" stroke-linejoin="round"/><path d="M56 31 L61 11 L40 27 Z" fill="#1c1c1c" stroke="#1c1c1c" stroke-width="6" stroke-linejoin="round"/><path d="M27 27 L25 18 L36 26 Z" fill="#8fdcff"/><path d="M53 27 L55 18 L44 26 Z" fill="#8fdcff"/><circle cx="32" cy="45" r="7.5" fill="#fff"/><circle cx="48" cy="45" r="7.5" fill="#fff"/><circle cx="32" cy="46" r="5.6" fill="#1c1c1c"/><circle cx="48" cy="46" r="5.6" fill="#1c1c1c"/></svg><span id="recentLabelText">直近3日</span></div>
   <div id="skyDecor" aria-hidden="true">
     <div id="sun"></div>
@@ -1500,10 +1733,12 @@ button,input{font:inherit;}
           </div>
           <div id="hgNowMk" class="rmNow24"><span class="lab" id="hgNowLbl">今 0:00</span><span class="bar"></span></div>
           <div id="hgReturnMk" class="rmReturn24" hidden><span class="lab" id="hgReturnLbl">帰宅 0:00</span><span class="bar"></span></div>
+          <div id="hgDoneMk" class="rmDone24" hidden><span class="lab" id="hgDoneLbl">体操 0:00</span><span class="bar"></span></div>
         </div>
         <div id="hgTicks" class="rmTicks24"></div>
       </div>
     </div>
+    <div id="doneHint" hidden><svg viewBox="0 0 16 16" fill="none" stroke="#34a672" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5 L6.5 12 L13 4.5"/></svg><span>きょうは 体操ずみ</span></div>
     <button class="modeCard" id="randomModeBtn" type="button">
       <span class="note n1">♪</span>
       <span class="note n2">♫</span>
@@ -1541,6 +1776,8 @@ button,input{font:inherit;}
           <text id="streakDaysTxt" x="50" y="80" font-family="'Yomogi','Kosugi Maru',sans-serif" font-size="22" font-weight="800" fill="#ff7a2e" text-anchor="middle" dominant-baseline="central">0日</text>
         </svg>
       </div>
+      <button id="joinBtn" type="button" aria-label="ラジオ体操部">入部</button>
+      <button id="friendBtn" type="button" aria-label="フレンド"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19 C3.5 15.3 6 13.8 9 13.8 C12 13.8 14.5 15.3 14.5 19"/><path d="M15.4 5.1 A3.2 3.2 0 0 1 15.4 10.9"/><path d="M16.6 14 C19.2 14.4 20.5 15.9 20.5 19"/></svg><span id="friendBadge" class="coinBadge" hidden></span></button>
     </div>
   </div>
 </div>
@@ -1677,7 +1914,7 @@ button,input{font:inherit;}
                 <path d="M3 13v3a1 1 0 001 1h12a1 1 0 001-1v-3" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
                 <path d="M10 3v9M7 9l3 3 3-3" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
-              <span class="saveBtnLabel">ほぞん</span>
+              <span class="saveBtnLabel">保存/投稿</span>
             </button>
           </div>
         </div>
@@ -1721,6 +1958,28 @@ button,input{font:inherit;}
         <span>カード読み込み</span>
         <input id="imageInput" type="file" accept="image/*"/>
       </label>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== きょうは どっち？（スタンプラリー / 投稿） ===================== -->
+<div id="modeChoice">
+  <div id="modeChoiceBox">
+    <button id="modeChoiceClose" type="button" aria-label="とじる">✕</button>
+    <div id="modeChoiceTitle">きょうは どっちにする？</div>
+    <div id="modeChoiceRow">
+      <button class="mcCard" id="mcRally" type="button">
+        <span class="mcIcon"><svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><circle cx="24" cy="22" r="15" fill="none" stroke="#e8536b" stroke-width="3.4"/><path d="M17 22 L22 27 L31 17" fill="none" stroke="#e8536b" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 40 L34 40" stroke="#e8536b" stroke-width="3.4" stroke-linecap="round"/></svg></span>
+        <span class="mcName">スタンプラリー</span>
+      </button>
+      <button class="mcCard" id="mcPost" type="button">
+        <span class="mcIcon"><svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="12" width="32" height="24" rx="5" fill="none" stroke="#4f9fca" stroke-width="3.4"/><path d="M24 30 L24 18 M18 24 L24 18 L30 24" fill="none" stroke="#4f9fca" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="mcName">投稿</span>
+      </button>
+    </div>
+    <div id="modeChoiceRow2">
+      <button class="mcMini" id="mcBoth" type="button">両方</button>
+      <button class="mcMini" id="mcSendoff" type="button">見送りだけ</button>
     </div>
   </div>
 </div>
@@ -1987,6 +2246,82 @@ button,input{font:inherit;}
   </div>
 </div>
 
+<!-- ===================== ラジオ体操部（部活） ===================== -->
+<div id="clubScreen">
+  <div id="clubHead">
+    <button id="clubClose" type="button" aria-label="もどる"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 L8 12 L15 19"/></svg></button>
+    <div id="clubTitle">ラジオ体操部</div>
+    <button id="clubJoinBtn" type="button">入部</button>
+  </div>
+  <div id="clubScroll">
+    <div id="earlyBird" hidden></div>
+    <div id="clubCount"></div>
+    <div id="clubRosterBox"></div>
+  </div>
+</div>
+
+<div id="memberPop">
+  <div id="memberPopBox">
+    <div id="memberPopAvatar"></div>
+    <div id="memberPopName"></div>
+    <div id="memberPopStreak"></div>
+    <div id="memberPopComment"></div>
+    <div id="memberPopWake"></div>
+    <button id="memberPopClose" type="button">とじる</button>
+  </div>
+</div>
+
+<!-- ===================== フレンド / リクエスト ===================== -->
+<div id="friendScreen">
+  <div id="friendHead">
+    <button id="friendClose" type="button" aria-label="もどる">‹ もどる</button>
+    <div id="friendTitle">フレンド</div>
+  </div>
+  <div id="friendTabs">
+    <button class="friendTab on" id="tabFriends" type="button">フレンド</button>
+    <button class="friendTab" id="tabRequests" type="button">リクエスト<span id="reqTabCoin" class="coinBadge tabCoin" hidden></span></button>
+  </div>
+  <div id="friendListBox"></div>
+  <div id="requestListBox" hidden></div>
+</div>
+
+<!-- ===================== きろく（起床データ） ===================== -->
+<div id="recordScreen">
+  <div id="recHead">
+    <button id="recClose" type="button" aria-label="もどる"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 L8 12 L15 19"/></svg></button>
+    <div id="recTitle">きろく</div>
+  </div>
+  <div id="recScroll">
+    <div class="recCard">
+      <div class="recTape"></div>
+      <div class="recEye"><span class="recEyeDot" style="background:#8fdcff;"></span>このごろの わたし</div>
+      <div class="recSum">
+        <div class="recSumBox"><div class="recSumLbl">平均起床</div><div class="recSumVal" id="recAvg">--:--</div></div>
+        <div class="recSumBox o"><div class="recSumLbl">目標との差</div><div class="recSumVal" id="recDiff">--</div></div>
+        <div class="recSumBox p"><div class="recSumLbl">連続</div><div class="recSumVal" id="recStreak">0<span class="recUnit">日</span></div></div>
+      </div>
+    </div>
+    <div class="recCard">
+      <div class="recEye"><span class="recEyeDot" style="background:#63ccff;"></span>起きた時間の うつりかわり</div>
+      <div id="recGraph"></div>
+    </div>
+    <div class="recCard">
+      <div class="recEye"><span class="recEyeDot" style="background:#ffa6c8;"></span><span id="recCalTitle">カレンダー</span></div>
+      <div id="recCal"></div>
+      <div class="recLegend">
+        <span class="rl"><span class="rlDot" style="background:#a9def5;"></span>はやい</span>
+        <span class="rl"><span class="rlDot" style="background:#ffd6a0;"></span>ふつう</span>
+        <span class="rl"><span class="rlDot" style="background:#ffb387;"></span>ゆっくり</span>
+      </div>
+    </div>
+    <div class="recCard">
+      <div class="recEye"><span class="recEyeDot" style="background:#ffc46b;"></span>曜日べつの 起きた時間</div>
+      <div id="recWeek"></div>
+      <div class="recNote" id="recWeekNote"></div>
+    </div>
+  </div>
+</div>
+
 <div id="restorePanel">
   <div id="restoreBox">
     <div id="restoreHead">
@@ -2012,6 +2347,18 @@ button,input{font:inherit;}
 </div>
 
 <!-- ===================== ルーレット ===================== -->
+<div id="dailyIntro">
+  <div id="diCard">
+    <div id="diHead">ラジオ体操カード</div>
+    <div id="diRow">
+      <div class="diDay"><div class="diCap">きのう</div><div class="diSlot" id="diSlotY"></div><div class="diDate" id="diDateY"></div></div>
+      <div class="diDay diTodayCol"><div class="diCap diCapT">きょう</div><div class="diSlot" id="diSlotT"></div><div class="diDate" id="diDateT"></div></div>
+      <div class="diDay"><div class="diCap">あした</div><div class="diSlot dim" id="diSlotTm"></div><div class="diDate" id="diDateTm"></div></div>
+    </div>
+    <div id="diMsg"></div>
+  </div>
+</div>
+
 <div id="rouletteScreen">
   <div id="rouletteInner">
     <div id="rouletteReset" hidden></div>
@@ -2102,6 +2449,354 @@ if(!_isCrawler){
   }catch(e){}
 }
 
+/* ===== ラジオ体操部（部活・部員一覧） ===== */
+const JOINED_KEY="radio_joined",JOINED_AT_KEY="radio_joined_at";
+function isJoined(){return localStorage.getItem(JOINED_KEY)==="1";}
+async function joinClub(){
+  const db=await getDB();
+  if(!db){toast("つながらなかったみたい。もう一度おしてね");return;}
+  localStorage.setItem(JOINED_KEY,"1");
+  if(!localStorage.getItem(JOINED_AT_KEY))localStorage.setItem(JOINED_AT_KEY,String(Date.now()));
+  await publishProfile();   /* publishProfile が members/ に自分を登録（最長連続日数ふくむ） */
+  refreshClubJoinBtn();loadRoster();
+  toast("入部したよ！ようこそ");
+}
+async function leaveClub(){
+  localStorage.removeItem(JOINED_KEY);
+  refreshClubJoinBtn();
+  const db=await getDB();
+  if(db){try{const{ref,remove}=await import(FB_DB);await remove(ref(db,"members/"+getUid()));}catch(_){}}
+  loadRoster();
+  toast("退部しました");
+}
+function refreshClubJoinBtn(){
+  const b=$("clubJoinBtn");if(!b)return;
+  if(isJoined()){b.textContent="退部";b.classList.add("joined");}
+  else{b.textContent="入部";b.classList.remove("joined");}
+}
+function openClub(){$("clubScreen").classList.add("visible");refreshClubJoinBtn();loadEarlyBird();loadRoster();}
+function closeClub(){$("clubScreen").classList.remove("visible");}
+/* 日本時間の今日、いちばん早起き（＝いちばん早く体操を投稿）した子を表示 */
+const FLAME_SVG='<svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1 C9 4 12 5 12 9 C12 12 10 15 8 15 C6 15 4 12 4 9 C4 6.5 5.6 6 6 4.4 C6.5 6 7.6 5.5 8 1 Z"/></svg>';
+async function loadEarlyBird(){
+  const box=$("earlyBird");if(!box)return;
+  box.innerHTML="";box.hidden=true;
+  const db=await getDB();if(!db)return;
+  try{
+    const{ref,get}=await import(FB_DB);
+    const snap=await get(ref(db,"posts"));
+    if(!snap.exists())return;
+    const today=jstKey();
+    let best=null;
+    Object.values(snap.val()).forEach(v=>{
+      if(!v||v.date!==today||!v.createdAt)return;
+      if(!best||v.createdAt<best.createdAt)best=v;
+    });
+    if(!best)return;
+    const d=new Date(best.createdAt);
+    const hm=d.getHours()+":"+String(d.getMinutes()).padStart(2,"0");
+    box.innerHTML='<div class="ebCard">'+
+      '<svg class="ebCrown" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18 L3.4 8.4 L8.4 12 L12 5.4 L15.6 12 L20.6 8.4 L21 18 Z"/><rect x="3" y="18.4" width="18" height="2.6" rx="1"/></svg>'+
+      '<span class="ebAvatar">'+catFaceSvg(best.catBody||"#1c1c1c",best.color||"#8fdcff",null)+'</span>'+
+      '<span class="ebInfo"><span class="ebLabel">今日の1番</span><span class="ebName">'+escHtml(best.name||"匿名さん")+'</span><span class="ebTime">'+hm+' 起き</span></span></div>';
+    box.hidden=false;
+  }catch(e){console.warn("earlybird:",e&&e.message);}
+}
+async function loadRoster(){
+  const box=$("clubRosterBox");if(!box)return;
+  const cnt=$("clubCount");
+  box.innerHTML='<div class="ppListMsg">読み込み中…</div>';
+  const db=await getDB();
+  if(!db){box.innerHTML='<div class="ppListMsg">つながらなかったみたい</div>';if(cnt)cnt.textContent="";return;}
+  try{
+    const{ref,get}=await import(FB_DB);
+    const me=getUid();
+    const[msnap,fsnap]=await Promise.all([get(ref(db,"members")),get(ref(db,"friends/"+me))]);
+    const data=msnap.exists()?msnap.val():{};
+    _friendSet=new Set(fsnap.exists()?Object.keys(fsnap.val()):[]);
+    const list=Object.entries(data).map(([uid,m])=>Object.assign({uid},m||{})).filter(m=>m&&m.joined);
+    /* 公開の人を最長連続日数の多い順に、非公開（非表示）の人はまとめて下に */
+    list.sort((a,b)=>{
+      const pa=(a.public!==false)?0:1,pb=(b.public!==false)?0:1;
+      if(pa!==pb)return pa-pb;
+      const ba=a.best||0,bb=b.best||0;if(bb!==ba)return bb-ba;
+      return (b.updatedAt||0)-(a.updatedAt||0);
+    });
+    if(cnt)cnt.textContent="部員 "+list.length+"人";
+    if(!list.length){box.innerHTML='<div class="ppListMsg">まだ部員がいないよ。<br>いちばん乗りで入部しよう！</div>';return;}
+    box.innerHTML="";
+    let rank=0;
+    list.forEach(m=>{
+      const pub=(m.public!==false);
+      const row=document.createElement("div");
+      row.className="rosterRow"+(m.uid===me?" isSelf":"");
+      const rk=document.createElement("div");rk.className="rosterRank";
+      if(pub){rank++;rk.textContent=rank;if(rank<=3)rk.classList.add("top","r"+rank);}else{rk.textContent="";}
+      const av=document.createElement("div");av.className="rosterAvatar"+(pub?"":" hidden-av");
+      const info=document.createElement("div");info.className="rosterInfo";
+      const nm=document.createElement("div");nm.className="rosterName"+(pub?"":" hidden-name");
+      const stk=document.createElement("div");stk.className="rosterStreak";
+      if(pub){
+        av.innerHTML=catFaceSvg(m.catBody||"#1c1c1c",m.color||"#8fdcff",null);
+        nm.innerHTML=escHtml(m.name||"匿名さん")+(m.uid===me?'<span class="selfTag">じぶん</span>':"");
+        stk.innerHTML=FLAME_SVG+"<span>"+(m.best||0)+"日</span>";
+      }else{
+        nm.textContent="非表示";
+      }
+      info.appendChild(nm);if(stk.textContent)info.appendChild(stk);
+      row.appendChild(rk);row.appendChild(av);row.appendChild(info);
+      /* 申請ボタン（公開部員・自分以外） */
+      if(pub && m.uid!==me){
+        const act=document.createElement("button");act.type="button";act.className="rosterAction";
+        if(_friendSet.has(m.uid)){act.textContent="フレンド";act.classList.add("isfriend");}
+        else if(sentSet().has(m.uid)){act.textContent="申請中";act.classList.add("pending");}
+        else{
+          act.textContent="申請";
+          act.addEventListener("click",async e=>{
+            e.stopPropagation();try{playClick();}catch(_){}
+            act.disabled=true;
+            const ok=await sendFriendRequest(m);
+            if(ok){act.textContent="申請中";act.className="rosterAction pending";}
+            else{act.disabled=false;}
+          });
+        }
+        row.appendChild(act);
+      }
+      row.addEventListener("click",()=>{try{playClick();}catch(_){}showMemberProfile(m);});
+      box.appendChild(row);
+    });
+  }catch(e){console.warn("roster:",e&&e.message);box.innerHTML='<div class="ppListMsg">よみこみに失敗したみたい</div>';}
+}
+function showMemberProfile(m){
+  const pub=(m.public!==false);
+  const av=$("memberPopAvatar");
+  if(!pub){
+    av.innerHTML="";
+    $("memberPopName").textContent="非表示";
+    $("memberPopStreak").textContent="このユーザーは非公開です";
+    $("memberPopComment").textContent="";
+    $("memberPopWake").textContent="";
+    $("memberPop").classList.add("visible");
+    return;
+  }
+  av.innerHTML=catFigureHTML(m.catBody||"#1c1c1c",m.color||"#8fdcff","sit",[0,0],"normal",null);
+  $("memberPopName").textContent=m.name||"匿名さん";
+  const best=m.best||0,cur=m.current||0;
+  $("memberPopStreak").textContent="最長 "+best+"日連続"+(cur>0?" ・ いま "+cur+"日":"");
+  $("memberPopComment").textContent=m.comment||"";
+  const wh=Number.isFinite(m.wakeHour)?m.wakeHour:null;
+  $("memberPopWake").textContent=(wh!=null)?("目標 "+fmtHM(wh,0)+"ごろ起き"):"";
+  $("memberPop").classList.add("visible");
+}
+/* ===== フレンド / リクエスト ===== */
+let _friendSet=new Set();
+const SENT_KEY="radio_sent_reqs";
+function sentSet(){try{const a=JSON.parse(localStorage.getItem(SENT_KEY)||"[]");return new Set(Array.isArray(a)?a:[]);}catch(_){return new Set();}}
+function markSent(uid){const s=sentSet();s.add(uid);localStorage.setItem(SENT_KEY,JSON.stringify([...s]));}
+function myFriendPayload(){const p=getProfile()||{};return{name:p.name||"匿名さん",catBody:p.catBody||"#1c1c1c",color:p.color||"#8fdcff",at:Date.now()};}
+async function sendFriendRequest(m){
+  if(!m||!m.uid)return false;
+  const db=await getDB();
+  if(!db){toast("つながらなかったみたい。もう一度おしてね");return false;}
+  try{
+    const{ref,set}=await import(FB_DB);
+    await set(ref(db,"requests/"+m.uid+"/"+getUid()),myFriendPayload());   /* 相手のリクエストに届く */
+    markSent(m.uid);
+    toast("申請を送ったよ");
+    return true;
+  }catch(e){console.warn("req send failed",e);toast("送れなかったみたい");return false;}
+}
+async function approveRequest(fromUid,info){
+  const db=await getDB();if(!db){toast("つながらなかったみたい");return;}
+  try{
+    const{ref,set,remove}=await import(FB_DB);
+    const me=getUid();
+    /* 双方に友だち登録（各自 friends/{自分}/{相手}） */
+    await set(ref(db,"friends/"+me+"/"+fromUid),{name:(info&&info.name)||"匿名さん",catBody:(info&&info.catBody)||"#1c1c1c",color:(info&&info.color)||"#8fdcff",at:Date.now()});
+    await set(ref(db,"friends/"+fromUid+"/"+me),myFriendPayload());
+    await remove(ref(db,"requests/"+me+"/"+fromUid));
+    _friendSet.add(fromUid);
+    toast("フレンドになったよ！");
+    loadRequests();refreshFriendBadge();
+  }catch(e){console.warn("approve failed",e);toast("失敗したみたい");}
+}
+async function rejectRequest(fromUid){
+  const db=await getDB();if(!db){toast("つながらなかったみたい");return;}
+  try{
+    const{ref,remove}=await import(FB_DB);
+    await remove(ref(db,"requests/"+getUid()+"/"+fromUid));
+    loadRequests();refreshFriendBadge();
+  }catch(e){console.warn("reject failed",e);}
+}
+function openFriend(){$("friendScreen").classList.add("visible");switchFriendTab("friends");}
+function closeFriend(){$("friendScreen").classList.remove("visible");refreshFriendBadge();}
+function switchFriendTab(which){
+  const isF=(which!=="requests");
+  $("tabFriends").classList.toggle("on",isF);
+  $("tabRequests").classList.toggle("on",!isF);
+  $("friendListBox").hidden=!isF;
+  $("requestListBox").hidden=isF;
+  if(isF)loadFriends();else loadRequests();
+}
+async function loadFriends(){
+  const box=$("friendListBox");if(!box)return;
+  box.innerHTML='<div class="ppListMsg">読み込み中…</div>';
+  const db=await getDB();
+  if(!db){box.innerHTML='<div class="ppListMsg">つながらなかったみたい</div>';return;}
+  try{
+    const{ref,get}=await import(FB_DB);
+    const snap=await get(ref(db,"friends/"+getUid()));
+    const data=snap.exists()?snap.val():{};
+    _friendSet=new Set(Object.keys(data));
+    const list=Object.entries(data).map(([uid,f])=>Object.assign({uid},f||{})).sort((a,b)=>(b.at||0)-(a.at||0));
+    if(!list.length){box.innerHTML='<div class="ppListMsg">まだフレンドがいないよ。<br>部員一覧から申請してみよう</div>';return;}
+    box.innerHTML="";
+    list.forEach(f=>{
+      const row=document.createElement("div");row.className="frRow";
+      row.innerHTML='<span class="frAvatar">'+catFaceSvg(f.catBody||"#1c1c1c",f.color||"#8fdcff",null)+'</span>'+
+        '<span class="frName">'+escHtml(f.name||"匿名さん")+'</span>';
+      box.appendChild(row);
+    });
+  }catch(e){console.warn("friends:",e&&e.message);box.innerHTML='<div class="ppListMsg">よみこみに失敗したみたい</div>';}
+}
+async function loadRequests(){
+  const box=$("requestListBox");if(!box)return;
+  box.innerHTML='<div class="ppListMsg">読み込み中…</div>';
+  const db=await getDB();
+  if(!db){box.innerHTML='<div class="ppListMsg">つながらなかったみたい</div>';return;}
+  try{
+    const{ref,get}=await import(FB_DB);
+    const snap=await get(ref(db,"requests/"+getUid()));
+    const data=snap.exists()?snap.val():{};
+    const list=Object.entries(data).map(([uid,r])=>Object.assign({uid},r||{})).sort((a,b)=>(b.at||0)-(a.at||0));
+    if(!list.length){box.innerHTML='<div class="ppListMsg">今は届いているリクエストがないよ</div>';return;}
+    box.innerHTML="";
+    list.forEach(r=>{
+      const row=document.createElement("div");row.className="frRow";
+      const btns=document.createElement("span");btns.className="frBtns";
+      const ok=document.createElement("button");ok.type="button";ok.className="frBtn ok";ok.textContent="承認";
+      ok.addEventListener("click",()=>{try{playClick();}catch(_){}ok.disabled=true;approveRequest(r.uid,r);});
+      const no=document.createElement("button");no.type="button";no.className="frBtn no";no.textContent="拒否";
+      no.addEventListener("click",()=>{try{playClick();}catch(_){}no.disabled=true;rejectRequest(r.uid);});
+      btns.appendChild(ok);btns.appendChild(no);
+      row.innerHTML='<span class="frAvatar">'+catFaceSvg(r.catBody||"#1c1c1c",r.color||"#8fdcff",null)+'</span>'+
+        '<span class="frName">'+escHtml(r.name||"匿名さん")+'</span>';
+      row.appendChild(btns);
+      box.appendChild(row);
+    });
+  }catch(e){console.warn("requests:",e&&e.message);box.innerHTML='<div class="ppListMsg">よみこみに失敗したみたい</div>';}
+}
+async function refreshFriendBadge(){
+  const b=$("friendBadge"),tb=$("reqTabCoin");
+  const db=await getDB();if(!db)return;
+  try{
+    const{ref,get}=await import(FB_DB);
+    const snap=await get(ref(db,"requests/"+getUid()));
+    const n=snap.exists()?Object.keys(snap.val()).length:0;
+    const txt=n>9?"9+":String(n);
+    if(b){b.textContent=txt;b.hidden=(n<=0);}
+    if(tb){tb.textContent=txt;tb.hidden=(n<=0);}
+  }catch(_){}
+}
+/* ===== きろく（起床データ：自分の目標時刻を基準に色分け） ===== */
+function _recHeat(dm){ if(dm<=-40)return "#66c4ff"; if(dm<=-5)return "#a9def5"; if(dm<=25)return "#ffd6a0"; return "#ffb387"; }
+function _recDot(dm){ return dm<=10 ? "#63ccff" : "#ff9e4d"; }
+function _floatHM(f){ let h=Math.floor(f),m=Math.round((f-h)*60); if(m===60){h++;m=0;} return fmtHM(h,m); }
+function openRecord(){ $("recordScreen").classList.add("visible"); buildRecord(); }
+function closeRecord(){ $("recordScreen").classList.remove("visible"); }
+function buildRecord(){ try{buildRecSummary();}catch(_){} try{buildRecGraph();}catch(_){} try{buildRecCalendar();}catch(_){} try{buildRecWeekday();}catch(_){} }
+function buildRecSummary(){
+  const wl=getWakeLog();
+  const rec=Object.entries(wl).filter(([k,v])=>Number.isFinite(v)).sort((a,b)=>a[0]<b[0]?1:-1).slice(0,30);
+  const target=profileWake();
+  const avgEl=$("recAvg"),diffEl=$("recDiff"),stEl=$("recStreak");
+  if(rec.length){
+    const avg=rec.reduce((s,d)=>s+d[1],0)/rec.length;
+    if(avgEl)avgEl.textContent=_floatHM(avg);
+    const dm=Math.round((avg-target)*60);
+    if(diffEl){diffEl.innerHTML=(dm>0?"+":dm<0?"-":"±")+Math.abs(dm)+'<span class="recUnit">分</span>';
+      diffEl.style.color=dm>15?"#e88a3a":(dm<-5?"#3f9fc9":"#4d7790");}
+  }else{ if(avgEl)avgEl.textContent="--:--"; if(diffEl)diffEl.textContent="--"; }
+  if(stEl)stEl.innerHTML=calcStreak().current+'<span class="recUnit">日</span>';
+}
+function buildRecGraph(){
+  const box=$("recGraph");if(!box)return;
+  const wl=getWakeLog();
+  const data=Object.entries(wl).filter(([k,v])=>Number.isFinite(v)).sort((a,b)=>a[0]<b[0]?-1:1).slice(-14);
+  if(data.length<2){box.innerHTML='<div class="recEmpty">記録がたまると<br>ここにグラフが出るよ</div>';return;}
+  const target=profileWake(),vals=data.map(d=>d[1]);
+  let lo=Math.min(target,...vals)-0.35,hi=Math.max(target,...vals)+0.35;
+  if(hi-lo<1.2){const mid=(hi+lo)/2;lo=mid-0.6;hi=mid+0.6;}
+  const W=340,H=150,pL=34,pR=8,pT=16,pB=22;
+  const X=i=>pL+i*(W-pL-pR)/(data.length-1), Y=v=>pT+(hi-v)/(hi-lo)*(H-pT-pB);
+  let s='<svg viewBox="0 0 340 150" style="width:100%;height:auto;display:block;">';
+  for(let h=Math.ceil(lo);h<=Math.floor(hi);h++){
+    s+='<line x1="'+pL+'" y1="'+Y(h).toFixed(1)+'" x2="'+(W-pR)+'" y2="'+Y(h).toFixed(1)+'" stroke="#eef3f7" stroke-width="1"/>';
+    s+='<text x="4" y="'+(Y(h)+3).toFixed(1)+'" font-size="9" font-weight="800" fill="#c4d0d9">'+h+':00</text>';
+  }
+  s+='<line x1="'+pL+'" y1="'+Y(target).toFixed(1)+'" x2="'+(W-pR)+'" y2="'+Y(target).toFixed(1)+'" stroke="#ffb37a" stroke-width="2" stroke-dasharray="4 5"/>';
+  s+='<text x="'+(W-pR)+'" y="'+(Y(target)-4).toFixed(1)+'" text-anchor="end" font-size="9" font-weight="800" fill="#e8a25a">目標 '+_floatHM(target)+'</text>';
+  s+='<polyline points="'+data.map((d,i)=>X(i).toFixed(1)+","+Y(d[1]).toFixed(1)).join(" ")+'" fill="none" stroke="#7fd0f0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>';
+  data.forEach((d,i)=>{ s+='<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(d[1]).toFixed(1)+'" r="3.6" fill="'+_recDot(Math.round((d[1]-target)*60))+'"/>'; });
+  s+='</svg>';
+  box.innerHTML=s;
+}
+function buildRecCalendar(){
+  const box=$("recCal");if(!box)return;
+  const wl=getWakeLog(),p=jstParts(),Y=p.Y,M=p.M;
+  const first=new Date(Y,M-1,1).getDay(), days=new Date(Y,M,0).getDate(), todayKey=jstKey(),target=profileWake();
+  const t=$("recCalTitle");if(t)t.textContent=M+"月";
+  const hdr=["日","月","火","水","木","金","土"];
+  let html="";
+  hdr.forEach((d,i)=>html+='<div class="rcH'+(i===0?' sun':i===6?' sat':'')+'">'+d+'</div>');
+  for(let i=0;i<first;i++)html+='<div class="rcCell blank"></div>';
+  for(let day=1;day<=days;day++){
+    const key=Y+"-"+String(M).padStart(2,"0")+"-"+String(day).padStart(2,"0");
+    const v=wl[key];let cls="rcCell",style="";
+    if(Number.isFinite(v)){cls+=" on";style='background:'+_recHeat(Math.round((v-target)*60))+';';}
+    else if(key>todayKey)cls+=" fut";
+    if(key===todayKey)cls+=" today";
+    html+='<div class="'+cls+'" style="'+style+'">'+day+'</div>';
+  }
+  box.innerHTML=html;
+}
+function buildRecWeekday(){
+  const box=$("recWeek");if(!box)return;
+  const wl=getWakeLog(),sums=[0,0,0,0,0,0,0],cnts=[0,0,0,0,0,0,0];
+  Object.entries(wl).forEach(([k,v])=>{ if(!Number.isFinite(v))return; const dow=new Date(k+"T00:00:00").getDay(); sums[dow]+=v;cnts[dow]++; });
+  const avgs=sums.map((s,i)=>cnts[i]?s/cnts[i]:null), present=avgs.filter(a=>a!=null), note=$("recWeekNote");
+  if(!present.length){box.innerHTML='<div class="recEmpty">記録がたまると<br>曜日ごとに出るよ</div>';if(note)note.style.display="none";return;}
+  if(note)note.style.display="";
+  const target=profileWake();
+  let lo=Math.min(target,...present)-0.3,hi=Math.max(target,...present)+0.3;
+  if(hi-lo<1.2){const mid=(hi+lo)/2;lo=mid-0.6;hi=mid+0.6;}
+  const W=340,H=134,pL=40,pR=8,pT=24,pB=30;
+  const X=i=>pL+i*(W-pL-pR)/6, Y=v=>pT+(hi-v)/(hi-lo)*(H-pT-pB);
+  const days=["日","月","火","水","木","金","土"], dcol=["#e79ab0","#9db6c6","#9db6c6","#9db6c6","#9db6c6","#9db6c6","#8bb6e0"];
+  let s='<svg viewBox="0 0 340 134" style="width:100%;height:auto;display:block;">';
+  for(let h=Math.ceil(lo);h<=Math.floor(hi);h++){
+    s+='<line x1="'+pL+'" y1="'+Y(h).toFixed(1)+'" x2="'+(W-pR)+'" y2="'+Y(h).toFixed(1)+'" stroke="#eef3f7" stroke-width="1"/>';
+    s+='<text x="4" y="'+(Y(h)+3).toFixed(1)+'" font-size="9" font-weight="800" fill="#c4d0d9">'+h+':00</text>';
+  }
+  s+='<line x1="'+pL+'" y1="'+Y(target).toFixed(1)+'" x2="'+(W-pR)+'" y2="'+Y(target).toFixed(1)+'" stroke="#ffcfa0" stroke-width="1.6" stroke-dasharray="3 4"/>';
+  avgs.forEach((a,i)=>{
+    const gx=X(i).toFixed(1);
+    s+='<line x1="'+gx+'" y1="20" x2="'+gx+'" y2="104" stroke="#f2f6f9" stroke-width="1"/>';
+    if(a!=null){
+      const dm=Math.round((a-target)*60),yy=Y(a),ty=Math.max(12,yy-8);
+      s+='<text x="'+gx+'" y="'+ty.toFixed(1)+'" text-anchor="middle" font-size="9" font-weight="900" fill="'+(dm<=10?"#3f9fc9":"#e88a3a")+'">'+_floatHM(a)+'</text>';
+      s+='<circle cx="'+gx+'" cy="'+yy.toFixed(1)+'" r="5" fill="'+_recDot(dm)+'"/>';
+    }
+    s+='<text x="'+gx+'" y="126" text-anchor="middle" font-size="10.5" font-weight="800" fill="'+dcol[i]+'">'+days[i]+'</text>';
+  });
+  s+='</svg>';
+  box.innerHTML=s;
+  let li=-1,lv=-1; avgs.forEach((a,i)=>{ if(a!=null&&a>lv){lv=a;li=i;} });
+  if(note){
+    if(li>=0&&(lv-target)*60>20){note.textContent=days[li]+"曜は ちょっとゆっくりめ";note.style.color="#d4853a";note.style.background="#fff3e6";}
+    else{note.textContent="曜日の ばらつきは 少なめ";note.style.color="#5aa06f";note.style.background="#eefaf0";}
+  }
+}
 /* ===== Firebase Realtime Database（公開プロフィールの共有） ===== */
 const FB_APP="https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
 const FB_DB="https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
@@ -2130,14 +2825,24 @@ async function publishProfile(){
   const db=await getDB();if(!db)return;
   try{
     const{ref,set,remove}=await import(FB_DB);
+    const st=calcStreak();
     if(p.isPublic){
       await set(ref(db,"profiles/"+getUid()),{
         name:p.name||"匿名さん",color:p.color||"#8fdcff",catBody:p.catBody||"#1c1c1c",comment:p.comment||"",
-        wakeHour:Number.isFinite(p.wakeHour)?p.wakeHour:6,streak:calcStreak().current,
+        wakeHour:Number.isFinite(p.wakeHour)?p.wakeHour:6,streak:st.current,best:st.best,
         public:true,updatedAt:Date.now()
       });
     }else{
       await remove(ref(db,"profiles/"+getUid()));   /* 非公開なら一覧から消す */
+    }
+    /* 入部済みなら部員情報も更新（最長連続日数など。非公開でも「非表示」部員として残す） */
+    if(isJoined()){
+      const pub=(p.isPublic!==false);
+      const rec={joined:true,public:pub,best:st.best,current:st.current,
+        wakeHour:Number.isFinite(p.wakeHour)?p.wakeHour:6,
+        joinedAt:Number(localStorage.getItem(JOINED_AT_KEY))||Date.now(),updatedAt:Date.now()};
+      if(pub){rec.name=p.name||"匿名さん";rec.color=p.color||"#8fdcff";rec.catBody=p.catBody||"#1c1c1c";rec.comment=p.comment||"";}
+      await set(ref(db,"members/"+getUid()),rec);
     }
   }catch(e){console.warn("publish failed",e);}
 }
@@ -2180,19 +2885,39 @@ async function postToday(anon,comment){
     });
   }catch(e){console.warn("post failed",e);}
 }
-function postPreviewHTML(comment){
+function postRiseText(){
+  const wl=getWakeLog()[jstKey()];let h,m;
+  if(Number.isFinite(wl)){h=Math.floor(wl);m=Math.round((wl-h)*60);if(m===60){h++;m=0;}}
+  else{const p=jstParts();h=p.h;m=p.m;}
+  const r=riseLabelInfo(h,m,profileWake());
+  return `${r.time}起床(${r.lbl})`;
+}
+function postPreviewHTML(comment,anon){
   const body=profileBody(),ear=profileColor(),p=getProfile()||{};
-  const name=escHtml((p.name||"匿名さん"));
+  const name=escHtml(anon?"匿名さん":(p.name||"匿名さん"));
   const streak=calcStreak().current;
   const st=streak>=2?`<span class="catStreak">連続${streak}日</span>`:"";
-  const cm=comment?`<div class="ppComment">${escHtml(comment)}</div>`:"";
   const _cos=getEquippedCostume();return `<div class="ppTopChip"><span class="avt">${catFaceSvg(body,ear,_cos)}</span><span class="nm">${name}</span></div>`+
-    cm+
+    `<div class="ppSub" id="ppSub">${escHtml(postRiseText())}</div>`+
     `<div class="ppCatWrap">${catFigureHTML(body,ear,"sit",[0,0],"normal",_cos)}</div>`+st;
 }
+let _ppSubTimer=null;
 function updatePostPreview(){
   const c=($("postComment").value||"").trim();
-  const el=$("postPreview");if(el)el.innerHTML=postPreviewHTML(c);
+  const anon=!!($("postAnon")&&$("postAnon").checked);
+  const el=$("postPreview");if(!el)return;
+  el.innerHTML=postPreviewHTML(c,anon);
+  if(_ppSubTimer){clearInterval(_ppSubTimer);_ppSubTimer=null;}
+  const rise=postRiseText();
+  if(c){   /* コメントありならホームと同じで 起床時刻 ↔ コメント を切り替え */
+    let showC=false;
+    _ppSubTimer=setInterval(()=>{
+      const s=$("ppSub");if(!s){clearInterval(_ppSubTimer);_ppSubTimer=null;return;}
+      showC=!showC;
+      if(showC){s.textContent="💬 "+c;s.classList.add("isComment");}
+      else{s.textContent=rise;s.classList.remove("isComment");}
+    },2600);
+  }
 }
 function showPostConfirm(fromSave){
   $("postConfirmTitle").textContent=fromSave?"保存されました":"今日の結果をシェア";
@@ -2205,7 +2930,7 @@ function showPostConfirm(fromSave){
 function refreshSaveBtn(){
   const sb=$("saveBtn");if(!sb)return;
   const lbl=sb.querySelector(".saveBtnLabel");
-  if(lbl)lbl.textContent="ほぞん";   /* 何度でも保存できる（投稿ボタンには変えない） */
+  if(lbl)lbl.textContent="保存/投稿";   /* 保存すると投稿確認へ進める */
   sb.classList.remove("asPost");
 }
 function refreshGroundPost(){
@@ -3663,6 +4388,7 @@ function _withTimeout(p,ms){return Promise.race([p,new Promise((_,rej)=>setTimeo
 async function loadHillCats(){
   const cont=$("hillCats");if(!cont)return;
   renderEmptyCat();   /* まず自分の猫を必ず表示（Firebaseが遅くても猫が消えないように） */
+  if($("recentPostCount"))$("recentPostCount").textContent="";
   try{
     const db=await _withTimeout(getDB(),4500);
     if(!db)return;     /* DB未設定：自分の猫のまま */
@@ -3683,6 +4409,8 @@ async function loadHillCats(){
     const p=getProfile()||{};
     /* 自分の“今日の投稿”を取得。あれば投稿済み＝実際のひとこと・起床時間を表示、なければ「投稿する」ボタン */
     const selfPost=val[me+"_"+jstKey()]||null;
+    const posters=cats.length+(selfPost?1:0);
+    if($("recentPostCount"))$("recentPostCount").textContent=posters>0?(posters+"人が投稿"):"";
     let self;
     if(selfPost){
       self={uid:me,isSelf:true,name:p.name||"あなた",catBody:profileBody(),color:profileColor(),
@@ -3711,12 +4439,15 @@ function renderHillPage(){
   const cont=$("hillCats");cont.className="";cont.innerHTML="";
   /* スマホは3匹固定表示。4匹以上（自分含む）なら ‹ › でページ切替 */
   const catW=74,labelW=118;
-  const perPage=3;
+  const gap=Math.max(8,labelW-catW);
+  /* 横幅に入るだけ表示（スマホ=3匹、横長PCはもっと多く。4匹以上ではみ出す時だけ ‹ › ） */
+  const avail=Math.max(300,(window.innerWidth||360)-24);
+  const perPage=Math.min(24,Math.max(3,Math.floor((avail+gap)/(catW+gap))));
   const all=_hillAllCats;
   const pages=Math.max(1,Math.ceil(all.length/perPage));
   if(_hillPage>=pages)_hillPage=0;
   const cats=all.slice(_hillPage*perPage,_hillPage*perPage+perPage);
-  cont.style.gap=Math.max(8,labelW-catW)+"px";
+  cont.style.gap=gap+"px";
   _hillCatsData=cats.map(c=>({body:c.catBody||"#1c1c1c",ear:c.color||"#8fdcff",name:c.name||"匿名さん"}));
   const n=cats.length,center=(n-1)/2;
   const figs=[];
@@ -3745,7 +4476,7 @@ function renderHillPage(){
         const pb=document.createElement("button");pb.className="catLike catSelfPost";pb.type="button";pb.textContent="投稿する";
         pb.addEventListener("click",e=>{
           e.stopPropagation();try{playClick();}catch(_){}
-          if(!todayStamp()){toast("先に今日のラジオ体操をしてね🌱");return;}
+          if(!todayStamp()){toast("先に今日のラジオ体操をしてね");return;}
           showPostConfirm(false);
         });
         el.appendChild(lab);el.appendChild(pb);el.appendChild(fig);
@@ -4641,50 +5372,100 @@ function dlCard(src,name){const a=document.createElement("a");a.href=src;a.downl
 /* =========================================================
    カード選択（時間チェック：PC・スマホ共通）
    ========================================================= */
+/* きょう初回だけ流す短い演出：ラジオ体操カード → onDone でルーレットへ */
+function _diStampEl(){const d=document.createElement("div");d.className="diStamp";d.textContent="済";return d;}
+function showDailyIntro(onDone){
+  const el=$("dailyIntro");
+  if(!el){ if(typeof onDone==="function")onDone(); return; }
+  const today=jstKey(), y=addDays(today,-1), tm=addDays(today,1);
+  const doneSet=new Set(getDoneDates());
+  const lbl=k=>{const p=k.split("-");return (+p[1])+"/"+(+p[2]);};
+  $("diDateY").textContent=lbl(y);$("diDateT").textContent=lbl(today);$("diDateTm").textContent=lbl(tm);
+  const sY=$("diSlotY"),sT=$("diSlotT"),sTm=$("diSlotTm"),msg=$("diMsg");
+  sY.innerHTML="";sT.innerHTML="";sTm.innerHTML="";if(msg)msg.textContent="";
+  if(doneSet.has(y))sY.appendChild(_diStampEl());   /* 昨日やっていれば昨日にスタンプ */
+  const st=calcStreak().current;
+  el.classList.add("show");
+  let done=false;
+  const finish=()=>{ if(done)return; done=true; el.removeEventListener("click",skip); el.classList.remove("show");
+    if(typeof onDone==="function")setTimeout(onDone,200); };
+  const skip=()=>finish();
+  el.addEventListener("click",skip);
+  setTimeout(()=>{   /* 少し待ってから きょうに スタンプを押す */
+    if(done)return;
+    const rip=document.createElement("div");rip.className="diRipple";
+    const stamp=_diStampEl();stamp.classList.add("press");
+    sT.appendChild(rip);sT.appendChild(stamp);
+    try{ stampSnd.currentTime=0; stampSnd.play().catch(()=>{}); }catch(_){}
+    setTimeout(()=>rip.classList.add("go"),110);
+    if(msg)msg.textContent = st>=2 ? (st+1)+"日 つづいてるよ！" : "きょうも えらい！";
+  },560);
+  setTimeout(finish,2150);
+}
 function startRandomMode(){
-  mode="random";
   _startedOnce=true;   /* このセッションで一度始めた（次回から確認カードを省略） */
+  showModeChoice();    /* 「スタンプラリー」か「投稿」を選ぶ（どっちでもOK） */
+}
+function showModeChoice(){ $("modeChoice").classList.add("visible"); }
+function hideModeChoice(){ $("modeChoice").classList.remove("visible"); }
+function chooseRally(){ hideModeChoice(); startRally(); }
+function choosePost(){ hideModeChoice(); doPostOnly(); }
+function chooseBoth(){ hideModeChoice(); startRally(); }   /* 両方＝スタンプラリー（最後に投稿できる） */
+function chooseSendoff(){   /* 見送りだけ：猫のいってらっしゃい画面へ。外出中なら説明して終わり */
+  hideModeChoice();
+  const phase=(typeof outingPhase==="function")?outingPhase():"none";
+  if(phase==="away"){ toast("ねこは いま おでかけ中だよ。帰ってきたら 見送れるよ"); return; }
+  goToCatRoomAfterPost();
+}
+/* スタンプラリー本体：演出 → ルーレット → カード準備 */
+function startRally(){
+  mode="random";
   hideSelect();
   clearStamps();
   uploaded=null;
   setCard(RAND_CARD);
   updateTop();
   setTimeOfDay(false);
-  /* 朝ノルマ画面はスキップして、押したらすぐスタンプを押せる画面へ */
   hideTaskScreen();
   challengeScreen.classList.remove("visible");
-  /* 毎回ルーレットを回せる。当たった日は固定（引き直し不可）。
-     目標時間から離れるほど「はずれ」の割合が増える。はずれは保存せず、また回せる。 */
   const decided=todayStamp();
-  const rb=$("rouletteReset");
+  const rb=$("rouletteReset");if(rb)rb.hidden=true;
   if(decided){
-    const mins=Math.max(0,Math.ceil((24-nowHourFloat())*60));
-    rb.textContent=`更新まで残り ${mins}分（同じスタンプ）`;
-    rb.hidden=false;
-  }else rb.hidden=true;
-  let idx,mFrac;
-  if(decided){idx=POOL.indexOf(decided);if(idx<0)idx=pickStampIdx();mFrac=0;}
-  else{
-    mFrac=missRate();
-    idx=(Math.random()<mFrac)?-1:pickStampIdx();
-  }
-  stampPath=decided||null;   /* 決定済み（2回目以降）は即セットして押せるように */
-  if(decided)ghostImg.src=decided;
-  openRoulette(idx,async(picked)=>{
-    if(picked===null){            /* はずれ：白黒スタンプを押せるようにする（見た目が違うだけ） */
-      const gbase=POOL[Math.floor(Math.random()*POOL.length)];
-      let gsrc=gbase;
-      try{ gsrc=await toGrayDataURL(gbase); }catch(_){ gsrc=gbase; }
-      stampPath=gsrc; ghostImg.src=gsrc;
-      refreshTodayPreview();
-      openCardMenu();   /* はずれでもカード準備→スタンプを押せる */
-      return;
-    }
-    if(!decided)assignTodayStamp(idx);   /* 初回だけ保存 */
-    stampPath=picked;ghostImg.src=picked;
+    /* 二回目以降：ルーレット演出をスキップして、そのままカード準備へ（スタンプは固定） */
+    stampPath=decided;ghostImg.src=decided;
     refreshTodayPreview();
-    openCardMenu();   /* ★ ルーレットの後にカード準備画面を表示 */
-  },mFrac);
+    openCardMenu();
+    return;
+  }
+  /* 初回：短い演出 → ルーレット（目標から離れるほど「はずれ」が増える。はずれは保存せず再挑戦可） */
+  const mFrac=missRate();
+  const idx=(Math.random()<mFrac)?-1:pickStampIdx();
+  stampPath=null;
+  showDailyIntro(()=>{
+    openRoulette(idx,async(picked)=>{
+      if(picked===null){            /* はずれ：白黒スタンプを押せるようにする（見た目が違うだけ） */
+        const gbase=POOL[Math.floor(Math.random()*POOL.length)];
+        let gsrc=gbase;
+        try{ gsrc=await toGrayDataURL(gbase); }catch(_){ gsrc=gbase; }
+        stampPath=gsrc; ghostImg.src=gsrc;
+        refreshTodayPreview();
+        openCardMenu();
+        return;
+      }
+      assignTodayStamp(idx);   /* 初回だけ保存 */
+      stampPath=picked;ghostImg.src=picked;
+      refreshTodayPreview();
+      openCardMenu();
+    },mFrac);
+  });
+}
+/* スタンプラリーはしない：スタンプは自動付与（図鑑・投稿用）→ そのまま投稿確認へ */
+function doPostOnly(){
+  if(!todayStamp())assignTodayStamp(pickStampIdx());
+  try{markTodayDone();}catch(_){}
+  try{refreshHome();}catch(_){}
+  if(postedToday()){ toast("きょうは 投稿ずみだよ"); return; }
+  showPostConfirm(false);
 }
 /* スタンプ画像を白黒データURLにする（はずれ用） */
 async function toGrayDataURL(src){
@@ -4824,6 +5605,7 @@ $("postNo").addEventListener("click",()=>{
   else{ showSendoffChoice(false); }   /* 投稿しない→見送り選択へ */
 });
 $("postComment").addEventListener("input",updatePostPreview);
+$("postAnon").addEventListener("change",updatePostPreview);
 $("groundPostBtn").addEventListener("click",()=>{playClick();showPostConfirm(false);});
 $("postDoneRally").addEventListener("click",()=>{playClick();$("postDone").classList.remove("visible");});   /* やめる→スタンプラリー */
 $("postDoneHome").addEventListener("click",()=>{playClick();$("postDone").classList.remove("visible");goToCatRoomAfterPost();});   /* 見送り→いってらっしゃい */
@@ -5129,6 +5911,16 @@ function refreshHomeGate(){
       if(rlbl)rlbl.textContent="帰宅 "+fmt(rH,rM);
     }else rmk.hidden=true;
   }
+  /* 体操済みマーカー（今日 最初に体操した時刻に縦棒） */
+  const dmk=$("hgDoneMk"), dlbl=$("hgDoneLbl");
+  if(dmk){
+    let dt=null; try{ const v=getWakeLog()[jstKey()]; if(Number.isFinite(v))dt=v; }catch(_){}
+    if(dt!=null){
+      dmk.hidden=false; dmk.style.left=X(dt)+"%";
+      let dH=Math.floor(dt), dM=Math.round((dt-dH)*60); if(dM===60){dH=(dH+1)%24;dM=0;}
+      if(dlbl)dlbl.textContent="体操 "+fmt(dH,dM);
+    }else dmk.hidden=true;
+  }
   /* 今の時間ゾーンで、ラジオ＆はじめるボタンの色を変える */
   const sel=$("selectInner");
   if(sel){
@@ -5163,6 +5955,7 @@ function refreshHome(){
   refreshRareMeter();
   refreshGroundPost();
   try{const ml=document.querySelector(".modeLabel");if(ml)ml.textContent=todayDone()?"スタンプ済み":"はじめる";}catch(_){}
+  try{const dh=$("doneHint");if(dh)dh.hidden=!todayDone();}catch(_){}
   try{checkCatLetter(current);}catch(_){}
   try{refreshBuddyCount();}catch(_){}
 }
@@ -8339,6 +9132,36 @@ if(_tutSkipBtn)_tutSkipBtn.addEventListener("click",()=>{
   try{ if(getProfile()){showSelect();updateTop();} else showNameCard(); }catch(_){ showNameCard(); }
 });
 $("helpBtn").addEventListener("click",()=>{playClick();showTutorial("help");});
+/* ラジオ体操部（部活） */
+$("joinBtn").addEventListener("click",()=>{playClick();openClub();});
+$("clubClose").addEventListener("click",()=>{playClick();closeClub();});
+$("clubJoinBtn").addEventListener("click",()=>{playClick();if(isJoined())leaveClub();else joinClub();});
+$("memberPopClose").addEventListener("click",()=>{playClick();$("memberPop").classList.remove("visible");});
+$("memberPop").addEventListener("click",e=>{if(e.target===$("memberPop"))$("memberPop").classList.remove("visible");});
+/* フレンド / リクエスト */
+$("friendBtn").addEventListener("click",()=>{playClick();openFriend();});
+$("friendClose").addEventListener("click",()=>{playClick();closeFriend();});
+$("tabFriends").addEventListener("click",()=>{playClick();switchFriendTab("friends");});
+$("tabRequests").addEventListener("click",()=>{playClick();switchFriendTab("requests");});
+/* きろく（起床時間の記録） */
+$("fabRecord").addEventListener("click",()=>{playClick();try{closeFab();}catch(_){}openRecord();});
+$("recClose").addEventListener("click",()=>{playClick();closeRecord();});
+/* きょうは どっち？（スタンプラリー / 投稿） */
+$("mcRally").addEventListener("click",()=>{playClick();chooseRally();});
+$("mcPost").addEventListener("click",()=>{playClick();choosePost();});
+$("mcBoth").addEventListener("click",()=>{playClick();chooseBoth();});
+$("mcSendoff").addEventListener("click",()=>{playClick();chooseSendoff();});
+$("modeChoiceClose").addEventListener("click",()=>{playClick();hideModeChoice();});
+$("modeChoice").addEventListener("click",e=>{if(e.target===$("modeChoice"))hideModeChoice();});
+/* 横幅が変わったら丘の猫を並べ直す（PCでウィンドウをリサイズしたとき） */
+let _hillResizeT=null;
+window.addEventListener("resize",()=>{
+  if(_hillResizeT)clearTimeout(_hillResizeT);
+  _hillResizeT=setTimeout(()=>{
+    try{ if(_hillAllCats&&_hillAllCats.length&&!$("selectScreen").classList.contains("hidden"))renderHillPage(); }catch(_){}
+  },250);
+});
+try{refreshFriendBadge();}catch(_){}
 $("nyanShot").addEventListener("click",()=>{playClick();if(!_photoMode)enterPhotoMode();});
 $("catShutter").addEventListener("click",()=>{playClick();nyanCapture();exitPhotoMode();});
 $("recentLabel").addEventListener("click",()=>{

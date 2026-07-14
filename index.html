@@ -1176,24 +1176,31 @@ button,input{font:inherit;}
   box-shadow:0 6px 16px rgba(111,205,255,.22);color:#7c97a8;font-size:18px;font-weight:800;}
 #roomBack:active{transform:scale(.94);}
 #roomBack.locked{opacity:.32;cursor:default;pointer-events:none;}
-#roomBag{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);z-index:6;width:54px;height:54px;border:none;
-  background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;
-  filter:drop-shadow(0 6px 10px rgba(80,150,190,.32));}
 #roomBag svg{width:46px;height:46px;}
 #roomBag:active{transform:translateX(-50%) scale(.94);}
-#roomCam{position:absolute;bottom:18px;right:16px;z-index:6;width:50px;height:50px;border:none;border-radius:50%;cursor:pointer;
+#roomShop{position:absolute;top:calc(50% - 84px);right:14px;left:auto;bottom:auto;z-index:6;width:50px;height:50px;border:none;border-radius:50%;cursor:pointer;
   background:rgba(255,255,255,.85);box-shadow:0 6px 16px rgba(111,205,255,.28);display:flex;align-items:center;justify-content:center;}
-#roomShop{position:absolute;bottom:18px;left:16px;z-index:6;width:50px;height:50px;border:none;border-radius:50%;cursor:pointer;
-  background:rgba(255,255,255,.85);box-shadow:0 6px 16px rgba(255,160,200,.3);display:flex;align-items:center;justify-content:center;font-size:24px;}
-#roomDoor{position:absolute;bottom:18px;left:74px;z-index:6;width:50px;height:50px;border:none;border-radius:50%;cursor:pointer;
-  background:linear-gradient(180deg,#fff6e6,#ffe6c2);box-shadow:0 6px 16px rgba(200,150,80,.34);display:flex;align-items:center;justify-content:center;font-size:24px;
+#roomShop svg,#roomCam svg,#roomBag svg{width:27px;height:27px;display:block;}
+#roomCam{position:absolute;top:calc(50% - 26px);right:14px;left:auto;bottom:auto;z-index:6;width:50px;height:50px;border:none;border-radius:50%;cursor:pointer;
+  background:rgba(255,255,255,.85);box-shadow:0 6px 16px rgba(111,205,255,.28);display:flex;align-items:center;justify-content:center;}
+#roomDoor{position:absolute;left:50%;right:auto;top:auto;bottom:calc(76px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:6;
+  padding:10px 20px;border:2px solid rgba(255,255,255,.85);border-radius:999px;cursor:pointer;
+  background:linear-gradient(180deg,#ffe3a8,#ffc861);box-shadow:0 6px 15px rgba(200,150,80,.38),inset 0 2px 0 rgba(255,255,255,.75);
+  color:#9c560f;font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:13.5px;font-weight:900;white-space:nowrap;letter-spacing:.02em;
   animation:doorBob 2.4s ease-in-out infinite;}
 #roomDoor[hidden]{display:none;}
-#roomDoor:active{transform:scale(.9);}
-#roomDoor .doorLbl{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:5px;
-  font-size:9px;font-weight:900;color:#c47a2e;background:rgba(255,255,255,.92);border-radius:9px;padding:2px 7px;white-space:nowrap;box-shadow:0 3px 9px rgba(200,150,80,.24);}
-@keyframes doorBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+#roomDoor:active{transform:translateX(-50%) scale(.94);}
+@keyframes doorBob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-3px)}}
 #catRoom.awayMode #roomDoor{display:none !important;}
+#roomBag{position:absolute;top:calc(50% + 32px);right:14px;left:auto;bottom:auto;transform:none;z-index:6;width:50px;height:50px;border:none;border-radius:50%;
+  background:rgba(255,255,255,.85);box-shadow:0 6px 16px rgba(111,205,255,.28);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;}
+/* 横画面（ドックが右に行く）ときは 部屋ボタンを下に入れ替え */
+@media (min-width:820px){
+  #roomShop{top:auto;bottom:20px;right:auto;left:20px;}
+  #roomCam{top:auto;bottom:20px;right:auto;left:80px;}
+  #roomBag{top:auto;bottom:14px;right:auto;left:138px;transform:none;}
+  #roomDoor{bottom:22px;}
+}
 #shopPanel{position:absolute;inset:0;z-index:9;display:none;align-items:flex-end;justify-content:center;background:rgba(120,90,110,.28);}
 #shopPanel.show{display:flex;}
 #shopCard{width:min(440px,94%);max-height:80%;overflow-y:auto;background:#fff;border-radius:22px 22px 0 0;padding:16px 16px 22px;box-shadow:0 -8px 30px rgba(150,120,150,.3);}
@@ -2199,10 +2206,10 @@ button,input{font:inherit;}
   <div id="roomStatus"></div>
   <div id="affBar"><span id="affHeart">❤</span><div id="affTrack"><div id="affFill"></div></div><div id="affLabel">はじめまして</div></div>
   <button id="roomBack" type="button" aria-label="もどる">✕</button>
-  <button id="roomBag" type="button" aria-label="プロフィール・衣装"><svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path d="M12 19 a12 12 0 0 1 24 0" fill="none" stroke="#4f88a4" stroke-width="3.4" stroke-linecap="round"/><rect x="6" y="18" width="36" height="26" rx="6" fill="#bfe6ff" stroke="#4f88a4" stroke-width="3"/><path d="M6 25 h36 v6 a3.5 3.5 0 0 1 -3.5 3.5 H9.5 A3.5 3.5 0 0 1 6 31 Z" fill="#9fd4f0" stroke="#4f88a4" stroke-width="3" stroke-linejoin="round"/><rect x="20" y="29" width="8" height="9" rx="2.2" fill="#4f88a4"/></svg><span id="roomBagBadge" class="coinBadge" hidden></span></button>
+  <button id="roomBag" type="button" aria-label="プロフィール・衣装"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M11 13 a5 5 0 0 1 10 0" fill="none" stroke="#5c93ad" stroke-width="2.4" stroke-linecap="round"/><rect x="6.5" y="13" width="19" height="15" rx="3.5" fill="none" stroke="#5c93ad" stroke-width="2.4"/><path d="M6.5 19 H25.5" stroke="#5c93ad" stroke-width="2.2"/></svg><span id="roomBagBadge" class="coinBadge" hidden></span></button>
   <button id="roomCam" type="button" aria-label="カメラ"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M11 7 L13 4 L19 4 L21 7 L27 7 Q29 7 29 9 L29 24 Q29 26 27 26 L5 26 Q3 26 3 24 L3 9 Q3 7 5 7 Z" fill="none" stroke="#5c93ad" stroke-width="2.4" stroke-linejoin="round"/><circle cx="16" cy="16" r="6" fill="none" stroke="#5c93ad" stroke-width="2.4"/></svg></button>
-  <button id="roomShop" type="button" aria-label="ショップ">🛒</button>
-  <button id="roomDoor" type="button" aria-label="いってらっしゃい" hidden><span class="doorLbl">いってらっしゃい</span>🚪</button>
+  <button id="roomShop" type="button" aria-label="ショップ"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M4 6 H8 L10.6 20.5 H24.4 L26.6 10 H10.3" fill="none" stroke="#5c93ad" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12.5" cy="25" r="2.2" fill="#5c93ad"/><circle cx="22.5" cy="25" r="2.2" fill="#5c93ad"/></svg></button>
+  <button id="roomDoor" type="button" aria-label="いってらっしゃい" hidden>いってらっしゃい</button>
   <div id="editBar">
     <div id="editTray"></div>
     <div id="editHintBar"><span id="editHint">アイテムをタップして置く・ドラッグで移動・✕で片づけ</span><button id="devAllToys" type="button" aria-label="どれでも遊ぶ">◯</button><button id="devOuting" type="button" aria-label="おでかけ短縮テスト">⏱おでかけ</button><button id="devUnlock" type="button" aria-label="dev">…</button><button id="editDone" type="button">かんりょう</button></div>
@@ -9582,32 +9589,10 @@ function dockGo(t){
 /* ドックの位置保存・復元 */
 function applyDockPos(){
   const d=$("fabWrap");if(!d)return;
-  let pos=null;try{pos=JSON.parse(localStorage.getItem("radio_dock_pos")||"null");}catch(_){}
-  if(pos&&Number.isFinite(pos.x)&&Number.isFinite(pos.y)){
-    const w=d.offsetWidth||60,h=d.offsetHeight||60;
-    const x=Math.max(4,Math.min(window.innerWidth-w-4,pos.x)),y=Math.max(4,Math.min(window.innerHeight-h-4,pos.y));
-    d.style.left=x+"px";d.style.top=y+"px";d.style.right="auto";d.style.bottom="auto";d.style.transform="none";
-  }
+  try{localStorage.removeItem("radio_dock_pos");}catch(_){}
+  d.style.left="";d.style.top="";d.style.right="";d.style.bottom="";d.style.transform="";   /* ドラッグ移動は廃止：CSS既定位置に固定 */
 }
-(function initDock(){
-  const d=$("fabWrap");if(!d)return;
-  let drag=null,moved=false;
-  d.addEventListener("pointerdown",e=>{drag={x:e.clientX,y:e.clientY,l:d.offsetLeft,t:d.offsetTop};moved=false;});
-  window.addEventListener("pointermove",e=>{
-    if(!drag)return;
-    const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
-    if(!moved&&Math.hypot(dx,dy)<6)return;
-    moved=true;
-    let nl=Math.max(4,Math.min(window.innerWidth-d.offsetWidth-4,drag.l+dx));
-    let nt=Math.max(4,Math.min(window.innerHeight-d.offsetHeight-4,drag.t+dy));
-    d.style.left=nl+"px";d.style.top=nt+"px";d.style.right="auto";d.style.bottom="auto";d.style.transform="none";
-  });
-  window.addEventListener("pointerup",()=>{
-    if(drag&&moved){try{localStorage.setItem("radio_dock_pos",JSON.stringify({x:d.offsetLeft,y:d.offsetTop}));}catch(_){}}
-    drag=null;
-  });
-  d.addEventListener("click",e=>{ if(moved){e.stopPropagation();e.preventDefault();moved=false;} },true);
-})();
+(function initDock(){ /* ドラッグ移動は廃止 */ })();
 $("fabHome").addEventListener("click",()=>{playClick();dockGo("home");});
 $("fabRoom").addEventListener("click",()=>{playClick();dockGo("room");});
 $("fabDex").addEventListener("click",()=>{playClick();dockGo("dex");});

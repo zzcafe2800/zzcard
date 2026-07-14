@@ -2583,6 +2583,7 @@ button,input{font:inherit;}
     <div id="ppTabProf" class="ppTabBody">
       <div id="ppComment"></div>
       <div id="ppProfBtns">
+        <button id="ppReminderBtn" type="button">⏰ 毎朝の通知（カレンダー）</button>
         <button id="ppPublicBtn" type="button">公開／非公開</button>
         <button id="ppEditBtn" type="button">編集する</button>
         <details id="ppRestore">
@@ -6552,7 +6553,7 @@ document.addEventListener("pointerdown",e=>{
 window.addEventListener("resize",()=>{
   renderStamps();updateGhostSize();
   if(taskScreen.classList.contains("visible"))layoutCarousel();
-  try{const pb=$("topProfileBar"),hb=$("helpBtn");if(pb&&hb){const r=pb.getBoundingClientRect();if(r.width>0){hb.style.left=(r.right+8)+"px";hb.style.top=(r.top+(r.height-28)/2)+"px";}}}catch(_){}
+  try{const pb=$("topProfileBar"),hb=$("helpBtn");if(pb&&hb){const r=pb.getBoundingClientRect();if(r.width>0){hb.style.left=(r.right+8)+"px";hb.style.top="";}}}catch(_){}
   try{const sb=$("streakBadge"),rc=$("randomModeBtn");if(sb&&rc){const r=rc.getBoundingClientRect();if(r.width>0){sb.style.left=(r.right-48)+"px";sb.style.top=(r.bottom-55)+"px";}}}catch(_){}
 });
 setInterval(()=>{
@@ -6880,7 +6881,7 @@ function refreshHome(){
   refreshHomeGate();
   try{const done=todayDone();const gt=$("selectTitle"),sub=$("lobbySub");if(done){if(gt){gt.textContent="体操済み";gt.classList.add("titleDone");}if(sub)sub.textContent="";}else{let pct=100;try{pct=Math.round((1-missRate())*100);}catch(_){}if(gt){gt.textContent="ボーナス率";gt.classList.remove("titleDone");}if(sub)sub.textContent=pct+"%";}const top=$("homeGateTop");if(top)top.style.display="none";}catch(_){}
   try{const ib=$("installBar");document.body.classList.toggle("ib-up",!!(ib&&!ib.hidden&&ib.classList.contains("show")));}catch(_){}
-  try{const pb=$("topProfileBar"),hb=$("helpBtn");if(pb&&hb){const r=pb.getBoundingClientRect();if(r.width>0){hb.style.left=(r.right+8)+"px";hb.style.top=(r.top+(r.height-28)/2)+"px";}}}catch(_){}
+  try{const pb=$("topProfileBar"),hb=$("helpBtn");if(pb&&hb){const r=pb.getBoundingClientRect();if(r.width>0){hb.style.left=(r.right+8)+"px";hb.style.top="";}}}catch(_){}
   try{const sb=$("streakBadge"),rc=$("randomModeBtn");if(sb&&rc){const r=rc.getBoundingClientRect();if(r.width>0){sb.style.left=(r.right-48)+"px";sb.style.top=(r.bottom-55)+"px";}}}catch(_){}
   refreshGachaBadge();
   const{current}=calcStreak();
@@ -10218,6 +10219,7 @@ if(_tutSkipBtn)_tutSkipBtn.addEventListener("click",()=>{
   try{ if(getProfile()){showSelect();updateTop();} else showNameCard(); }catch(_){ showNameCard(); }
 });
 $("helpBtn").addEventListener("click",()=>{playClick();showTutorial("help");});
+try{const rb=$("ppReminderBtn");if(rb)rb.addEventListener("click",()=>{playClick();makeMorningReminder();});}catch(_){}
 /* ラジオ体操部（部活） */
 $("joinBtn").addEventListener("click",()=>{playClick();openClub();});
 $("clubClose").addEventListener("click",()=>{playClick();closeClub();});
@@ -10608,6 +10610,35 @@ function getBalancedStoryCats(){
 function _yesterdayLabel(){try{const y=addDays(storyPeriodKey(),-1).split("-");if(y.length===3)return (+y[1])+"月"+(+y[2])+"日";}catch(_){}const d=new Date(Date.now()-86400000);return (d.getMonth()+1)+"月"+d.getDate()+"日";}
 function _hashStr(str){let h=2166136261>>>0;const s=String(str||"");for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return h>>>0;}
 /* 日替わりで固定：同じ日は みんな同じ1本（日付から決定） */
+/* 毎朝のリマインダー（端末のカレンダーに"毎日くり返し"の予定＋アラームを追加）。サーバー不要・非公開 */
+function makeMorningReminder(){
+  try{
+    const {h,m}=profileWakeHM();
+    const pad=x=>String(x).padStart(2,"0");
+    const now=new Date();
+    const dt=`${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}T${pad(h)}${pad(m)}00`;
+    const stamp=now.toISOString().replace(/[-:]/g,"").replace(/\.\d+/,"");
+    const title="ラジオ体操の じかん\u{1F408}";
+    const ics=[
+      "BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//zuzu radio//JP","CALSCALE:GREGORIAN","METHOD:PUBLISH",
+      "BEGIN:VEVENT","UID:zuzu-"+Date.now()+"@radio","DTSTAMP:"+stamp,"DTSTART:"+dt,"RRULE:FREQ=DAILY",
+      "SUMMARY:"+title,"DESCRIPTION:おはよう！ 体操して スタンプを あつめよう。今日の おはなしも みてね\u{1F408}",
+      "BEGIN:VALARM","ACTION:DISPLAY","DESCRIPTION:"+title,"TRIGGER:-PT0M","END:VALARM",
+      "END:VEVENT","END:VCALENDAR"
+    ].join("\r\n");
+    const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent||"");
+    if(isIOS){
+      window.location.href="data:text/calendar;charset=utf-8,"+encodeURIComponent(ics);
+    }else{
+      const blob=new Blob([ics],{type:"text/calendar;charset=utf-8"});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement("a");a.href=url;a.download="radiotaiso.ics";
+      document.body.appendChild(a);a.click();
+      setTimeout(()=>{try{document.body.removeChild(a);URL.revokeObjectURL(url);}catch(_){}},1500);
+    }
+    try{toast(pad(h)+":"+pad(m)+" に 毎朝 おしらせするよ \u{1F4C5}");}catch(_){}
+  }catch(e){try{toast("うまく いかなかった…");}catch(_){}}
+}
 /* 進行度：最初の50話は1〜50、それ以降は51〜100（新規の人にまず前半の面白い話を） */
 function _storyOrder(){
   const a=[],b=[];

@@ -203,6 +203,10 @@ button,input{font:inherit;}
 .fabItem .fi svg{width:26px;height:26px;color:#5c93ad;}
 .sky-night .fabItem .fi svg,.sky-evening .fabItem .fi svg{color:#dfe8ff;}
 .fabItem .fl{font-size:9.5px;font-weight:800;color:#4d7790;background:none;padding:0;white-space:nowrap;line-height:1;}
+/* いま開いてる場所を目立たせる（アクティブ） */
+.fabItem.active .fi{background:#fff;box-shadow:0 3px 11px rgba(70,120,150,.34);}
+.fabItem.active .fi svg{color:#4f88a4 !important;}
+.fabItem.active .fl{color:#3f7d97;font-weight:900;}
 .sky-night .fabItem .fl,.sky-evening .fabItem .fl{color:#eef2ff;}
 /* スマホだけ：ドックをカードなし・地面に文字・太め・大きめ・全幅 */
 @media (max-width:560px){
@@ -217,7 +221,9 @@ button,input{font:inherit;}
   .sky-night .fabItem .fl,.sky-evening .fabItem .fl{color:#fff;}
   #fabHome .fi{width:46px;height:46px;}
   #fabHomeIcon{filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));}
-  .fabItem.active .fi,.fabItem:active .fi{background:rgba(255,255,255,.22);}
+  .fabItem.active .fi{background:#fff !important;box-shadow:0 3px 13px rgba(0,0,0,.32) !important;filter:none !important;}
+  .fabItem.active .fi svg{color:#4f88a4 !important;}
+  .fabItem.active .fl{color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.7),0 0 3px rgba(0,0,0,.5);}
   #recentLabel{bottom:80px;}
   #hillCats{bottom:108px;}
   #hillCats.empty{bottom:116px;}
@@ -2476,7 +2482,7 @@ button,input{font:inherit;}
         <path d="M40 30 l2.4 6 6 .5 -4.6 4 1.5 6 -5.3-3.2 -5.3 3.2 1.5-6 -4.6-4 6-.5Z" fill="#ffe08a"/>
         <path d="M188 40 l2 5 5 .4 -3.9 3.3 1.2 5 -4.3-2.6 -4.3 2.6 1.2-5 -3.9-3.3 5-.4Z" fill="#ffe08a"/>
       </svg></div>
-      <div class="tutTitle">ねこが おみやげ</div>
+      <div class="tutTitle">ねこの おみやげ</div>
       <div class="tutDesc">おでかけから ふく や ポーズを<br>もってかえるよ。きせかえしよう！</div>
     </div>
     <div class="tutPage" data-i="2" hidden>
@@ -7458,8 +7464,8 @@ function placedItemsSVG(){
 }
 /* エディタ */
 function toggleEdit(){_editMode?exitEdit():enterEdit();}
-function enterEdit(){_editMode=true;$("catRoom").classList.add("editing");_roomState="normal";stopCatLifeRoom();renderTray();if(roomVisible())renderRoom();}
-function exitEdit(){_editMode=false;$("catRoom").classList.remove("editing");if(roomVisible())renderRoom();}
+function enterEdit(){_editMode=true;$("catRoom").classList.add("editing");_roomState="normal";stopCatLifeRoom();renderTray();if(roomVisible())renderRoom();try{refreshDock();}catch(_){}}
+function exitEdit(){_editMode=false;$("catRoom").classList.remove("editing");if(roomVisible())renderRoom();try{refreshDock();}catch(_){}}
 function renderTray(){
   const tray=$("editTray");if(!tray)return;
   const valid=PLAY_ITEMS.map(p=>p.id),owned=ownedPlayItems().filter(id=>valid.indexOf(id)>=0);
@@ -9831,11 +9837,15 @@ function refreshDock(){
   const d=$("fabWrap");if(!d)return;
   const vis=id=>{const e=$(id);return e&&e.classList.contains("visible");};
   const onHome=$("selectScreen")&&!$("selectScreen").classList.contains("hidden");
+  const roomEdit=$("catRoom")&&$("catRoom").classList.contains("editing");   /* おへやのおもちゃ編集中はドックを隠す */
   const onMain=vis("dexPopup")||vis("recordScreen")||vis("catRoom")||vis("profilePanel");
-  const blocked=vis("friendScreen")||vis("clubScreen")||vis("tutorial")||vis("titleScreen")||vis("rouletteScreen")||vis("taisoScreen")||vis("firstMeet")||vis("gachaReveal")||($("outingIntro")&&$("outingIntro").classList.contains("show"))||($("nyanShot")&&$("nyanShot").classList.contains("capmode"))||($("photoCancelBtn")&&!$("photoCancelBtn").hidden);
+  const blocked=roomEdit||vis("friendScreen")||vis("clubScreen")||vis("tutorial")||vis("titleScreen")||vis("rouletteScreen")||vis("taisoScreen")||vis("firstMeet")||vis("gachaReveal")||($("outingIntro")&&$("outingIntro").classList.contains("show"))||($("nyanShot")&&$("nyanShot").classList.contains("capmode"))||($("photoCancelBtn")&&!$("photoCancelBtn").hidden);
   const show=(onHome||onMain)&&!blocked;
   d.style.display=show?"flex":"none";
   if(show){
+    /* いま開いてるアイコンをハイライト（ぱっと見で分かるように） */
+    const active=vis("catRoom")?"fabRoom":vis("recordScreen")?"fabRecord":vis("profilePanel")?"fabCloset":vis("dexPopup")?"fabDex":(onHome?"fabHome":null);
+    ["fabHome","fabRoom","fabDex","fabCloset","fabRecord"].forEach(id=>{const e=$(id);if(e)e.classList.toggle("active",id===active);});
     try{const ic=$("fabHomeIcon");if(ic&&ic.dataset.k!==(profileBody()+profileColor())){ic.innerHTML=catFaceSvg(profileBody(),profileColor(),null);ic.dataset.k=profileBody()+profileColor();}}catch(_){}
     try{const rb=$("roomReadyBadge");if(rb)rb.hidden=!(typeof outingPhase==="function"&&outingPhase()==="back");}catch(_){}
     try{applyDockPos();}catch(_){}
@@ -10389,7 +10399,7 @@ function positionHelpBtn(){
     if(!bar||!h||bar.offsetParent===null)return;
     const r=bar.getBoundingClientRect();
     h.style.left=(r.right+8)+"px";h.style.right="auto";
-    h.style.top=(r.top+(r.height-h.offsetHeight)/2)+"px";
+    h.style.top="";   /* 縦位置はCSSのまま（下にずれないように上書きしない） */
   }catch(_){}
 }
 window.addEventListener("resize",positionHelpBtn);

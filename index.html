@@ -9173,6 +9173,12 @@ function firstMeetRevealGifts(picks,nm){
   $("gachaReveal").classList.add("show");
   refreshCostumeEverywhere();
 }
+function _giftIllust(pick){
+  if(!pick)return"";
+  if(pick.type==="item")return itemAloneSVG(pick.id);
+  if(pick.type==="play"){const pi=playItemById(pick.id);return `<div style="font-size:78px;line-height:120px;text-align:center;">${pi?pi.emoji:"🎁"}</div>`;}
+  return catFigureHTML(profileBody(),profileColor(),pick.id,null,null,null);
+}
 function outingRevealGift(pick,headText,buddy,bonus){
   const nm=(typeof catName==="function"&&catName())?catName():"ねこ";
   if(buddy&&!headText)headText=`${escHtml(buddy.name)}ちゃんの ねこと いっしょに かえってきたよ！`;
@@ -9194,12 +9200,15 @@ function outingRevealGift(pick,headText,buddy,bonus){
     $("gachaRevealInner").innerHTML=catFigureHTML(profileBody(),profileColor(),pick.id,null,null,getEquippedCostume());
     $("gachaRevealName").innerHTML=head+escHtml(pick.name);
   }
+  if(buddy&&bonus){   /* おみやげ枠：私の猫のおみやげ と 相手のおみやげ */
+    $("gachaRevealInner").innerHTML=`<div style="display:flex;gap:2px;justify-content:center;align-items:center;height:100%;"><div style="width:40%;">${_giftIllust(pick)}</div><div style="font-size:22px;font-weight:800;color:#e0608f;flex:0 0 auto;">と</div><div style="width:40%;">${_giftIllust(bonus)}</div></div>`;
+    $("gachaRevealName").innerHTML=head+`<b>${escHtml(pick.name)}</b> と <b>${escHtml(bonus.name)}</b>`;
+  }
   const nmEl=$("gachaRevealName");if(nmEl&&rareTag)nmEl.innerHTML=rareTag+nmEl.innerHTML;
-  if(buddy){   /* 相方の猫＋おすそわけ */
+  if(buddy){   /* 相方の猫 */
     const bcat=catFaceSvg(buddy.catBody||"#1c1c1c",buddy.color||"#8fdcff",null);
     const bn=escHtml(buddy.name||"フレンド");
-    const gift=bonus?`<div class="grBuddyGift">${bn}ちゃんから<br><b>${escHtml(bonus.name)}</b> を おすそわけ！</div>`:"";
-    const block=`<div class="grBuddy"><span class="grBuddyCat">${bcat}</span><div class="grBuddyTxt"><div class="grBuddyName">${bn}ちゃんと ふたりで おでかけ</div>${gift}</div></div>`;
+    const block=`<div class="grBuddy"><span class="grBuddyCat">${bcat}</span><div class="grBuddyTxt"><div class="grBuddyName">${bn}ちゃんと ふたりで おでかけ</div></div></div>`;
     const el=$("gachaRevealName");if(el)el.innerHTML+=block;
   }
   try{
@@ -9357,7 +9366,7 @@ async function playReturnAnim(){
   const place=(el,fx,fy,sc,op)=>{if(!el)return;el.setAttribute("transform",`translate(${(fx-60*sc).toFixed(1)},${(fy-119*sc).toFixed(1)}) scale(${sc.toFixed(3)})`);el.setAttribute("opacity",op==null?1:op.toFixed(3));};
   const placeGift=(el,fx,fy,sc,op)=>{if(!el)return;el.setAttribute("x",(fx+3*sc).toFixed(1));el.setAttribute("y",(fy-58*sc).toFixed(1));el.setAttribute("opacity",op==null?"1":(""+op));};
   const setFrame=(dy,op)=>{frameEl.setAttribute("transform",`translate(0,${dy.toFixed(1)})`);frameEl.setAttribute("opacity",op.toFixed(3));};
-  const LAG=0.17,BSC=0.9;                 /* 相手は少し遅れて・少し小さく（後ろ） */
+  const LAG=0.06,BSC=0.92;                 /* 相手はほぼ一緒に・少しだけ小さく */
   const bud_p=p=>Math.max(0,(p-LAG)/(1-LAG));
   setFrame(0,1);
   place(cat,winCx,belowOutY,s*0.62,0);placeGift(gift,winCx,belowOutY,s*0.62,0);
@@ -9385,9 +9394,9 @@ async function playReturnAnim(){
   await _tween(400,_easeIO,p=>setFrame(-(winH*0.9)*(1-p),p));
   /* E くわえたまま近寄る（相手は後ろから遅れて 横に並ぶ） */
   await _tween(880,_easeIO,p=>{
-    const fx=_lerp(winCx,centerX-g.W*0.055,p),fy=floorFeetY,sc=s*(1+0.25*p);
+    const fx=_lerp(winCx,centerX-g.W*0.15,p),fy=floorFeetY,sc=s*(1+0.25*p);
     place(cat,fx,fy,sc,1);placeGift(gift,fx,fy,sc,1);
-    const bp=bud_p(p),bfx=_lerp(winCx,centerX+g.W*0.08,bp),bsc=s*(1+0.25*bp)*BSC;
+    const bp=bud_p(p),bfx=_lerp(winCx,centerX+g.W*0.15,bp),bsc=s*(1+0.25*bp)*BSC;
     place(cat2,bfx,floorFeetY,bsc,1);placeGift(gift2,bfx,floorFeetY,bsc,1);
   });
   await _wait(220);
@@ -10589,7 +10598,22 @@ function getBalancedStoryCats(){
 function _yesterdayLabel(){try{const y=addDays(storyPeriodKey(),-1).split("-");if(y.length===3)return (+y[1])+"月"+(+y[2])+"日";}catch(_){}const d=new Date(Date.now()-86400000);return (d.getMonth()+1)+"月"+d.getDate()+"日";}
 function _hashStr(str){let h=2166136261>>>0;const s=String(str||"");for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return h>>>0;}
 /* 日替わりで固定：同じ日は みんな同じ1本（日付から決定） */
-function pickDailyStoryIdx(){return _hashStr("st_"+storyPeriodKey())%STORY_SCRIPTS.length;}
+/* 進行度：最初の50話は1〜50、それ以降は51〜100（新規の人にまず前半の面白い話を） */
+function _storyOrder(){
+  const a=[],b=[];
+  for(let i=0;i<50&&i<STORY_SCRIPTS.length;i++)a.push(i);
+  for(let i=50;i<STORY_SCRIPTS.length;i++)b.push(i);
+  const sh=(arr,seed)=>{const r=_seededRand(seed);const c=[...arr];for(let i=c.length-1;i>0;i--){const j=Math.floor(r()*(i+1));const t=c[i];c[i]=c[j];c[j]=t;}return c;};
+  return sh(a,4241).concat(sh(b,9173));
+}
+function _storySeqIndex(){
+  let seq=0,sp="";
+  try{seq=parseInt(localStorage.getItem("radio_story_seq")||"0",10)||0;sp=localStorage.getItem("radio_story_seq_period")||"";}catch(_){}
+  const pk=storyPeriodKey();
+  if(sp!==pk){ if(sp!=="")seq++; try{localStorage.setItem("radio_story_seq",String(seq));localStorage.setItem("radio_story_seq_period",pk);}catch(_){} }
+  return seq;
+}
+function pickDailyStoryIdx(){const order=_storyOrder();return order[_storySeqIndex()%order.length];}
 /* 昨日（or今日）目標時間〜+1h以内に起きれた＝早起きできた人か */
 function metWakeGoalRecently(){
   try{
@@ -11509,13 +11533,11 @@ try{
   <div id="storyTutCard">
     <div class="stuIcon">📖</div>
     <div class="stuTitle">ラジオ体操部の 日常</div>
-    <div class="stuBody">みんなの あさが<br>4コマの おはなしに なるよ</div>
+    <div class="stuBody">みんなの あさが<br>4コマ まんがに！</div>
     <div class="stuTips">
-      <div class="stuTip"><b>👆 タップ</b>で つぎへ</div>
-      <div class="stuTip"><b>‹ もどる</b>で まえへ</div>
-      <div class="stuTip"><b>✕</b>で とじる</div>
+      <div class="stuTip">👆 タップで すすむ</div>
     </div>
-    <button id="storyTutStart" type="button">みてみる ▸</button>
+    <button id="storyTutStart" type="button">よむ ▸</button>
   </div>
 </div>
 </body>

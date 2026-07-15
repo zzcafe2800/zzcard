@@ -5235,6 +5235,7 @@ function renderHillPage(){
       (riseTxt?`<span class="catRise">${escHtml(riseTxt)}</span>`:"")+   /* カテゴリ＝名前の上 */
       `<span class="catNameRow"><span class="catName">${escHtml(po.name||"匿名さん")}</span>${fireHtml}</span>`+
       (comment?`<span class="catCmt">${escHtml(comment)}</span>`:"");   /* コメント＝名前の下・常時 */
+    const riseEl=lab.querySelector(".catRise")||null;
     if(comment){   /* クリックで全文表示 */
       lab.title="コメントを見る";
       lab.addEventListener("click",e=>{e.stopPropagation();openCommentPop(po.name||"匿名さん",comment);});

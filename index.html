@@ -173,6 +173,7 @@ button,input{font:inherit;}
   font-size:12px;font-weight:700;color:#5c93ad;box-shadow:0 6px 16px rgba(111,205,255,.2);position:relative;white-space:nowrap;}
 .catBubble::after{content:"";position:absolute;left:50%;bottom:-7px;transform:translateX(-50%);
   border-left:7px solid transparent;border-right:7px solid transparent;border-top:7px solid #fff;}
+.catCmt{max-width:112px;font-size:10px;font-weight:700;color:#d46a9a;line-height:1.25;background:#fff5fb;border:1px solid rgba(255,150,200,.4);border-radius:9px;padding:3px 8px;margin-top:1px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
 .catComment{max-width:120px;background:#fff5fb;border:1.5px solid rgba(255,150,200,.5);border-radius:12px;
   padding:5px 10px;font-size:11px;font-weight:700;color:#d46a9a;line-height:1.3;position:relative;
   box-shadow:0 5px 13px rgba(255,150,200,.22);word-break:break-word;text-align:center;margin-bottom:3px;}
@@ -3651,11 +3652,12 @@ async function postToday(anon,comment){
   }catch(e){console.warn("post failed",e);}
 }
 function postRiseText(hide){
+  if(hide)return"起床時間 ひみつ";   /* 隠す時はプレビューでもカテゴリを出さない */
   const wl=getWakeLog()[jstKey()];let h,m;
   if(Number.isFinite(wl)){h=Math.floor(wl);m=Math.round((wl-h)*60);if(m===60){h++;m=0;}}
   else{const p=jstParts();h=p.h;m=p.m;}
   const r=riseLabelInfo(h,m,profileWake());
-  return hide?`起床(${r.lbl})`:`${r.time}起床(${r.lbl})`;
+  return r.lbl;   /* カテゴリだけ */
 }
 function postPreviewHTML(comment,anon,hide){
   const body=profileBody(),ear=profileColor(),p=getProfile()||{};
@@ -5143,11 +5145,11 @@ function riseLabelInfo(ah,am,targetFloat){
 }
 function riseTextFromPost(po){
   if(!po.createdAt)return"";
+  if(po.hideTime)return"";   /* 起床時間を隠す＝カテゴリも出さない */
   const d=new Date(po.createdAt),ah=d.getHours(),am=d.getMinutes();
   const tgt=Number.isFinite(po.wakeHour)?po.wakeHour+((po.wakeMin||0)/60):ah;
   const r=riseLabelInfo(ah,am,tgt);
-  if(po.hideTime)return`起床（${r.lbl}）`;
-  return`${r.time}起床(${r.lbl})`;
+  return r.lbl;   /* カテゴリだけ（超早起き/早起き/ぴったり/遅起き）。時刻は出さない */
 }
 function riseTextSelf(){
   const p=jstParts(),tgt=profileWake();
@@ -5226,15 +5228,13 @@ function renderHillPage(){
     const el=document.createElement("div");el.className="hillCat";
     const lab=document.createElement("div");lab.className="catLabel";
     const fireHtml=(po.streak>=2)?`<span class="catFire">${po.streak}日</span>`:"";
-    lab.innerHTML=`<span class="catNameRow"><span class="catName">${escHtml(po.name||"匿名さん")}</span>${fireHtml}</span>`;
     const riseTxt=riseTextFromPost(po);
     const comment=po.comment||"";
-    let riseEl=null;
-    if(riseTxt){
-      riseEl=document.createElement("span");riseEl.className="catRise";riseEl.textContent=riseTxt;
-      lab.appendChild(riseEl);
-    }
-    if(comment){   /* コメントはクリックで全文表示 */
+    lab.innerHTML=
+      (riseTxt?`<span class="catRise">${escHtml(riseTxt)}</span>`:"")+   /* カテゴリ＝名前の上 */
+      `<span class="catNameRow"><span class="catName">${escHtml(po.name||"匿名さん")}</span>${fireHtml}</span>`+
+      (comment?`<span class="catCmt">${escHtml(comment)}</span>`:"");   /* コメント＝名前の下・常時 */
+    if(comment){   /* クリックで全文表示 */
       lab.title="コメントを見る";
       lab.addEventListener("click",e=>{e.stopPropagation();openCommentPop(po.name||"匿名さん",comment);});
     }

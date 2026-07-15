@@ -11252,18 +11252,35 @@ profileBoot();
   /* 公式プロンプトが来る環境ではそれを使う */
   window.addEventListener("beforeinstallprompt",(e)=>{
     e.preventDefault();deferred=e;
-    txt.textContent="アプリとしてインストールできます";
-    btn.textContent="インストール";btn.style.display="";
-    showBar(10000);
+    if(typeof setBarMode==="function")setBarMode("install");else{txt.textContent="アプリとしてインストールできます";btn.textContent="インストール";btn.style.display="";}
+    showBar(0);
   });
-  btn.addEventListener("click",async()=>{
-    if(deferred){
-      hideBar();deferred.prompt();
-      try{await deferred.userChoice;}catch(_){}
-      deferred=null;return;
+  let _mode="reminder";   /* reminder / install */
+  function _reminderMade(){try{return localStorage.getItem("radio_reminder_made")==="1";}catch(_){return false;}}
+  function setBarMode(m){
+    _mode=m;
+    if(m==="install"){
+      txt.textContent="📲 アプリとして インストールできるよ";
+      btn.textContent="インストール";btn.style.display="";
+    }else{
+      txt.textContent="⏰ 目標の時間に 毎朝お知らせ（通知からサイトを開けるよ）";
+      btn.textContent="毎朝通知をつくる";btn.style.display="";
     }
-    /* 毎朝通知をつくる（カレンダーへ。通知から予定を開くとサイトのリンクをタップできる） */
+  }
+  btn.addEventListener("click",async()=>{
+    if(_mode==="install"){
+      if(deferred){hideBar();deferred.prompt();try{await deferred.userChoice;}catch(_){}deferred=null;return;}
+      /* 公式プロンプトが無い環境：入れ方を案内 */
+      const ua2=navigator.userAgent||"";
+      if(/iphone|ipad|ipod/i.test(ua2))txt.textContent="共有ボタン →「ホーム画面に追加」でアプリになるよ";
+      else txt.textContent="ブラウザのメニュー（⋮）→「アプリをインストール / ホーム画面に追加」から入れてね";
+      btn.style.display="none";clearTimeout(hideTimer);hideTimer=setTimeout(hideBar,8000);
+      return;
+    }
+    /* 毎朝通知をつくる→作った印をつけて、次からはインストール表示に */
     try{makeMorningReminder();}catch(_){}
+    try{localStorage.setItem("radio_reminder_made","1");}catch(_){}
+    toast("毎朝通知をつくったよ！（次からはインストール案内が出るよ）");
     hideBar();
   });
   cls.addEventListener("click",()=>{hideBar();});   /* ×は今回だけ閉じる（次に開いたらまた出る） */
@@ -11273,8 +11290,8 @@ profileBoot();
   const isIOS=/iphone|ipad|ipod/i.test(ua);
   const isiOSSafari=isIOS&&/safari/i.test(ua)&&!/crios|fxios|edgios/i.test(ua);
   {
-    /* 毎回：インストール案内のかわりに「毎朝通知」バーを出す（通知の予定からサイトを開けるよ） */
-    setTimeout(()=>{ if(!shown){ txt.textContent="⏰ 目標の時間に 毎朝お知らせ（通知からサイトを開けるよ）";btn.textContent="毎朝通知をつくる";btn.style.display="";showBar(0);} },1500);
+    /* すでにアプリで開いてるなら何も出さない。それ以外は、毎朝通知を作る前＝通知案内／作った後＝インストール案内を毎回出す */
+    setTimeout(()=>{ if(shown||isStandalone)return; setBarMode(_reminderMade()?"install":"reminder"); showBar(0); },1500);
   }
 })();
 /* ===== ストーリー（4コマ）：データ（起床/目標差/連続）＋控えめな声タイプ ===== */

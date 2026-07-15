@@ -400,11 +400,13 @@ button,input{font:inherit;}
 #topLeftStack:empty{display:none;}
 #postRow{display:flex;gap:0;align-items:center;flex-wrap:nowrap;}
 /* まとめたpillの中：各統計は透明・区切り線でつなぐ */
-#topLeftStack>#buddyCount,#topLeftStack #recentPostCount,#topLeftStack #liveCount{background:none !important;border:none !important;box-shadow:none !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important;padding:3px 10px !important;position:relative;display:flex !important;flex-direction:column;align-items:center;gap:0;line-height:1.05;}
-#topLeftStack .hsIco{width:17px;height:17px;display:block;}
-#topLeftStack>#buddyCount>b,#topLeftStack #recentPostCount>b,#topLeftStack #liveCount>b{font-size:13px;font-weight:900;margin-top:1px;}
+#topLeftStack>#buddyCount,#topLeftStack #recentPostCount,#topLeftStack #liveCount{background:none !important;border:none !important;box-shadow:none !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important;padding:2px 8px !important;position:relative;display:flex !important;flex-direction:column;align-items:center;gap:0;line-height:1.05;}
+#topLeftStack .hsTop{display:flex;align-items:center;gap:3px;}
+#topLeftStack .hsIco{width:15px;height:15px;display:block;flex:0 0 auto;}
+#topLeftStack .hsTop b{font-size:13.5px;font-weight:900;}
+#topLeftStack .hsUnit{font-style:normal;}
 #topLeftStack .hsLbl{font-size:8.5px;font-weight:800;opacity:.72;margin-top:0;letter-spacing:.02em;}
-#topLeftStack .hsUnit{font-size:8px;font-weight:800;opacity:.7;margin-left:1px;}
+#topLeftStack .hsUnit{font-size:8.5px;font-weight:800;opacity:.75;margin-left:0;}
 #topLeftStack>#buddyCount>b,#topLeftStack #recentPostCount>b,#topLeftStack #liveCount>b{display:inline;}
 /* 時間帯で見やすい色に（夕方・夜は暗い空に合わせて明るい文字＋濃いめのpill） */
 .sky-evening #topLeftStack,.sky-night #topLeftStack{background:rgba(38,50,92,.44) !important;border-color:rgba(255,255,255,.32) !important;}
@@ -2170,40 +2172,61 @@ html.lite #ppBox{width:100% !important;max-width:100% !important;min-height:100v
 .fabItem .fi svg{color:var(--dockFgDim) !important;filter:none !important;}
 .fabItem .fl{color:var(--dockFgDim) !important;text-shadow:none !important;transition:color .2s,transform .2s;}
 .fabItem.active{background:none !important;box-shadow:none !important;}
-.fabItem.active::before{content:"";position:absolute;left:50%;top:-27px;transform:translateX(-50%);width:60px;height:19px;border-radius:0 0 40px 40px/0 0 22px 22px;background:var(--dockNotch);z-index:1;}   /* バー上辺のへこみ（浅い弧） */
-.fabItem.active .fi{position:relative;z-index:2;transform:translateY(-19px) !important;width:44px !important;height:44px !important;border-radius:50% !important;background:var(--dockActBg) !important;color:var(--dockActFg) !important;box-shadow:0 0 0 5px var(--dockNotch),0 9px 17px rgba(0,0,0,.28) !important;}
-.fabItem.active .fi svg{color:var(--dockActFg) !important;width:27px !important;height:27px !important;}
-.fabItem.active .fl{color:var(--dockFg) !important;font-weight:900 !important;transform:translateY(-4px);}
+.fabItem.active .fi{background:var(--dockNotch) !important;border-radius:50% !important;}   /* PC：シンプルな●ハイライト（縦バーにも合う） */
+.fabItem.active .fi svg{color:var(--dockFgDim) !important;}
+.fabItem.active .fl{color:var(--dockFg) !important;font-weight:900 !important;}
 #fabRoomIcon{filter:none !important;}
-
-/* ===== ドック 参考画像版：下端に密着＋選択はバー色の●＋床色リング(へこみ)＋ラベル非表示 ===== */
-#fabWrap{left:0 !important;right:0 !important;bottom:0 !important;width:100% !important;max-width:none !important;transform:none !important;border-radius:26px 26px 0 0 !important;padding:12px 2px calc(9px + env(safe-area-inset-bottom)) !important;gap:0 !important;justify-content:space-around !important;cursor:default !important;overflow:visible !important;-webkit-mask:none !important;mask:none !important;}
-.fabItem{flex:1 1 0 !important;overflow:visible !important;}
-.fabItem .fi{transition:background .3s cubic-bezier(.4,0,.2,1),box-shadow .3s cubic-bezier(.4,0,.2,1),transform .3s cubic-bezier(.34,1.4,.5,1) !important;}
-.fabItem.active{background:none !important;box-shadow:none !important;}
-.fabItem.active::before{display:none !important;}
-.fabItem.active .fi{transform:none !important;background:var(--dockBg) !important;box-shadow:0 0 0 5px var(--dockNotch) !important;border-radius:50% !important;color:var(--dockFgDim) !important;width:44px !important;height:44px !important;}
-.fabItem.active .fi svg{color:var(--dockFgDim) !important;width:26px !important;height:26px !important;}
-.fabItem.active .fl{opacity:0 !important;transition:opacity .2s !important;}
 
 /* ===== 縦画面ドック：下スキマなし＋選択は同色●とバーの切り欠き（重ならない） ===== */
 @property --nx{syntax:"<length>";inherits:true;initial-value:-999px;}
 html.lite #fabWrap{left:0 !important;right:0 !important;transform:none !important;bottom:0 !important;width:100% !important;box-sizing:border-box;
   border-radius:0 !important;background:transparent !important;border:none !important;box-shadow:none !important;
-  padding:10px 8px calc(9px + env(safe-area-inset-bottom)) !important;gap:0 !important;justify-content:space-around !important;
+  padding:7px 8px calc(6px + env(safe-area-inset-bottom)) !important;gap:0 !important;justify-content:space-around !important;
   transition:--nx .32s cubic-bezier(.45,0,.2,1);}
 html.lite #fabWrap::before{content:"";position:absolute;inset:0;z-index:0;background:var(--dockBg);border-radius:20px 20px 0 0;
   -webkit-mask-image:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%202000%20100'%20preserveAspectRatio='none'%3E%3Cpath%20d='M0,0%20H918%20C950,0%20960,12%20969,32%20C978,52%20984,66%201000,66%20C1016,66%201022,52%201031,32%20C1040,12%201050,0%201082,0%20H2000%20V100%20H0%20Z'%20fill='%23000'/%3E%3C/svg%3E");-webkit-mask-size:2000px 100%;-webkit-mask-repeat:no-repeat;-webkit-mask-position:calc(var(--nx) - 1000px) 0;
   mask-image:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%202000%20100'%20preserveAspectRatio='none'%3E%3Cpath%20d='M0,0%20H918%20C950,0%20960,12%20969,32%20C978,52%20984,66%201000,66%20C1016,66%201022,52%201031,32%20C1040,12%201050,0%201082,0%20H2000%20V100%20H0%20Z'%20fill='%23000'/%3E%3C/svg%3E");mask-size:2000px 100%;mask-repeat:no-repeat;mask-position:calc(var(--nx) - 1000px) 0;
   filter:drop-shadow(0 -5px 14px rgba(20,50,60,.16));}
-html.lite .fabItem{z-index:2;padding:4px 2px 2px !important;}
+html.lite .fabItem{z-index:2;padding:3px 2px 1px !important;}
 html.lite .fabItem .fi{width:44px !important;height:44px !important;margin:0 auto;border-radius:50% !important;background:transparent !important;transform:none !important;transition:transform .32s cubic-bezier(.45,0,.2,1),background .25s ease !important;}
 html.lite .fabItem .fi svg{width:26px !important;height:26px !important;}
 html.lite .fabItem.active::before{display:none !important;}   /* PC用の弧は使わない */
-html.lite .fabItem.active .fi{transform:translateY(-10px) !important;width:44px !important;height:44px !important;background:var(--dockBg) !important;box-shadow:none !important;filter:drop-shadow(0 5px 9px rgba(15,45,55,.28)) !important;transition:transform .32s cubic-bezier(.45,0,.2,1),background .25s ease !important;}
+html.lite .fabItem.active .fi{transform:translateY(-10px) !important;width:44px !important;height:44px !important;background:var(--dockBg) !important;box-shadow:none !important;filter:drop-shadow(0 5px 9px rgba(15,45,55,.28)) !important;transition:transform .32s cubic-bezier(.45,0,.2,1),background .25s ease !important;
+  animation:dockJelly .5s cubic-bezier(.34,1.3,.5,1) .3s both;}
+@keyframes dockJelly{0%{transform:translateY(-10px) scale(1,1);}38%{transform:translateY(-10px) scale(1.14,.86);}68%{transform:translateY(-9px) scale(.93,1.07);}100%{transform:translateY(-10px) scale(1,1);}}
 html.lite .fabItem.active .fi svg{color:var(--dockFgDim) !important;width:26px !important;height:26px !important;}   /* 選択でも色は変えない */
 html.lite .fabItem.active .fl{visibility:hidden;transform:none !important;}   /* 選択中はテキスト非表示（場所は保持＝ズレない） */
 html.lite #fabWrap,html.lite .fabItem{cursor:default !important;touch-action:auto !important;}
+/* 横画面（スマホ）：右側に縦バー（シンプル・波形なし） */
+@media (orientation:landscape){
+  html.lite #fabWrap{left:auto !important;right:0 !important;top:50% !important;bottom:auto !important;width:auto !important;transform:translateY(-50%) !important;
+    flex-direction:column !important;padding:10px 7px 10px 9px !important;gap:6px !important;transition:none;}
+  html.lite #fabWrap::before{border-radius:20px 0 0 20px;-webkit-mask-image:none !important;mask-image:none !important;filter:drop-shadow(-4px 0 12px rgba(20,50,60,.16));}
+  html.lite .fabItem.active .fi{transform:none !important;background:var(--dockNotch) !important;animation:none !important;filter:none !important;}
+  html.lite .fabItem.active .fl{visibility:visible;}
+}
+
+/* ===== プロフ画面リデザイン：ヘッダーを主役に、下は設定と同じ"一覧"スタイル ===== */
+#ppHead{flex-direction:column;gap:6px;text-align:center;padding:6px 0 2px;}
+#ppAvatar{width:76px;height:76px;background:linear-gradient(150deg,#eaf6fd,#d8ecfa);border-radius:50%;box-shadow:0 6px 16px rgba(120,180,220,.22);}
+#ppAvatar svg{width:62px;height:62px;}
+#ppName{font-size:17.5px;font-weight:900;color:#3f6d84;}
+#ppStreakInline{font-size:11px;font-weight:800;color:#e8833a;background:#fff1e3;border-radius:999px;padding:2px 9px;margin-left:5px;vertical-align:2px;}
+#ppComment{background:rgba(255,255,255,.94);box-shadow:0 5px 15px rgba(120,180,220,.13);border:none;text-align:center;margin-top:8px;}
+#ppProfBtns{gap:9px;}
+#ppProfBtns>button,#ppPrivateRow{display:flex;align-items:center;gap:12px;width:100%;box-sizing:border-box;text-align:left;border:none;background:rgba(255,255,255,.94);border-radius:16px;padding:14px 15px;cursor:pointer;box-shadow:0 5px 14px rgba(120,180,220,.13);font-size:14px;font-weight:800;color:#3f6d84;transition:transform .12s;}
+#ppProfBtns>button:active{transform:scale(.98);}
+#ppPrivateRow{justify-content:flex-start;}
+#ppPrivateRow input[type=checkbox]{width:24px;height:24px;accent-color:#78bfe2;margin-left:auto;flex:0 0 auto;}
+#ppProfBtns #ppRestore{background:rgba(255,255,255,.94);border-radius:16px;box-shadow:0 5px 14px rgba(120,180,220,.13);border:none;}
+#ppProfBtns #ppRestore summary{padding:14px 15px;font-size:14px;font-weight:800;color:#3f6d84;cursor:pointer;list-style:none;}
+
+/* ===== 投稿カード洗練：やわらかい影・整ったチップ・上品な余白 ===== */
+.catLabel{background:#fff;border:none;border-radius:15px;padding:8px 10px 8px;gap:3.5px;
+  box-shadow:0 4px 10px rgba(140,170,200,.14),0 10px 24px rgba(140,170,200,.12);}
+.catFire{background:#fff1e3;color:#e8833a;box-shadow:none;font-size:9px;padding:1.5px 7px;}
+.catRise{background:none;border:none;color:#9fb3c0;font-size:9px;letter-spacing:.02em;padding:0;}
+.catCmt{background:#fdf1f7;border:none;color:#d4699b;border-radius:8px;padding:3.5px 9px;}
 </style>
 </head>
 <body>
@@ -5334,7 +5357,7 @@ async function loadHillCats(){
     /* 自分の“今日の投稿”を取得。あれば投稿済み＝実際のひとこと・起床時間を表示、なければ「投稿する」ボタン */
     const selfPost=val[me+"_"+jstKey()]||null;
     const posters=cats.length+(selfPost?1:0);
-    if($("recentPostCount"))$("recentPostCount").innerHTML=posters>0?(`<svg class="hsIco" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20 l1.2 -4.2 L16 5 l3 3 L8.2 18.8 Z"/><path d="M14 7 l3 3"/></svg><b>${posters}</b><span class="hsUnit">人</span><span class="hsLbl">とうこう</span>`):"";
+    if($("recentPostCount"))$("recentPostCount").innerHTML=posters>0?(`<span class="hsTop"><svg class="hsIco" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20 l1.2 -4.2 L16 5 l3 3 L8.2 18.8 Z"/><path d="M14 7 l3 3"/></svg><b>${posters}</b><i class="hsUnit">人</i></span><span class="hsLbl">とうこう</span>`):"";
     let self;
     if(selfPost){
       self={uid:me,isSelf:true,name:p.name||"あなた",catBody:profileBody(),color:profileColor(),
@@ -7189,9 +7212,9 @@ async function refreshBuddyCount(force){
     const now=Date.now();
     const live=Object.values(v).filter(t=>(typeof t==="number")&&(now-t<3*3600*1000)).length;
     if(total<=0){ el.hidden=true; return; }
-    let html=`<svg class="hsIco" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18 h18"/><path d="M7.5 18 a4.5 4.5 0 0 1 9 0"/><path d="M12 4.5 v2.2 M5.4 7.4 l1.5 1.5 M18.6 7.4 l-1.5 1.5"/></svg><b>${total}</b><span class="hsUnit">人</span><span class="hsLbl">たいそう</span>`;
+    let html=`<span class="hsTop"><svg class="hsIco" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18 h18"/><path d="M7.5 18 a4.5 4.5 0 0 1 9 0"/><path d="M12 4.5 v2.2 M5.4 7.4 l1.5 1.5 M18.6 7.4 l-1.5 1.5"/></svg><b>${total}</b><i class="hsUnit">人</i></span><span class="hsLbl">たいそう</span>`;
     el.innerHTML=html;el.hidden=false;el.dataset.loaded="1";
-    try{const lc=$("liveCount");if(lc){if(live>=2){lc.innerHTML=`<svg class="hsIco" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M13.5 2.5 L5 13 h5 l-1.2 8.5 8.7 -11.5 h-5 Z"/></svg><b>${live}</b><span class="hsUnit">人</span><span class="hsLbl">いま</span>`;lc.hidden=false;}else{lc.hidden=true;}}}catch(_){}
+    try{const lc=$("liveCount");if(lc){if(live>=2){lc.innerHTML=`<span class="hsTop"><svg class="hsIco" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M13.5 2.5 L5 13 h5 l-1.2 8.5 8.7 -11.5 h-5 Z"/></svg><b>${live}</b><i class="hsUnit">人</i></span><span class="hsLbl">いま</span>`;lc.hidden=false;}else{lc.hidden=true;}}}catch(_){}
     fitText(el,12,8);
   }catch(_){}
 }
@@ -10112,7 +10135,8 @@ function refreshDock(){
   const onHome=$("selectScreen")&&!$("selectScreen").classList.contains("hidden");
   const roomEdit=$("catRoom")&&$("catRoom").classList.contains("editing");   /* おへやのおもちゃ編集中はドックを隠す */
   const onMain=vis("dexPopup")||vis("recordScreen")||vis("catRoom")||vis("profilePanel");
-  const blocked=roomEdit||vis("friendScreen")||vis("clubScreen")||vis("tutorial")||vis("titleScreen")||vis("rouletteScreen")||vis("taisoScreen")||vis("firstMeet")||vis("gachaReveal")||($("outingIntro")&&$("outingIntro").classList.contains("show"))||($("nyanShot")&&$("nyanShot").classList.contains("capmode"))||($("photoCancelBtn")&&!$("photoCancelBtn").hidden);
+  const ppProfMode=vis("profilePanel")&&!$("profilePanel").classList.contains("bagMode");   /* 匿名さんから開くプロフ画面ではバーを出さない */
+  const blocked=ppProfMode||roomEdit||vis("friendScreen")||vis("clubScreen")||vis("tutorial")||vis("titleScreen")||vis("rouletteScreen")||vis("taisoScreen")||vis("firstMeet")||vis("gachaReveal")||($("outingIntro")&&$("outingIntro").classList.contains("show"))||($("nyanShot")&&$("nyanShot").classList.contains("capmode"))||($("photoCancelBtn")&&!$("photoCancelBtn").hidden);
   const show=(onHome||onMain)&&!blocked;
   d.style.display=show?"flex":"none";
   if(show){

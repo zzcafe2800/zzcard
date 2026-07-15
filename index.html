@@ -2411,7 +2411,7 @@ button,input{font:inherit;}
         <div id="tsPostPreview"></div>
         <textarea id="tsComment" maxlength="20" rows="2" placeholder="ひとこと（ひらがな）" inputmode="kana"></textarea>
         <label class="tsAnonRow"><input type="checkbox" id="tsAnon"/> 匿名で投稿する</label>
-        <label class="tsAnonRow"><input type="checkbox" id="tsHideTime"/> 起床時間を隠す</label>
+        <label class="tsAnonRow"><input type="checkbox" id="tsShowTime"/> 起床時間を表示</label>
         <div class="tsFoot">
           <button class="tsPost" id="tsPostBtn" type="button">投稿する</button>
         </div>
@@ -2653,7 +2653,7 @@ button,input{font:inherit;}
     <div id="postPreview"></div>
     <input type="text" id="postComment" maxlength="30" placeholder="ひとこと（任意）例：今日も早起き！"/>
     <label id="postAnonRow"><input type="checkbox" id="postAnon"/> 匿名で投稿する</label>
-    <label id="postHideRow"><input type="checkbox" id="postHideTime"/> 起床時間を隠す</label>
+    <label id="postHideRow"><input type="checkbox" id="postShowTime"/> 起床時間を表示</label>
     <div id="postConfirmBtns">
       <button id="postNo" type="button">投稿しない</button>
       <button id="postYes" type="button">投稿する</button>
@@ -3641,42 +3641,41 @@ async function postToday(anon,comment){
   try{
     const{ref,set}=await import(FB_DB);
     const date=jstKey();
-    const _hide=!!((document.getElementById("tsHideTime")&&document.getElementById("tsHideTime").checked)||(document.getElementById("postHideTime")&&document.getElementById("postHideTime").checked));
+    const _show=!!((document.getElementById("tsShowTime")&&document.getElementById("tsShowTime").checked)||(document.getElementById("postShowTime")&&document.getElementById("postShowTime").checked));
     let _cAt=Date.now();   /* 同じ日の編集なら最初の投稿時刻を保つ（起床時刻がズレないように） */
     try{const _ed=JSON.parse(localStorage.getItem("radio_post_edit")||"null");if(_ed&&_ed.date===date&&Number.isFinite(_ed.createdAt))_cAt=_ed.createdAt;}catch(_){}
     const _cm=(comment||"").slice(0,30);
     await set(ref(db,"posts/"+getUid()+"_"+date),{   /* キーが uid_date なので上書き＝二重投稿にならない */
-      uid:getUid(),name:anon?"匿名さん":(p.name||"匿名さん"),color:p.color||"#8fdcff",catBody:p.catBody||"#1c1c1c",date,stamp,createdAt:_cAt,wakeHour:Number.isFinite(p.wakeHour)?p.wakeHour:null,wakeMin:Number.isFinite(p.wakeMin)?p.wakeMin:0,streak:calcStreak().current,comment:_cm,pose:getEquippedPose(),thanks:getThanksWord(),hideTime:_hide,storyJoin:(function(){try{return localStorage.getItem("radio_story_join")==="1";}catch(_){return false;}})()
+      uid:getUid(),name:anon?"匿名さん":(p.name||"匿名さん"),color:p.color||"#8fdcff",catBody:p.catBody||"#1c1c1c",date,stamp,createdAt:_cAt,wakeHour:Number.isFinite(p.wakeHour)?p.wakeHour:null,wakeMin:Number.isFinite(p.wakeMin)?p.wakeMin:0,streak:calcStreak().current,comment:_cm,pose:getEquippedPose(),thanks:getThanksWord(),showTime:_show,storyJoin:(function(){try{return localStorage.getItem("radio_story_join")==="1";}catch(_){return false;}})()
     });
-    try{localStorage.setItem("radio_post_edit",JSON.stringify({date,createdAt:_cAt,comment:_cm,anon:!!anon,hide:_hide}));}catch(_){}
+    try{localStorage.setItem("radio_post_edit",JSON.stringify({date,createdAt:_cAt,comment:_cm,anon:!!anon,show:_show}));}catch(_){}
   }catch(e){console.warn("post failed",e);}
 }
-function postRiseText(hide){
-  if(hide)return"起床時間 ひみつ";   /* 隠す時はプレビューでもカテゴリを出さない */
+function postRiseText(show){
   const wl=getWakeLog()[jstKey()];let h,m;
   if(Number.isFinite(wl)){h=Math.floor(wl);m=Math.round((wl-h)*60);if(m===60){h++;m=0;}}
   else{const p=jstParts();h=p.h;m=p.m;}
   const r=riseLabelInfo(h,m,profileWake());
-  return r.lbl;   /* カテゴリだけ */
+  return show?`${r.time}に起床（${r.lbl}）`:r.lbl;   /* 表示ON→時刻＋カテゴリ／既定→カテゴリのみ */
 }
-function postPreviewHTML(comment,anon,hide){
+function postPreviewHTML(comment,anon,show){
   const body=profileBody(),ear=profileColor(),p=getProfile()||{};
   const name=escHtml(anon?"匿名さん":(p.name||"匿名さん"));
   const streak=calcStreak().current;
   const st=streak>=2?`<span class="catStreak">連続${streak}日</span>`:"";
   const _cos=getEquippedCostume();return `<div class="ppTopChip"><span class="avt">${catFaceSvg(body,ear,_cos)}</span><span class="nm">${name}</span></div>`+
-    `<div class="ppSub" id="ppSub">${escHtml(postRiseText(hide))}</div>`+
+    `<div class="ppSub" id="ppSub">${escHtml(postRiseText(show))}</div>`+
     `<div class="ppCatWrap">${catFigureHTML(body,ear,"sit",[0,0],"normal",_cos)}</div>`+st;
 }
 let _ppSubTimer=null;
 function updatePostPreview(){
   const c=($("postComment").value||"").trim();
   const anon=!!($("postAnon")&&$("postAnon").checked);
-  const hide=!!($("postHideTime")&&$("postHideTime").checked);
+  const show=!!($("postShowTime")&&$("postShowTime").checked);
   const el=$("postPreview");if(!el)return;
-  el.innerHTML=postPreviewHTML(c,anon,hide);
+  el.innerHTML=postPreviewHTML(c,anon,show);
   if(_ppSubTimer){clearInterval(_ppSubTimer);_ppSubTimer=null;}
-  const rise=postRiseText(hide);
+  const rise=postRiseText(show);
   if(c){   /* コメントありならホームと同じで 起床時刻 ↔ コメント を切り替え */
     let showC=false;
     _ppSubTimer=setInterval(()=>{
@@ -3691,7 +3690,7 @@ function showPostConfirm(fromSave){
   $("postConfirmTitle").textContent=fromSave?"保存されました":"今日の結果をシェア";
   $("postConfirmSub").textContent="今日の結果をシェアしますか？";
   $("postAnon").checked=false;
-  {const ht=$("postHideTime");if(ht)ht.checked=false;}
+  {const ht=$("postShowTime");if(ht)ht.checked=false;}
   const pc=$("postComment");if(pc)pc.value="";
   updatePostPreview();
   $("postConfirm").classList.add("visible");
@@ -5145,11 +5144,11 @@ function riseLabelInfo(ah,am,targetFloat){
 }
 function riseTextFromPost(po){
   if(!po.createdAt)return"";
-  if(po.hideTime)return"";   /* 起床時間を隠す＝カテゴリも出さない */
   const d=new Date(po.createdAt),ah=d.getHours(),am=d.getMinutes();
   const tgt=Number.isFinite(po.wakeHour)?po.wakeHour+((po.wakeMin||0)/60):ah;
   const r=riseLabelInfo(ah,am,tgt);
-  return r.lbl;   /* カテゴリだけ（超早起き/早起き/ぴったり/遅起き）。時刻は出さない */
+  if(po.showTime)return`${r.time}に起床（${r.lbl}）`;   /* 表示ON→○○:○○に起床（カテゴリ） */
+  return r.lbl;   /* 既定→カテゴリだけ */
 }
 function riseTextSelf(){
   const p=jstParts(),tgt=profileWake();
@@ -5160,13 +5159,15 @@ let _recentRange=3;
 function _withTimeout(p,ms){return Promise.race([p,new Promise((_,rej)=>setTimeout(()=>rej(new Error("timeout")),ms))]);}
 async function loadHillCats(){
   const cont=$("hillCats");if(!cont)return;
-  renderEmptyCat();   /* まず自分の猫を必ず表示（Firebaseが遅くても猫が消えないように） */
+  if(!(_hillAllCats&&_hillAllCats.length>1))renderEmptyCat();   /* すでに他の猫が居るなら消さない（読み込み失敗で自分だけにならないように） */
   if($("recentPostCount"))$("recentPostCount").textContent="";
   try{
-    const db=await _withTimeout(getDB(),4500);
+    const db=await _withTimeout(getDB(),9000);
     if(!db)return;     /* DB未設定：自分の猫のまま */
     const{ref,get}=await import(FB_DB);
-    const snap=await _withTimeout(get(ref(db,"posts")),4500);
+    let snap;
+    try{ snap=await _withTimeout(get(ref(db,"posts")),9000); }
+    catch(_e){ snap=await _withTimeout(get(ref(db,"posts")),13000); }   /* 遅い時はもう一度ながめに待つ */
     const val=(snap&&snap.exists())?snap.val():{};
     const me=getUid();
     const dayMs=24*3600*1000,now=Date.now();
@@ -6334,11 +6335,11 @@ function tsLoadPrevious(file){
 }
 function tsUpdatePreview(){
   const c=($("tsComment").value||"").trim(),anon=!!($("tsAnon")&&$("tsAnon").checked);
-  const hide=!!($("tsHideTime")&&$("tsHideTime").checked);
+  const show=!!($("tsShowTime")&&$("tsShowTime").checked);
   const el=$("tsPostPreview");if(!el)return;
   const body=profileBody(),ear=profileColor(),p=getProfile()||{},cos=getEquippedCostume();
   const name=escHtml(anon?"匿名さん":(p.name||"匿名さん"));
-  const sub=c?("💬 "+escHtml(c)):escHtml(postRiseText(hide));
+  const sub=c?("💬 "+escHtml(c)):escHtml(postRiseText(show));
   el.innerHTML='<div class="ppTopChip"><span class="avt">'+catFaceSvg(body,ear,cos)+'</span><span class="nm">'+name+'</span></div>'+
     '<div class="tsSub'+(c?" isComment":"")+'">'+sub+'</div>'+
     '<div class="ppCatWrap">'+catFigureHTML(body,ear,"sit",[0,0],"normal",cos)+'</div>';
@@ -6349,7 +6350,7 @@ function tsResetPost(){
   const same=posted&&ed&&ed.date===jstKey();
   const c=$("tsComment");if(c)c.value=same?(ed.comment||""):"";
   const a=$("tsAnon");if(a)a.checked=same?!!ed.anon:false;
-  const ht=$("tsHideTime");if(ht)ht.checked=same?!!ed.hide:false;
+  const ht=$("tsShowTime");if(ht)ht.checked=same?!!ed.show:false;
   const b=$("tsPostBtn");if(b){b.textContent=posted?"投稿を へんしゅう":"投稿する";b.disabled=false;b.classList.toggle("posted",posted);}
   const nb=$("tsNextBtn");if(nb){const away=(typeof outingPhase==="function"&&outingPhase()==="away");nb.textContent=away?"ホームへ":"おへやへ →";}
   tsUpdatePreview();
@@ -6564,7 +6565,7 @@ $("postNo").addEventListener("click",()=>{
 });
 $("postComment").addEventListener("input",updatePostPreview);
 $("postAnon").addEventListener("change",updatePostPreview);
-try{const _ph=$("postHideTime");if(_ph)_ph.addEventListener("change",updatePostPreview);}catch(_){}
+try{const _ph=$("postShowTime");if(_ph)_ph.addEventListener("change",updatePostPreview);}catch(_){}
 $("groundPostBtn").addEventListener("click",()=>{playClick();showPostConfirm(false);});
 $("postDoneRally").addEventListener("click",()=>{playClick();$("postDone").classList.remove("visible");});   /* やめる→スタンプラリー */
 $("postDoneHome").addEventListener("click",()=>{playClick();$("postDone").classList.remove("visible");goToCatRoomAfterPost();});   /* 見送り→いってらっしゃい */
@@ -10295,7 +10296,7 @@ $("recClose").addEventListener("click",()=>{playClick();closeRecord();});
 $("tsDownloadBtn").addEventListener("click",()=>{playClick();if(_autoCardUrl)dlCard(_autoCardUrl,"radio-card.png");});
 _wireHiraInput($("tsComment"),tsUpdatePreview);
 $("tsAnon").addEventListener("change",tsUpdatePreview);
-try{const _h=$("tsHideTime");if(_h)_h.addEventListener("change",tsUpdatePreview);}catch(_){}
+try{const _h=$("tsShowTime");if(_h)_h.addEventListener("change",tsUpdatePreview);}catch(_){}
 $("tsPostBtn").addEventListener("click",()=>{playClick();tsDoPost();});
 $("tsNextBtn").addEventListener("click",()=>{playClick();taisoNext();});
 $("taisoBack").addEventListener("click",()=>{try{playClick();}catch(_){}$("taisoScreen").classList.remove("visible");try{showSelect();}catch(_){}try{updateTop();}catch(_){}});

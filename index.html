@@ -120,7 +120,7 @@ button,input{font:inherit;}
 .hillDots{position:absolute;bottom:6px;left:0;right:0;display:flex;justify-content:center;gap:5px;pointer-events:none;}
 .hillDot{width:6px;height:6px;border-radius:50%;background:rgba(120,160,185,.35);}
 .hillDot.on{background:#5c93ad;}
-.catLabel{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;line-height:1.2;text-align:center;
+.catLabel{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:3px;line-height:1.2;text-align:center;
   background:rgba(255,255,255,.94);border:1.5px solid rgba(143,220,255,.4);border-radius:16px;padding:7px 10px 8px;
   backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);box-shadow:0 8px 18px rgba(111,205,255,.2);width:124px;cursor:pointer;}
 .catName{font-size:12.5px;font-weight:900;color:#2f6d86;max-width:76px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -174,6 +174,7 @@ button,input{font:inherit;}
 .catBubble::after{content:"";position:absolute;left:50%;bottom:-7px;transform:translateX(-50%);
   border-left:7px solid transparent;border-right:7px solid transparent;border-top:7px solid #fff;}
 .catCmt{max-width:112px;font-size:10px;font-weight:700;color:#d46a9a;line-height:1.25;background:#fff5fb;border:1px solid rgba(255,150,200,.4);border-radius:9px;padding:3px 8px;margin-top:1px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.catCmtWrap{display:flex;align-items:flex-start;justify-content:center;width:100%;margin-top:1px;}
 .catComment{max-width:120px;background:#fff5fb;border:1.5px solid rgba(255,150,200,.5);border-radius:12px;
   padding:5px 10px;font-size:11px;font-weight:700;color:#d46a9a;line-height:1.3;position:relative;
   box-shadow:0 5px 13px rgba(255,150,200,.22);word-break:break-word;text-align:center;margin-bottom:3px;}
@@ -5234,9 +5235,9 @@ function renderHillPage(){
     const riseTxt=riseTextFromPost(po);
     const comment=po.comment||"";
     lab.innerHTML=
-      (riseTxt?`<span class="catRise">${escHtml(riseTxt)}</span>`:"")+   /* カテゴリ＝名前の上 */
-      `<span class="catNameRow"><span class="catName">${escHtml(po.name||"匿名さん")}</span>${fireHtml}</span>`+
-      (comment?`<span class="catCmt">${escHtml(comment)}</span>`:"");   /* コメント＝名前の下・常時 */
+      `<span class="catNameRow"><span class="catName">${escHtml(po.name||"匿名さん")}</span>${fireHtml}</span>`+   /* なまえ＋連続＝一番上 */
+      `<span class="catRise"${riseTxt?"":' style="visibility:hidden"'}>（${riseTxt?escHtml(riseTxt):"・"}）</span>`+   /* カテゴリ（早起き等）＝名前の下・カッコつき */
+      `<div class="catCmtWrap">${comment?`<span class="catCmt">${escHtml(comment)}</span>`:""}</div>`;   /* コメント枠：高さを最長に揃える */
     const riseEl=lab.querySelector(".catRise")||null;
     if(comment){   /* クリックで全文表示 */
       lab.title="コメントを見る";
@@ -5279,7 +5280,8 @@ function renderHillPage(){
   _catFigs=figs;
   startCatLife(figs);
   startCommentCycle(figs);
-  requestAnimationFrame(()=>{try{const ls=cont.querySelectorAll(".catLabel");if(ls.length>1){let mx=0;ls.forEach(l=>{l.style.minHeight="";if(l.offsetHeight>mx)mx=l.offsetHeight;});ls.forEach(l=>{l.style.minHeight=mx+"px";});}}catch(_){}});   /* カードの高さを一番長い人に合わせる */
+  function _equalizeCmt(){try{const ws=cont.querySelectorAll(".catCmtWrap");if(ws.length>1){let mx=0;ws.forEach(w=>{w.style.minHeight="";if(w.offsetHeight>mx)mx=w.offsetHeight;});ws.forEach(w=>{w.style.minHeight=mx+"px";});}}catch(_){}}
+  requestAnimationFrame(_equalizeCmt);setTimeout(_equalizeCmt,250);try{if(document.fonts&&document.fonts.ready)document.fonts.ready.then(_equalizeCmt);}catch(_){}   /* コメント枠の高さを最長に揃える（フォント読込後も再計算）＝3行が揃う */
   /* 収まりきらない時は ‹ › でページ切り替え */
   if(pages>1){
     const mk=(dir,txt)=>{

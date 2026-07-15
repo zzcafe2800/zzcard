@@ -173,7 +173,7 @@ button,input{font:inherit;}
   font-size:12px;font-weight:700;color:#5c93ad;box-shadow:0 6px 16px rgba(111,205,255,.2);position:relative;white-space:nowrap;}
 .catBubble::after{content:"";position:absolute;left:50%;bottom:-7px;transform:translateX(-50%);
   border-left:7px solid transparent;border-right:7px solid transparent;border-top:7px solid #fff;}
-.catCmt{max-width:112px;font-size:10px;font-weight:700;color:#d46a9a;line-height:1.25;background:#fff5fb;border:1px solid rgba(255,150,200,.4);border-radius:9px;padding:3px 8px;margin-top:1px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.catCmt{max-width:112px;font-size:10px;font-weight:700;color:#d46a9a;line-height:1.3;background:#fff5fb;border:1px solid rgba(255,150,200,.4);border-radius:9px;padding:3px 9px;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .catCmtWrap{display:flex;align-items:flex-start;justify-content:center;width:100%;margin-top:1px;}
 .catComment{max-width:120px;background:#fff5fb;border:1.5px solid rgba(255,150,200,.5);border-radius:12px;
   padding:5px 10px;font-size:11px;font-weight:700;color:#d46a9a;line-height:1.3;position:relative;
@@ -272,7 +272,7 @@ button,input{font:inherit;}
 #recentLabel{position:absolute;left:50%;transform:translateX(-50%);bottom:70px;z-index:104;display:flex;align-items:center;gap:5px;pointer-events:auto;cursor:pointer;
   background:rgba(255,255,255,.44);border-radius:999px;padding:4px 11px 4px 5px;box-shadow:none;
   font-size:10px;font-weight:700;color:#5c93ad;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);}
-#recentLabel:active{transform:scale(.94);}
+#recentLabel:active{transform:translateX(-50%) scale(.94);}
 #recentLabel .recentCat{width:22px;height:22px;}
 .sky-night #recentLabel{background:rgba(70,82,130,.62);color:#eef2ff;}
 #recentPostCount{margin:0;width:auto;max-width:100%;box-sizing:border-box;z-index:103;font-size:10px;font-weight:700;
@@ -1826,6 +1826,13 @@ button,input{font:inherit;}
 #tsComment{width:100%;box-sizing:border-box;border:1.5px solid #d8e8f2;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:13px;resize:none;color:#4d7790;}
 #tsComment:focus{outline:none;border-color:#8fd0ef;}
 .tsAnonRow{display:flex;align-items:center;justify-content:center;gap:8px;font-size:12.5px;font-weight:700;color:#6f9fb6;cursor:pointer;}
+#wakeAdjRow{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff7ec;border:1.5px solid #ffe1b8;border-radius:14px;padding:8px 12px;margin:8px 0 3px;}
+#wakeAdjRow .waLabel{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:13px;font-weight:900;color:#e0913f;white-space:nowrap;}
+#wakeAdjRow .waCtrl{display:flex;align-items:center;gap:4px;}
+#wakeAdjRow .waCtrl button{border:none;width:30px;height:30px;border-radius:50%;background:#ffd9a8;color:#c9772a;font-size:13px;font-weight:900;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center;transition:transform .12s;}
+#wakeAdjRow .waCtrl button:active{transform:scale(.9);}
+#wakeAdjTime{min-width:52px;text-align:center;font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:19px;font-weight:900;color:#ef8a4d;letter-spacing:.02em;}
+#wakeAdjHint{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:10.5px;font-weight:700;color:#c6a678;text-align:center;margin-bottom:6px;line-height:1.3;}
 .tsAnonRow input{width:16px;height:16px;accent-color:#7fd8b0;}
 .tsPost{flex:1;border:none;border-radius:999px;padding:12px;font-size:14px;font-weight:900;cursor:pointer;background:linear-gradient(135deg,#ffc46b,#ff9e4d);color:#fff;transition:transform .15s;}
 .tsPost:active{transform:scale(.96);}
@@ -1958,22 +1965,18 @@ button,input{font:inherit;}
 #storyStats.show{display:flex;}
 #storyStatsCard{width:min(340px,90vw);background:rgba(255,255,255,.95);border:2px solid #cdeaff;border-radius:26px;padding:22px 20px 20px;
   box-shadow:0 18px 44px rgba(60,100,130,.28);text-align:center;animation:slMottoIn .5s cubic-bezier(.2,1.3,.4,1) both;}
-.ssTitle{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:19px;font-weight:900;color:#3f7d97;margin-bottom:15px;}
+.ssTitle{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:17px;font-weight:900;color:#7a97a6;margin-bottom:14px;letter-spacing:.08em;}
 .ssStats{display:flex;flex-direction:column;gap:8px;margin-bottom:15px;}
-.ssRow{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#f4fafd;border:1.5px solid #e2f1f8;border-radius:15px;padding:10px 15px;}
+.ssRow{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#f6f9fb;border:1px solid #eaf0f4;border-radius:13px;padding:9px 14px;}
 .ssRow .ssLabel{display:flex;align-items:center;gap:8px;font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:13.5px;font-weight:800;color:#5f8598;}
 .ssRow .ssIcon{font-size:20px;}
-.ssRow .ssVal{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:25px;font-weight:900;color:#ef8a4d;line-height:1;}
-.ssRow .ssValUnit{font-size:12.5px;font-weight:800;color:#b6a08c;margin-left:2px;}
-.ssTop{background:linear-gradient(135deg,#fff6e0,#ffe9c9);border:1.5px solid #f0d69a;border-radius:18px;padding:11px 12px;margin-bottom:13px;}
-.ssTopLabel{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:12px;font-weight:900;color:#c99a3a;margin-bottom:6px;}
-.ssTopRow{display:flex;align-items:center;justify-content:center;gap:10px;}
-.ssTopFace{width:44px;height:44px;display:inline-flex;flex:0 0 auto;}
-.ssTopFace svg{width:44px;height:44px;}
-.ssTopInfo{text-align:left;}
-.ssTopName{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:15px;font-weight:900;color:#4f88a4;}
-.ssTopStreak{font-size:13px;font-weight:800;color:#ef8a4d;}
-.ssHook{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:15px;font-weight:900;color:#e0608f;line-height:1.5;margin-bottom:16px;}
+.ssRow .ssVal{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:21px;font-weight:800;color:#5a7180;line-height:1;}
+.ssRow .ssValUnit{font-size:12px;font-weight:700;color:#a8b4bc;margin-left:2px;}
+.ssTop{background:linear-gradient(135deg,#eef7fc,#e4f1f8);border:1.5px solid #cbe6f2;border-radius:16px;padding:13px 14px;margin:4px 0 13px;text-align:center;}
+.ssRankLabel{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:11.5px;font-weight:700;color:#7f9bab;margin-bottom:5px;}
+.ssRankMain{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:15px;font-weight:800;color:#4f7f95;display:flex;align-items:center;justify-content:center;gap:4px;flex-wrap:wrap;}
+.ssRankNum{font-size:23px;font-weight:900;color:#f19a3e;letter-spacing:.02em;}
+.ssHook{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:12.5px;font-weight:700;color:#a7b4bc;line-height:1.4;margin-bottom:15px;}
 #ssNext{border:none;border-radius:999px;padding:12px 34px;font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:15px;font-weight:900;color:#fff;
   background:linear-gradient(135deg,#9fd4f0,#7ab8d8);box-shadow:0 8px 20px rgba(120,184,216,.4);cursor:pointer;transition:transform .15s;}
 #ssNext:active{transform:scale(.95);}
@@ -2412,6 +2415,8 @@ button,input{font:inherit;}
       <div class="taisoCard" id="tsPostCard">
         <div class="tsCardTitle">とうこう</div>
         <div id="tsPostPreview"></div>
+        <div id="wakeAdjRow"><span class="waLabel">🌅 おきた じかん</span><div class="waCtrl"><button id="wakeAdjMinus" type="button" aria-label="はやく">◀</button><span id="wakeAdjTime">–</span><button id="wakeAdjPlus" type="button" aria-label="おそく">▶</button></div></div>
+        <div id="wakeAdjHint">たいそうが あとに なっても、おきた じかんに あわせてね（3じかん前まで）</div>
         <textarea id="tsComment" maxlength="20" rows="2" placeholder="ひとこと（ひらがな）" inputmode="kana"></textarea>
         <label class="tsAnonRow"><input type="checkbox" id="tsAnon"/> 匿名で投稿する</label>
         <label class="tsAnonRow"><input type="checkbox" id="tsShowTime"/> 起床時間を表示</label>
@@ -3649,7 +3654,7 @@ async function postToday(anon,comment){
     try{const _ed=JSON.parse(localStorage.getItem("radio_post_edit")||"null");if(_ed&&_ed.date===date&&Number.isFinite(_ed.createdAt))_cAt=_ed.createdAt;}catch(_){}
     const _cm=(comment||"").slice(0,30);
     await set(ref(db,"posts/"+getUid()+"_"+date),{   /* キーが uid_date なので上書き＝二重投稿にならない */
-      uid:getUid(),name:anon?"匿名さん":(p.name||"匿名さん"),color:p.color||"#8fdcff",catBody:p.catBody||"#1c1c1c",date,stamp,createdAt:_cAt,wakeHour:Number.isFinite(p.wakeHour)?p.wakeHour:null,wakeMin:Number.isFinite(p.wakeMin)?p.wakeMin:0,streak:calcStreak().current,comment:_cm,pose:getEquippedPose(),thanks:getThanksWord(),showTime:_show,storyJoin:(function(){try{return localStorage.getItem("radio_story_join")==="1";}catch(_){return false;}})()
+      uid:getUid(),name:anon?"匿名さん":(p.name||"匿名さん"),color:p.color||"#8fdcff",catBody:p.catBody||"#1c1c1c",date,stamp,createdAt:_cAt,wakeHour:Number.isFinite(p.wakeHour)?p.wakeHour:null,wakeMin:Number.isFinite(p.wakeMin)?p.wakeMin:0,streak:calcStreak().current,comment:_cm,pose:getEquippedPose(),thanks:getThanksWord(),showTime:_show,wakeHF:getActualWake(),storyJoin:(function(){try{return localStorage.getItem("radio_story_join")==="1";}catch(_){return false;}})()
     });
     try{localStorage.setItem("radio_post_edit",JSON.stringify({date,createdAt:_cAt,comment:_cm,anon:!!anon,show:_show}));}catch(_){}
   }catch(e){console.warn("post failed",e);}
@@ -5147,7 +5152,9 @@ function riseLabelInfo(ah,am,targetFloat){
 }
 function riseTextFromPost(po){
   if(!po.createdAt)return"";
-  const d=new Date(po.createdAt),ah=d.getHours(),am=d.getMinutes();
+  let ah,am;
+  if(Number.isFinite(po.wakeHF)){ah=Math.floor(po.wakeHF);am=Math.round((po.wakeHF-ah)*60);if(am===60){ah++;am=0;}}
+  else{const d=new Date(po.createdAt);ah=d.getHours();am=d.getMinutes();}
   const tgt=Number.isFinite(po.wakeHour)?po.wakeHour+((po.wakeMin||0)/60):ah;
   const r=riseLabelInfo(ah,am,tgt);
   if(po.showTime)return`${r.time}に起床（${r.lbl}）`;   /* 表示ON→○○:○○に起床（カテゴリ） */
@@ -5212,8 +5219,20 @@ function renderCats(cats){
   renderHillPage();
 }
 let _hillAllCats=[],_hillPage=0;
+function _hillPerPage(){const catW=74,labelW=118,gap=Math.max(8,labelW-catW);const avail=Math.max(300,(window.innerWidth||360)-24);return Math.min(24,Math.max(3,Math.floor((avail+gap)/(catW+gap))));}
+function _changeHillPage(dir){try{const cont=$("hillCats");if(!cont)return;const pages=Math.max(1,Math.ceil((_hillAllCats||[]).length/_hillPerPage()));if(pages<=1)return;try{playClick();}catch(_){}_hillPage=(_hillPage+dir+pages)%pages;renderHillPage();cont.style.setProperty("--hpFrom",dir<0?"-22px":"22px");cont.classList.remove("pageIn");void cont.offsetWidth;cont.classList.add("pageIn");}catch(_){}}
+function _wireHillSwipe(){const c=$("hillCats");if(!c||c._swipeWired)return;c._swipeWired=true;
+  let x0=null,y0=null,drag=false;
+  const st=(x,y)=>{x0=x;y0=y;drag=true;};
+  const en=(x,y)=>{if(!drag||x0==null){drag=false;return;}drag=false;const dx=x-x0,dy=y-y0;x0=null;if(Math.abs(dx)<38||Math.abs(dx)<Math.abs(dy))return;_changeHillPage(dx<0?1:-1);};   /* 左スワイプ→次、右→前 */
+  c.addEventListener("touchstart",e=>{if(e.touches&&e.touches[0])st(e.touches[0].clientX,e.touches[0].clientY);},{passive:true});
+  c.addEventListener("touchend",e=>{if(e.changedTouches&&e.changedTouches[0])en(e.changedTouches[0].clientX,e.changedTouches[0].clientY);},{passive:true});
+  c.addEventListener("mousedown",e=>{st(e.clientX,e.clientY);});
+  window.addEventListener("mouseup",e=>{if(drag)en(e.clientX,e.clientY);});
+}
 function renderHillPage(){
   const cont=$("hillCats");cont.className="";cont.innerHTML="";
+  _wireHillSwipe();
   /* スマホは3匹固定表示。4匹以上（自分含む）なら ‹ › でページ切替 */
   const catW=74,labelW=118;
   const gap=Math.max(8,labelW-catW);
@@ -5280,8 +5299,9 @@ function renderHillPage(){
   _catFigs=figs;
   startCatLife(figs);
   startCommentCycle(figs);
-  function _equalizeCmt(){try{const ws=cont.querySelectorAll(".catCmtWrap");if(ws.length>1){let mx=0;ws.forEach(w=>{w.style.minHeight="";if(w.offsetHeight>mx)mx=w.offsetHeight;});ws.forEach(w=>{w.style.minHeight=mx+"px";});}}catch(_){}}
-  requestAnimationFrame(_equalizeCmt);setTimeout(_equalizeCmt,250);try{if(document.fonts&&document.fonts.ready)document.fonts.ready.then(_equalizeCmt);}catch(_){}   /* コメント枠の高さを最長に揃える（フォント読込後も再計算）＝3行が揃う */
+  function _fitComment(el){try{if(!el||!el.textContent)return;el.style.fontSize="";let fs=10;el.style.fontSize=fs+"px";let g=0;while(el.scrollWidth>el.clientWidth+1&&fs>6&&g<28){fs-=0.5;el.style.fontSize=fs+"px";g++;}}catch(_){}}
+  function _equalizeCmt(){try{cont.querySelectorAll(".catCmt").forEach(_fitComment);const ws=cont.querySelectorAll(".catCmtWrap");if(ws.length>1){let mx=0;ws.forEach(w=>{w.style.minHeight="";if(w.offsetHeight>mx)mx=w.offsetHeight;});ws.forEach(w=>{w.style.minHeight=mx+"px";});}}catch(_){}}
+  requestAnimationFrame(_equalizeCmt);setTimeout(_equalizeCmt,250);try{if(document.fonts&&document.fonts.ready)document.fonts.ready.then(_equalizeCmt);}catch(_){}   /* コメントを1行に自動縮小＋枠の高さを揃える */
   /* 収まりきらない時は ‹ › でページ切り替え */
   if(pages>1){
     const mk=(dir,txt)=>{
@@ -5838,6 +5858,10 @@ function profileBody(){const p=getProfile();return(p&&p.catBody)?p.catBody:"#1c1
 
 /* いまの時刻（小数の「時」） */
 function nowHourFloat(){const p=jstParts();return p.h+p.m/60+p.s/3600;}
+/* おきた じかん：体操した時刻を上限に、3時間前まで自分で調整できる（ゆるいコミュニティ運用） */
+function _doneTimeHf(){try{const v=JSON.parse(localStorage.getItem("radio_done_time")||"null");if(v&&v.date===jstKey()&&Number.isFinite(v.hf))return v.hf;}catch(_){}return null;}
+function getActualWake(){const wl=getWakeLog()[jstKey()];if(Number.isFinite(wl))return wl;const d=_doneTimeHf();return Number.isFinite(d)?d:nowHourFloat();}
+function setActualWake(hf){const dt=_doneTimeHf();if(!Number.isFinite(dt))return;const mn=Math.max(0,dt-3),mx=dt;hf=Math.max(mn,Math.min(mx,hf));try{const wl=getWakeLog();wl[jstKey()]=hf;localStorage.setItem(WAKELOG_KEY,JSON.stringify(wl));publishProfile();}catch(_){}}
 function inWakeWindow(){const wake=profileWake(),now=nowHourFloat();return now>=wake&&now<wake+1;}  /* 目標時間〜+1時間の枠内か */
 /* 目標枠（wake〜wake+1）からのズレでハズレ率を決める
    ・枠内：0  ・寝坊：1hで5割→どんどん上げて上限9割
@@ -6339,16 +6363,41 @@ function tsLoadPrevious(file){
   };
   rd.readAsDataURL(file);
 }
+let _tsSubTimer=null;
+function refreshWakeAdj(){
+  const row=$("wakeAdjRow"),lab=$("wakeAdjTime");if(!row||!lab)return;
+  const dt=_doneTimeHf();
+  if(!Number.isFinite(dt)){row.style.display="none";const h=$("wakeAdjHint");if(h)h.style.display="none";return;}
+  row.style.display="";const h=$("wakeAdjHint");if(h)h.style.display="";
+  const hf=getActualWake(),hh=Math.floor(hf),mm=Math.round((hf-hh)*60);
+  lab.textContent=hh+":"+String(mm).padStart(2,"0");
+  const mn=Math.max(0,dt-3);
+  const mb=$("wakeAdjMinus"),pb=$("wakeAdjPlus");
+  if(mb)mb.disabled=(hf<=mn+1e-6);if(pb)pb.disabled=(hf>=dt-1e-6);
+  if(mb)mb.style.opacity=mb.disabled?"0.35":"1";if(pb)pb.style.opacity=pb.disabled?"0.35":"1";
+}
 function tsUpdatePreview(){
   const c=($("tsComment").value||"").trim(),anon=!!($("tsAnon")&&$("tsAnon").checked);
   const show=!!($("tsShowTime")&&$("tsShowTime").checked);
   const el=$("tsPostPreview");if(!el)return;
   const body=profileBody(),ear=profileColor(),p=getProfile()||{},cos=getEquippedCostume();
   const name=escHtml(anon?"匿名さん":(p.name||"匿名さん"));
-  const sub=c?("💬 "+escHtml(c)):escHtml(postRiseText(show));
+  const rise=postRiseText(show);
+  const streak=calcStreak().current;
+  const st=streak>=2?`<span class="catStreak">連続${streak}日</span>`:"";
   el.innerHTML='<div class="ppTopChip"><span class="avt">'+catFaceSvg(body,ear,cos)+'</span><span class="nm">'+name+'</span></div>'+
-    '<div class="tsSub'+(c?" isComment":"")+'">'+sub+'</div>'+
-    '<div class="ppCatWrap">'+catFigureHTML(body,ear,"sit",[0,0],"normal",cos)+'</div>';
+    '<div class="tsSub" id="tsSub">'+escHtml(rise)+'</div>'+
+    '<div class="ppCatWrap">'+catFigureHTML(body,ear,"sit",[0,0],"normal",cos)+'</div>'+st;
+  if(_tsSubTimer){clearInterval(_tsSubTimer);_tsSubTimer=null;}
+  if(c){   /* コメントありなら 起床 ↔ コメント を交互に（ホームと同じ） */
+    let showC=false;
+    _tsSubTimer=setInterval(()=>{
+      const s=$("tsSub");if(!s){clearInterval(_tsSubTimer);_tsSubTimer=null;return;}
+      showC=!showC;
+      if(showC){s.textContent="💬 "+c;s.classList.add("isComment");}
+      else{s.textContent=rise;s.classList.remove("isComment");}
+    },2600);
+  }
 }
 function tsResetPost(){
   const posted=postedToday();
@@ -6359,6 +6408,7 @@ function tsResetPost(){
   const ht=$("tsShowTime");if(ht)ht.checked=same?!!ed.show:false;
   const b=$("tsPostBtn");if(b){b.textContent=posted?"投稿を へんしゅう":"投稿する";b.disabled=false;b.classList.toggle("posted",posted);}
   const nb=$("tsNextBtn");if(nb){const away=(typeof outingPhase==="function"&&outingPhase()==="away");nb.textContent=away?"ホームへ":"おへやへ →";}
+  try{refreshWakeAdj();}catch(_){}
   tsUpdatePreview();
 }
 async function tsDoPost(){
@@ -6805,7 +6855,7 @@ function markTodayDone(){
   const before=getCollected();
   dates.push(today);
   localStorage.setItem(DONE_KEY,JSON.stringify(dates));
-  try{const wl=getWakeLog();wl[today]=nowHourFloat();localStorage.setItem(WAKELOG_KEY,JSON.stringify(wl));}catch(_){}
+  try{const wl=getWakeLog();wl[today]=nowHourFloat();localStorage.setItem(WAKELOG_KEY,JSON.stringify(wl));localStorage.setItem("radio_done_time",JSON.stringify({date:today,hf:nowHourFloat()}));}catch(_){}
   try{recordCheckin();}catch(_){}
   const st=stampForDate(today);
   publishProfile();   /* 連続日数を一覧に反映 */
@@ -10302,6 +10352,8 @@ $("recClose").addEventListener("click",()=>{playClick();closeRecord();});
 $("tsDownloadBtn").addEventListener("click",()=>{playClick();if(_autoCardUrl)dlCard(_autoCardUrl,"radio-card.png");});
 _wireHiraInput($("tsComment"),tsUpdatePreview);
 $("tsAnon").addEventListener("change",tsUpdatePreview);
+try{const _wm=$("wakeAdjMinus");if(_wm)_wm.addEventListener("click",()=>{try{playClick();}catch(_){}setActualWake(getActualWake()-5/60);refreshWakeAdj();tsUpdatePreview();});}catch(_){}
+try{const _wp=$("wakeAdjPlus");if(_wp)_wp.addEventListener("click",()=>{try{playClick();}catch(_){}setActualWake(getActualWake()+5/60);refreshWakeAdj();tsUpdatePreview();});}catch(_){}
 try{const _h=$("tsShowTime");if(_h)_h.addEventListener("change",tsUpdatePreview);}catch(_){}
 $("tsPostBtn").addEventListener("click",()=>{playClick();tsDoPost();});
 $("tsNextBtn").addEventListener("click",()=>{playClick();taisoNext();});
@@ -10756,32 +10808,47 @@ function _refreshStoryBadge(){try{const b=$("storyNewBadge");if(b)b.hidden=(stor
 let _pendingDailyStory=false,_dailyStoryActive=false;
 function _statRow(icon,label,val,unit){return `<div class="ssRow"><span class="ssLabel"><span class="ssIcon">${icon}</span>${label}</span><span class="ssVal">${val}${unit?`<span class="ssValUnit">${unit}</span>`:""}</span></div>`;}
 /* 起動時：やる気の上がる分析画面（自分の実績＋いまの1位＋あしたも やりたくなるフック） */
+/* みんなの中で自分が一番優れてる項目とその順位（同率対応）。項目はいろいろ用意して一番いい順位を選ぶ */
+function _bestRank(cur,myWakeMin){
+  try{
+    const others=(_hillAllCats||[]).filter(c=>c&&c.name&&!c.isSelf);
+    if(others.length<1)return null;
+    const ms=[];
+    { const vals=others.map(c=>c.streak||0);let bt=0,sm=0;vals.forEach(v=>{if(v>cur)bt++;else if(v===cur)sm++;});ms.push({key:"れんぞく",icon:"🔥",rank:bt+1,tied:sm>0}); }
+    if(myWakeMin!=null){
+      const vals=others.map(c=>{let w=c.wakeHF;if(!Number.isFinite(w)&&c.createdAt){const d=new Date(c.createdAt);w=d.getHours()+d.getMinutes()/60;}return Number.isFinite(w)?Math.round(w*60):null;}).filter(v=>v!=null);
+      if(vals.length){let bt=0,sm=0;vals.forEach(v=>{if(v<myWakeMin)bt++;else if(v===myWakeMin)sm++;});ms.push({key:"早起き",icon:"🌅",rank:bt+1,tied:sm>0});}
+    }
+    if(!ms.length)return null;
+    ms.sort((a,b)=>a.rank-b.rank||(a.key==="れんぞく"?-1:1));
+    return {best:ms[0],total:others.length+1};
+  }catch(_){return null;}
+}
 function showStoryStats(){
   try{
     const el=$("storyStats");if(!el)return;
-    const st=calcStreak(),cur=st.current,best=st.best,total=getDoneDates().length;
+    const st=calcStreak(),cur=st.current,total=getDoneDates().length;
     const wl=getWakeLog(),vals=Object.values(wl).filter(v=>typeof v==="number");
     const pad=x=>String(x).padStart(2,"0");
     const avg=vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;
     const avgStr=avg!=null?(Math.floor(avg)+":"+pad(Math.round((avg%1)*60))):"—";
     $("ssStats").innerHTML=
       _statRow("🔥","れんぞく",cur,"日")+
-      _statRow("📅","たいそうした",total,"回")+
-      (avg!=null?_statRow("⏰","早起き へいきん",avgStr,""):"")+
-      (best>cur?_statRow("🏅","じこベスト",best,"日"):"");
-    let top=null;
-    try{const cats=(_hillAllCats||[]).filter(c=>c&&c.name);for(const c of cats){if((c.streak||0)>((top&&top.streak)||0))top=c;}}catch(_){}
+      _statRow("📅","たいそう",total,"回")+
+      (avg!=null?_statRow("⏰","早起きへいきん",avgStr,""):"");
+    const myWakeHf=wl[jstKey()];const myWakeMin=Number.isFinite(myWakeHf)?Math.round(myWakeHf*60):null;
+    const rk=_bestRank(cur,myWakeMin);
     const tEl=$("ssTop");
-    if(top&&(top.streak||0)>=1){
-      const face=(typeof catFaceSvg==="function")?catFaceSvg(top.catBody||"#1c1c1c",top.color||"#8fdcff",null):"";
-      tEl.innerHTML=`<div class="ssTopLabel">👑 いまの 1位</div><div class="ssTopRow"><span class="ssTopFace">${face}</span><div class="ssTopInfo"><div class="ssTopName">${escHtml(top.name||"匿名さん")}${top.isSelf?"（きみ！）":""}</div><div class="ssTopStreak">🔥 ${top.streak}日 れんぞく</div></div></div>`;
+    if(rk&&rk.best){
+      const b=rk.best,rankTxt=(b.tied?"同率 ":"")+b.rank+"位";
+      tEl.innerHTML=`<div class="ssRankLabel">みんな（${rk.total}人）の中で</div><div class="ssRankMain">${b.icon} ${escHtml(b.key)}　<span class="ssRankNum">${rankTxt}</span></div>`;
       tEl.style.display="";
     }else{tEl.style.display="none";}
     const miles=[3,7,14,21,30,50,75,100,150,200,300,365];
     let hook="";
-    if(cur>=1){const nm=miles.find(m=>m>cur);if(nm&&nm-cur<=5)hook=`あと ${nm-cur}日で れんぞく ${nm}日！🔥`;else if(cur>=2)hook=`${cur}日 つづいてるよ！<br>あしたも とめないで🔥`;}
-    if(!hook){const nt=miles.find(m=>m>total);if(nt&&nt-total<=5)hook=`あと ${nt-total}回で つうさん ${nt}回！`;else if(cur===0)hook="また きょうから はじめよう！🌱";else hook="あしたも いっしょに がんばろう🐈";}
-    $("ssHook").innerHTML=hook;
+    if(cur>=1){const nm=miles.find(m=>m>cur);if(nm&&nm-cur<=5)hook=`あと ${nm-cur}日で れんぞく ${nm}日`;else if(cur>=2)hook=`${cur}日 つづいてるよ`;}
+    if(!hook){const nt=miles.find(m=>m>total);if(nt&&nt-total<=5)hook=`あと ${nt-total}回で つうさん ${nt}回`;else if(cur===0)hook="また きょうから はじめよう";else hook="あしたも いっしょに";}
+    $("ssHook").textContent=hook;
     el.classList.add("show");
     const next=$("ssNext");if(next)next.onclick=()=>{try{playClick();}catch(_){}el.classList.remove("show");};
   }catch(e){}
@@ -11693,7 +11760,7 @@ try{
 </div>
 <div id="storyStats">
   <div id="storyStatsCard">
-    <div class="ssTitle">✨ きみの きろく ✨</div>
+    <div class="ssTitle">きろく</div>
     <div class="ssStats" id="ssStats"></div>
     <div class="ssTop" id="ssTop"></div>
     <div class="ssHook" id="ssHook"></div>

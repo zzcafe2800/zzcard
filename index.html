@@ -1407,7 +1407,8 @@ html:not(.lite) #fabWrap{right:20px;left:auto;top:50%;bottom:auto;transform:tran
 #sendoffGuide{position:absolute;inset:0;z-index:150;background:rgba(22,15,10,.62);display:none;}
 #sendoffGuide.on{display:block;animation:stFadeIn .4s ease both;}
 #catRoom.guideGo #outingBar{z-index:160 !important;}
-#catRoom.guideGo #outingBar .outingBtn{box-shadow:0 0 0 5px rgba(255,255,255,.28),0 0 34px 10px rgba(159,212,240,.95);animation:sgPulse 1.3s ease-in-out infinite;}
+#catRoom.guideGo #outingBar .outingBtn,#catRoom.guideGo #roomDoor{box-shadow:0 0 0 5px rgba(255,255,255,.28),0 0 34px 10px rgba(159,212,240,.95);animation:sgPulse 1.3s ease-in-out infinite;}
+#catRoom.guideGo #roomDoor{z-index:170 !important;}   /* いってらっしゃいを暗幕の上に出して押せるように */
 @keyframes sgPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.07);}}
 #sendoffGuide .sgHint{position:absolute;left:50%;bottom:96px;transform:translateX(-50%);width:min(84vw,340px);text-align:center;font-family:"Yomogi","Kosugi Maru",cursive;font-size:15px;font-weight:800;line-height:1.85;color:#fff8ee;background:rgba(90,60,40,.6);border:1.5px solid rgba(255,255,255,.35);border-radius:16px;padding:14px 16px;}
 #sendoffGuide .sgSub{display:block;margin-top:6px;font-size:12px;color:#ffe0c0;font-weight:700;}
@@ -3905,6 +3906,9 @@ async function cloudSyncPull(){
     let meta={};try{meta=JSON.parse(localStorage.getItem(SYNC_META_KEY)||"{}");}catch(_){}
     if(v.t<=(meta.t||0))return false;   /* こっちが最新 */
     const data=JSON.parse(v.data||"{}");
+    /* 合わせる前のローカル記録は削除（クラウドと完全一致にする） */
+    const del=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.indexOf("radio_")===0&&SYNC_EXCLUDE.indexOf(k)<0)del.push(k);}
+    del.forEach(k=>{try{localStorage.removeItem(k);}catch(_){}});
     Object.keys(data).forEach(k=>{try{localStorage.setItem(k,data[k]);}catch(_){}});
     localStorage.setItem(SYNC_META_KEY,JSON.stringify({t:v.t,h:v.h}));
     return true;
@@ -3912,15 +3916,25 @@ async function cloudSyncPull(){
 }
 /* 起動時：クラウドに新しい記録があれば取り込んで一度だけ再読み込み */
 (async()=>{try{
-  if(sessionStorage.getItem("radio_sync_boot")==="1")return;
-  sessionStorage.setItem("radio_sync_boot","1");
   const changed=await cloudSyncPull();
   if(changed)location.reload();
 }catch(_){}})();
-/* 自動アップロード：45秒ごとの変化チェック＋画面を離れる時 */
-try{setInterval(()=>{cloudSyncPush(false);},45000);}catch(_){}
+/* 変化があったら素早くアップロード（デバウンス）＝相手にすぐ反映 */
+let _syncPushT=null;
+function syncSoon(){try{if(_syncPushT)clearTimeout(_syncPushT);_syncPushT=setTimeout(()=>{cloudSyncPush(false);},1500);}catch(_){}}
+try{window.addEventListener("storage",syncSoon);}catch(_){}   /* 同端末の別タブ更新も拾う */
+/* 定期：変化チェックのみ（無変化なら送信しない＝サーバー負担小） */
+try{setInterval(()=>{cloudSyncPush(false);},30000);}catch(_){}
+/* 画面を離れる時は確実に送る */
 try{window.addEventListener("pagehide",()=>{cloudSyncPush(false);});}catch(_){}
-try{document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")cloudSyncPush(false);});}catch(_){}
+/* 画面に戻る度に：まず相手の最新を取り込み、無ければ自分の変化を送る（＝開くたび自動同期） */
+let _syncPullBusy=false;
+try{document.addEventListener("visibilitychange",async()=>{
+  if(document.visibilityState==="hidden"){cloudSyncPush(false);return;}
+  if(_syncPullBusy)return;_syncPullBusy=true;
+  try{const changed=await cloudSyncPull();if(changed){location.reload();return;}await cloudSyncPush(false);}catch(_){}
+  _syncPullBusy=false;
+});}catch(_){}
 function escHtml(s){return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 let _db=null,_dbTried=false;
 async function getDB(){
@@ -10082,8 +10096,9 @@ function spotlightSendoff(){
   gv.innerHTML=`<div class="sgHint">🌅 目標の時間に アプリを ひらいて、<br>スタンプラリーと プレゼントを もらおう！<br><span class="sgSub">下の「いってらっしゃい」で ねこを おくりだしてね</span></div>`;
   gv.classList.add("on"); room.classList.add("guideGo");
   gv.onclick=()=>{};
+  try{refreshDock();}catch(_){}
 }
-function clearSendoffGuide(){ const gv=document.getElementById("sendoffGuide"); if(gv)gv.classList.remove("on"); const room=$("catRoom"); if(room)room.classList.remove("guideGo"); }
+function clearSendoffGuide(){ const gv=document.getElementById("sendoffGuide"); if(gv)gv.classList.remove("on"); const room=$("catRoom"); if(room)room.classList.remove("guideGo"); try{refreshDock();}catch(_){} }
 function spotlightBack(){
   const room=$("catRoom"); if(!room)return;
   let gv=document.getElementById("backGuide");
@@ -10092,8 +10107,9 @@ function spotlightBack(){
   gv.innerHTML=`<div class="bkHint">これで じゅんび かんりょう！<br>×で とじて、目標の時間に また 会おう</div>`;
   gv.classList.add("on"); room.classList.add("guideBack");
   gv.onclick=()=>{};
+  try{refreshDock();}catch(_){}
 }
-function clearBackGuide(){ const gv=document.getElementById("backGuide"); if(gv)gv.classList.remove("on"); const room=$("catRoom"); if(room)room.classList.remove("guideBack"); }
+function clearBackGuide(){ const gv=document.getElementById("backGuide"); if(gv)gv.classList.remove("on"); const room=$("catRoom"); if(room)room.classList.remove("guideBack"); try{refreshDock();}catch(_){} }
 function startFirstMeet(){
   localStorage.setItem(FIRSTMEET_KEY,"1");
   firstMeetPresent();
@@ -10403,7 +10419,7 @@ function refreshDock(){
   const onMain=vis("dexPopup")||vis("recordScreen")||vis("catRoom")||vis("profilePanel");
   const ppProfMode=vis("profilePanel")&&!$("profilePanel").classList.contains("bagMode");   /* 匿名さんから開くプロフ画面ではバーを出さない */
   const setOpen=$("settingsScreen")&&$("settingsScreen").classList.contains("show");   /* 設定・詳細設定・図鑑でもバーを出さない */
-  const blocked=ppProfMode||setOpen||vis("profileSetup")||vis("dexPopup")||roomEdit||vis("friendScreen")||vis("clubScreen")||vis("tutorial")||vis("titleScreen")||vis("rouletteScreen")||vis("taisoScreen")||vis("firstMeet")||vis("gachaReveal")||($("outingIntro")&&$("outingIntro").classList.contains("show"))||($("nyanShot")&&$("nyanShot").classList.contains("capmode"))||($("photoCancelBtn")&&!$("photoCancelBtn").hidden);
+  const blocked=ppProfMode||setOpen||vis("profileSetup")||vis("dexPopup")||roomEdit||vis("friendScreen")||vis("clubScreen")||vis("tutorial")||vis("titleScreen")||vis("rouletteScreen")||vis("taisoScreen")||vis("firstMeet")||_firstMeetActive||($("catRoom")&&($("catRoom").classList.contains("guideGo")||$("catRoom").classList.contains("guideBack")))||vis("gachaReveal")||($("outingIntro")&&$("outingIntro").classList.contains("show"))||($("nyanShot")&&$("nyanShot").classList.contains("capmode"))||($("photoCancelBtn")&&!$("photoCancelBtn").hidden);
   const show=(onHome||onMain)&&!blocked;
   d.style.display=show?"flex":"none";
   if(show){
@@ -10711,14 +10727,7 @@ function openAdvSettings(){
 {const sc=$("setClose");if(sc)sc.addEventListener("click",()=>{playClick();closeSettings();});}
 {const av=$("setAdvanced");if(av)av.addEventListener("click",()=>{playClick();openAdvSettings();});}
 {const sb=$("setBack");if(sb)sb.addEventListener("click",()=>{playClick();closeSettings();});}
-{const sn=$("setSyncNow");if(sn)sn.addEventListener("click",async()=>{playClick();sn.disabled=true;sn.textContent="同期中…";
-  try{
-    await cloudSyncPush(true);
-    const changed=await cloudSyncPull();
-    if(changed){toast("最新にそろえたよ！");setTimeout(()=>location.reload(),700);}
-    else{toast("同期したよ（この端末が最新）");}
-  }catch(_){toast("同期できなかったよ");}
-  sn.disabled=false;sn.textContent="いま同期";});}
+
 {const rb=$("setReminder");if(rb)rb.addEventListener("click",()=>{playClick();try{makeMorningReminder();}catch(_){}});}
 {const pc=$("setPrivateChk");if(pc)pc.addEventListener("change",()=>{const p=getProfile()||{};p.isPublic=!pc.checked;saveProfile(p);try{const st=$("setPubStateTxt");if(st){st.textContent=pc.checked?"非公開":"公開中";st.classList.toggle("off",pc.checked);}}catch(_){}try{toast(pc.checked?"非公開にしたよ":"公開にしたよ");}catch(_){}publishProfile();});}
 $("ppRestoreSave").addEventListener("click",async()=>{
@@ -12380,11 +12389,6 @@ try{
           <button id="ppRestoreOpen" type="button">別の端末から復元する</button>
         </div>
       </details>
-      <div class="setCard" id="setSyncCard">
-        <span class="setCardIco ico-sync"><svg viewBox="0 0 24 24" fill="none"><rect x="2.5" y="5" width="11" height="15" rx="2" stroke="#4a86a6" stroke-width="1.6"/><rect x="15" y="8" width="6.5" height="12" rx="1.6" stroke="#7fb0da" stroke-width="1.6"/><path d="M8 22.5h11" stroke="#7fb0da" stroke-width="1.4" stroke-linecap="round"/><path d="M6 10.5h4M8 8.5l2 2-2 2" stroke="#4a86a6" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-        <span class="setCardTxt"><b>連動（PC⇄スマホ）</b><small>復元IDでリンクした端末と きろくが自動でそろうよ</small></span>
-        <span class="setCardRight"><button id="setSyncNow" type="button" class="setSyncBtn">いま同期</button></span>
-      </div>
       <button class="setCard" id="setReminder" type="button">
         <span class="setCardIco ico-bell"><svg viewBox="0 0 24 24" fill="none"><path d="M9 6.5a3 3 0 016 0c3 1.2 3 4 3 7l1.5 2.5h-15L6 13.5c0-3 0-5.8 3-7z" stroke="#8b7fca" stroke-width="1.6" stroke-linejoin="round"/><path d="M10 19a2 2 0 004 0" stroke="#8b7fca" stroke-width="1.6" stroke-linecap="round"/></svg></span>
         <span class="setCardTxt"><b>毎朝通知</b><small>毎朝のリマインダー通知を受け取ります</small></span>

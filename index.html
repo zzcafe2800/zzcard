@@ -120,7 +120,7 @@ button,input{font:inherit;}
 .hillDots{position:absolute;bottom:6px;left:0;right:0;display:flex;justify-content:center;gap:5px;pointer-events:none;}
 .hillDot{width:6px;height:6px;border-radius:50%;background:rgba(120,160,185,.35);}
 .hillDot.on{background:#5c93ad;}
-.catLabel{display:flex;flex-direction:column;align-items:center;gap:3px;line-height:1.2;text-align:center;
+.catLabel{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;line-height:1.2;text-align:center;
   background:rgba(255,255,255,.94);border:1.5px solid rgba(143,220,255,.4);border-radius:16px;padding:7px 10px 8px;
   backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);box-shadow:0 8px 18px rgba(111,205,255,.2);width:124px;cursor:pointer;}
 .catName{font-size:12.5px;font-weight:900;color:#2f6d86;max-width:76px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -2044,7 +2044,9 @@ button,input{font:inherit;}
   background:rgba(140,150,170,.85);color:#fff;box-shadow:0 4px 12px rgba(100,110,130,.28);font-family:"Yomogi","Kosugi Maru",sans-serif;}
 #storyTestBtn[hidden]{display:none;}
 #storyTestBtn:active{transform:scale(.94);}
-#taisoFooter{display:flex;justify-content:center;align-items:center;gap:10px;margin-top:18px;flex-wrap:wrap;}
+#taisoFooter{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:10px;margin-top:18px;}
+#storyJoinChkRow{display:flex;align-items:center;justify-content:center;gap:8px;font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:13px;font-weight:800;color:#5c93ad;cursor:pointer;background:rgba(255,255,255,.88);border:1.5px solid rgba(143,220,255,.5);border-radius:999px;padding:8px 18px;}
+#storyJoinChkRow input{width:17px;height:17px;accent-color:#7fd8b0;cursor:pointer;}
 #taisoBack{position:fixed;left:16px;top:max(16px,env(safe-area-inset-top));z-index:20;border:none;border-radius:999px;padding:9px 15px;
   font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:13px;font-weight:800;cursor:pointer;color:#5c93ad;background:rgba(255,255,255,.82);
   box-shadow:0 5px 14px rgba(120,180,220,.22);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:transform .15s;}
@@ -2417,7 +2419,7 @@ button,input{font:inherit;}
         </div>
       </div>
     </div>
-    <div id="taisoFooter"><button class="tsNext" id="tsNextBtn" type="button">次へ →</button><button id="storyJoinBtn" type="button">ストーリに参加</button></div>
+    <div id="taisoFooter"><label id="storyJoinChkRow"><input type="checkbox" id="storyJoinChk"/> あすのストーリーに参加</label><button class="tsNext" id="tsNextBtn" type="button">次へ →</button></div>
   </div>
 </div>
 
@@ -5277,6 +5279,7 @@ function renderHillPage(){
   _catFigs=figs;
   startCatLife(figs);
   startCommentCycle(figs);
+  requestAnimationFrame(()=>{try{const ls=cont.querySelectorAll(".catLabel");if(ls.length>1){let mx=0;ls.forEach(l=>{l.style.minHeight="";if(l.offsetHeight>mx)mx=l.offsetHeight;});ls.forEach(l=>{l.style.minHeight=mx+"px";});}}catch(_){}});   /* カードの高さを一番長い人に合わせる */
   /* 収まりきらない時は ‹ › でページ切り替え */
   if(pages>1){
     const mk=(dir,txt)=>{
@@ -11649,8 +11652,8 @@ try{
   const stb=$("storyTestBtn");if(stb)stb.addEventListener("click",e=>{e.stopPropagation();try{playClick();}catch(_){}openStoryPicker();});
   /* ストーリに参加（あすから）：ローカル保存 */
   function isStoryJoined(){try{return localStorage.getItem("radio_story_join")==="1";}catch(_){return false;}}
-  function refreshStoryJoinBtn(){const b=$("storyJoinBtn");if(!b)return;const on=isStoryJoined();b.textContent=on?"参加中(明日)":"ストーリーに参加(明日)";b.classList.toggle("joined",on);}
-  const sjb=$("storyJoinBtn");if(sjb)sjb.addEventListener("click",e=>{e.stopPropagation();try{playClick();}catch(_){}const nv=!isStoryJoined();try{localStorage.setItem("radio_story_join",nv?"1":"0");}catch(_){}refreshStoryJoinBtn();try{toast(nv?"あすのストーリに参加するよ":"参加をやめたよ");}catch(_){}});
+  function refreshStoryJoinBtn(){const b=$("storyJoinChk");if(!b)return;b.checked=isStoryJoined();}
+  const sjb=$("storyJoinChk");if(sjb)sjb.addEventListener("change",()=>{try{playClick();}catch(_){}const nv=!!sjb.checked;try{localStorage.setItem("radio_story_join",nv?"1":"0");}catch(_){}try{toast(nv?"あすのストーリーに参加するよ":"参加をやめたよ");}catch(_){}});
   const svb=$("storyViewBtn");if(svb)svb.addEventListener("click",e=>{e.stopPropagation();try{playClick();}catch(_){}try{playDailyStory();}catch(_){}});
   const stus=$("storyTutStart");if(stus)stus.addEventListener("click",e=>{e.stopPropagation();try{playClick();}catch(_){}try{localStorage.setItem("radio_story_tut","1");}catch(_){}const t=$("storyTutorial");if(t)t.classList.remove("show");try{playDailyStory();}catch(_){}});
   try{refreshStoryJoinBtn();}catch(_){}

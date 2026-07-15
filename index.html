@@ -1666,7 +1666,7 @@ html:not(.lite) #fabWrap{right:20px;left:auto;top:50%;bottom:auto;transform:tran
 #ppRestoreSave{background:rgba(143,220,255,.18);color:#4d7790;}
 #ppRestoreOpen{height:42px;border:none;border-radius:999px;cursor:pointer;font-size:12px;font-weight:700;
   background:rgba(255,221,236,.6);color:#c46a92;}
-#restorePanel{position:fixed;inset:0;z-index:212;display:none;align-items:flex-start;justify-content:center;
+#restorePanel{position:fixed;inset:0;z-index:380;display:none;align-items:flex-start;justify-content:center;
   background:rgba(200,234,255,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:46px 22px 30px;overflow-y:auto;}
 #restorePanel.visible{display:flex;}
 #restoreBox{width:min(340px,92vw);margin:auto;border-radius:24px;padding:22px;
@@ -2381,6 +2381,12 @@ html.lite .catDeco{animation:none;}
 .setSyncBtn{border:none;background:linear-gradient(135deg,#8fd0f0,#5fa8cc);color:#fff;border-radius:999px;padding:8px 14px;font-size:12px;font-weight:900;cursor:pointer;box-shadow:0 4px 10px rgba(95,168,204,.3);white-space:nowrap;}
 .setSyncBtn:active{transform:scale(.95);}
 .setSyncBtn:disabled{opacity:.6;}
+
+/* ===== 復元の方向イラスト説明 ===== */
+#restoreExplain{background:#fbf7ec;border:1.5px solid #eadfc4;border-radius:14px;padding:12px 12px 10px;margin-bottom:13px;text-align:center;}
+#restoreExplain svg{width:min(240px,80%);height:auto;display:block;margin:0 auto 6px;}
+#restoreExplain .reTxt{font-size:11.5px;font-weight:800;color:#8a774f;line-height:1.75;}
+#restoreExplain .reTxt b{color:#d3722c;}
 </style>
 </head>
 <body>
@@ -3877,9 +3883,9 @@ function getUid(){
   return u;
 }
 /* ===== 連動（PC⇄スマホ）：ローカル記録をクラウドに自動同期。復元IDでuidを揃えた端末どうしが同じ状態になる ===== */
-const SYNC_EXCLUDE=["radio_uid","radio_stamp_cards","radio_auto_card","radio_unlock_all","radio_sync_meta"];
+const SYNC_EXCLUDE=["radio_uid","radio_stamp_cards","radio_auto_card","radio_unlock_all","radio_sync_meta","radio_syncbig_meta"];
 const SYNC_META_KEY="radio_sync_meta";
-function _syncCollect(){const o={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(!k||k.indexOf("radio_")!==0)continue;if(SYNC_EXCLUDE.indexOf(k)>=0)continue;const v=localStorage.getItem(k);if(v!=null&&v.length<60000)o[k]=v;}return o;}
+function _syncCollect(){const o={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(!k||k.indexOf("radio_")!==0)continue;if(SYNC_EXCLUDE.indexOf(k)>=0)continue;const v=localStorage.getItem(k);if(v!=null&&v.length<200000)o[k]=v;}return o;}
 function _syncHash(str){let h=0;for(let i=0;i<str.length;i++){h=(h*31+str.charCodeAt(i))>>>0;}return h.toString(36);}
 async function cloudSyncPush(force){
   try{
@@ -3914,10 +3920,48 @@ async function cloudSyncPull(){
     return true;
   }catch(_){return false;}
 }
-/* 起動時：クラウドに新しい記録があれば取り込んで一度だけ再読み込み */
+/* ===== カード画像履歴も同期（大きいので別ノード・変化時だけ送受信） ===== */
+const BIG_KEYS=["radio_stamp_cards","radio_auto_card"];
+const BIG_META_KEY="radio_syncbig_meta";
+function _bigCollect(){const o={};BIG_KEYS.forEach(k=>{const v=localStorage.getItem(k);if(v!=null&&v.length<4500000)o[k]=v;});return o;}
+async function cloudBigPush(force){
+  try{
+    const db=await getDB();if(!db)return false;
+    const data=_bigCollect();const js=JSON.stringify(data);
+    if(js.length>9000000)return false;   /* 大きすぎる時は送らない（安全弁） */
+    const h=_syncHash(js);
+    let meta={};try{meta=JSON.parse(localStorage.getItem(BIG_META_KEY)||"{}");}catch(_){}
+    if(!force&&meta.h===h)return false;
+    const{ref,set}=await import(FB_DB);
+    const t=Date.now();
+    await set(ref(db,"syncbig/"+getUid()),{t,h,data:js});
+    localStorage.setItem(BIG_META_KEY,JSON.stringify({t,h}));
+    return true;
+  }catch(_){return false;}
+}
+async function cloudBigPull(){
+  try{
+    const db=await getDB();if(!db)return false;
+    const{ref,get}=await import(FB_DB);
+    const s=await get(ref(db,"syncbig/"+getUid()));
+    if(!s.exists())return false;
+    const v=s.val();if(!v||!v.t)return false;
+    let meta={};try{meta=JSON.parse(localStorage.getItem(BIG_META_KEY)||"{}");}catch(_){}
+    if(v.t<=(meta.t||0))return false;
+    const data=JSON.parse(v.data||"{}");
+    BIG_KEYS.forEach(k=>{try{localStorage.removeItem(k);}catch(_){}});
+    Object.keys(data).forEach(k=>{try{localStorage.setItem(k,data[k]);}catch(_){}});
+    localStorage.setItem(BIG_META_KEY,JSON.stringify({t:v.t,h:v.h}));
+    return true;
+  }catch(_){return false;}
+}
+let _bigPushT=null;
+function syncBigSoon(){try{if(_bigPushT)clearTimeout(_bigPushT);_bigPushT=setTimeout(()=>{cloudBigPush(false);},2500);}catch(_){}}
+/* 起動時：クラウドに新しい記録があれば（画像も）取り込んで一度だけ再読み込み */
 (async()=>{try{
-  const changed=await cloudSyncPull();
-  if(changed)location.reload();
+  const a=await cloudSyncPull();
+  const b=await cloudBigPull();
+  if(a||b)location.reload();
 }catch(_){}})();
 /* 変化があったら素早くアップロード（デバウンス）＝相手にすぐ反映 */
 let _syncPushT=null;
@@ -3926,13 +3970,13 @@ try{window.addEventListener("storage",syncSoon);}catch(_){}   /* 同端末の別
 /* 定期：変化チェックのみ（無変化なら送信しない＝サーバー負担小） */
 try{setInterval(()=>{cloudSyncPush(false);},30000);}catch(_){}
 /* 画面を離れる時は確実に送る */
-try{window.addEventListener("pagehide",()=>{cloudSyncPush(false);});}catch(_){}
+try{window.addEventListener("pagehide",()=>{cloudSyncPush(false);cloudBigPush(false);});}catch(_){}
 /* 画面に戻る度に：まず相手の最新を取り込み、無ければ自分の変化を送る（＝開くたび自動同期） */
 let _syncPullBusy=false;
 try{document.addEventListener("visibilitychange",async()=>{
-  if(document.visibilityState==="hidden"){cloudSyncPush(false);return;}
+  if(document.visibilityState==="hidden"){cloudSyncPush(false);cloudBigPush(false);return;}
   if(_syncPullBusy)return;_syncPullBusy=true;
-  try{const changed=await cloudSyncPull();if(changed){location.reload();return;}await cloudSyncPush(false);}catch(_){}
+  try{const a=await cloudSyncPull();const b=await cloudBigPull();if(a||b){location.reload();return;}await cloudSyncPush(false);await cloudBigPush(false);}catch(_){}
   _syncPullBusy=false;
 });}catch(_){}
 function escHtml(s){return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
@@ -6676,7 +6720,7 @@ function getStampCards(){
     if(Array.isArray(old)&&(!old.length||!Array.isArray(old[0])))return old.length?[old]:[[]];}catch(_){}
   return [[]];
 }
-function saveStampCards(c){try{localStorage.setItem(STAMP_CARDS_KEY,JSON.stringify(c));}catch(_){}}
+function saveStampCards(c){try{localStorage.setItem(STAMP_CARDS_KEY,JSON.stringify(c));}catch(_){}try{syncBigSoon();}catch(_){}}
 function currentCardNo(){return getStampCards().length;}
 /* 今日のスタンプを次の空きマスへ記録。9マス埋まったら次のカードへ自動で繰り上がり。
    記録内容：使ったスタンプ(src)・どのマス(配列index)・何日(date)・何枚目(配列の位置) */
@@ -7765,9 +7809,34 @@ function openProfileSetup(edit){
   $("profileSetup").classList.add("visible");
 }
 function closeProfileSetup(){$("profileSetup").classList.remove("visible");}
-function saveFromSetup(){
+const NAME_CHG_MAX=5;
+async function _nameTaken(name,myUid){   /* 公開プロフィールの中に同じ名前（別の人）がいるか */
+  try{
+    if(!name||name==="匿名さん")return false;
+    const db=await getDB();if(!db)return false;
+    const{ref,get}=await import(FB_DB);
+    const s=await _withTimeout(get(ref(db,"profiles")),7000);
+    if(!s.exists())return false;
+    const data=s.val()||{};
+    return Object.keys(data).some(uid=>uid!==myUid&&String((data[uid]||{}).name||"").trim()===name);
+  }catch(_){return false;}   /* 通信できない時は止めない */
+}
+async function saveFromSetup(){
   const prev=getProfile()||{};
   const wasNew=!(prev&&prev.name);
+  const newName=($("psName").value||"").trim()||"匿名さん";
+  const oldName=(prev.name||"").trim();
+  const isRename=!!oldName&&newName!==oldName;
+  /* なまえの変更は5回まで */
+  let chg=parseInt(localStorage.getItem("radio_name_changes")||"0",10)||0;
+  if(isRename&&chg>=NAME_CHG_MAX){toast("なまえの変更は "+NAME_CHG_MAX+"回までだよ");try{$("psName").value=oldName;}catch(_){}return;}
+  /* 同じ名前は登録できない（公開プロフィールと照合） */
+  if((wasNew||isRename)&&newName!=="匿名さん"){
+    const sb=$("psSubmit");const _old=sb?sb.textContent:"";if(sb){sb.disabled=true;sb.textContent="確認中…";}
+    const taken=await _nameTaken(newName,getUid());
+    if(sb){sb.disabled=false;sb.textContent=_old;}
+    if(taken){toast("その なまえは もう つかわれてるよ");return;}
+  }
   let wake=parseInt($("psWake").value,10);if(!Number.isFinite(wake)||wake<0)wake=0;if(wake>23)wake=23;
   let wmin=parseInt($("psWakeMin").value,10);if(!Number.isFinite(wmin)||wmin<0)wmin=0;if(wmin>59)wmin=59;
   const changed=Number.isFinite(prev.wakeHour)&&(prev.wakeHour!==wake||(prev.wakeMin||0)!==wmin);
@@ -7780,17 +7849,36 @@ function saveFromSetup(){
   }
   const id=prev.id||"",pw=prev.pw||"";
   const p={
-    name:($("psName").value||"").trim()||"匿名さん",
+    name:newName,
     color:psEar,catBody:psBody,comment:($("psComment").value||"").trim(),
     wakeHour:wake,wakeMin:wmin,isPublic:!$("psPrivate").checked,id,pw
   };
   saveProfile(p);
+  if(isRename){
+    chg++;try{localStorage.setItem("radio_name_changes",String(chg));}catch(_){}
+    const left=NAME_CHG_MAX-chg;
+    toast(left>0?("なまえを変えたよ（あと"+left+"回 変えられるよ）"):"なまえを変えたよ（もう変えられないよ）");
+    /* 名前を変えたら他の場所も揃える */
+    try{_renamePropagate(newName);}catch(_){}
+  }
   try{window._applyCatAppIcon&&window._applyCatAppIcon();}catch(_){}   /* my猫を変えたらアイコンも更新 */
   try{setThanksWord(hiraOnly(($("psThanks").value||"").trim()));}catch(_){}
   ensureWakeStart();   /* 「始める」を押した日を起点に3日間 */
   closeProfileSetup();
   renderProfileBar();refreshHome();loadHillCats();publishProfile();
   if(wasNew && !firstMeetDone()){ try{startFirstMeet();}catch(_){} }
+}
+async function _renamePropagate(newName){
+  /* 今日の投稿の名前を更新（匿名投稿はそのまま） */
+  try{
+    const db=await getDB();if(!db)return;
+    const{ref,get,update}=await import(FB_DB);
+    const key="posts/"+getUid()+"_"+jstKey();
+    const s=await get(ref(db,key));
+    if(s.exists()){const v=s.val()||{};if(v.name&&v.name!=="匿名さん")await update(ref(db,key),{name:newName});}
+  }catch(_){}
+  /* 復元IDの表示名も更新 */
+  try{const p=getProfile()||{};if(p.id&&p.pw)saveRestoreId(p);}catch(_){}
 }
 let _roomState="normal",_ballTaps=0,_idleSpot=0,_playEyeDir=[0,0],_lastEye=0;
 let _roomAvertTimer=null,_roomBoredTimer=null,_boredReturn=null,_roomIdleTimer=null,_watchTimer=null,_happyTimer=null,_tOff={x:0,y:0};
@@ -10755,6 +10843,25 @@ $("restoreClose").addEventListener("click",()=>{playClick();$("restorePanel").cl
 $("restorePanel").addEventListener("click",e=>{if(e.target===$("restorePanel"))$("restorePanel").classList.remove("visible");});
 async function openRestore(){
   _restoreSel=null;$("restoreId").value="";$("restorePw").value="";
+  try{let ex=$("restoreExplain");
+    if(!ex){ex=document.createElement("div");ex.id="restoreExplain";
+      const box=$("restorePanel").querySelector("#restoreBox")||$("restorePanel").firstElementChild;
+      if(box)box.insertBefore(ex,box.firstChild);
+    }
+    ex.innerHTML='<svg viewBox="0 0 220 74" xmlns="http://www.w3.org/2000/svg">'
+      +'<rect x="8" y="10" width="58" height="54" rx="8" fill="#eaf6fd" stroke="#8fc4e6" stroke-width="2"/>'
+      +'<circle cx="37" cy="30" r="10" fill="#1c1c1c"/><circle cx="33.5" cy="30" r="2.6" fill="#fff"/><circle cx="40.5" cy="30" r="2.6" fill="#fff"/>'
+      +'<rect x="20" y="46" width="34" height="5" rx="2.5" fill="#9fd4f0"/><rect x="20" y="54" width="24" height="5" rx="2.5" fill="#cfe9f8"/>'
+      +'<text x="37" y="72" font-size="9" fill="#4a86a6" text-anchor="middle" font-weight="bold">えらんだID（もと）</text>'
+      +'<path d="M78 37 H136" stroke="#f4a83c" stroke-width="5" stroke-linecap="round"/><path d="M128 27 L142 37 L128 47 Z" fill="#f4a83c"/>'
+      +'<text x="110" y="24" font-size="10" fill="#e0913f" text-anchor="middle" font-weight="bold">コピー</text>'
+      +'<rect x="154" y="10" width="58" height="54" rx="8" fill="#fff" stroke="#8fc4e6" stroke-width="2" stroke-dasharray="5 4"/>'
+      +'<circle cx="183" cy="30" r="10" fill="#e2eef7" stroke="#9fc4de" stroke-width="1.6"/>'
+      +'<rect x="166" y="46" width="34" height="5" rx="2.5" fill="#e2eef7"/><rect x="166" y="54" width="24" height="5" rx="2.5" fill="#eef5fa"/>'
+      +'<text x="183" y="72" font-size="9" fill="#4a86a6" text-anchor="middle" font-weight="bold">この端末</text>'
+      +'</svg>'
+      +'<div class="reTxt">えらんだIDの記録が <b>この端末にコピー</b>されるよ。<br><b>この端末の今の記録は消えて</b>、えらんだIDと同じになるよ</div>';
+  }catch(_){}
   const list=$("restoreIdList");list.innerHTML='<div class="restoreNote">読み込み中…</div>';
   $("restorePanel").classList.add("visible");
   const db=await getDB();
@@ -10788,6 +10895,7 @@ $("restoreDo").addEventListener("click",async()=>{
     const d=snap.val();
     if(String(d.pw)!==pw){toast("パスワードが違うよ");return;}
     localStorage.setItem(UID_KEY,d.uid);
+    try{localStorage.removeItem("radio_sync_meta");localStorage.removeItem("radio_syncbig_meta");}catch(_){}   /* リンク先の記録で必ず揃うように */
     saveProfile({name:d.name||"匿名さん",color:d.color||"#8fdcff",catBody:d.catBody||"#1c1c1c",comment:d.comment||"",
       wakeHour:Number.isFinite(d.wakeHour)?d.wakeHour:6,isPublic:!!d.isPublic,id,pw});
     toast("リンクできた！記録を取り戻したよ");
@@ -11135,7 +11243,7 @@ profileBoot();
   if(isStandalone){try{localStorage.setItem("radio_installed","1");}catch(_){}_installed=true;}   /* 一度でもアプリで開いたら記憶して、以後ブラウザでも案内を出さない */
   let deferred=null,hideTimer=null,shown=false;
   function showBar(autoHideMs){
-    if(isStandalone||_installed||_dismissed||shown)return;
+    if(shown)return;
     shown=true;bar.hidden=false;
     requestAnimationFrame(()=>bar.classList.add("show"));
     if(autoHideMs){clearTimeout(hideTimer);hideTimer=setTimeout(hideBar,autoHideMs);}
@@ -11154,26 +11262,19 @@ profileBoot();
       try{await deferred.userChoice;}catch(_){}
       deferred=null;return;
     }
-    /* SW無し環境：公式プロンプトは出せないので入れ方を案内 */
-    txt.textContent="ブラウザのメニュー（⋮）→「アプリをインストール / ホーム画面に追加」から入れてね";
-    btn.style.display="none";
-    clearTimeout(hideTimer);hideTimer=setTimeout(hideBar,7000);
+    /* 毎朝通知をつくる（カレンダーへ。通知から予定を開くとサイトのリンクをタップできる） */
+    try{makeMorningReminder();}catch(_){}
+    hideBar();
   });
-  cls.addEventListener("click",()=>{try{localStorage.setItem("radio_install_dismissed","1");}catch(_){}_dismissed=true;hideBar();});   /* 一度閉じたら二度と出さない */
+  cls.addEventListener("click",()=>{hideBar();});   /* ×は今回だけ閉じる（次に開いたらまた出る） */
   window.addEventListener("appinstalled",()=>{try{localStorage.setItem("radio_installed","1");}catch(_){}_installed=true;deferred=null;hideBar();});
 
   const ua=navigator.userAgent||"";
   const isIOS=/iphone|ipad|ipod/i.test(ua);
   const isiOSSafari=isIOS&&/safari/i.test(ua)&&!/crios|fxios|edgios/i.test(ua);
-  if(!isStandalone){
-    if(isiOSSafari){
-      txt.textContent="共有ボタン →「ホーム画面に追加」でアプリ化できます";
-      btn.style.display="none";
-      setTimeout(()=>showBar(12000),1400);
-    }else{
-      /* 起動時に一度バーを出す（公式プロンプトが来ればそちらに上書きされる） */
-      setTimeout(()=>{ if(!shown){ txt.textContent="アプリとして使えます（インストール）";btn.textContent="インストール";showBar(10000);} },1600);
-    }
+  {
+    /* 毎回：インストール案内のかわりに「毎朝通知」バーを出す（通知の予定からサイトを開けるよ） */
+    setTimeout(()=>{ if(!shown){ txt.textContent="⏰ 目標の時間に 毎朝お知らせ（通知からサイトを開けるよ）";btn.textContent="毎朝通知をつくる";btn.style.display="";showBar(0);} },1500);
   }
 })();
 /* ===== ストーリー（4コマ）：データ（起床/目標差/連続）＋控えめな声タイプ ===== */
@@ -11306,7 +11407,7 @@ function makeMorningReminder(){
     const ics=[
       "BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//zuzu radio//JP","CALSCALE:GREGORIAN","METHOD:PUBLISH",
       "BEGIN:VEVENT","UID:zuzu-"+Date.now()+"@radio","DTSTAMP:"+stamp,"DTSTART:"+dt,"RRULE:FREQ=DAILY",
-      "SUMMARY:"+title,"DESCRIPTION:おはよう！ 体操して スタンプを あつめよう。今日の おはなしも みてね\u{1F408}",
+      "SUMMARY:"+title,"URL:https://zzcafe2800.github.io/zzcard/","DESCRIPTION:おはよう！ 体操して スタンプを あつめよう\\nひらく→ https://zzcafe2800.github.io/zzcard/",
       "BEGIN:VALARM","ACTION:DISPLAY","DESCRIPTION:"+title,"TRIGGER:-PT0M","END:VALARM",
       "END:VEVENT","END:VCALENDAR"
     ].join("\r\n");
@@ -11317,7 +11418,7 @@ function makeMorningReminder(){
       /* Android・PC：Googleカレンダーを開いて「毎日くり返し」の予定を入れる（保存を押すだけ） */
       const em=(m+15)%60,eh=h+((m+15)>=60?1:0);
       const dates=`${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}T${pad(h)}${pad(m)}00/${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}T${pad(eh)}${pad(em)}00`;
-      const gurl="https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent(title)+"&details="+encodeURIComponent("おはよう！体操して スタンプを あつめよう。今日の おはなしも みてね")+"&dates="+dates+"&recur="+encodeURIComponent("RRULE:FREQ=DAILY");
+      const gurl="https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent(title)+"&details="+encodeURIComponent("おはよう！体操して スタンプを あつめよう\nひらく→ https://zzcafe2800.github.io/zzcard/")+"&location="+encodeURIComponent("https://zzcafe2800.github.io/zzcard/")+"&dates="+dates+"&recur="+encodeURIComponent("RRULE:FREQ=DAILY");
       const w=window.open(gurl,"_blank");
       if(!w){   /* ポップアップが塞がれた時は .ics ダウンロードにフォールバック */
         const blob=new Blob([ics],{type:"text/calendar;charset=utf-8"});const url=URL.createObjectURL(blob);

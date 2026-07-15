@@ -124,6 +124,8 @@ button,input{font:inherit;}
   background:rgba(255,255,255,.94);border:1.5px solid rgba(143,220,255,.4);border-radius:16px;padding:7px 10px 8px;
   backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);box-shadow:0 8px 18px rgba(111,205,255,.2);width:124px;cursor:pointer;}
 .catName{font-size:12.5px;font-weight:900;color:#2f6d86;max-width:76px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.catDayY1{background:#e9f2fb !important;border-color:#c6dcf0 !important;}   /* 昨日：少し青 */
+.catDayY2{background:#e2f4fa !important;border-color:#bde4f0 !important;}   /* 一昨日：水色 */
 .catTime{font-size:9.5px;font-weight:700;color:#7796a8;display:flex;align-items:center;gap:3px;
   background:rgba(143,220,255,.16);border-radius:999px;padding:1px 7px;}
 .catRise{font-size:9px;font-weight:800;color:#5c8aa0;background:rgba(143,220,255,.15);
@@ -1976,6 +1978,7 @@ button,input{font:inherit;}
 .ssRankLabel{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:11.5px;font-weight:700;color:#7f9bab;margin-bottom:5px;}
 .ssRankMain{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:15px;font-weight:800;color:#4f7f95;display:flex;align-items:center;justify-content:center;gap:4px;flex-wrap:wrap;}
 .ssRankNum{font-size:23px;font-weight:900;color:#f19a3e;letter-spacing:.02em;}
+.ssRankSub{font-size:11.5px;font-weight:700;color:#9aacb6;margin-left:6px;}
 .ssHook{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:12.5px;font-weight:700;color:#a7b4bc;line-height:1.4;margin-bottom:15px;}
 #ssNext{border:none;border-radius:999px;padding:12px 34px;font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:15px;font-weight:900;color:#fff;
   background:linear-gradient(135deg,#9fd4f0,#7ab8d8);box-shadow:0 8px 20px rgba(120,184,216,.4);cursor:pointer;transition:transform .15s;}
@@ -2081,6 +2084,11 @@ html.lite #recentPostCount{background:rgba(255,255,255,.82);}
 html.lite .catLabel{background:rgba(255,255,255,.97);}
 /* 常時動く装飾アニメを止めて負荷を下げる（猫の基本ポーズは残す） */
 html.lite .catZ, html.lite .catZ *{animation:none !important;}
+
+/* ===== 一定時間 無操作で 操作UIを隠す（シーンに集中）。タップ等で復帰 ===== */
+#topProfileBar,#homeTopRight,#helpBtn,#fabWrap,#topLeftStack,#recentLabel,.hillArrow{transition:opacity .5s ease;}
+body.uiRest #topProfileBar,body.uiRest #homeTopRight,body.uiRest #helpBtn,body.uiRest #fabWrap,body.uiRest #topLeftStack,body.uiRest #recentLabel,body.uiRest .hillArrow{opacity:0;pointer-events:none;}
+body.uiRest #hillCats,body.uiRest .catLabel{opacity:1 !important;pointer-events:auto !important;}   /* 投稿の名前・コメント・起床は消さない */
 </style>
 </head>
 <body>
@@ -5263,7 +5271,9 @@ function renderHillPage(){
   const figs=[];
   cats.forEach((po,i)=>{
     const el=document.createElement("div");el.className="hillCat";
-    const lab=document.createElement("div");lab.className="catLabel"+((po.isSelf&&po.needsPost)?" catLabelSelf":"");
+    let _dayCls="";
+    if(po.date&&!po.isSelf){if(po.date===addDays(jstKey(),-1))_dayCls=" catDayY1";else if(po.date<=addDays(jstKey(),-2))_dayCls=" catDayY2";}
+    const lab=document.createElement("div");lab.className="catLabel"+((po.isSelf&&po.needsPost)?" catLabelSelf":"")+_dayCls;
     const fireHtml=(po.streak>=2)?`<span class="catFire">${po.streak}日</span>`:"";
     const riseTxt=riseTextFromPost(po);
     const comment=po.comment||"";
@@ -10342,6 +10352,21 @@ if(_tutSkipBtn)_tutSkipBtn.addEventListener("click",()=>{
 $("helpBtn").addEventListener("click",()=>{playClick();showTutorial("help");});
 function _applyLite(){try{const m=/Mobi|Android|iPhone|iPod|iPad/i.test(navigator.userAgent||"");const p=(window.innerHeight||0)>=(window.innerWidth||0);document.documentElement.classList.toggle("lite",m||p);}catch(_){}}
 window.addEventListener("resize",_applyLite);window.addEventListener("orientationchange",_applyLite);_applyLite();
+/* 一定時間 無操作で 操作UIを隠す（ホーム表示中のみ）。タップ・スクロール・移動で即復帰 */
+let _uiRestTimer=null;
+function _uiActive(){
+  if(document.body.classList.contains("uiRest"))document.body.classList.remove("uiRest");
+  if(_uiRestTimer)clearTimeout(_uiRestTimer);
+  _uiRestTimer=setTimeout(()=>{
+    try{const ss=$("selectScreen");const onHome=ss&&!ss.classList.contains("hidden");
+      const typing=document.activeElement&&/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName);
+      if(onHome&&!typing)document.body.classList.add("uiRest");
+    }catch(_){}
+  },5000);
+}
+["pointerdown","touchstart","mousemove","wheel","keydown"].forEach(ev=>window.addEventListener(ev,_uiActive,{passive:true}));
+document.addEventListener("scroll",_uiActive,{passive:true,capture:true});
+_uiActive();
 try{const rb=$("ppReminderBtn");if(rb)rb.addEventListener("click",()=>{playClick();makeMorningReminder();});}catch(_){}
 /* ラジオ体操部（部活） */
 $("joinBtn").addEventListener("click",()=>{playClick();openClub();});
@@ -10595,10 +10620,14 @@ profileBoot();
     document.head.appendChild(at);
   }catch(_){}
 
-  const isStandalone=(window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)||window.navigator.standalone===true;
+  const mm=q=>{try{return window.matchMedia&&window.matchMedia(q).matches;}catch(_){return false;}};
+  const isStandalone=mm("(display-mode: standalone)")||mm("(display-mode: fullscreen)")||mm("(display-mode: minimal-ui)")||window.navigator.standalone===true||(document.referrer||"").indexOf("android-app://")===0;
+  let _installed=false;try{_installed=localStorage.getItem("radio_installed")==="1";}catch(_){}
+  let _dismissed=false;try{_dismissed=localStorage.getItem("radio_install_dismissed")==="1";}catch(_){}
+  if(isStandalone){try{localStorage.setItem("radio_installed","1");}catch(_){}_installed=true;}   /* 一度でもアプリで開いたら記憶して、以後ブラウザでも案内を出さない */
   let deferred=null,hideTimer=null,shown=false;
   function showBar(autoHideMs){
-    if(isStandalone||shown)return;
+    if(isStandalone||_installed||_dismissed||shown)return;
     shown=true;bar.hidden=false;
     requestAnimationFrame(()=>bar.classList.add("show"));
     if(autoHideMs){clearTimeout(hideTimer);hideTimer=setTimeout(hideBar,autoHideMs);}
@@ -10622,8 +10651,8 @@ profileBoot();
     btn.style.display="none";
     clearTimeout(hideTimer);hideTimer=setTimeout(hideBar,7000);
   });
-  cls.addEventListener("click",hideBar);
-  window.addEventListener("appinstalled",()=>{deferred=null;hideBar();});
+  cls.addEventListener("click",()=>{try{localStorage.setItem("radio_install_dismissed","1");}catch(_){}_dismissed=true;hideBar();});   /* 一度閉じたら二度と出さない */
+  window.addEventListener("appinstalled",()=>{try{localStorage.setItem("radio_installed","1");}catch(_){}_installed=true;deferred=null;hideBar();});
 
   const ua=navigator.userAgent||"";
   const isIOS=/iphone|ipad|ipod/i.test(ua);
@@ -10857,7 +10886,7 @@ function _refreshStatsRank(){
   try{
     const cur=calcStreak().current;const wl=getWakeLog();const mh=wl[jstKey()];const mm=Number.isFinite(mh)?Math.round(mh*60):null;
     const b=_bestRank(cur,mm);const tEl=$("ssTop");if(!tEl)return;
-    if(b){const rankTxt=(b.tied?"同率 ":"")+b.rank+"位";tEl.innerHTML=`<div class="ssRankLabel">${b.ctx}（${b.pool}人）の中で</div><div class="ssRankMain">${b.icon} ${escHtml(b.key)}　<span class="ssRankNum">${rankTxt}</span></div>`;tEl.style.display="";}
+    if(b){const rankTxt="世界 "+(b.tied?"同率 ":"")+b.rank+"位";tEl.innerHTML=`<div class="ssRankLabel">${b.icon} ${escHtml(b.key)}</div><div class="ssRankMain"><span class="ssRankNum">${rankTxt}</span><span class="ssRankSub">（${b.pool}人中）</span></div>`;tEl.style.display="";}
     else{tEl.style.display="none";}
   }catch(_){}
 }

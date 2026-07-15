@@ -1719,7 +1719,7 @@ button,input{font:inherit;}
 .ppTopChip .nm{font-size:12px;font-weight:700;color:#4d7790;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .ppCatWrap{width:88px;height:90px;}
 .ppSub{font-size:11px;font-weight:800;color:#5c93ad;background:rgba(143,220,255,.18);border-radius:999px;padding:3px 12px;margin-bottom:6px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;}
-.ppSub.isComment{color:#d46a9a;background:#fff0f6;white-space:normal;max-width:170px;line-height:1.35;text-align:center;}
+.ppSub.isComment{color:#d46a9a;background:#fff0f6;white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis;text-align:center;}
 .ppCatWrap .catSvg{width:100%;height:100%;}
 .ppComment{max-width:150px;background:#fff5fb;border:1.5px solid rgba(255,150,200,.5);border-radius:12px;padding:4px 10px;
   font-size:11px;font-weight:700;color:#d46a9a;text-align:center;word-break:break-word;}
@@ -1841,7 +1841,7 @@ button,input{font:inherit;}
 .tsNext{border:none;border-radius:999px;padding:14px 46px;font-size:15px;font-weight:900;cursor:pointer;color:#fff;background:linear-gradient(135deg,#7fc9a0,#5db98a);box-shadow:0 8px 20px rgba(93,185,138,.4);transition:transform .15s;}
 .tsNext:active{transform:scale(.96);}
 .tsSub{font-size:11px;font-weight:800;color:#5c93ad;background:rgba(143,220,255,.18);border-radius:999px;padding:3px 12px;margin-bottom:6px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;}
-.tsSub.isComment{color:#d46a9a;background:#fff0f6;white-space:normal;max-width:170px;line-height:1.35;text-align:center;}
+.tsSub.isComment{color:#d46a9a;background:#fff0f6;white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis;text-align:center;}
 #postConfirmBtns{display:flex;gap:10px;}
 #postYes,#postNo{flex:1;height:48px;border:none;border-radius:999px;cursor:pointer;font-size:15px;font-weight:700;}
 #postYes{background:linear-gradient(135deg,#7fd8b0,#5ec79a);color:#fff;box-shadow:0 8px 20px rgba(94,199,154,.34);}
@@ -2072,9 +2072,19 @@ button,input{font:inherit;}
 .spNum{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 5px;margin-right:8px;border-radius:999px;
   background:rgba(111,184,224,.22);color:#4f88a4;font-size:11px;font-weight:900;vertical-align:middle;}
 #storyPickClose{margin-top:12px;width:100%;border:none;border-radius:14px;padding:10px;font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:13px;font-weight:800;cursor:pointer;background:rgba(180,210,228,.3);color:#7a9ab0;}
+
+/* ===== スマホ/縦画面 軽量化（.lite）：重いブラーを全部切る＝激重の主因を除去 ===== */
+html.lite *, html.lite *::before, html.lite *::after{backdrop-filter:none !important;-webkit-backdrop-filter:none !important;}
+/* 半透明の背景はブラー前提だったので、liteでは少し不透明にして見やすく */
+html.lite #recentLabel{background:rgba(255,255,255,.72);}
+html.lite #recentPostCount{background:rgba(255,255,255,.82);}
+html.lite .catLabel{background:rgba(255,255,255,.97);}
+/* 常時動く装飾アニメを止めて負荷を下げる（猫の基本ポーズは残す） */
+html.lite .catZ, html.lite .catZ *{animation:none !important;}
 </style>
 </head>
 <body>
+<script>(function(){try{var m=/Mobi|Android|iPhone|iPod|iPad/i.test(navigator.userAgent||"");var p=(window.innerHeight||0)>=(window.innerWidth||0);if(m||p)document.documentElement.classList.add("lite");}catch(e){}})();</script>
 <div id="installBar" hidden>
   <span class="ibIcon" aria-hidden="true"><svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg"><circle cx="40" cy="45" r="22" fill="#1c1c1c"/><path d="M24 33 L20 14 L39 28 Z" fill="#1c1c1c" stroke="#1c1c1c" stroke-width="5" stroke-linejoin="round"/><path d="M56 33 L60 14 L41 28 Z" fill="#1c1c1c" stroke="#1c1c1c" stroke-width="5" stroke-linejoin="round"/><circle cx="33" cy="46" r="6.5" fill="#fff"/><circle cx="47" cy="46" r="6.5" fill="#fff"/><circle cx="33" cy="47" r="5" fill="#1c1c1c"/><circle cx="47" cy="47" r="5" fill="#1c1c1c"/></svg></span>
   <span id="ibText">アプリとしてインストールできます</span>
@@ -5183,12 +5193,16 @@ async function loadHillCats(){
     const dayMs=24*3600*1000,now=Date.now();
     const minDate=addDays(jstKey(),-2);
     const byUid={};
+    const byUidAll={};   /* 全期間：これまで1回でも投稿した人みんな（順位の母数） */
     Object.entries(val).forEach(([pid,v])=>{
-      if(!v||v.uid===me)return;
+      if(!v||v.uid===me||!v.name)return;
+      if(!byUidAll[v.uid]||(v.createdAt||0)>(byUidAll[v.uid].createdAt||0))byUidAll[v.uid]=Object.assign({pid},v);
       if(_recentRange===1){ if(!(v.createdAt&&(now-v.createdAt)<=dayMs))return; }
       else { if((v.date||"")<minDate)return; }
       if(!byUid[v.uid]||(v.createdAt||0)>(byUid[v.uid].createdAt||0))byUid[v.uid]=Object.assign({pid},v);
     });
+    _allTimeCats=Object.values(byUidAll);
+    try{if($("storyStats")&&$("storyStats").classList.contains("show"))_refreshStatsRank();}catch(_){}
     const cats=Object.values(byUid).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,24);
     const p=getProfile()||{};
     /* 自分の“今日の投稿”を取得。あれば投稿済み＝実際のひとこと・起床時間を表示、なければ「投稿する」ボタン */
@@ -5249,7 +5263,7 @@ function renderHillPage(){
   const figs=[];
   cats.forEach((po,i)=>{
     const el=document.createElement("div");el.className="hillCat";
-    const lab=document.createElement("div");lab.className="catLabel";
+    const lab=document.createElement("div");lab.className="catLabel"+((po.isSelf&&po.needsPost)?" catLabelSelf":"");
     const fireHtml=(po.streak>=2)?`<span class="catFire">${po.streak}日</span>`:"";
     const riseTxt=riseTextFromPost(po);
     const comment=po.comment||"";
@@ -5300,7 +5314,7 @@ function renderHillPage(){
   startCatLife(figs);
   startCommentCycle(figs);
   function _fitComment(el){try{if(!el||!el.textContent)return;el.style.fontSize="";let fs=10;el.style.fontSize=fs+"px";let g=0;while(el.scrollWidth>el.clientWidth+1&&fs>6&&g<28){fs-=0.5;el.style.fontSize=fs+"px";g++;}}catch(_){}}
-  function _equalizeCmt(){try{cont.querySelectorAll(".catCmt").forEach(_fitComment);const ws=cont.querySelectorAll(".catCmtWrap");if(ws.length>1){let mx=0;ws.forEach(w=>{w.style.minHeight="";if(w.offsetHeight>mx)mx=w.offsetHeight;});ws.forEach(w=>{w.style.minHeight=mx+"px";});}}catch(_){}}
+  function _equalizeCmt(){try{cont.querySelectorAll(".catCmt").forEach(_fitComment);const ws=[...cont.querySelectorAll(".catLabel:not(.catLabelSelf) .catCmtWrap")];if(ws.length>1){let mx=0;ws.forEach(w=>{w.style.minHeight="";if(w.offsetHeight>mx)mx=w.offsetHeight;});ws.forEach(w=>{w.style.minHeight=mx+"px";});}}catch(_){}}
   requestAnimationFrame(_equalizeCmt);setTimeout(_equalizeCmt,250);try{if(document.fonts&&document.fonts.ready)document.fonts.ready.then(_equalizeCmt);}catch(_){}   /* コメントを1行に自動縮小＋枠の高さを揃える */
   /* 収まりきらない時は ‹ › でページ切り替え */
   if(pages>1){
@@ -10317,15 +10331,17 @@ $("tutNext").addEventListener("click",()=>{playClick();tutGo(_tutPage+1);});
 $("tutStart").addEventListener("click",()=>{
   playClick();
   $("tutorial").classList.remove("visible");
-  if(_tutMode!=="help"){ try{ if(getProfile()){showSelect();updateTop();} else showNameCard(); }catch(_){ showNameCard(); } }
+  if(_tutMode!=="help"){ try{ if(getProfile()){showSelect();updateTop();} else openProfileSetup(false); }catch(_){ openProfileSetup(false); } }
 });
 const _tutSkipBtn=$("tutSkip");
 if(_tutSkipBtn)_tutSkipBtn.addEventListener("click",()=>{
   playClick();
   $("tutorial").classList.remove("visible");
-  try{ if(getProfile()){showSelect();updateTop();} else showNameCard(); }catch(_){ showNameCard(); }
+  try{ if(getProfile()){showSelect();updateTop();} else openProfileSetup(false); }catch(_){ openProfileSetup(false); }
 });
 $("helpBtn").addEventListener("click",()=>{playClick();showTutorial("help");});
+function _applyLite(){try{const m=/Mobi|Android|iPhone|iPod|iPad/i.test(navigator.userAgent||"");const p=(window.innerHeight||0)>=(window.innerWidth||0);document.documentElement.classList.toggle("lite",m||p);}catch(_){}}
+window.addEventListener("resize",_applyLite);window.addEventListener("orientationchange",_applyLite);_applyLite();
 try{const rb=$("ppReminderBtn");if(rb)rb.addEventListener("click",()=>{playClick();makeMorningReminder();});}catch(_){}
 /* ラジオ体操部（部活） */
 $("joinBtn").addEventListener("click",()=>{playClick();openClub();});
@@ -10799,6 +10815,8 @@ function metWakeGoalRecently(){
     return false;
   }catch(_){return false;}
 }
+function _bonusUsedToday(){try{return localStorage.getItem("radio_bonus_date")===jstKey();}catch(_){return false;}}
+function _markBonusUsed(){try{localStorage.setItem("radio_bonus_date",jstKey());}catch(_){}}
 function playBonusStory(){
   let idx=(typeof _bonusIdx==="number")?_bonusIdx:Math.floor(Math.random()*STORY_SCRIPTS.length);
   playScript(idx);
@@ -10808,21 +10826,40 @@ function _refreshStoryBadge(){try{const b=$("storyNewBadge");if(b)b.hidden=(stor
 let _pendingDailyStory=false,_dailyStoryActive=false;
 function _statRow(icon,label,val,unit){return `<div class="ssRow"><span class="ssLabel"><span class="ssIcon">${icon}</span>${label}</span><span class="ssVal">${val}${unit?`<span class="ssValUnit">${unit}</span>`:""}</span></div>`;}
 /* 起動時：やる気の上がる分析画面（自分の実績＋いまの1位＋あしたも やりたくなるフック） */
-/* みんなの中で自分が一番優れてる項目とその順位（同率対応）。項目はいろいろ用意して一番いい順位を選ぶ */
+let _allTimeCats=[];
+/* みんなの中で自分が一番優れてる項目とその順位（同率対応）。母数は「これまで参加した全員」 */
 function _bestRank(cur,myWakeMin){
   try{
-    const others=(_hillAllCats||[]).filter(c=>c&&c.name&&!c.isSelf);
-    if(others.length<1)return null;
+    const all=(_allTimeCats||[]).filter(c=>c&&c.name&&!c.isSelf);
+    if(all.length<1)return null;
+    const today=jstKey();const todays=all.filter(c=>c.date===today);
     const ms=[];
-    { const vals=others.map(c=>c.streak||0);let bt=0,sm=0;vals.forEach(v=>{if(v>cur)bt++;else if(v===cur)sm++;});ms.push({key:"れんぞく",icon:"🔥",rank:bt+1,tied:sm>0}); }
+    const _wmin=c=>{let w=c.wakeHF;if(!Number.isFinite(w)&&c.createdAt){const d=new Date(c.createdAt);w=d.getHours()+d.getMinutes()/60;}return Number.isFinite(w)?Math.round(w*60):null;};
+    /* れんぞく：これまで参加した全員が母数 */
+    { const vals=all.map(c=>c.streak||0);let bt=0,sm=0;vals.forEach(v=>{if(v>cur)bt++;else if(v===cur)sm++;});ms.push({key:"れんぞく",icon:"🔥",rank:bt+1,tied:sm>0,ctx:"みんな",pool:all.length+1}); }
     if(myWakeMin!=null){
-      const vals=others.map(c=>{let w=c.wakeHF;if(!Number.isFinite(w)&&c.createdAt){const d=new Date(c.createdAt);w=d.getHours()+d.getMinutes()/60;}return Number.isFinite(w)?Math.round(w*60):null;}).filter(v=>v!=null);
-      if(vals.length){let bt=0,sm=0;vals.forEach(v=>{if(v<myWakeMin)bt++;else if(v===myWakeMin)sm++;});ms.push({key:"早起き",icon:"🌅",rank:bt+1,tied:sm>0});}
+      /* 早起き：今日いちばん早く起きた人 */
+      { const vals=todays.map(_wmin).filter(v=>v!=null);if(vals.length){let bt=0,sm=0;vals.forEach(v=>{if(v<myWakeMin)bt++;else if(v===myWakeMin)sm++;});ms.push({key:"早起き",icon:"🌅",rank:bt+1,tied:sm>0,ctx:"きょう",pool:vals.length+1});} }
+      /* ぴったり：今日 目標時間ちょうどに起きた人（目標とのズレが小さい順） */
+      { const myGoal=Math.round(profileWake()*60);const myDiff=Math.abs(myWakeMin-myGoal);
+        const vals=todays.map(c=>{const w=_wmin(c);if(w==null||!Number.isFinite(c.wakeHour))return null;const g=Math.round((c.wakeHour+(c.wakeMin||0)/60)*60);return Math.abs(w-g);}).filter(v=>v!=null);
+        if(vals.length){let bt=0,sm=0;vals.forEach(v=>{if(v<myDiff)bt++;else if(v===myDiff)sm++;});ms.push({key:"ぴったり",icon:"🎯",rank:bt+1,tied:sm>0,ctx:"きょう",pool:vals.length+1});} }
+      /* いちばんのり：今日いちばん早く投稿した人 */
+      { const myAt=Date.now();const vals=todays.map(c=>Number.isFinite(c.createdAt)?c.createdAt:null).filter(v=>v!=null);
+        if(vals.length){let bt=0;vals.forEach(v=>{if(v<myAt)bt++;});ms.push({key:"いちばんのり",icon:"🏁",rank:bt+1,tied:false,ctx:"きょう",pool:vals.length+1});} }
     }
     if(!ms.length)return null;
     ms.sort((a,b)=>a.rank-b.rank||(a.key==="れんぞく"?-1:1));
-    return {best:ms[0],total:others.length+1};
+    return ms[0];
   }catch(_){return null;}
+}
+function _refreshStatsRank(){
+  try{
+    const cur=calcStreak().current;const wl=getWakeLog();const mh=wl[jstKey()];const mm=Number.isFinite(mh)?Math.round(mh*60):null;
+    const b=_bestRank(cur,mm);const tEl=$("ssTop");if(!tEl)return;
+    if(b){const rankTxt=(b.tied?"同率 ":"")+b.rank+"位";tEl.innerHTML=`<div class="ssRankLabel">${b.ctx}（${b.pool}人）の中で</div><div class="ssRankMain">${b.icon} ${escHtml(b.key)}　<span class="ssRankNum">${rankTxt}</span></div>`;tEl.style.display="";}
+    else{tEl.style.display="none";}
+  }catch(_){}
 }
 function showStoryStats(){
   try{
@@ -10836,17 +10873,12 @@ function showStoryStats(){
       _statRow("🔥","れんぞく",cur,"日")+
       _statRow("📅","たいそう",total,"回")+
       (avg!=null?_statRow("⏰","早起きへいきん",avgStr,""):"");
-    const myWakeHf=wl[jstKey()];const myWakeMin=Number.isFinite(myWakeHf)?Math.round(myWakeHf*60):null;
-    const rk=_bestRank(cur,myWakeMin);
-    const tEl=$("ssTop");
-    if(rk&&rk.best){
-      const b=rk.best,rankTxt=(b.tied?"同率 ":"")+b.rank+"位";
-      tEl.innerHTML=`<div class="ssRankLabel">みんな（${rk.total}人）の中で</div><div class="ssRankMain">${b.icon} ${escHtml(b.key)}　<span class="ssRankNum">${rankTxt}</span></div>`;
-      tEl.style.display="";
-    }else{tEl.style.display="none";}
+    _refreshStatsRank();
     const miles=[3,7,14,21,30,50,75,100,150,200,300,365];
     let hook="";
-    if(cur>=1){const nm=miles.find(m=>m>cur);if(nm&&nm-cur<=5)hook=`あと ${nm-cur}日で れんぞく ${nm}日`;else if(cur>=2)hook=`${cur}日 つづいてるよ`;}
+    const isComeback=(()=>{try{const ds=getDoneDates().slice().sort();const t=jstKey();if(ds[ds.length-1]!==t||ds.length<2)return false;return addDays(ds[ds.length-2],1)!==t;}catch(_){return false;}})();
+    if(isComeback)hook="おかえり！ また いっしょに 🌱";   /* 久しぶりでも うれしく（出遅れ感を出さない） */
+    else if(cur>=1){const nm=miles.find(m=>m>cur);if(nm&&nm-cur<=5)hook=`あと ${nm-cur}日で れんぞく ${nm}日`;else if(cur>=2)hook=`${cur}日 つづいてるよ`;else hook="きょうも えらい！";}
     if(!hook){const nt=miles.find(m=>m>total);if(nt&&nt-total<=5)hook=`あと ${nt-total}回で つうさん ${nt}回`;else if(cur===0)hook="また きょうから はじめよう";else hook="あしたも いっしょに";}
     $("ssHook").textContent=hook;
     el.classList.add("show");
@@ -11646,11 +11678,18 @@ function renderStoryPanel(){
     try{const cb=$("storyCloseBtm");if(cb)cb.hidden=false;const h=$("storyHint");if(h)h.style.display="none";}catch(_){}
     _bonusIdx=Math.floor(Math.random()*STORY_SCRIPTS.length);
     if(_bonusIdx===pickDailyStoryIdx())_bonusIdx=(_bonusIdx+1)%STORY_SCRIPTS.length;
+    const _bUsed=_bonusUsedToday();
+    const _canBonus=_elig&&!_bUsed;
     const cs=(p.cats||[]).slice(0,6).map(c=>`<span class="storyCat">${catFaceSvg(c.body,c.ear,null)}</span>`).join("");
-    stage.innerHTML=`<div class="castCardWrap"><div class="castTitleCard"><div class="castTitleTxt">おしまい</div><div class="castTitleSub">ー ${escHtml(p.title)} のはなし ー</div></div><div class="castRow" style="gap:10px">${cs}</div><button id="storyDlBtn" type="button" class="stDlBtn">表紙を保存</button></div><button id="storyBonusBtn" type="button" class="stBonusBtn${_elig?"":" locked"}">第${_bonusIdx+1}話も みる</button>`;
+    const _bLbl=_bUsed?"きょうは もう みたよ":`第${_bonusIdx+1}話も みる`;
+    stage.innerHTML=`<div class="castCardWrap"><div class="castTitleCard"><div class="castTitleTxt">おしまい</div><div class="castTitleSub">ー ${escHtml(p.title)} のはなし ー</div></div><div class="castRow" style="gap:10px">${cs}</div><button id="storyDlBtn" type="button" class="stDlBtn">表紙を保存</button></div><button id="storyBonusBtn" type="button" class="stBonusBtn${_canBonus?"":" locked"}">${_bLbl}</button>`;
     const prog=$("storyProg");if(prog)prog.textContent=`${_storyIdx+1} / ${total}`;
     try{const db=$("storyDlBtn");if(db)db.addEventListener("click",ev=>{ev.stopPropagation();try{downloadStory(p);}catch(_){}});}catch(_){}
-    try{const bb=$("storyBonusBtn");if(bb)bb.addEventListener("click",ev=>{ev.stopPropagation();if(_elig){try{playClick();}catch(_){}try{playBonusStory();}catch(_){}}else{try{toast("昨日の早起きor目標時間に起きれた人限定です");}catch(_){}}});}catch(_){}
+    try{const bb=$("storyBonusBtn");if(bb)bb.addEventListener("click",ev=>{ev.stopPropagation();
+      if(_bUsed){try{toast("ボーナスは 1日 1回まで。また あした！");}catch(_){}return;}
+      if(!_elig){try{toast("昨日の早起きor目標時間に起きれた人限定です");}catch(_){}return;}
+      try{playClick();}catch(_){}try{_markBonusUsed();}catch(_){}try{playBonusStory();}catch(_){}
+    });}catch(_){}
     _gateRead("おしまい");
     return;
   }

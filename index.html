@@ -5721,8 +5721,38 @@ let _lastPostsVal=null,_recentCycleTimer=null;
 function _applyHillFromVal(val){
   try{
     val=val||{};
-    _lastPostsVal=val;
-    _applyHillFromVal(val);
+    const me=getUid();
+    const dayMs=24*3600*1000,now=Date.now();
+    const minDate=addDays(jstKey(),-2);
+    const _myGoume=_weekDoneCount();
+    const byUid={};
+    const byUidAll={};   /* 全期間：これまで1回でも投稿した人みんな（順位の母数） */
+    Object.entries(val).forEach(([pid,v])=>{
+      if(!v||v.uid===me||!v.name)return;
+      if(!byUidAll[v.uid]||(v.createdAt||0)>(byUidAll[v.uid].createdAt||0))byUidAll[v.uid]=Object.assign({pid},v);
+      if(_recentMode===0){ if((v.date||"")<minDate)return; }
+      else { if(!(v.createdAt&&(now-v.createdAt)<=dayMs))return; if(_recentMode===2 && (v.goume||0)!==_myGoume)return; }
+      if(!byUid[v.uid]||(v.createdAt||0)>(byUid[v.uid].createdAt||0))byUid[v.uid]=Object.assign({pid},v);
+    });
+    _allTimeCats=Object.values(byUidAll);
+    const cats=Object.values(byUid).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,24);
+    const p=getProfile()||{};
+    /* 自分の“今日の投稿”を取得。あれば投稿済み＝実際のひとこと・起床時間を表示、なければ「投稿する」ボタン */
+    const selfPost=val[me+"_"+jstKey()]||null;
+    const posters=cats.length+(selfPost?1:0);
+    if($("recentPostCount"))$("recentPostCount").innerHTML=posters>0?(`<span class="hsTop"><svg class="hsIco" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20 l1.2 -4.2 L16 5 l3 3 L8.2 18.8 Z"/><path d="M14 7 l3 3"/></svg><b>${posters}</b><i class="hsUnit">人</i></span><span class="hsLbl">とうこう</span>`):"";
+    let self;
+    if(selfPost){
+      self={uid:me,isSelf:true,name:p.name||"あなた",catBody:profileBody(),color:profileColor(),
+        wakeHour:selfPost.wakeHour,wakeMin:selfPost.wakeMin,
+        createdAt:selfPost.createdAt||Date.now(),
+        streak:Number.isFinite(selfPost.streak)?selfPost.streak:calcStreak().current,
+        comment:selfPost.comment||"",thanks:getThanksWord()};
+    }else{
+      self={uid:me,isSelf:true,needsPost:true,name:p.name||"あなた",catBody:profileBody(),color:profileColor(),
+        createdAt:0,comment:"",streak:calcStreak().current};
+    }
+    renderCats([self,...cats]);   /* 自分の猫は常に表示（未投稿なら投稿ボタン／投稿済みなら実データ・いいねは付かない） */
   }catch(e){console.warn("hill filter:",e&&e.message);}
 }
 function _refilterHill(){ if(_lastPostsVal)_applyHillFromVal(_lastPostsVal); }

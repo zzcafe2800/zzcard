@@ -7925,7 +7925,7 @@ function startMorningExercise(opts){
     _exNoteTimer=setInterval(_spawnExNote,380);
     _exMeowTimer=setInterval(_exCatMeow,1900);_exCatMeow();
     try{_exerciseAudio=new Audio("radiobgm.mp3");_exerciseAudio.volume=bgmMuted?0:Math.max(bgmVol,0.28);_exerciseAudio.play().catch(()=>{});}catch(_){}
-    _exStopTimer=setTimeout(()=>stopMorningExercise(),5000);   /* 5秒で自動的に次の画面へ */
+    _exStopTimer=setTimeout(()=>stopMorningExercise(),7000);   /* 7秒で自動的に次の画面へ */
   };
   if(morning)setTimeout(begin,1500);else begin();
 }
@@ -7987,7 +7987,6 @@ function refreshHome(){
   try{refreshBuddyCount();}catch(_){}
   try{updateHomeScenery();}catch(_){}
   try{_exDevAutoMaybe();}catch(_){}
-  try{if(!$("selectScreen").classList.contains("hidden"))_startRecentCycle();}catch(_){}
 }
 /* ===== みんなの起床人数（今日／いま） ===== */
 async function recordCheckin(){
@@ -11505,7 +11504,6 @@ $("recentLabel").addEventListener("click",()=>{
   _recentMode=(_recentMode+1)%3;
   $("recentLabelText").textContent=_RECENT_LABELS[_recentMode];
   if(_lastPostsVal)_applyHillFromVal(_lastPostsVal); else loadHillCats();
-  _stopRecentCycle();_startRecentCycle();   /* 手動後はタイマーをリセット */
 });
 let _autoTimer=null;
 /* 本番トリガー：早起き時刻でストーリー更新→更新後 初回に ロード→自動表示 */

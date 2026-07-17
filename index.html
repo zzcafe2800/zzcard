@@ -377,10 +377,10 @@ html:not(.lite) #fabWrap{right:20px;left:auto;top:50%;bottom:auto;transform:tran
 .note.n1{left:40%;font-size:19px;animation-delay:0s;}
 .note.n2{left:53%;font-size:15px;color:#9ec9e0;animation-delay:1.2s;}
 .note.n3{left:46%;font-size:22px;animation-delay:2.4s;}
-.rText{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:31px;font-weight:900;fill:#fff;text-anchor:middle;dominant-baseline:central;letter-spacing:1px;paint-order:stroke;stroke:rgba(28,66,96,.42);stroke-width:1.6;}
+.rText{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:40px;font-weight:900;fill:#fff;text-anchor:middle;dominant-baseline:central;letter-spacing:1px;paint-order:stroke;stroke:rgba(28,66,96,.42);stroke-width:1.6;}
 @keyframes taisoTodoPulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.11);opacity:.7;}}
 #selectInner:not(.radioDone) #randomModeBtn{animation:taisoTodoPulse 1.1s ease-in-out infinite;transform-origin:50% 62%;}
-#selectInner:not(.radioDone) .rText{font-size:34px;fill:#fffbe8;}
+#selectInner:not(.radioDone) .rText{font-size:43px;fill:#fffbe8;}
 body.exercising #randomModeBtn{animation:none !important;}
 .rSpark{fill:#ffffff;opacity:.9;}
 .modeCard:active .radioSvg{transform:scale(.97);}
@@ -1616,6 +1616,11 @@ body.exercising #randomModeBtn{animation:none !important;}
 .closetColorInput{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;}
 #psTitle{font-size:18px;font-weight:700;color:#5c93ad;text-align:center;letter-spacing:.06em;}
 .psField{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:700;color:#6f9fb6;}
+.gBtn{height:46px;border:1.5px solid #dcdfe4;border-radius:999px;background:#fff;color:#3c4043;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;width:100%;box-sizing:border-box;box-shadow:0 2px 6px rgba(60,64,67,.12);}
+.gBtn:active{transform:scale(.985);}
+.gBtn .gIco{width:18px;height:18px;flex:0 0 auto;}
+.gBtnSub{height:38px;border:1.5px solid rgba(143,180,200,.4);border-radius:999px;background:#fff;color:#7a97a8;font-size:12px;font-weight:700;cursor:pointer;width:100%;box-sizing:border-box;margin-top:8px;}
+#gLoginState .restoreNote{margin-bottom:2px;}
 .psField.psRow{flex-direction:row;align-items:center;justify-content:space-between;}
 .psField input[type=text],.psField input[type=number]{height:42px;border-radius:12px;border:1.5px solid rgba(143,220,255,.4);
   background:#fff;padding:0 13px;font-size:14px;color:#3f6b84;font-weight:600;outline:none;}
@@ -1938,7 +1943,7 @@ body.exercising #randomModeBtn{animation:none !important;}
   #lobbySub{font-size:34px;}
   #sun{width:94px;height:94px;top:5%;}
   .modeCard{width:min(290px,86%);}
-  .rText{font-size:29px;}
+  .rText{font-size:37px;}
   .randomTodayCircle{width:74px;height:74px;top:-12px;right:-8px;}
   .randomTodayLabel{top:66px;}
   #stageWrap{padding:90px 14px 58px;}#timeGate{width:calc(100vw - 28px);}
@@ -1963,7 +1968,7 @@ body.exercising #randomModeBtn{animation:none !important;}
   #joinBtn{height:33px;padding:0 13px;font-size:12.5px;}
   /* はじめるカードを小さくして、猫の上のコメント/ラベルと被らないように */
   .modeCard{width:min(214px,64%);margin:2px 0 8px;}
-  .rText{font-size:27px;}
+  .rText{font-size:35px;}
   .randomTodayCircle{width:62px;height:62px;top:-8px;right:-6px;}
   .randomTodayLabel{top:54px;font-size:11px;}
   #selectScreen{padding:60px 18px 188px;}
@@ -3963,7 +3968,7 @@ function getUid(){
   return u;
 }
 /* ===== 連動（PC⇄スマホ）：ローカル記録をクラウドに自動同期。復元IDでuidを揃えた端末どうしが同じ状態になる ===== */
-const SYNC_EXCLUDE=["radio_uid","radio_stamp_cards","radio_auto_card","radio_unlock_all","radio_sync_meta","radio_syncbig_meta"];
+const SYNC_EXCLUDE=["radio_uid","radio_stamp_cards","radio_auto_card","radio_unlock_all","radio_sync_meta","radio_syncbig_meta","radio_glogin","radio_gredirect"];
 const SYNC_META_KEY="radio_sync_meta";
 function _syncCollect(){const o={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(!k||k.indexOf("radio_")!==0)continue;if(SYNC_EXCLUDE.indexOf(k)>=0)continue;const v=localStorage.getItem(k);if(v!=null&&v.length<200000)o[k]=v;}return o;}
 function _syncHash(str){let h=0;for(let i=0;i<str.length;i++){h=(h*31+str.charCodeAt(i))>>>0;}return h.toString(36);}
@@ -4073,6 +4078,94 @@ async function getDB(){
     _db=getDatabase(app);return _db;
   }catch(e){console.warn("db init failed",e);return null;}
 }
+/* ===== Googleログイン：既存のクラウド同期(uid)を「Googleアカウント」で束ねる簡単引き継ぎ =====
+   仕組み：glinks/<googleUID> = {uid} を保存。別端末で同じGoogleにログイン→その uid に切替→cloudSyncPullで記録が揃う。
+   ※Firebaseコンソールで「Googleサインイン有効化＋ドメイン許可」が必要。 */
+const FB_AUTH="https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+const GLOGIN_KEY="radio_glogin";
+function _gInfo(){try{return JSON.parse(localStorage.getItem(GLOGIN_KEY)||"null");}catch(_){return null;}}
+function _saveGInfo(o){try{localStorage.setItem(GLOGIN_KEY,JSON.stringify(o));}catch(_){}}
+function _clearGInfo(){try{localStorage.removeItem(GLOGIN_KEY);}catch(_){}}
+async function _getAuth(){
+  const{getApps,initializeApp}=await import(FB_APP);
+  const app=getApps().length?getApps()[0]:initializeApp(firebaseConfig);
+  const m=await import(FB_AUTH);
+  return {auth:m.getAuth(app),m};
+}
+function _renderGoogleUI(){
+  try{
+    const info=_gInfo(),btn=$("gLoginBtn"),st=$("gLoginState"),em=$("gLoginEmail"),note=$("gLoginNote");
+    if(info&&(info.email||info.name)){
+      if(btn)btn.style.display="none";
+      if(st)st.hidden=false;
+      if(em)em.textContent=info.email||info.name||"ログイン中";
+      if(note)note.style.display="none";
+    }else{
+      if(btn)btn.style.display="";
+      if(st)st.hidden=true;
+      if(note)note.style.display="";
+    }
+  }catch(_){}
+}
+async function _afterGoogleUser(user){
+  if(!user)return;
+  const db=await getDB();if(!db){toast("いまはつながらないよ");return;}
+  const{ref,get,set}=await import(FB_DB);
+  const gid=user.uid,cur=getUid();
+  let snap;try{snap=await get(ref(db,"glinks/"+gid));}catch(e){toast("接続に失敗したよ");return;}
+  if(snap.exists()&&snap.val()&&snap.val().uid){
+    const appUid=String(snap.val().uid);
+    _saveGInfo({email:user.email||"",name:user.displayName||""});
+    if(appUid!==cur){
+      localStorage.setItem(UID_KEY,appUid);
+      try{localStorage.removeItem("radio_sync_meta");localStorage.removeItem("radio_syncbig_meta");}catch(_){}
+      toast("Googleでログイン！記録を取り戻すね");
+      setTimeout(()=>location.reload(),950);   /* reload→cloudSyncPullで記録取得 */
+    }else{ toast("Googleでログインしたよ"); _renderGoogleUI(); }
+  }else{
+    try{await set(ref(db,"glinks/"+gid),{uid:cur,at:Date.now()});}catch(e){toast("連携に失敗したよ");return;}
+    _saveGInfo({email:user.email||"",name:user.displayName||""});
+    try{await cloudSyncPush(true);}catch(_){}   /* 今の記録をクラウドへ保存 */
+    toast("Googleと連携したよ！他の端末とも繋がる");
+    _renderGoogleUI();
+  }
+}
+async function googleLogin(){
+  let A;try{A=await _getAuth();}catch(e){toast("Googleログインは使えないよ（設定が必要）");return;}
+  const{auth,m}=A;const provider=new m.GoogleAuthProvider();
+  try{
+    let result;
+    try{ result=await m.signInWithPopup(auth,provider); }
+    catch(e){
+      const c=e&&e.code||"";
+      if(c==="auth/popup-closed-by-user"||c==="auth/cancelled-popup-request")return;   /* ユーザーが閉じた */
+      if(c==="auth/popup-blocked"||c==="auth/operation-not-supported-in-this-environment"){
+        try{localStorage.setItem("radio_gredirect","1");}catch(_){}
+        await m.signInWithRedirect(auth,provider);return;   /* モバイル等：リダイレクト方式へ */
+      }
+      throw e;
+    }
+    await _afterGoogleUser(result.user);
+  }catch(e){
+    console.warn("glogin",e);const c=e&&e.code||"";
+    if(c==="auth/operation-not-allowed")toast("Firebaseで Googleサインインを有効にしてね");
+    else if(c==="auth/unauthorized-domain")toast("このドメインを Firebaseの許可ドメインに追加してね");
+    else toast("Googleログインに失敗したよ");
+  }
+}
+async function googleLogout(){
+  try{const{auth,m}=await _getAuth();await m.signOut(auth);}catch(_){}
+  _clearGInfo();toast("ログアウトしたよ（記録はこの端末に残るよ）");_renderGoogleUI();
+}
+/* リダイレクト方式で戻ってきた時だけauthを読んで処理（普段は読み込まない＝軽い） */
+(function(){
+  try{
+    if(typeof _isCrawler!=="undefined"&&_isCrawler)return;
+    if(localStorage.getItem("radio_gredirect")!=="1")return;
+    localStorage.removeItem("radio_gredirect");
+    (async()=>{ try{ const{auth,m}=await _getAuth(); const res=await m.getRedirectResult(auth); if(res&&res.user)await _afterGoogleUser(res.user); }catch(e){console.warn("gredirect",e);} })();
+  }catch(_){}
+})();
 async function publishProfile(){
   const p=getProfile();if(!p)return;
   const db=await getDB();if(!db)return;
@@ -7937,7 +8030,7 @@ function _runExerciseThenTaiso(){
 }
 function _taisouButtonPress(){
   if(_exerciseActive)return;
-  if(todayDone()){ try{playClick();}catch(_){} try{showStoryStats();}catch(_){} return; }   /* 体操済み(また明日)：体操もルーレットも許可もなし→完了画面だけ */
+  if(todayDone()){ try{playClick();}catch(_){} try{startRandomMode();}catch(_){} return; }   /* 体操済み(また明日)：体操もルーレットも許可もなし→ラジオ体操完了画面(カード)だけ */
   const wake=profileWake(),now=nowHourFloat();
   if((now>=wake&&now<wake+1)||_startedOnce){ _runExerciseThenTaiso(); return; }   /* 枠内・既開始なら確認なしで体操へ */
   /* 枠外：許可（確認）を体操の前に出す */
@@ -11277,6 +11370,7 @@ function openSettings(){
   try{const pp=$("ppId"),pw=$("ppPw"),p=getProfile()||{};if(pp)pp.value=p.id||"";if(pw)pw.value=p.pw||"";}catch(_){}
   try{$("profilePanel").classList.remove("visible");}catch(_){}
   $("settingsScreen").classList.add("show");
+  try{_renderGoogleUI();}catch(_){}
   try{refreshDock();}catch(_){}
 }
 function closeSettings(){
@@ -11316,6 +11410,8 @@ async function saveRestoreId(p){
 }
 let _restoreSel=null;
 $("ppRestoreOpen").addEventListener("click",async()=>{playClick();await openRestore();});
+try{const _gb=$("gLoginBtn");if(_gb)_gb.addEventListener("click",()=>{playClick();googleLogin();});}catch(_){}
+try{const _go=$("gLogoutBtn");if(_go)_go.addEventListener("click",()=>{playClick();googleLogout();});}catch(_){}
 $("restoreClose").addEventListener("click",()=>{playClick();$("restorePanel").classList.remove("visible");});
 $("restorePanel").addEventListener("click",e=>{if(e.target===$("restorePanel"))$("restorePanel").classList.remove("visible");});
 async function openRestore(){
@@ -11548,7 +11644,7 @@ function maybeAutoStory(){
 }
 function doTitlePlay(){
   $("titleScreen").classList.remove("visible");
-  if(getProfile()){showSelect();updateTop();setTimeout(()=>{try{showStoryStats();}catch(_){}},700);}   /* 2回目以降：ホーム→きみの記録→更新ありならストーリーにNEW */
+  if(getProfile()){showSelect();updateTop();try{showStoryStats();}catch(_){}}   /* 2回目以降：すぐに きろく（ホームを一瞬映さない） */
   else if(!getProfile()){ showTutorial("first"); }  /* 初回：まず ゲーム説明 → はじめる で物語へ */
   else { openProfileSetup(false); }                /* 説明・物語は見た → 設定へ */
 }
@@ -11620,7 +11716,7 @@ function profileBoot(){
   try{loadStampCardsFB();}catch(_){}   /* 保険：ローカルが空ならFirebaseから復元 */
   try{ensureDevHomeBtn();}catch(_){}   /* 【テスト用・あとで消す】 */
   $("titleScreen").classList.add("visible");   /* タイトルは毎回最初に表示 */
-  if(getProfile()){startAutoPlay();}            /* 2回目以降：ロードバー→自動で開始 */
+  if(getProfile()){ setTimeout(()=>{ try{ if($("titleScreen").classList.contains("visible")) doTitlePlay(); }catch(_){} }, 350); }   /* 2回目以降：タイトルをほぼ飛ばして即きろくへ（初見だけタイトルをちゃんと見せる） */
   else{$("titlePlay").hidden=false;$("autoPlayBar").hidden=true;}   /* 初回：プレイボタン */
 }
 
@@ -13083,6 +13179,14 @@ try{
           <label class="psField"><span>パスワード（数字4桁）</span><input id="ppPw" type="text" inputmode="numeric" maxlength="4" placeholder="0000"></label>
           <button id="ppRestoreSave" type="button">保存</button>
           <button id="ppRestoreOpen" type="button">別の端末から復元する</button>
+        </div>
+      </details>
+      <details id="gLoginCard" class="setCard setCardDetails">
+        <summary><span class="setCardIco ico-id"><svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.9 0 6.6 1.7 8.1 3.1l6-5.8C34.6 3.2 29.8 1 24 1 14.6 1 6.5 6.4 2.7 14.3l7 5.4C11.5 13.6 17.2 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-2.8-.4-4H24v7.6h12.7c-.3 2.1-1.6 5.2-4.7 7.3l7.2 5.6c4.3-4 6.3-9.9 6.3-16.5z"/><path fill="#FBBC05" d="M9.7 19.7C9.2 21.1 9 22.5 9 24s.2 2.9.7 4.3l-7 5.4C1.3 30.6 0 27.5 0 24s1.3-6.6 2.7-9.7l7 5.4z"/><path fill="#34A853" d="M24 47c6.5 0 11.9-2.1 15.9-5.8l-7.2-5.6c-2 1.4-4.6 2.3-8.7 2.3-6.8 0-12.5-4.1-14.3-9.9l-7 5.4C6.5 41.6 14.6 47 24 47z"/></svg></span><span class="setCardTxt"><b>Googleでログイン</b><small>スマホ⇄PCをかんたんに同期</small></span><span class="setCardArrow">›</span></summary>
+        <div class="psRestoreInner">
+          <div id="gLoginNote" class="restoreNote">Googleでログインすると、この記録を他の端末とも共有できるよ。別の端末で同じGoogleでログインすると、同じ記録に繋がるよ。</div>
+          <button id="gLoginBtn" type="button" class="gBtn"><svg class="gIco" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.9 0 6.6 1.7 8.1 3.1l6-5.8C34.6 3.2 29.8 1 24 1 14.6 1 6.5 6.4 2.7 14.3l7 5.4C11.5 13.6 17.2 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-2.8-.4-4H24v7.6h12.7c-.3 2.1-1.6 5.2-4.7 7.3l7.2 5.6c4.3-4 6.3-9.9 6.3-16.5z"/><path fill="#FBBC05" d="M9.7 19.7C9.2 21.1 9 22.5 9 24s.2 2.9.7 4.3l-7 5.4C1.3 30.6 0 27.5 0 24s1.3-6.6 2.7-9.7l7 5.4z"/><path fill="#34A853" d="M24 47c6.5 0 11.9-2.1 15.9-5.8l-7.2-5.6c-2 1.4-4.6 2.3-8.7 2.3-6.8 0-12.5-4.1-14.3-9.9l-7 5.4C6.5 41.6 14.6 47 24 47z"/></svg>Googleでログイン</button>
+          <div id="gLoginState" hidden><div class="restoreNote">ログイン中：<b id="gLoginEmail"></b></div><button id="gLogoutBtn" type="button" class="gBtnSub">ログアウト</button></div>
         </div>
       </details>
       <button class="setCard" id="setReminder" type="button">

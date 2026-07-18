@@ -2165,7 +2165,7 @@ body.exercising #randomModeBtn{animation:none !important;}
 .ssHook{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:12.5px;font-weight:700;color:#a7b4bc;line-height:1.4;margin-bottom:15px;}
 .ssRangeBtn{border:none;background:linear-gradient(180deg,#a8d8f0,#8ec5e8);color:#fff;font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:13px;font-weight:800;border-radius:999px;padding:9px 18px;cursor:pointer;box-shadow:0 4px 12px rgba(120,180,220,.35);margin:0 0 13px;}
 .ssRangeBtn:active{transform:scale(.97);}
-#rangeScreen{position:fixed;inset:0;z-index:3170;display:none;flex-direction:column;background:linear-gradient(180deg,#eaf6fd,#dcecf8);overflow:hidden;}
+#rangeScreen{position:fixed;inset:0;z-index:3170;display:none;flex-direction:column;background:linear-gradient(180deg,#bfe3f7 0%,#dcecf8 40%,#fdeede 100%);overflow:hidden;}
 #rangeScreen.show{display:flex;}
 #rangeTop{display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top)) 16px 8px;}
 #rangeClose{border:none;background:rgba(143,190,220,.18);color:#5c93ad;font-size:14px;font-weight:800;border-radius:999px;padding:7px 14px;cursor:pointer;}
@@ -2174,6 +2174,7 @@ body.exercising #randomModeBtn{animation:none !important;}
 #rangeStats b{color:#e08a4a;font-size:15px;margin:0 1px;}
 #rangeWeekMt{text-align:center;font-size:13px;font-weight:800;color:#5c8aa3;padding:0 18px 10px;max-width:640px;margin:0 auto;}
 #rangeWeekMt b{color:#e08a4a;font-size:17px;}
+#rangeWeekMt .rgBonus{display:block;font-size:11px;font-weight:800;color:#ff8a3d;margin-top:2px;}
 #rangeScroll{flex:1 1 auto;overflow-x:auto;overflow-y:hidden;display:flex;align-items:center;-webkit-overflow-scrolling:touch;padding:0 0 6px;max-width:460px;width:100%;margin:0 auto;box-sizing:border-box;}
 #rangeInner{min-width:100%;}
 #rangeGoal{padding:10px 18px 8px;font-size:12.5px;font-weight:700;color:#5c8aa3;text-align:center;background:rgba(255,255,255,.5);line-height:1.8;}
@@ -2422,6 +2423,9 @@ html.lite #fabWrap,html.lite .fabItem{cursor:default !important;touch-action:aut
 /* ===== プロフ画面リデザイン：ヘッダーを主役に、下は設定と同じ"一覧"スタイル ===== */
 #ppHead{flex-direction:column;gap:6px;text-align:center;padding:6px 0 2px;}
 #ppAvatar{width:76px;height:76px;background:linear-gradient(150deg,#eaf6fd,#d8ecfa);border-radius:50%;box-shadow:0 6px 16px rgba(120,180,220,.22);}
+#ppAvatar{position:relative;}
+.ppChestMeds{position:absolute;left:50%;bottom:17%;transform:translateX(-50%);display:flex;justify-content:center;pointer-events:none;line-height:1;z-index:3;}
+.ppChestMed{margin:0 -1px;filter:drop-shadow(0 1px 1.5px rgba(0,0,0,.28));}
 #ppAvatar svg{width:62px;height:62px;}
 #ppName{font-size:17.5px;font-weight:900;color:#3f6d84;}
 #ppStreakInline{font-size:11px;font-weight:800;color:#e8833a;background:#fff1e3;border-radius:999px;padding:2px 9px;margin-left:5px;vertical-align:2px;}
@@ -10405,6 +10409,15 @@ function roomCapture(){
 function openProfilePanel(bagMode){
   const p=getProfile()||{};
   $("ppAvatar").innerHTML=catFaceSvg(profileBody(),profileColor(),getEquippedCostume());
+  try{
+    const meds=_mountainMedals(),av=$("ppAvatar");
+    if(av&&meds.length){
+      const T=["🥇","🥈","🥉"],n=Math.min(meds.length,5),fs=n<=2?15:(n<=3?13:11);
+      const ov=document.createElement("div");ov.className="ppChestMeds";
+      ov.innerHTML=meds.slice(0,5).map((m,i)=>`<span class="ppChestMed" style="font-size:${fs}px">${T[i]||"🏅"}</span>`).join("");
+      av.appendChild(ov);
+    }
+  }catch(_){}
   $("ppName").firstChild.textContent=(p.name||"匿名さん")+" ";
   $("ppStreakInline").textContent="🔥"+calcStreak().current;
   try{
@@ -12489,13 +12502,15 @@ function _dayScore(dk){
   try{const wl=getWakeLog(),w=wl[dk];
     if(!Number.isFinite(w))return 0;                 /* その日やってない＝0 */
     const diff=w-profileWake();                      /* 目標との差（負=早起き） */
-    let sc=500-diff*200;                             /* 早いほど高い */
-    if(sc>800)sc=800;                                /* 早起きボーナス上限 */
+    let sc=450-diff*260;                            /* 早いほどぐっと高い（早起きの旨味UP） */
+    if(sc>900)sc=900;                                /* 早起きボーナス上限UP */
     if(sc<-150)sc=-150;                              /* 大寝坊はマイナス（下限） */
     return Math.round(sc);
   }catch(_){return 0;}
 }
-function _weekHeightOf(mon){let h=0;for(let i=0;i<7;i++)h+=_dayScore(addDays(mon,i));return Math.max(0,h);}
+function _weekDaysDone(mon){let d=0;const wl=getWakeLog();for(let i=0;i<7;i++)if(Number.isFinite(wl[addDays(mon,i)]))d++;return d;}
+function _weekBonus(mon){const d=_weekDaysDone(mon);return (d>=2?d*(d-1)*18:0)+(d>=7?800:0);}   /* 日数が多いほど＆パーフェクトでボーナス */
+function _weekHeightOf(mon){let h=0;for(let i=0;i<7;i++)h+=_dayScore(addDays(mon,i));h+=_weekBonus(mon);return Math.max(0,h);}
 function _thisWeekHeight(){return _weekHeightOf(_monOf(jstKey()));}
 function _mountainFor(h){for(const m of REAL_MTS){if(h>=m[0])return {alt:m[0],name:m[1]};}return {alt:0,name:"ふもと"};}
 function _mountainMedals(){
@@ -12527,6 +12542,7 @@ function _rangeStats(weeks){
   dates.forEach(d=>{if(prev&&addDays(prev,1)===d)cur++;else cur=1;if(cur>best)best=cur;prev=d;});
   return{peaks,total,perfect,best,weeksTotal:weeks.length};
 }
+function _cloudShape(cx,cy,op){return `<g opacity="${op}"><ellipse cx="${cx}" cy="${cy}" rx="23" ry="11" fill="#fff"/><ellipse cx="${(cx-15).toFixed(0)}" cy="${(cy+3).toFixed(0)}" rx="14" ry="9" fill="#fff"/><ellipse cx="${(cx+16).toFixed(0)}" cy="${(cy+3).toFixed(0)}" rx="15" ry="9" fill="#fff"/></g>`;}
 function _rangeSVG(weeks,minW){
   const WP=56,BW=68,baseY=196,H=238,MARGIN=32;
   const contentW=MARGIN*2+weeks.length*WP;
@@ -12556,19 +12572,31 @@ function _rangeSVG(weeks,minW){
     const cs=catFaceSvg(p.catBody||"#f2b2c6",p.color||"#ffd27a").replace('<svg class="avatarCat" viewBox="0 0 80 80"',`<svg x="${(cx0-cw/2).toFixed(1)}" y="${cyp.toFixed(1)}" width="${cw}" height="${cw}" viewBox="0 0 80 80"`);
     cat=cs+`<text x="${cx0.toFixed(1)}" y="${(cyp-4).toFixed(1)}" text-anchor="middle" font-size="8.5" font-weight="800" fill="#e08a4a" font-family="'Yomogi',sans-serif">いまここ</text>`;
   }
+  /* ===== 背景の演出：空・太陽・雲・鳥・遠くの山・きらめき ===== */
+  let distant="";{let dp=`M0 ${baseY}`;const dc=Math.ceil(width/74)+1;for(let i=0;i<=dc;i++){const x=i*74,hh=32+((i*41)%38);dp+=` L${(x-37).toFixed(0)} ${baseY} L${x.toFixed(0)} ${(baseY-hh).toFixed(0)}`;}dp+=` L${width} ${baseY} Z`;distant=`<path d="${dp}" fill="#c2d8ea" opacity="0.5"/>`;}
+  let clouds="";{const cc=Math.max(2,Math.ceil(width/200));for(let i=0;i<cc;i++){const cx2=70+i*200+((i*57)%70),cy2=28+((i*31)%40);clouds+=_cloudShape(cx2,cy2,(0.92-((i%3)*0.14)).toFixed(2));}}
+  const _sx=Math.max(60,width-52),_sy=42;
+  const sun=`<circle cx="${_sx}" cy="${_sy}" r="24" fill="url(#rgSun)"/><circle cx="${_sx}" cy="${_sy}" r="13" fill="#fff4cc"/>`;
+  const birds=`<path d="M${(_sx-80).toFixed(0)} 56 q4 -4.5 8 0 q4 -4.5 8 0" fill="none" stroke="#a7bccb" stroke-width="1.3" stroke-linecap="round"/><path d="M${(_sx-106).toFixed(0)} 70 q3.5 -4 7 0 q3.5 -4 7 0" fill="none" stroke="#a7bccb" stroke-width="1.2" stroke-linecap="round"/>`;
+  const spark=(lastX!=null)?`<text x="${(lastX+15).toFixed(0)}" y="${(baseY-lastH-16).toFixed(0)}" font-size="13">✨</text>`:"";
   return `<svg width="${width}" height="${H}" viewBox="0 0 ${width} ${H}" xmlns="http://www.w3.org/2000/svg" style="display:block">`+
-    `<defs><linearGradient id="rgSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfeafd"/><stop offset="1" stop-color="#f0f8fd"/></linearGradient></defs>`+
+    `<defs><linearGradient id="rgSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a9d6f4"/><stop offset="0.55" stop-color="#d4ebfa"/><stop offset="1" stop-color="#ffe9d2"/></linearGradient>`+
+    `<radialGradient id="rgSun" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#fff6d0"/><stop offset="0.55" stop-color="#ffe08a" stop-opacity="0.55"/><stop offset="1" stop-color="#ffe08a" stop-opacity="0"/></radialGradient>`+
+    `<linearGradient id="rgGround" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dcecc6"/><stop offset="1" stop-color="#c6deb0"/></linearGradient></defs>`+
     `<rect x="0" y="0" width="${width}" height="${H}" fill="url(#rgSky)"/>`+
-    `<rect x="0" y="${baseY}" width="${width}" height="${H-baseY}" fill="#e7efe3"/>`+
-    `<line x1="0" y1="${baseY}" x2="${width}" y2="${baseY}" stroke="#ccd8c7" stroke-width="1"/>`+
-    peaks+caps+marks+cat+labels+`</svg>`;
+    sun+clouds+birds+distant+
+    `<rect x="0" y="${baseY}" width="${width}" height="${H-baseY}" fill="url(#rgGround)"/>`+
+    `<line x1="0" y1="${baseY}" x2="${width}" y2="${baseY}" stroke="#bcd0b0" stroke-width="1"/>`+
+    peaks+caps+marks+spark+cat+labels+`</svg>`;
 }
 function openRange(){
   try{
     const weeks=_rangeData(),st=_rangeStats(weeks);
     $("rangeInner").innerHTML=_rangeSVG(weeks,Math.min((window.innerWidth||360),460));
     $("rangeStats").innerHTML=weeks.length?`のべ <b>${st.peaks}</b>座 ・ <b>${st.total}</b>日 のぼった ・ パーフェクト <b>${st.perfect}</b>週 ・ 最高 <b>${st.best}</b>日れんぞく`:"まだ山がないよ。体操して 最初の山を つくろう！";
-    try{const _wh=_thisWeekHeight(),_mt=_mountainFor(_wh);$("rangeWeekMt").innerHTML=`🏔 今週の高さ <b>${_wh}m</b>${_mt.alt?` ・ ${_mt.alt}m級『${_mt.name}』`:""}`;}catch(_){}
+    try{const _mon=_monOf(jstKey()),_wh=_thisWeekHeight(),_mt=_mountainFor(_wh),_dd=_weekDaysDone(_mon),_bn=_weekBonus(_mon);
+      $("rangeWeekMt").innerHTML=`🏔 今週の高さ <b>${_wh}m</b>${_mt.alt?` ・ ${_mt.alt}m級『${_mt.name}』`:""}`+(_bn>0?`<span class="rgBonus">🔥 ${_dd}日つづけてボーナス ＋${_bn}m${_dd>=7?" ・ パーフェクト！🎉":""}</span>`:"");
+    }catch(_){}
     const twd=_weekDoneCount(),nextMile=(Math.floor(st.peaks/10)+1)*10;
     const _wEnd=addDays(_monOf(jstKey()),6),_eMD=parseInt(_wEnd.slice(5,7),10)+"/"+parseInt(_wEnd.slice(8,10),10);
     let g=twd>=7?"今週は 頂上まで 登ったよ！🎉":`今週：あと <b>${7-twd}</b>日 で 頂上！`;
@@ -12718,6 +12746,7 @@ async function createParty(){
   const mem={};mem[getUid()]={name:me.name||"匿名さん",catBody:me.catBody||"#1c1c1c",color:me.color||"#8fdcff",at:Date.now()};
   try{await set(ref(db,"parties/"+code),{host:getUid(),name:(me.name||"みんな")+"のパーティ",members:mem,at:Date.now()});await set(ref(db,"uparty/"+getUid()),code);}catch(e){toast("作れなかったよ");return;}
   try{localStorage.setItem(PARTY_KEY,code);}catch(_){}
+  try{syncSoon();}catch(_){}
   toast("パーティを作ったよ⛰");openParty();
 }
 async function joinParty(code){
@@ -12734,6 +12763,7 @@ async function joinParty(code){
   try{await set(ref(db,"parties/"+code+"/members/"+getUid()),{name:me.name||"匿名さん",catBody:me.catBody||"#1c1c1c",color:me.color||"#8fdcff",at:Date.now()});await set(ref(db,"uparty/"+getUid()),code);}catch(e){toast("入れなかったよ");return;}
   try{await remove(ref(db,"pinvites/"+getUid()));}catch(_){}
   try{localStorage.setItem(PARTY_KEY,code);}catch(_){}
+  try{syncSoon();}catch(_){}
   toast("パーティに 入ったよ⛰");openParty();
 }
 async function leaveParty(){
@@ -12741,11 +12771,14 @@ async function leaveParty(){
   const db=await getDB();
   if(db){try{const{ref,remove}=await import(FB_DB);await remove(ref(db,"parties/"+code+"/members/"+getUid()));await remove(ref(db,"uparty/"+getUid()));}catch(_){}}
   try{localStorage.removeItem(PARTY_KEY);}catch(_){}
+  try{syncSoon();}catch(_){}
   toast("パーティから ぬけたよ");openParty();
 }
 async function openParty(){
   $("partyScreen").classList.add("visible");
-  const code=_partyId(),noP=$("partyNone"),hasP=$("partyHas");
+  let code=_partyId();
+  if(!code){try{const _db=await getDB();if(_db){const{ref,get}=await import(FB_DB);const _s=await get(ref(_db,"uparty/"+getUid()));if(_s.exists()&&_s.val()){code=String(_s.val());try{localStorage.setItem(PARTY_KEY,code);}catch(_){}try{syncSoon();}catch(_){}}}}catch(_){}}
+  const noP=$("partyNone"),hasP=$("partyHas");
   if(!code){
     noP.hidden=false;hasP.hidden=true;const inp=$("partyJoinCode");if(inp)inp.value="";
     const invE=$("partyInvited");if(invE)invE.hidden=true;

@@ -145,7 +145,7 @@ body.exercising #hillCats .hillCat:nth-child(4n) .catFig{animation-delay:.07s;}
 @keyframes exBanPop{0%{transform:translateX(-50%) scale(.6);opacity:0}100%{transform:translateX(-50%) scale(1);opacity:1}}
 #exHint{position:absolute;bottom:max(96px,calc(env(safe-area-inset-bottom) + 86px));left:50%;transform:translateX(-50%);background:rgba(58,72,90,.85);color:#fff;font-family:"Yomogi","Kosugi Maru",sans-serif;font-weight:800;font-size:12.5px;padding:6px 16px;border-radius:999px;animation:exHintP 1.5s ease-in-out infinite;}
 @keyframes exHintP{0%,100%{opacity:.55}50%{opacity:1}}
-body.exercising #randomModeBtn,body.exercising #topProfileBar,body.exercising #topLeftStack,body.exercising #helpBtn,body.exercising #fabWrap,body.exercising #recentLabel,body.exercising #streakBadge,body.exercising .hillArrow,body.exercising #homeGate,body.exercising #catShutter,body.exercising #lobbyHead,body.exercising #doneHint{opacity:0 !important;pointer-events:none !important;transition:opacity .3s;}
+body.exercising #randomModeBtn,body.exercising #topProfileBar,body.exercising #topLeftStack,body.exercising #helpBtn,body.exercising #fabWrap,body.exercising #recentRow,body.exercising #streakBadge,body.exercising .hillArrow,body.exercising #homeGate,body.exercising #catShutter,body.exercising #lobbyHead,body.exercising #doneHint{opacity:0 !important;pointer-events:none !important;transition:opacity .3s;}
 body.exercising #hillCats .catLike,body.exercising #hillCats .catStreak,body.exercising #hillCats .catStreakFire,body.exercising #hillCats .catCmt,body.exercising #hillCats .catCmtWrap,body.exercising #hillCats .catRise,body.exercising #hillCats .catTime,body.exercising #hillCats .catMark,body.exercising #hillCats .catDeco,body.exercising #hillCats .catBubble{display:none !important;}
 #volPanel .vpLbl{cursor:pointer;user-select:none;}
 #volPanel .vpLbl.muted{color:#c98b8b;text-decoration:line-through;}
@@ -181,6 +181,7 @@ body.exercising #hillCats .catLike,body.exercising #hillCats .catStreak,body.exe
 .wEarly{font-size:8px;font-weight:800;color:#4aa9da;}
 .wTime{font-size:inherit;}
 .catNameRow{display:flex;align-items:center;justify-content:center;gap:4px;flex-wrap:nowrap;max-width:100%;}
+.catStreakNum{display:inline-flex;align-items:center;justify-content:center;min-width:17px;height:17px;padding:0 4px;border-radius:999px;background:linear-gradient(135deg,#ff9d3f,#ff5a2a);color:#fff;font-size:10.5px;font-weight:900;line-height:1;box-shadow:0 1px 3px rgba(255,90,42,.4);flex:0 0 auto;}
 .catFire{font-size:8.5px;font-weight:800;color:#fff;white-space:nowrap;background:linear-gradient(135deg,#ffb268,#ff8f4d);border-radius:999px;padding:1.5px 6px;box-shadow:0 2px 5px rgba(255,140,80,.3);}
 .catStreak{font-size:8.5px;font-weight:800;color:#fff;background:linear-gradient(135deg,#ffb37a,#ff8f5e);
   border-radius:999px;padding:1px 6px;margin-top:2px;box-shadow:0 2px 5px rgba(255,140,90,.3);}
@@ -272,7 +273,7 @@ html:not(.lite) #fabWrap{right:20px;left:auto;top:50%;bottom:auto;transform:tran
   .fabItem.active .fi{background:#fff !important;box-shadow:0 3px 13px rgba(0,0,0,.32) !important;filter:none !important;}
   .fabItem.active .fi svg{color:#4f88a4 !important;}
   .fabItem.active .fl{color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.7),0 0 3px rgba(0,0,0,.5);}
-  #recentLabel{bottom:87px;}
+  #recentRow{bottom:87px;}
   #hillCats{bottom:108px;}
   #hillCats.empty{bottom:116px;}
 }
@@ -315,10 +316,16 @@ html:not(.lite) #fabWrap{right:20px;left:auto;top:50%;bottom:auto;transform:tran
 #catShutter::after{content:"";width:50px;height:50px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.12);}
 #catShutter.show{opacity:1;transform:translateX(-50%) scale(1);pointer-events:auto;}
 #catShutter:active.show{transform:translateX(-50%) scale(.92);}
-#recentLabel{position:absolute;left:50%;transform:translateX(-50%);bottom:77px;z-index:104;display:flex;align-items:center;gap:5px;pointer-events:auto;cursor:pointer;
+#recentRow{position:absolute;left:50%;transform:translateX(-50%);bottom:77px;z-index:104;display:flex;align-items:center;gap:6px;pointer-events:none;}
+#recentRow>*{pointer-events:auto;}
+#likeAllBtn{width:27px;height:27px;border-radius:999px;background:rgba(255,255,255,.95);border:none;box-shadow:0 4px 12px rgba(80,110,140,.25);color:#e0588f;font-size:14px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);}
+#likeAllBtn:active{transform:scale(.9);}
+.sky-night #likeAllBtn{background:rgba(255,255,255,.92);}
+html.lite #likeAllBtn{background:rgba(255,255,255,.95);}
+#recentLabel{display:flex;align-items:center;gap:5px;pointer-events:auto;cursor:pointer;
   background:rgba(255,255,255,.95);border-radius:999px;padding:4px 13px;box-shadow:0 4px 12px rgba(80,110,140,.25);color:#4a7086;font-weight:900;
   font-size:10px;font-weight:700;color:#5c93ad;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);}
-#recentLabel:active{transform:translateX(-50%) scale(.94);}
+#recentLabel:active{transform:scale(.94);}
 #recentLabel .recentCat{width:22px;height:22px;}
 .sky-night #recentLabel{background:rgba(255,255,255,.92);color:#3f5a7a;}
 #recentPostCount{margin:0;width:auto;max-width:100%;box-sizing:border-box;z-index:103;font-size:10px;font-weight:700;
@@ -1030,6 +1037,41 @@ body.exercising #randomModeBtn{animation:none !important;}
 .sky-night #nyanShot{background:rgba(70,82,130,.5);border-color:rgba(255,255,255,.4);color:#eef2ff;}
 .sky-night #friendBtn svg{color:#eef2ff;}
 #friendBadge{position:absolute;top:-5px;right:-5px;}
+#partyScreen{position:fixed;inset:0;z-index:3178;display:none;flex-direction:column;background:linear-gradient(180deg,#eaf6fd,#dcecf8);overflow:hidden;}
+#partyScreen.visible{display:flex;}
+#partyHead{display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top)) 16px 10px;}
+#partyClose{border:none;background:rgba(143,190,220,.18);color:#5c93ad;font-size:14px;font-weight:800;border-radius:999px;padding:7px 14px;cursor:pointer;}
+#partyTitle{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:17px;font-weight:900;color:#5c8aa3;letter-spacing:.05em;}
+#partyBody{flex:1;overflow-y:auto;padding:6px 18px calc(24px + env(safe-area-inset-bottom));}
+.pIntro{font-size:12.5px;font-weight:700;color:#6f9fb6;line-height:1.8;text-align:center;margin:8px 0 16px;}
+.pBtn{width:100%;height:48px;border:none;border-radius:999px;background:linear-gradient(180deg,#8ec5e8,#6fb0da);color:#fff;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 4px 12px rgba(120,180,220,.35);}
+.pBtn:active{transform:scale(.98);}
+.pOr{text-align:center;font-size:11px;font-weight:700;color:#9fb2bd;margin:14px 0 8px;}
+.pJoinRow{display:flex;gap:8px;}
+#partyJoinCode{flex:1;height:46px;border:1.5px solid rgba(143,190,220,.5);border-radius:12px;padding:0 13px;font-size:15px;color:#4f88a4;font-weight:700;outline:none;text-transform:lowercase;}
+.pBtn2{flex:0 0 auto;padding:0 20px;height:46px;border:none;border-radius:999px;background:linear-gradient(180deg,#a8d8f0,#8ec5e8);color:#fff;font-size:14px;font-weight:800;cursor:pointer;}
+.pCodeRow{text-align:center;font-size:12.5px;font-weight:700;color:#6f9fb6;margin:6px 0 4px;}
+.pCodeRow b{font-size:20px;color:#e08a4a;letter-spacing:.15em;font-family:monospace;}
+#partyName{text-align:center;font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:14px;font-weight:900;color:#5c8aa3;margin-bottom:14px;}
+#partyMembers{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-bottom:20px;}
+.pMember{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.pCat{display:flex;align-items:center;justify-content:center;}
+.pmName{font-size:11px;font-weight:800;color:#4d7790;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center;}
+.pLeaveBtn{display:block;margin:0 auto;border:none;background:rgba(220,150,150,.14);color:#c07070;font-size:12px;font-weight:700;border-radius:999px;padding:8px 18px;cursor:pointer;}
+.pLoading,.pEmpty{text-align:center;font-size:12px;color:#9fb2bd;font-weight:700;padding:20px 0;line-height:1.6;}
+#partyInvited{background:#fff6ec;border:1.5px solid #ffd0a0;border-radius:16px;padding:14px;margin-bottom:16px;text-align:center;}
+#partyInvitedText{font-size:13px;font-weight:800;color:#e0793a;margin-bottom:10px;line-height:1.6;}
+.pInviteToggle{display:block;margin:0 auto 10px;border:1.5px solid rgba(143,190,220,.5);background:#fff;color:#5c93ad;font-size:13px;font-weight:800;border-radius:999px;padding:9px 20px;cursor:pointer;}
+.pInviteToggle:active{transform:scale(.97);}
+#partyInviteList{max-width:340px;margin:0 auto 16px;display:flex;flex-direction:column;gap:7px;}
+.pInvRow{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#f6fafc;border-radius:12px;padding:9px 13px;}
+.pInvName{font-size:13px;font-weight:800;color:#4d7790;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.pInvBtn{flex:0 0 auto;border:none;background:linear-gradient(180deg,#8ec5e8,#6fb0da);color:#fff;font-size:12px;font-weight:800;border-radius:999px;padding:6px 15px;cursor:pointer;}
+.pInvBtn.done{background:#cdd9e0;}
+.pInvBusy{flex:0 0 auto;font-size:11px;font-weight:700;color:#b0a0a0;}
+.pInvIn{flex:0 0 auto;font-size:11px;font-weight:800;color:#7fc0a0;}
+.partyEntryBtn{display:block;width:calc(100% - 32px);margin:0 16px 12px;box-sizing:border-box;border:none;border-radius:16px;background:linear-gradient(180deg,#a8d8f0,#8ec5e8);color:#fff;font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:14px;font-weight:800;padding:13px;cursor:pointer;box-shadow:0 4px 12px rgba(120,180,220,.3);}
+.partyEntryBtn:active{transform:scale(.98);}
 #clubScreen{position:fixed;inset:0;z-index:222;display:none;flex-direction:column;
   background:linear-gradient(180deg,#dcebf7 0%,#e7f2fb 45%,#f7ead9 100%);
   padding:max(14px,env(safe-area-inset-top)) 0 0;overflow:hidden;}
@@ -1831,6 +1873,35 @@ body.exercising #randomModeBtn{animation:none !important;}
   font-size:14px;color:#4d7790;font-family:inherit;outline:none;margin-bottom:4px;background:rgba(245,251,255,.8);}
 #postComment:focus{border-color:#7fd8b0;background:#fff;}
 #postComment::placeholder{color:#a8c6d6;font-weight:600;}
+.cmtChips{display:flex;flex-wrap:wrap;gap:5px;margin:9px 0 2px;justify-content:center;}
+.cmtChip{border:1.5px solid rgba(143,220,255,.5);background:#f4fbff;color:#4f88a4;font-size:11px;font-weight:800;border-radius:999px;padding:4px 10px;cursor:pointer;}
+.cmtChip:active{background:#e2f4ff;transform:scale(.96);}
+#tsMoodRow{display:flex;justify-content:center;margin:0;}
+#tsMoodBtn{border:1.5px solid #ffd0a0;background:linear-gradient(180deg,#fff6ec,#ffeede);color:#e0793a;font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:13px;font-weight:800;border-radius:999px;padding:7px 18px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+#tsMoodBtn:active{transform:scale(.97);}
+#moodCard{position:fixed;inset:0;z-index:3185;display:none;align-items:center;justify-content:center;background:rgba(40,60,80,.42);padding:20px;}
+#moodCard.show{display:flex;}
+#moodBox{width:min(340px,92vw);background:#fff;border-radius:22px;padding:20px;box-shadow:0 14px 44px rgba(40,60,80,.32);}
+#moodTitle{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:16px;font-weight:900;color:#5c8aa3;text-align:center;margin-bottom:14px;}
+#moodGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;}
+.moodItem{border:none;background:#f4fbff;border-radius:14px;padding:10px 4px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.moodItem:active{background:#e2f4ff;transform:scale(.95);}
+.moodE{font-size:22px;line-height:1;}
+.moodL{font-size:10.5px;font-weight:800;color:#5c8aa3;}
+#moodCancel{margin-top:14px;width:100%;height:40px;border:none;border-radius:999px;background:rgba(143,190,220,.16);color:#5c93ad;font-size:13px;font-weight:700;cursor:pointer;}
+.ssMoods{margin:2px 0 12px;}
+#recMoods .rmStrip{display:flex;gap:5px;overflow-x:auto;padding-bottom:3px;-webkit-overflow-scrolling:touch;}
+.rmCell{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:2px;background:#f6fafc;border-radius:11px;padding:7px 6px 5px;min-width:36px;}
+.rmCell.today{background:#fff2e0;box-shadow:0 0 0 1.5px #ffcf8a inset;}
+.rmCell .rmDow{font-size:9px;font-weight:800;color:#a9bcc7;}
+.rmCell .rmE{font-size:18px;line-height:1;}
+.rmCell .rmD{font-size:9px;font-weight:700;color:#9fb2bd;}
+.ssMoodTitle{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:11.5px;font-weight:800;color:#8fa9b6;margin-bottom:6px;letter-spacing:.04em;}
+.ssMoodStrip{display:flex;gap:5px;justify-content:flex-start;overflow-x:auto;padding-bottom:2px;}
+.ssMoodCell{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:2px;background:#f4f9fc;border-radius:10px;padding:6px 5px 4px;min-width:34px;}
+.ssMoodCell.today{background:#fff2e0;box-shadow:0 0 0 1.5px #ffcf8a inset;}
+.ssMoodCell .smE{font-size:16px;line-height:1;}
+.ssMoodCell .smDate{font-size:8.5px;font-weight:700;color:#9fb2bd;}
 #postAnonRow input{width:17px;height:17px;accent-color:#7fd8b0;}
 /* ===== 部室（ぶしつ）：教室で椅子に座って会話 ===== */
 #clubroom{position:fixed;inset:0;z-index:230;display:none;overflow:hidden;background:#cfe0ea;}
@@ -2072,6 +2143,54 @@ body.exercising #randomModeBtn{animation:none !important;}
 .ssChg.up{color:#e08a6a;background:#fceee7;}
 .ssChg.flat{color:#a8b4bc;background:#f0f3f5;}
 .ssHook{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:12.5px;font-weight:700;color:#a7b4bc;line-height:1.4;margin-bottom:15px;}
+.ssRangeBtn{border:none;background:linear-gradient(180deg,#a8d8f0,#8ec5e8);color:#fff;font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:13px;font-weight:800;border-radius:999px;padding:9px 18px;cursor:pointer;box-shadow:0 4px 12px rgba(120,180,220,.35);margin:0 0 13px;}
+.ssRangeBtn:active{transform:scale(.97);}
+#rangeScreen{position:fixed;inset:0;z-index:3170;display:none;flex-direction:column;background:linear-gradient(180deg,#eaf6fd,#dcecf8);overflow:hidden;}
+#rangeScreen.show{display:flex;}
+#rangeTop{display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top)) 16px 8px;}
+#rangeClose{border:none;background:rgba(143,190,220,.18);color:#5c93ad;font-size:14px;font-weight:800;border-radius:999px;padding:7px 14px;cursor:pointer;}
+#rangeTitle{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:17px;font-weight:900;color:#5c8aa3;letter-spacing:.06em;}
+#rangeStats{padding:2px 18px 10px;font-size:12px;font-weight:700;color:#6f9fb6;text-align:center;line-height:1.7;}
+#rangeStats b{color:#e08a4a;font-size:15px;margin:0 1px;}
+#rangeScroll{flex:1 1 auto;overflow-x:auto;overflow-y:hidden;display:flex;align-items:center;-webkit-overflow-scrolling:touch;padding:0 0 6px;}
+#rangeInner{min-width:100%;}
+#rangeGoal{padding:10px 18px 8px;font-size:12.5px;font-weight:700;color:#5c8aa3;text-align:center;background:rgba(255,255,255,.5);line-height:1.8;}
+#rangeGoal b{color:#e08a4a;font-size:15px;}
+.rgGoalMile{display:block;font-size:11px;color:#9fb2bd;margin-top:2px;}
+#rangeActions{display:flex;gap:9px;padding:2px 16px calc(14px + env(safe-area-inset-bottom));background:rgba(255,255,255,.5);}
+.rangeActBtn{flex:1;height:46px;border:none;border-radius:14px;background:linear-gradient(180deg,#a8d8f0,#8ec5e8);color:#fff;font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 3px 9px rgba(120,180,220,.3);}
+.rangeActBtn:active{transform:scale(.97);}
+.rgPeak:active{opacity:.72;}
+#rangePeakPop{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:3180;background:#fff;border-radius:18px;padding:15px 22px;box-shadow:0 10px 30px rgba(60,90,120,.28);text-align:center;min-width:198px;}
+#rangePeakPop[hidden]{display:none;}
+.rgPopTitle{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:18px;font-weight:900;color:#e08a4a;}
+.rgPopSub{font-size:11.5px;font-weight:700;color:#9fb2bd;margin:3px 0 6px;}
+.rgPopDays{font-size:14px;font-weight:800;color:#5c8aa3;}
+.rgPopPerfect{font-size:12.5px;font-weight:800;color:#c99a2e;margin-top:5px;}
+.rgPopClose{margin-top:11px;border:none;background:rgba(143,190,220,.16);color:#5c93ad;font-size:12px;font-weight:700;border-radius:999px;padding:6px 16px;cursor:pointer;}
+.sbOpenBtn{margin-left:auto;border:none;background:linear-gradient(180deg,#ffcf8a,#ff9d5a);color:#fff;font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:12px;font-weight:800;border-radius:999px;padding:6px 13px;cursor:pointer;box-shadow:0 3px 9px rgba(255,140,80,.32);}
+.sbOpenBtn:active{transform:scale(.96);}
+#summitBoard{position:fixed;inset:0;z-index:3175;display:none;flex-direction:column;background:linear-gradient(180deg,#fef4e8,#f7e6d2);overflow:hidden;}
+#summitBoard.show{display:flex;}
+#sbTop{display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top)) 16px 8px;}
+#sbClose{border:none;background:rgba(210,150,90,.16);color:#b5793e;font-size:14px;font-weight:800;border-radius:999px;padding:7px 14px;cursor:pointer;}
+#sbTitle{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:17px;font-weight:900;color:#b5793e;letter-spacing:.06em;}
+#sbIntro{padding:2px 18px 8px;font-size:11.5px;font-weight:700;color:#b09370;text-align:center;line-height:1.7;}
+#sbCompose{margin:4px 16px 8px;background:#fff;border-radius:16px;padding:12px;box-shadow:0 4px 12px rgba(180,140,90,.18);}
+#sbChips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:9px;}
+.sbChip{border:1.5px solid #f0d9bd;background:#fff8ef;color:#b5793e;font-size:11.5px;font-weight:800;border-radius:999px;padding:5px 11px;cursor:pointer;}
+.sbChip:active{background:#ffedd6;transform:scale(.96);}
+#sbInput{width:100%;box-sizing:border-box;height:46px;border:1.5px solid #f0d9bd;border-radius:12px;padding:9px 12px;font-size:13px;color:#7a5c3a;font-weight:600;outline:none;resize:none;font-family:inherit;}
+#sbPost{margin-top:9px;width:100%;height:44px;border:none;border-radius:999px;background:linear-gradient(180deg,#ffb463,#ff8f42);color:#fff;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 4px 12px rgba(255,140,80,.32);}
+#sbPost:active{transform:scale(.98);}
+#sbLocked{margin:4px 18px 10px;font-size:12px;font-weight:700;color:#b09370;text-align:center;background:rgba(255,255,255,.6);border-radius:12px;padding:11px;line-height:1.7;}
+#sbList{flex:1 1 auto;overflow-y:auto;padding:4px 16px calc(20px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:8px;-webkit-overflow-scrolling:touch;}
+.sbEntry{background:#fff;border-radius:14px;padding:10px 13px;box-shadow:0 2px 7px rgba(180,140,90,.14);}
+.sbEHead{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:3px;}
+.sbEHead b{font-size:12.5px;font-weight:900;color:#a5673a;}
+.sbEHead span{font-size:10px;font-weight:700;color:#c3a888;flex:0 0 auto;}
+.sbEText{font-size:13px;font-weight:600;color:#6f5842;line-height:1.5;word-break:break-word;}
+.sbEmpty,.sbLoading{text-align:center;font-size:12px;font-weight:700;color:#c3a888;padding:24px 0;}
 #ssNext{border:none;border-radius:999px;padding:12px 34px;font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:15px;font-weight:900;color:#fff;
   background:linear-gradient(135deg,#9fd4f0,#7ab8d8);box-shadow:0 8px 20px rgba(120,184,216,.4);cursor:pointer;transition:transform .15s;}
 #ssNext:active{transform:scale(.95);}
@@ -2193,7 +2312,7 @@ html.lite .catZ, html.lite .catZ *{animation:none !important;}
 
 /* ===== 一定時間 無操作で 操作UIを隠す（シーンに集中）。タップ等で復帰 ===== */
 #topProfileBar,#homeTopRight,#helpBtn,#fabWrap,#topLeftStack,#recentLabel,.hillArrow{transition:opacity .5s ease;}
-body.uiRest #topProfileBar,body.uiRest #helpBtn,body.uiRest #fabWrap,body.uiRest #topLeftStack,body.uiRest #recentLabel,body.uiRest .hillArrow{opacity:0;pointer-events:none;}
+body.uiRest #topProfileBar,body.uiRest #helpBtn,body.uiRest #fabWrap,body.uiRest #topLeftStack,body.uiRest #recentRow,body.uiRest .hillArrow{opacity:0;pointer-events:none;}
 body.uiRest #hillCats,body.uiRest .catLabel{opacity:1 !important;pointer-events:auto !important;}   /* 投稿の名前・コメント・起床は消さない */
 
 /* きせかえ一覧：下に余白があれば縦に伸ばす */
@@ -2488,7 +2607,7 @@ html.lite .catDeco{animation:none;}
   <button id="groundPostBtn" type="button" hidden>📮 今日の結果を投稿</button>
   
     
-  <div id="recentLabel"><span id="recentLabelText">直近3日</span></div>
+  <div id="recentRow"><div id="recentLabel"><span id="recentLabelText">直近3日</span></div><button id="likeAllBtn" type="button" aria-label="まだ♡してない人みんなに♡">♡</button></div>
   <div id="skyDecor" aria-hidden="true">
     <div id="sun"></div>
     <span class="twinkle t1"></span>
@@ -2818,6 +2937,7 @@ html.lite .catDeco{animation:none;}
           <div id="tsPostRight">
             <div id="wakeAdjRow"><span class="waLabel">おきた<br>じかん</span><div class="waCtrl"><button id="wakeAdjMinus" type="button" aria-label="はやく">◀</button><span id="wakeAdjTime">–</span><button id="wakeAdjPlus" type="button" aria-label="おそく">▶</button></div></div>
             <textarea id="tsComment" maxlength="20" rows="3" placeholder="ひとこと（ひらがな）" inputmode="kana"></textarea>
+            <div id="tsMoodRow"><button id="tsMoodBtn" type="button"><span>😊</span> きょうの気分</button></div>
           </div>
         </div>
         <label class="tsAnonRow"><input type="checkbox" id="tsAnon"/> 匿名で投稿する</label>
@@ -3129,6 +3249,27 @@ html.lite .catDeco{animation:none;}
   </div>
 </div>
 
+<div id="partyScreen">
+  <div id="partyHead"><button id="partyClose" type="button">‹ もどる</button><div id="partyTitle">⛰ パーティ登山</div></div>
+  <div id="partyBody">
+    <div id="partyNone" hidden>
+      <div id="partyInvited" hidden><div id="partyInvitedText"></div><button id="partyInvitedAccept" type="button" class="pBtn">さんかする</button></div>
+      <div class="pIntro">フレンドと いっしょに 山をのぼろう⛰</div>
+      <button id="partyCreate" type="button" class="pBtn">パーティを作る</button>
+      <div class="pOr">または「あいことば」で さんか</div>
+      <div class="pJoinRow"><input id="partyJoinCode" maxlength="5" placeholder="あいことば" inputmode="latin"><button id="partyJoinBtn" type="button" class="pBtn2">さんか</button></div>
+    </div>
+    <div id="partyHas" hidden>
+      <div class="pCodeRow">あいことば：<b id="partyCode"></b></div>
+      <div id="partyName"></div>
+      <div id="partyMembers"></div>
+      <button id="partyInviteBtn" type="button" class="pInviteToggle">👥 フレンドを招待</button>
+      <div id="partyInviteList" hidden></div>
+      <button id="partyLeave" type="button" class="pLeaveBtn">パーティから ぬける</button>
+    </div>
+  </div>
+</div>
+
 <!-- ===================== フレンド / リクエスト ===================== -->
 <div id="friendScreen">
   <div id="friendHead">
@@ -3178,6 +3319,10 @@ html.lite .catDeco{animation:none;}
       <div class="recEye"><span class="recEyeDot" style="background:#ffc46b;"></span>曜日べつの 起きた時間</div>
       <div id="recWeek"></div>
       <div class="recNote" id="recWeekNote"></div>
+    </div>
+    <div class="recCard">
+      <div class="recEye"><span class="recEyeDot" style="background:#ffb3d1;"></span>あさの気分</div>
+      <div id="recMoods"></div>
     </div>
   </div>
 </div>
@@ -3880,7 +4025,7 @@ function _recDot(dm){ return dm<=10 ? "#63ccff" : "#ff9e4d"; }
 function _floatHM(f){ let h=Math.floor(f),m=Math.round((f-h)*60); if(m===60){h++;m=0;} return fmtHM(h,m); }
 function openRecord(){ $("recordScreen").classList.add("visible"); buildRecord(); }
 function closeRecord(){ $("recordScreen").classList.remove("visible"); }
-function buildRecord(){ try{buildRecSummary();}catch(_){} try{buildRecGraph();}catch(_){} try{buildRecCalendar();}catch(_){} try{buildRecWeekday();}catch(_){} }
+function buildRecord(){ try{buildRecSummary();}catch(_){} try{buildRecGraph();}catch(_){} try{buildRecCalendar();}catch(_){} try{buildRecWeekday();}catch(_){} try{_renderRecMoods();}catch(_){} }
 function buildRecSummary(){
   const wl=getWakeLog();
   const rec=Object.entries(wl).filter(([k,v])=>Number.isFinite(v)).sort((a,b)=>a[0]<b[0]?1:-1).slice(0,30);
@@ -4382,6 +4527,27 @@ async function likePost(po,btn){
     btn.dataset.sending="";   /* 失敗→押し直せるように戻す */
     toast("いいねを送れなかったよ。もう一度おしてね");
   }
+}
+async function likeAllVisible(){
+  const btns=[...document.querySelectorAll("#hillCats .catLikeHeart:not(.done)")].filter(b=>b.dataset&&b.dataset.pid);
+  if(!btns.length){toast("もう みんなに♡してるよ");return;}
+  const db=await getDB();
+  if(!db){toast("つながらなかったみたい。もう一度おしてね");return;}
+  const{ref,set}=await import(FB_DB);
+  const me=getProfile()||{};
+  const fromName=me.isPublic?(me.name||"匿名"):"匿名";
+  let n=0;
+  for(const btn of btns){
+    const pid=btn.dataset.pid,uid=btn.dataset.uid||"";
+    if(uid&&likedToday(uid)){btn.classList.add("done");btn.textContent="♥";continue;}
+    try{
+      await set(ref(db,"likes/"+pid+"/"+getUid()),{name:fromName,at:Date.now()});
+      if(uid)markLiked(uid);
+      btn.classList.add("done");btn.textContent="♥";n++;
+    }catch(_){}
+  }
+  if(n>0){try{playPop();}catch(_){}}   /* 1回だけポン。読み上げ(catSpeakBubble)も吹き出しもしない */
+  toast(n>0?("💗 "+n+"人に♡したよ"):"みんなに♡済みだよ");
 }
 let _allPosts={},_allLikes={},_notifList=[],_notifSeenSet=null,_prevLikeTotal=-1;
 const NOTIF_SEEN_KEY="radio_notif_seen";
@@ -5997,11 +6163,11 @@ function renderHillPage(){
     const _bt=_hashStr(po.uid||po.name||i)%4;
     const lab=document.createElement("div");lab.className="catLabel bub bub"+_bt+((po.isSelf&&po.needsPost)?" catLabelSelf":"")+_dayCls;
     const _fireSvg='<svg viewBox="0 0 20 22"><path d="M10 1.5 C12.4 5.5 16.5 7 16.5 12.5 C16.5 16.6 13.6 19.5 10 19.5 C6.4 19.5 3.5 16.6 3.5 12.5 C3.5 8.5 6.8 7.6 7.3 3.8 C8.6 5.2 9.4 7.4 9.4 9.8 C10.2 8.4 10.6 6 10 1.5 Z" fill="#ff7a2f"/><path d="M10 8.5 C11.4 11 13 12 13 15 C13 17 11.6 18.6 10 18.6 C8.4 18.6 7 17 7 15 C7 12.6 8.6 12.4 9 10 C9.6 11.2 10 12.6 10 13.8 C10.6 12.6 10.8 10.4 10 8.5 Z" fill="#ffc24d"/></svg>';
-    const fireBadge=(po.streak>=2)?`<span class="catStreakFire" aria-label="${po.streak}日れんぞく">${_fireSvg}<b>${po.streak}<i>日</i></b></span>`:"";
+    const fireBadge=(po.streak>=2)?`<span class="catStreakNum" aria-label="${po.streak}日れんぞく">${po.streak}</span>`:"";
     const riseTxt=riseTextFromPost(po);
     const comment=po.comment||"";
     lab.innerHTML=_BUBS[_bt]+
-      `<span class="catNameRow"><span class="catName">${escHtml(po.name||"匿名さん")}</span></span>`+   /* なまえ（連続は猫の横バッジへ） */
+      `<span class="catNameRow"><span class="catName">${escHtml(po.name||"匿名さん")}</span>${fireBadge}</span>`+   /* なまえ＋🔥連続（名前の右・③風火色） */
       `<span class="catRise" data-cat="${_riseCat(po)}"${riseTxt?"":' style="visibility:hidden"'}>（${riseTxt?escHtml(riseTxt):"・"}）</span>`+   /* カテゴリ（色＋形で区別） */
       `<div class="catCmtWrap">${comment?`<span class="catCmt">${escHtml(comment)}</span>`:""}</div>`;   /* コメント枠：高さを最長に揃える */
     const riseEl=lab.querySelector(".catRise")||null;
@@ -6031,6 +6197,7 @@ function renderHillPage(){
       }
     }else{
       const btn=document.createElement("button");btn.className="catLike catLikeHeart";btn.type="button";
+      btn.dataset.pid=po.pid||"";btn.dataset.uid=po.uid||"";
       if(likedToday(po.uid)){btn.classList.add("done");btn.textContent="♥";}
       else{btn.textContent="♡";btn.addEventListener("click",e=>{e.stopPropagation();likePost(po,btn);});}
       el.appendChild(lab);el.appendChild(btn);el.appendChild(fig);
@@ -6049,7 +6216,7 @@ function renderHillPage(){
         el.appendChild(d);
       }
     }catch(_){}
-    if(fireBadge){const fb=document.createElement("span");fb.className="catStreakWrap";fb.innerHTML=fireBadge;el.appendChild(fb);}
+    /* 🔥連続は catNameRow（名前の右）へ移動済み */
     fig.querySelector(".catPose").style.animationDelay=(-Math.random()*4.6).toFixed(2)+"s";
     fig.style.cursor="pointer";
     fig.addEventListener("click",e=>{e.stopPropagation();try{if(comment)_readComment(lab,comment);else{try{playMeow((po.voice)||"");}catch(_){}}}catch(_){}});   /* 猫タップ＝カードの文字を読み演出（吹き出しは出さない） */
@@ -7227,12 +7394,12 @@ function taisoNext(){
   else { goToCatRoomAfterPost(); }            /* 猫の部屋（いってらっしゃい） */
 }
 function afterStampReady(){ autoStampFlow(); }
-function startRandomMode(){
+function startRandomMode(skipRoulette){
   _startedOnce=true;   /* このセッションで一度始めた（次回から確認カードを省略） */
-  startRally();        /* 選択画面は廃止：許可のあとは直接ルーレットへ */
+  startRally(skipRoulette);
 }
 /* スタンプラリー本体：演出 → ルーレット → カード準備 */
-function startRally(){
+function startRally(skipRoulette){
   mode="random";
   hideSelect();
   clearStamps();
@@ -7251,12 +7418,12 @@ function startRally(){
     afterStampReady();
     return;
   }
-  /* ルーレット（演出はルーレット後・押す演出に移動）。目標から離れるほど「はずれ」が増える */
+  /* 目標から離れるほど「はずれ」が増える */
   const mFrac=missRate();
   const idx=(Math.random()<mFrac)?-1:pickStampIdx();
   stampPath=null;
-  openRoulette(idx,async(picked)=>{
-    if(picked===null){            /* はずれ：白黒スタンプを押せるようにする（見た目が違うだけ） */
+  const onChosen=async(picked)=>{
+    if(picked===null){            /* はずれ：白黒スタンプ */
       const gbase=POOL[Math.floor(Math.random()*POOL.length)];
       let gsrc=gbase;
       try{ gsrc=await toGrayDataURL(gbase); }catch(_){ gsrc=gbase; }
@@ -7269,7 +7436,9 @@ function startRally(){
     stampPath=picked;ghostImg.src=picked;
     refreshTodayPreview();
     afterStampReady();
-  },mFrac);
+  };
+  if(skipRoulette){ onChosen((idx===-1)?null:POOL[idx]); }   /* 体操フロー：ルーレット演出を飛ばして即カードへ */
+  else{ openRoulette(idx,onChosen,mFrac); }
 }
 /* スタンプラリーはしない：スタンプは自動付与（図鑑・投稿用）→ そのまま投稿確認へ */
 function doPostOnly(){
@@ -7960,7 +8129,10 @@ function _sceneVBW(){
 }
 function _setAltLabel(tier){
   let el=document.getElementById("homeAltLabel");
-  if(!el){el=document.createElement("div");el.id="homeAltLabel";const sc=$("selectScreen");if(sc)sc.appendChild(el);}
+  if(!el){el=document.createElement("div");el.id="homeAltLabel";const sc=$("selectScreen");if(sc)sc.appendChild(el);
+    el.style.cursor="pointer";el.style.pointerEvents="auto";
+    el.addEventListener("click",()=>{try{playClick();}catch(_){}try{openRange();}catch(_){}});
+  }
   if(el)el.textContent=tier+" / 7合目";
 }
 function renderHomeScenery(tier){
@@ -8071,7 +8243,7 @@ function startMorningExercise(opts){
     document.body.classList.add("exercising","exmv"+_exMvNow);
     _showExRadio();
     _exNoteTimer=setInterval(_spawnExNote,380);
-    _exMeowTimer=setInterval(_exCatMeow,1900);_exCatMeow();
+    /* ラジオ体操ちゅうは「にゃー」も「読み上げ」も出さない（削除） */
     try{_exerciseAudio=new Audio("radiobgm.mp3");_exerciseAudio.volume=bgmMuted?0:Math.max(bgmVol,0.28);_exerciseAudio.play().catch(()=>{});}catch(_){}
     _exStopTimer=setTimeout(()=>stopMorningExercise(),7000);   /* 7秒で自動的に次の画面へ */
   };
@@ -8081,7 +8253,7 @@ function startMorningExercise(opts){
 function _runExerciseThenTaiso(){
   if(_exerciseActive)return;
   try{playClick();}catch(_){}
-  startMorningExercise({manual:true,onDone:()=>{try{startRandomMode();}catch(_){}}});   /* 5秒後 自動で完了フローへ */
+  startMorningExercise({manual:true,onDone:()=>{try{startRandomMode(true);}catch(_){}}});   /* 体操の後はルーレットを飛ばして完了カードへ */
 }
 function _taisouButtonPress(){
   if(_exerciseActive)return;
@@ -11599,6 +11771,12 @@ try{const rb=$("ppReminderBtn");if(rb)rb.addEventListener("click",()=>{playClick
 /* ラジオ体操部（部活） */
 $("joinBtn").addEventListener("click",()=>{playClick();openClub();});
 $("clubClose").addEventListener("click",()=>{playClick();closeClub();});
+try{$("openPartyBtn").addEventListener("click",()=>{try{playClick();}catch(_){}openParty();});}catch(_){}
+try{$("partyClose").addEventListener("click",()=>{try{playClick();}catch(_){}closeParty();});}catch(_){}
+try{$("partyCreate").addEventListener("click",()=>{try{playClick();}catch(_){}createParty();});}catch(_){}
+try{$("partyJoinBtn").addEventListener("click",()=>{try{playClick();}catch(_){}joinParty(($("partyJoinCode")||{}).value);});}catch(_){}
+try{$("partyLeave").addEventListener("click",()=>{try{playClick();}catch(_){}leaveParty();});}catch(_){}
+try{$("partyInviteBtn").addEventListener("click",()=>{try{playClick();}catch(_){}_loadPartyInvitable();});}catch(_){}
 $("clubJoinBtn").addEventListener("click",()=>{playClick();if(isJoined())leaveClub();else joinClub();});
 $("clubroomEnterBtn").addEventListener("click",()=>{playClick();openClubroom();});
 $("crClose").addEventListener("click",()=>{playClick();closeClubroom();});
@@ -11660,6 +11838,15 @@ $("recentLabel").addEventListener("click",()=>{
   $("recentLabelText").textContent=_RECENT_LABELS[_recentMode];
   if(_lastPostsVal)_applyHillFromVal(_lastPostsVal); else loadHillCats();
 });
+try{$("likeAllBtn").addEventListener("click",e=>{e.stopPropagation();if(_photoMode)return;likeAllVisible();});}catch(_){}
+try{$("ssRange").addEventListener("click",()=>{try{playClick();}catch(_){}openRange();});}catch(_){}
+try{$("rangeClose").addEventListener("click",()=>{try{playClick();}catch(_){}closeRange();});}catch(_){}
+try{$("openSummitBtn").addEventListener("click",()=>{try{playClick();}catch(_){}openSummitBoard();});}catch(_){}
+try{$("sbClose").addEventListener("click",()=>{try{playClick();}catch(_){}closeSummitBoard();});}catch(_){}
+try{$("sbPost").addEventListener("click",()=>{try{playClick();}catch(_){}postSummit();});}catch(_){}
+try{const _mb=$("tsMoodBtn");if(_mb)_mb.addEventListener("click",()=>{try{playClick();}catch(_){}openMoodCard();});}catch(_){}
+try{const _mcc=$("moodCancel");if(_mcc)_mcc.addEventListener("click",()=>{closeMoodCard();});}catch(_){}
+try{const _mo=$("moodCard");if(_mo)_mo.addEventListener("click",e=>{if(e.target===_mo)closeMoodCard();});}catch(_){}
 let _autoTimer=null;
 /* 本番トリガー：早起き時刻でストーリー更新→更新後 初回に ロード→自動表示 */
 function storyPeriodKey(){try{const wake=profileWake(),now=nowHourFloat(),today=jstKey();return (now>=wake)?today:addDays(today,-1);}catch(_){return jstKey();}}
@@ -12187,6 +12374,279 @@ function _ssMtnThemes(){return [
   {sky1:"#eef7ff",sky2:"#d7e9f7",mtn:"#bcd2e2",mtnL:"#d6e6f1",mtnLL:"#eaf3fa",mtnD:"#93b1c8",leaf:"#8fb7cf",leafD:"#6f97b0",trail:"#e9eff4",dot:"#7fb0e6"},
   {sky1:"#fff0f6",sky2:"#ffdcec",mtn:"#e2accb",mtnL:"#f0c8dd",mtnLL:"#f8deec",mtnD:"#c489ab",leaf:"#d97fa8",leafD:"#b5628a",trail:"#f2e2ea",dot:"#ff8fb4"}
 ];}
+/* ===== これまでの山脈：done-datesから週ごとの山を積み上げ、消えない一生の登山記録に ===== */
+const _SEASONS={
+  spring:{l:"#f7c9d9",d:"#e7abc0",name:"春"},
+  summer:{l:"#a8d98f",d:"#79bd63",name:"夏"},
+  autumn:{l:"#f0b47a",d:"#df9457",name:"秋"},
+  winter:{l:"#dce9f3",d:"#b8cee0",name:"冬"}
+};
+function _seasonKey(dk){const m=parseInt(dk.slice(5,7),10);if(m===12||m<=2)return"winter";if(m<=5)return"spring";if(m<=8)return"summer";return"autumn";}
+function _monOf(dk){const d=new Date(dk+"T00:00:00Z"),dow=d.getUTCDay(),back=(dow===0)?6:(dow-1);return addDays(dk,-back);}
+function _rangeData(){
+  const dates=getDoneDates().filter(Boolean).slice().sort();
+  if(!dates.length)return[];
+  const set=new Set(dates);
+  let m=_monOf(dates[0]);const end=_monOf(jstKey());
+  const weeks=[];let g=0;
+  while(m<=end&&g<800){let days=0;for(let i=0;i<7;i++){if(set.has(addDays(m,i)))days++;}weeks.push({mon:m,days});m=addDays(m,7);g++;}
+  return weeks;
+}
+function _rangeStats(weeks){
+  let peaks=0,total=0,perfect=0;
+  weeks.forEach(w=>{if(w.days>0){peaks++;total+=w.days;}if(w.days===7)perfect++;});
+  const dates=getDoneDates().slice().sort();let best=0,cur=0,prev=null;
+  dates.forEach(d=>{if(prev&&addDays(prev,1)===d)cur++;else cur=1;if(cur>best)best=cur;prev=d;});
+  return{peaks,total,perfect,best,weeksTotal:weeks.length};
+}
+function _rangeSVG(weeks){
+  const WP=56,BW=68,baseY=196,H=238,MARGIN=32;
+  const width=Math.max(340,MARGIN*2+weeks.length*WP);
+  let peaks="",caps="",marks="",labels="",cat="";
+  let active=0,lastX=null,lastH=0,prevM="";
+  weeks.forEach((w,i)=>{
+    const cx=MARGIN+i*WP+WP/2;
+    const mNum=parseInt(w.mon.slice(5,7),10),mLbl=mNum+"月";
+    if(mLbl!==prevM){labels+=`<text x="${cx.toFixed(1)}" y="${baseY+15}" text-anchor="middle" font-size="8.5" fill="#9fb2bd" font-family="'Kosugi Maru',sans-serif">${mNum===1?w.mon.slice(0,4)+"/1月":mLbl}</text>`;prevM=mLbl;}
+    if(w.days<=0)return;
+    active++;
+    const sc=_SEASONS[_seasonKey(w.mon)];
+    const h=26+Math.round((w.days/7)*126),apexY=baseY-h;
+    peaks+=`<g class="rgPeak" data-i="${i}" style="cursor:pointer">`+
+      `<path d="M${(cx-BW/2).toFixed(1)} ${baseY} L${cx.toFixed(1)} ${apexY.toFixed(1)} L${cx.toFixed(1)} ${baseY} Z" fill="${sc.l}"/>`+
+      `<path d="M${cx.toFixed(1)} ${apexY.toFixed(1)} L${(cx+BW/2).toFixed(1)} ${baseY} L${cx.toFixed(1)} ${baseY} Z" fill="${sc.d}"/>`+
+      `<rect x="${(cx-BW/2).toFixed(1)}" y="${apexY.toFixed(1)}" width="${BW}" height="${h}" fill="transparent"/></g>`;
+    if(w.days>=6){const ch=Math.max(9,h*0.24);caps+=`<path d="M${(cx-ch*0.75).toFixed(1)} ${(apexY+ch).toFixed(1)} L${cx.toFixed(1)} ${apexY.toFixed(1)} L${(cx+ch*0.75).toFixed(1)} ${(apexY+ch).toFixed(1)} Q${cx.toFixed(1)} ${(apexY+ch*0.5).toFixed(1)} ${(cx-ch*0.75).toFixed(1)} ${(apexY+ch).toFixed(1)} Z" fill="#fff" opacity=".95"/>`;}
+    if(w.days===7){marks+=`<g><line x1="${cx.toFixed(1)}" y1="${apexY.toFixed(1)}" x2="${cx.toFixed(1)}" y2="${(apexY-12).toFixed(1)}" stroke="#c99a2e" stroke-width="1.5"/><path d="M${cx.toFixed(1)} ${(apexY-12).toFixed(1)} L${(cx+8.5).toFixed(1)} ${(apexY-9.5).toFixed(1)} L${cx.toFixed(1)} ${(apexY-7).toFixed(1)} Z" fill="#f4c430"/></g>`;}
+    if(active%10===0){marks+=`<text x="${cx.toFixed(1)}" y="${(apexY-15).toFixed(1)}" text-anchor="middle" font-size="12">⛩️</text>`;}
+    lastX=cx;lastH=h;
+  });
+  if(lastX!=null){
+    const p=getProfile()||{},cw=30,cx0=lastX,cyp=baseY-lastH-cw+8;
+    const cs=catFaceSvg(p.catBody||"#f2b2c6",p.color||"#ffd27a").replace('<svg class="avatarCat" viewBox="0 0 80 80"',`<svg x="${(cx0-cw/2).toFixed(1)}" y="${cyp.toFixed(1)}" width="${cw}" height="${cw}" viewBox="0 0 80 80"`);
+    cat=cs+`<text x="${cx0.toFixed(1)}" y="${(cyp-4).toFixed(1)}" text-anchor="middle" font-size="8.5" font-weight="800" fill="#e08a4a" font-family="'Yomogi',sans-serif">いまここ</text>`;
+  }
+  return `<svg width="${width}" height="${H}" viewBox="0 0 ${width} ${H}" xmlns="http://www.w3.org/2000/svg" style="display:block">`+
+    `<defs><linearGradient id="rgSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfeafd"/><stop offset="1" stop-color="#f0f8fd"/></linearGradient></defs>`+
+    `<rect x="0" y="0" width="${width}" height="${H}" fill="url(#rgSky)"/>`+
+    `<rect x="0" y="${baseY}" width="${width}" height="${H-baseY}" fill="#e7efe3"/>`+
+    `<line x1="0" y1="${baseY}" x2="${width}" y2="${baseY}" stroke="#ccd8c7" stroke-width="1"/>`+
+    peaks+caps+marks+cat+labels+`</svg>`;
+}
+function openRange(){
+  try{
+    const weeks=_rangeData(),st=_rangeStats(weeks);
+    $("rangeInner").innerHTML=_rangeSVG(weeks);
+    $("rangeStats").innerHTML=weeks.length?`のべ <b>${st.peaks}</b>座 ・ <b>${st.total}</b>日 のぼった ・ パーフェクト <b>${st.perfect}</b>週 ・ 最高 <b>${st.best}</b>日れんぞく`:"まだ山がないよ。体操して 最初の山を つくろう！";
+    const twd=_weekDoneCount(),nextMile=(Math.floor(st.peaks/10)+1)*10;
+    const _wEnd=addDays(_monOf(jstKey()),6),_eMD=parseInt(_wEnd.slice(5,7),10)+"/"+parseInt(_wEnd.slice(8,10),10);
+    let g=twd>=7?"今週は 頂上まで 登ったよ！🎉":`今週：あと <b>${7-twd}</b>日 で 頂上！`;
+    g+=`<span class="rgGoalMile">今週は ${_eMD}（日）まで${st.peaks>0?` ・ つぎの記念まで あと ${nextMile-st.peaks}週`:""}</span>`;
+    $("rangeGoal").innerHTML=g;
+    const pop=$("rangePeakPop");if(pop)pop.hidden=true;
+    $("rangeScreen").classList.add("show");
+    setTimeout(()=>{const sc=$("rangeScroll");if(sc)sc.scrollLeft=sc.scrollWidth;},70);
+    [...$("rangeInner").querySelectorAll(".rgPeak")].forEach(gp=>{gp.addEventListener("click",()=>_showPeakDetail(parseInt(gp.dataset.i,10),weeks));});
+  }catch(e){console.warn("range",e);}
+}
+function closeRange(){try{$("rangeScreen").classList.remove("show");const pop=$("rangePeakPop");if(pop)pop.hidden=true;}catch(_){}}
+const SB_TEMPLATES=["やったー！","つかれた〜","きもちいい朝☀️","また来るね","今週もがんばった","みんなおつかれ！","さいこう！","ねむいけど来た","のぼりきった〜","ありがとう⛰"];
+const SB_POSTED_KEY="radio_summit_posted";
+async function openSummitBoard(){
+  try{
+    const atSummit=(_weekDoneCount()>=7);
+    let posted=false;try{posted=(localStorage.getItem(SB_POSTED_KEY)===_monOf(jstKey()));}catch(_){}
+    const compose=$("sbCompose"),locked=$("sbLocked");
+    if(!atSummit){
+      compose.hidden=true;locked.hidden=false;locked.textContent="いま頂上にいる人だけ 見れるよ。7日連続で頂上へ⛰";
+      $("sbList").innerHTML="";$("summitBoard").classList.add("show");
+      return;
+    }
+    if(!posted){
+      compose.hidden=false;locked.hidden=true;
+      $("sbChips").innerHTML=SB_TEMPLATES.map(t=>`<button class="sbChip" type="button">${t}</button>`).join("");
+      $("sbInput").value="";
+      [...$("sbChips").querySelectorAll(".sbChip")].forEach(c=>c.addEventListener("click",()=>{$("sbInput").value=c.textContent;}));
+    }else{compose.hidden=true;locked.hidden=false;locked.textContent="今週はもう記帳したよ⛰";}
+    $("sbList").innerHTML='<div class="sbLoading">よみこみ中…</div>';
+    $("summitBoard").classList.add("show");
+    const db=await getDB();
+    if(!db){$("sbList").innerHTML='<div class="sbEmpty">いまは よみこめないよ</div>';return;}
+    const{ref,get}=await import(FB_DB);
+    const snap=await get(ref(db,"summit"));
+    const arr=[];snap.forEach(ch=>{const v=ch.val();if(v&&v.comment)arr.push(v);});
+    arr.sort((a,b)=>(b.at||0)-(a.at||0));
+    const show=arr.slice(0,200);
+    $("sbList").innerHTML=show.length?show.map(e=>`<div class="sbEntry"><div class="sbEHead"><b>${escHtml(e.name||"匿名さん")}</b><span>${escHtml(e.date||"")}</span></div><div class="sbEText">${escHtml(e.comment||"")}</div></div>`).join(""):'<div class="sbEmpty">まだ 誰も 書いてないよ。最初の記帳を！⛰</div>';
+  }catch(e){console.warn("summit",e);try{$("sbList").innerHTML='<div class="sbEmpty">よみこめなかったよ</div>';}catch(_){}}
+}
+async function postSummit(){
+  const txt=($("sbInput").value||"").trim().slice(0,40);
+  if(!txt){toast("ひとこと 書いてね（例をタップでもOK）");return;}
+  if(_weekDoneCount()<7){toast("頂上に着いてから書けるよ⛰");return;}
+  const db=await getDB();if(!db){toast("つながらなかったよ。もう一度おしてね");return;}
+  const me=getProfile()||{},nm=me.isPublic?(me.name||"匿名さん"):"匿名さん";
+  const p=jstKey().split("-"),dateLabel=(+p[1])+"/"+(+p[2]);
+  try{
+    const{ref,push,set}=await import(FB_DB);
+    const r=push(ref(db,"summit"));
+    await set(r,{name:nm,comment:txt,date:dateLabel,at:Date.now(),uid:getUid()});
+    try{localStorage.setItem(SB_POSTED_KEY,_monOf(jstKey()));}catch(_){}
+    try{playPop();}catch(_){}
+    toast("看板に書いたよ⛰✨");
+    openSummitBoard();
+  }catch(e){toast("書けなかったよ。もう一度おしてね");}
+}
+function closeSummitBoard(){try{$("summitBoard").classList.remove("show");}catch(_){}}
+const MMOODS=[
+  {e:"☀️",l:"すっきり"},{e:"😴",l:"ねむい"},{e:"💪",l:"げんき"},{e:"🥰",l:"しあわせ"},
+  {e:"😌",l:"おだやか"},{e:"🔥",l:"やるき"},{e:"✨",l:"わくわく"},{e:"🌫️",l:"ぼんやり"},
+  {e:"🫠",l:"だるい"},{e:"🌧️",l:"どんより"},{e:"🥶",l:"さむい"},{e:"😊",l:"ふつう"}
+];
+const MMOOD_KEY="radio_moods";
+function _moodMap(){try{const v=JSON.parse(localStorage.getItem(MMOOD_KEY)||"{}");return(v&&typeof v==="object")?v:{};}catch(_){return{};}}
+function _saveMood(dk,m){try{const mm=_moodMap();mm[dk]={e:m.e,l:m.l};localStorage.setItem(MMOOD_KEY,JSON.stringify(mm));try{syncSoon();}catch(_){}}catch(_){}}
+function openMoodCard(){
+  try{
+    const grid=$("moodGrid");
+    grid.innerHTML=MMOODS.map((m,i)=>`<button class="moodItem" type="button" data-i="${i}"><span class="moodE">${m.e}</span><span class="moodL">${m.l}</span></button>`).join("");
+    [...grid.querySelectorAll(".moodItem")].forEach(b=>b.addEventListener("click",()=>selectMood(MMOODS[parseInt(b.dataset.i,10)])));
+    $("moodCard").classList.add("show");
+  }catch(_){}
+}
+function selectMood(m){
+  try{const inp=$("tsComment");if(inp){inp.value=(m.l+" "+m.e);try{inp.dispatchEvent(new Event("input",{bubbles:true}));}catch(_){}}}catch(_){}
+  try{_saveMood(jstKey(),m);}catch(_){}
+  try{playPop();}catch(_){}
+  closeMoodCard();
+}
+function closeMoodCard(){try{$("moodCard").classList.remove("show");}catch(_){}}
+const PARTY_KEY="radio_party";
+function _partyId(){try{return localStorage.getItem(PARTY_KEY)||"";}catch(_){return "";}}
+function _genPartyCode(){let c="";const a="abcdefghijkmnpqrstuvwxyz23456789";for(let i=0;i<5;i++)c+=a[Math.floor(Math.random()*a.length)];return c;}
+async function createParty(){
+  const db=await getDB();if(!db){toast("つながらなかったよ。もう一度おしてね");return;}
+  const{ref,get,set}=await import(FB_DB);
+  try{const up=await get(ref(db,"uparty/"+getUid()));if(up.exists()&&up.val()){toast("もう パーティにいるよ");return;}}catch(_){}
+  const me=getProfile()||{},code=_genPartyCode();
+  const mem={};mem[getUid()]={name:me.name||"匿名さん",catBody:me.catBody||"#1c1c1c",color:me.color||"#8fdcff",at:Date.now()};
+  try{await set(ref(db,"parties/"+code),{host:getUid(),name:(me.name||"みんな")+"のパーティ",members:mem,at:Date.now()});await set(ref(db,"uparty/"+getUid()),code);}catch(e){toast("作れなかったよ");return;}
+  try{localStorage.setItem(PARTY_KEY,code);}catch(_){}
+  toast("パーティを作ったよ⛰");openParty();
+}
+async function joinParty(code){
+  code=(code||"").toLowerCase().replace(/[^a-z0-9]/g,"").slice(0,5);
+  if(!code){toast("あいことばを入れてね");return;}
+  const db=await getDB();if(!db){toast("つながらなかったよ");return;}
+  const{ref,get,set,remove}=await import(FB_DB);
+  try{const up=await get(ref(db,"uparty/"+getUid()));if(up.exists()&&up.val()&&up.val()!==code){toast("もう 別のパーティに いるよ");return;}}catch(_){}
+  let snap;try{snap=await get(ref(db,"parties/"+code));}catch(e){toast("入れなかったよ");return;}
+  if(!snap.exists()){toast("そのパーティは 見つからないよ");return;}
+  const me=getProfile()||{};
+  try{await set(ref(db,"parties/"+code+"/members/"+getUid()),{name:me.name||"匿名さん",catBody:me.catBody||"#1c1c1c",color:me.color||"#8fdcff",at:Date.now()});await set(ref(db,"uparty/"+getUid()),code);}catch(e){toast("入れなかったよ");return;}
+  try{await remove(ref(db,"pinvites/"+getUid()));}catch(_){}
+  try{localStorage.setItem(PARTY_KEY,code);}catch(_){}
+  toast("パーティに 入ったよ⛰");openParty();
+}
+async function leaveParty(){
+  const code=_partyId();if(!code){closeParty();return;}
+  const db=await getDB();
+  if(db){try{const{ref,remove}=await import(FB_DB);await remove(ref(db,"parties/"+code+"/members/"+getUid()));await remove(ref(db,"uparty/"+getUid()));}catch(_){}}
+  try{localStorage.removeItem(PARTY_KEY);}catch(_){}
+  toast("パーティから ぬけたよ");openParty();
+}
+async function openParty(){
+  $("partyScreen").classList.add("visible");
+  const code=_partyId(),noP=$("partyNone"),hasP=$("partyHas");
+  if(!code){
+    noP.hidden=false;hasP.hidden=true;const inp=$("partyJoinCode");if(inp)inp.value="";
+    const invE=$("partyInvited");if(invE)invE.hidden=true;
+    try{const db=await getDB();if(db){const{ref,get}=await import(FB_DB);const s=await get(ref(db,"pinvites/"+getUid()));
+      if(s.exists()&&s.val()&&s.val().code){const v=s.val();if(invE){invE.hidden=false;$("partyInvitedText").textContent=(v.from||"だれか")+" から パーティに さそわれてるよ✉️";$("partyInvitedAccept").onclick=()=>{joinParty(v.code);};}}}}catch(_){}
+    return;
+  }
+  noP.hidden=true;hasP.hidden=false;
+  $("partyCode").textContent=code;$("partyName").textContent="";
+  const _il=$("partyInviteList");if(_il){_il.hidden=true;_il.innerHTML="";}
+  $("partyMembers").innerHTML='<div class="pLoading">よみこみ中…</div>';
+  try{
+    const db=await getDB();if(!db){$("partyMembers").innerHTML='<div class="pEmpty">いまは よみこめないよ</div>';return;}
+    const{ref,get}=await import(FB_DB);
+    const snap=await get(ref(db,"parties/"+code));
+    if(!snap.exists()){try{localStorage.removeItem(PARTY_KEY);}catch(_){}noP.hidden=false;hasP.hidden=true;return;}
+    const v=snap.val(),mem=v.members||{};
+    const arr=Object.entries(mem).map(([uid,m])=>Object.assign({uid},m));
+    const n=arr.length,sz=Math.max(38,Math.round(82-n*5));   /* 人数が増えるほど猫が小さめ */
+    $("partyName").textContent=(v.name||"パーティ")+"（"+n+"人）";
+    $("partyMembers").innerHTML=arr.map(m=>{
+      const cs=catFaceSvg(m.catBody||"#1c1c1c",m.color||"#8fdcff").replace('<svg class="avatarCat" viewBox="0 0 80 80"','<svg viewBox="0 0 80 80" style="width:100%;height:100%;display:block"');
+      return `<div class="pMember"><div class="pCat" style="width:${sz}px;height:${sz}px">${cs}</div><div class="pmName">${escHtml(m.name||"匿名さん")}${m.uid===v.host?" 👑":""}</div></div>`;
+    }).join("");
+  }catch(e){console.warn("party",e);$("partyMembers").innerHTML='<div class="pEmpty">よみこめなかったよ</div>';}
+}
+async function _loadPartyInvitable(){
+  const el=$("partyInviteList");if(!el)return;
+  if(!el.hidden){el.hidden=true;return;}   /* トグル：開いてたら閉じる */
+  el.hidden=false;el.innerHTML='<div class="pLoading">フレンドを よみこみ中…</div>';
+  const db=await getDB();if(!db){el.innerHTML='<div class="pEmpty">いまは よみこめないよ</div>';return;}
+  const{ref,get}=await import(FB_DB);
+  const me=getUid(),code=_partyId();
+  let fsnap;try{fsnap=await get(ref(db,"friends/"+me));}catch(_){el.innerHTML='<div class="pEmpty">よみこめなかったよ</div>';return;}
+  const friends=fsnap.exists()?fsnap.val():{};
+  const arr=Object.entries(friends).map(([uid,f])=>Object.assign({uid},f));
+  if(!arr.length){el.innerHTML='<div class="pEmpty">フレンドが いないよ。<br>フレンド画面から ふやしてね</div>';return;}
+  const statuses=await Promise.all(arr.map(async f=>{try{const s=await get(ref(db,"uparty/"+f.uid));return s.exists()?s.val():"";}catch(_){return "";}}));
+  el.innerHTML=arr.map((f,i)=>{
+    const st=statuses[i],inThis=st===code,inOther=st&&st!==code;
+    const right=inThis?'<span class="pInvIn">参加中</span>':inOther?'<span class="pInvBusy">別のパーティ中</span>':`<button class="pInvBtn" data-uid="${f.uid}" type="button">招待</button>`;
+    return `<div class="pInvRow"><span class="pInvName">${escHtml(f.name||"匿名さん")}</span>${right}</div>`;
+  }).join("");
+  [...el.querySelectorAll(".pInvBtn")].forEach(b=>b.addEventListener("click",()=>_invite(b.dataset.uid,b)));
+}
+async function _invite(uid,btn){
+  const code=_partyId();if(!code)return;
+  const db=await getDB();if(!db){toast("つながらないよ");return;}
+  const{ref,get,set}=await import(FB_DB);
+  try{const s=await get(ref(db,"uparty/"+uid));if(s.exists()&&s.val()&&s.val()!==code){toast("その人は もう別のパーティにいるよ");_loadPartyInvitable();_loadPartyInvitable();return;}}catch(_){}
+  const me=getProfile()||{};
+  try{await set(ref(db,"pinvites/"+uid),{code,from:me.name||"匿名さん",fromUid:getUid(),at:Date.now()});}catch(e){toast("招待できなかったよ");return;}
+  if(btn){btn.textContent="招待ずみ";btn.disabled=true;btn.classList.add("done");}
+  toast("招待を おくったよ✉️");
+}
+function closeParty(){try{$("partyScreen").classList.remove("visible");}catch(_){}}
+function _renderRecMoods(){
+  try{
+    const el=$("recMoods");if(!el)return;
+    const mm=_moodMap(),today=jstKey(),days=[],DOW=["日","月","火","水","木","金","土"];
+    for(let i=13;i>=0;i--){const dk=addDays(today,-i);days.push({dk,m:mm[dk]});}
+    el.innerHTML='<div class="rmStrip">'+days.map(d=>{
+      const dNum=parseInt(d.dk.slice(8,10),10),dow=DOW[new Date(d.dk+"T00:00:00Z").getUTCDay()];
+      return `<div class="rmCell${d.dk===today?" today":""}"><span class="rmDow">${dow}</span><span class="rmE">${d.m?d.m.e:"·"}</span><span class="rmD">${dNum}</span></div>`;
+    }).join("")+'</div>';
+  }catch(_){}
+}
+function _renderMoodHistory(){
+  try{
+    const el=$("ssMoods");if(!el)return;
+    const mm=_moodMap(),today=jstKey(),days=[];
+    for(let i=9;i>=0;i--){const dk=addDays(today,-i);days.push({dk,m:mm[dk]});}
+    el.innerHTML='<div class="ssMoodTitle">あさの気分</div><div class="ssMoodStrip">'+days.map(d=>{
+      const mNum=parseInt(d.dk.slice(5,7),10),dNum=parseInt(d.dk.slice(8,10),10);
+      return `<div class="ssMoodCell${d.dk===today?" today":""}"><span class="smE">${d.m?d.m.e:"·"}</span><span class="smDate">${mNum}/${dNum}</span></div>`;
+    }).join("")+'</div>';
+  }catch(_){}
+}
+function _showPeakDetail(i,weeks){
+  try{
+    const w=weeks[i];if(!w||w.days<=0)return;
+    let za=0;for(let k=0;k<=i;k++){if(weeks[k].days>0)za++;}
+    const sc=_SEASONS[_seasonKey(w.mon)],y=w.mon.slice(0,4),mm=parseInt(w.mon.slice(5,7),10);
+    const pop=$("rangePeakPop");
+    pop.innerHTML=`<div class="rgPopTitle">第${za}座</div><div class="rgPopSub">${y}年${mm}月の週 ・ ${sc.name}</div><div class="rgPopDays">${w.days}日 のぼった</div>${w.days===7?'<div class="rgPopPerfect">🚩 パーフェクト週！</div>':''}<button class="rgPopClose" type="button">とじる</button>`;
+    pop.hidden=false;
+    const cb=pop.querySelector(".rgPopClose");if(cb)cb.addEventListener("click",()=>{pop.hidden=true;});
+  }catch(_){}
+}
 function _ssMountain(dayIn,week){
   dayIn=Math.max(0,Math.min(7,dayIn|0));   /* 0=ふもと, 1..7合目(7=頂上) */
   week=week||0;
@@ -13194,13 +13654,36 @@ try{
   <div id="slMotto" class="slMotto"></div>
   <div class="slText">よみこみ中…</div>
 </div>
+<div id="rangeScreen">
+  <div id="rangeTop"><button id="rangeClose" type="button">‹ もどる</button><div id="rangeTitle">⛰ 登山</div></div>
+  <div id="rangeStats"></div>
+  <div id="rangeScroll"><div id="rangeInner"></div></div>
+  <div id="rangeGoal"></div>
+  <div id="rangeActions"><button id="openPartyBtn" type="button" class="rangeActBtn">⛰ パーティ登山</button><button id="openSummitBtn" type="button" class="rangeActBtn">📖 頂上の看板</button></div>
+  <div id="rangePeakPop" hidden></div>
+</div>
+<div id="summitBoard">
+  <div id="sbTop"><button id="sbClose" type="button">‹ もどる</button><div id="sbTitle">⛰ 頂上の看板</div></div>
+  <div id="sbIntro">7日連続で頂上に着いた みんなの記帳。おとずれるたび 思い出が たまっていくよ。</div>
+  <div id="sbCompose" hidden><div id="sbChips"></div><textarea id="sbInput" maxlength="40" placeholder="頂上でひとこと（下の例をタップでもOK）"></textarea><button id="sbPost" type="button">看板に書く ✏️</button></div>
+  <div id="sbLocked" hidden></div>
+  <div id="sbList"></div>
+</div>
 <div id="storyStats">
   <div id="storyStatsCard">
     <div class="ssTitle">きろく</div>
     <div class="ssMountain" id="ssMountain"></div>
     <div class="ssStats" id="ssStats"></div>
+    <button id="ssRange" type="button" class="ssRangeBtn">⛰ 登山</button>
     <div class="ssHook" id="ssHook"></div>
     <button id="ssNext" type="button">はじめる ▸</button>
+  </div>
+</div>
+<div id="moodCard">
+  <div id="moodBox">
+    <div id="moodTitle">きょうの あさの気分は？</div>
+    <div id="moodGrid"></div>
+    <button id="moodCancel" type="button">とじる</button>
   </div>
 </div>
 <div id="storyTutorial">

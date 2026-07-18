@@ -1042,7 +1042,7 @@ body.exercising #randomModeBtn{animation:none !important;}
 #partyHead{display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top)) 16px 10px;}
 #partyClose{border:none;background:rgba(143,190,220,.18);color:#5c93ad;font-size:14px;font-weight:800;border-radius:999px;padding:7px 14px;cursor:pointer;}
 #partyTitle{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:17px;font-weight:900;color:#5c8aa3;letter-spacing:.05em;}
-#partyBody{flex:1;overflow-y:auto;padding:6px 18px calc(24px + env(safe-area-inset-bottom));}
+#partyBody{flex:1;overflow-y:auto;padding:6px 18px calc(24px + env(safe-area-inset-bottom));max-width:560px;margin:0 auto;width:100%;box-sizing:border-box;}
 .pIntro{font-size:12.5px;font-weight:700;color:#6f9fb6;line-height:1.8;text-align:center;margin:8px 0 16px;}
 .pBtn{width:100%;height:48px;border:none;border-radius:999px;background:linear-gradient(180deg,#8ec5e8,#6fb0da);color:#fff;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 4px 12px rgba(120,180,220,.35);}
 .pBtn:active{transform:scale(.98);}
@@ -1061,6 +1061,8 @@ body.exercising #randomModeBtn{animation:none !important;}
 .pLoading,.pEmpty{text-align:center;font-size:12px;color:#9fb2bd;font-weight:700;padding:20px 0;line-height:1.6;}
 #partyInvited{background:#fff6ec;border:1.5px solid #ffd0a0;border-radius:16px;padding:14px;margin-bottom:16px;text-align:center;}
 #partyInvitedText{font-size:13px;font-weight:800;color:#e0793a;margin-bottom:10px;line-height:1.6;}
+.pCard{background:#f6fafc;border-radius:16px;padding:14px;margin-bottom:12px;max-width:360px;margin-left:auto;margin-right:auto;}
+.pCardT{font-size:12.5px;font-weight:800;color:#5c8aa3;margin-bottom:10px;text-align:center;}
 .pInviteToggle{display:block;margin:0 auto 10px;border:1.5px solid rgba(143,190,220,.5);background:#fff;color:#5c93ad;font-size:13px;font-weight:800;border-radius:999px;padding:9px 20px;cursor:pointer;}
 .pInviteToggle:active{transform:scale(.97);}
 #partyInviteList{max-width:340px;margin:0 auto 16px;display:flex;flex-direction:column;gap:7px;}
@@ -1890,7 +1892,7 @@ body.exercising #randomModeBtn{animation:none !important;}
 .moodL{font-size:10.5px;font-weight:800;color:#5c8aa3;}
 #moodCancel{margin-top:14px;width:100%;height:40px;border:none;border-radius:999px;background:rgba(143,190,220,.16);color:#5c93ad;font-size:13px;font-weight:700;cursor:pointer;}
 .ssMoods{margin:2px 0 12px;}
-#recMoods .rmStrip{display:flex;gap:5px;overflow-x:auto;padding-bottom:3px;-webkit-overflow-scrolling:touch;}
+#recMoods .rmStrip{display:flex;gap:5px;overflow-x:auto;padding-bottom:3px;-webkit-overflow-scrolling:touch;justify-content:flex-start;}
 .rmCell{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:2px;background:#f6fafc;border-radius:11px;padding:7px 6px 5px;min-width:36px;}
 .rmCell.today{background:#fff2e0;box-shadow:0 0 0 1.5px #ffcf8a inset;}
 .rmCell .rmDow{font-size:9px;font-weight:800;color:#a9bcc7;}
@@ -2150,15 +2152,16 @@ body.exercising #randomModeBtn{animation:none !important;}
 #rangeTop{display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top)) 16px 8px;}
 #rangeClose{border:none;background:rgba(143,190,220,.18);color:#5c93ad;font-size:14px;font-weight:800;border-radius:999px;padding:7px 14px;cursor:pointer;}
 #rangeTitle{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:17px;font-weight:900;color:#5c8aa3;letter-spacing:.06em;}
-#rangeStats{padding:2px 18px 10px;font-size:12px;font-weight:700;color:#6f9fb6;text-align:center;line-height:1.7;}
+#rangeStats{padding:2px 18px 10px;font-size:12px;font-weight:700;color:#6f9fb6;text-align:center;line-height:1.7;max-width:640px;margin:0 auto;}
 #rangeStats b{color:#e08a4a;font-size:15px;margin:0 1px;}
 #rangeScroll{flex:1 1 auto;overflow-x:auto;overflow-y:hidden;display:flex;align-items:center;-webkit-overflow-scrolling:touch;padding:0 0 6px;}
 #rangeInner{min-width:100%;}
 #rangeGoal{padding:10px 18px 8px;font-size:12.5px;font-weight:700;color:#5c8aa3;text-align:center;background:rgba(255,255,255,.5);line-height:1.8;}
+#rangeGoal>*{max-width:640px;margin-left:auto;margin-right:auto;}
 #rangeGoal b{color:#e08a4a;font-size:15px;}
 .rgGoalMile{display:block;font-size:11px;color:#9fb2bd;margin-top:2px;}
-#rangeActions{display:flex;gap:9px;padding:2px 16px calc(14px + env(safe-area-inset-bottom));background:rgba(255,255,255,.5);}
-.rangeActBtn{flex:1;height:46px;border:none;border-radius:14px;background:linear-gradient(180deg,#a8d8f0,#8ec5e8);color:#fff;font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 3px 9px rgba(120,180,220,.3);}
+#rangeActions{display:flex;gap:9px;padding:2px 16px calc(14px + env(safe-area-inset-bottom));background:rgba(255,255,255,.5);max-width:560px;margin:0 auto;box-sizing:border-box;width:100%;}
+.rangeActBtn{flex:1;min-width:0;height:46px;border:none;border-radius:14px;background:linear-gradient(180deg,#a8d8f0,#8ec5e8);color:#fff;font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:12.5px;font-weight:800;cursor:pointer;box-shadow:0 3px 9px rgba(120,180,220,.3);white-space:nowrap;padding:0 4px;}
 .rangeActBtn:active{transform:scale(.97);}
 .rgPeak:active{opacity:.72;}
 #rangePeakPop{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:3180;background:#fff;border-radius:18px;padding:15px 22px;box-shadow:0 10px 30px rgba(60,90,120,.28);text-align:center;min-width:198px;}
@@ -2176,7 +2179,7 @@ body.exercising #randomModeBtn{animation:none !important;}
 #sbClose{border:none;background:rgba(210,150,90,.16);color:#b5793e;font-size:14px;font-weight:800;border-radius:999px;padding:7px 14px;cursor:pointer;}
 #sbTitle{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:17px;font-weight:900;color:#b5793e;letter-spacing:.06em;}
 #sbIntro{padding:2px 18px 8px;font-size:11.5px;font-weight:700;color:#b09370;text-align:center;line-height:1.7;}
-#sbCompose{margin:4px 16px 8px;background:#fff;border-radius:16px;padding:12px;box-shadow:0 4px 12px rgba(180,140,90,.18);}
+#sbCompose{margin:4px auto 8px;max-width:560px;background:#fff;border-radius:16px;padding:12px;box-shadow:0 4px 12px rgba(180,140,90,.18);}
 #sbChips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:9px;}
 .sbChip{border:1.5px solid #f0d9bd;background:#fff8ef;color:#b5793e;font-size:11.5px;font-weight:800;border-radius:999px;padding:5px 11px;cursor:pointer;}
 .sbChip:active{background:#ffedd6;transform:scale(.96);}
@@ -2184,7 +2187,7 @@ body.exercising #randomModeBtn{animation:none !important;}
 #sbPost{margin-top:9px;width:100%;height:44px;border:none;border-radius:999px;background:linear-gradient(180deg,#ffb463,#ff8f42);color:#fff;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 4px 12px rgba(255,140,80,.32);}
 #sbPost:active{transform:scale(.98);}
 #sbLocked{margin:4px 18px 10px;font-size:12px;font-weight:700;color:#b09370;text-align:center;background:rgba(255,255,255,.6);border-radius:12px;padding:11px;line-height:1.7;}
-#sbList{flex:1 1 auto;overflow-y:auto;padding:4px 16px calc(20px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:8px;-webkit-overflow-scrolling:touch;}
+#sbList{flex:1 1 auto;overflow-y:auto;padding:4px 16px calc(20px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:8px;-webkit-overflow-scrolling:touch;max-width:600px;width:100%;margin:0 auto;box-sizing:border-box;}
 .sbEntry{background:#fff;border-radius:14px;padding:10px 13px;box-shadow:0 2px 7px rgba(180,140,90,.14);}
 .sbEHead{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:3px;}
 .sbEHead b{font-size:12.5px;font-weight:900;color:#a5673a;}
@@ -3254,10 +3257,9 @@ html.lite .catDeco{animation:none;}
   <div id="partyBody">
     <div id="partyNone" hidden>
       <div id="partyInvited" hidden><div id="partyInvitedText"></div><button id="partyInvitedAccept" type="button" class="pBtn">さんかする</button></div>
-      <div class="pIntro">フレンドと いっしょに 山をのぼろう⛰</div>
-      <button id="partyCreate" type="button" class="pBtn">パーティを作る</button>
-      <div class="pOr">または「あいことば」で さんか</div>
-      <div class="pJoinRow"><input id="partyJoinCode" maxlength="5" placeholder="あいことば" inputmode="latin"><button id="partyJoinBtn" type="button" class="pBtn2">さんか</button></div>
+      <div class="pIntro">フレンドと 山をのぼろう⛰</div>
+      <div class="pCard"><div class="pCardT">🆕 パーティを作る</div><button id="partyCreate" type="button" class="pBtn">作る</button></div>
+      <div class="pCard"><div class="pCardT">🔑 あいことばで さんか</div><div class="pJoinRow"><input id="partyJoinCode" maxlength="5" placeholder="あいことば" inputmode="latin"><button id="partyJoinBtn" type="button" class="pBtn2">さんか</button></div></div>
     </div>
     <div id="partyHas" hidden>
       <div class="pCodeRow">あいことば：<b id="partyCode"></b></div>
@@ -8245,7 +8247,7 @@ function startMorningExercise(opts){
     _exNoteTimer=setInterval(_spawnExNote,380);
     /* ラジオ体操ちゅうは「にゃー」も「読み上げ」も出さない（削除） */
     try{_exerciseAudio=new Audio("radiobgm.mp3");_exerciseAudio.volume=bgmMuted?0:Math.max(bgmVol,0.28);_exerciseAudio.play().catch(()=>{});}catch(_){}
-    _exStopTimer=setTimeout(()=>stopMorningExercise(),7000);   /* 7秒で自動的に次の画面へ */
+    _exStopTimer=setTimeout(()=>stopMorningExercise(),6000);   /* 6秒で自動的に次の画面へ（1秒短縮） */
   };
   if(morning)setTimeout(begin,1500);else begin();
 }
@@ -8276,16 +8278,25 @@ function _exDevAutoMaybe(){
     startMorningExercise({manual:true});
   }catch(_){}
 }
+function _exFinaleMeow(){
+  try{const hc=$("hillCats");if(!hc)return 0;const cats=[...hc.querySelectorAll(".hillCat")];if(!cats.length)return 0;
+    cats.forEach(c=>{try{catSpeakBubble(c,"にゃっ");}catch(_){}});   /* 全員 同時に「にゃっ」＋読み上げ（重なって一斉に） */
+    return cats.length;}catch(_){return 0;}
+}
 function stopMorningExercise(){
   if(!_exerciseActive)return;_exerciseActive=false;
-  document.body.classList.remove("exercising");for(let i=1;i<=7;i++)document.body.classList.remove("exmv"+i);
   try{clearInterval(_exNoteTimer);}catch(_){}_exNoteTimer=null;
   try{clearInterval(_exMeowTimer);}catch(_){}_exMeowTimer=null;
   try{clearTimeout(_exStopTimer);}catch(_){}_exStopTimer=null;
   try{if(_exerciseAudio){_exerciseAudio.pause();_exerciseAudio=null;}}catch(_){}
-  _hideExRadio();_exHideUI();
-  const cb=_exOnDone;_exOnDone=null;
-  if(cb){setTimeout(()=>{try{cb();}catch(_){}},150);}
+  const _fin=_exFinaleMeow();   /* 最後に全員一斉ににゃっ（読み上げあり） */
+  const finish=()=>{
+    document.body.classList.remove("exercising");for(let i=1;i<=7;i++)document.body.classList.remove("exmv"+i);
+    _hideExRadio();_exHideUI();
+    const cb=_exOnDone;_exOnDone=null;
+    if(cb){setTimeout(()=>{try{cb();}catch(_){}},150);}
+  };
+  if(_fin){setTimeout(finish,750);}else{finish();}
 }
 function refreshHome(){
   refreshHomeGate();
@@ -11772,6 +11783,7 @@ try{const rb=$("ppReminderBtn");if(rb)rb.addEventListener("click",()=>{playClick
 $("joinBtn").addEventListener("click",()=>{playClick();openClub();});
 $("clubClose").addEventListener("click",()=>{playClick();closeClub();});
 try{$("openPartyBtn").addEventListener("click",()=>{try{playClick();}catch(_){}openParty();});}catch(_){}
+try{$("openInviteBtn").addEventListener("click",()=>{try{playClick();}catch(_){}openInvite();});}catch(_){}
 try{$("partyClose").addEventListener("click",()=>{try{playClick();}catch(_){}closeParty();});}catch(_){}
 try{$("partyCreate").addEventListener("click",()=>{try{playClick();}catch(_){}createParty();});}catch(_){}
 try{$("partyJoinBtn").addEventListener("click",()=>{try{playClick();}catch(_){}joinParty(($("partyJoinCode")||{}).value);});}catch(_){}
@@ -12399,13 +12411,15 @@ function _rangeStats(weeks){
   dates.forEach(d=>{if(prev&&addDays(prev,1)===d)cur++;else cur=1;if(cur>best)best=cur;prev=d;});
   return{peaks,total,perfect,best,weeksTotal:weeks.length};
 }
-function _rangeSVG(weeks){
+function _rangeSVG(weeks,minW){
   const WP=56,BW=68,baseY=196,H=238,MARGIN=32;
-  const width=Math.max(340,MARGIN*2+weeks.length*WP);
+  const contentW=MARGIN*2+weeks.length*WP;
+  const width=Math.max(minW||340,contentW);
+  const _off=Math.max(0,(width-contentW)/2);
   let peaks="",caps="",marks="",labels="",cat="";
   let active=0,lastX=null,lastH=0,prevM="";
   weeks.forEach((w,i)=>{
-    const cx=MARGIN+i*WP+WP/2;
+    const cx=_off+MARGIN+i*WP+WP/2;
     const mNum=parseInt(w.mon.slice(5,7),10),mLbl=mNum+"月";
     if(mLbl!==prevM){labels+=`<text x="${cx.toFixed(1)}" y="${baseY+15}" text-anchor="middle" font-size="8.5" fill="#9fb2bd" font-family="'Kosugi Maru',sans-serif">${mNum===1?w.mon.slice(0,4)+"/1月":mLbl}</text>`;prevM=mLbl;}
     if(w.days<=0)return;
@@ -12436,7 +12450,7 @@ function _rangeSVG(weeks){
 function openRange(){
   try{
     const weeks=_rangeData(),st=_rangeStats(weeks);
-    $("rangeInner").innerHTML=_rangeSVG(weeks);
+    $("rangeInner").innerHTML=_rangeSVG(weeks,(window.innerWidth||360));
     $("rangeStats").innerHTML=weeks.length?`のべ <b>${st.peaks}</b>座 ・ <b>${st.total}</b>日 のぼった ・ パーフェクト <b>${st.perfect}</b>週 ・ 最高 <b>${st.best}</b>日れんぞく`:"まだ山がないよ。体操して 最初の山を つくろう！";
     const twd=_weekDoneCount(),nextMile=(Math.floor(st.peaks/10)+1)*10;
     const _wEnd=addDays(_monOf(jstKey()),6),_eMD=parseInt(_wEnd.slice(5,7),10)+"/"+parseInt(_wEnd.slice(8,10),10);
@@ -12445,7 +12459,8 @@ function openRange(){
     $("rangeGoal").innerHTML=g;
     const pop=$("rangePeakPop");if(pop)pop.hidden=true;
     $("rangeScreen").classList.add("show");
-    setTimeout(()=>{const sc=$("rangeScroll");if(sc)sc.scrollLeft=sc.scrollWidth;},70);
+    try{const _sbb=$("openSummitBtn");if(_sbb)_sbb.style.display=(twd>=7)?"":"none";}catch(_){}
+    setTimeout(()=>{const sc=$("rangeScroll");if(sc){sc.scrollLeft=sc.scrollWidth;}},70);
     [...$("rangeInner").querySelectorAll(".rgPeak")].forEach(gp=>{gp.addEventListener("click",()=>_showPeakDetail(parseInt(gp.dataset.i,10),weeks));});
   }catch(e){console.warn("range",e);}
 }
@@ -12614,6 +12629,11 @@ async function _invite(uid,btn){
   toast("招待を おくったよ✉️");
 }
 function closeParty(){try{$("partyScreen").classList.remove("visible");}catch(_){}}
+function openInvite(){
+  if(!_partyId()){openParty();try{toast("まず パーティを作ってね⛰");}catch(_){}return;}
+  openParty();
+  setTimeout(()=>{try{const el=$("partyInviteList");if(el&&el.hidden)_loadPartyInvitable();}catch(_){}},500);
+}
 function _renderRecMoods(){
   try{
     const el=$("recMoods");if(!el)return;
@@ -13659,7 +13679,7 @@ try{
   <div id="rangeStats"></div>
   <div id="rangeScroll"><div id="rangeInner"></div></div>
   <div id="rangeGoal"></div>
-  <div id="rangeActions"><button id="openPartyBtn" type="button" class="rangeActBtn">⛰ パーティ登山</button><button id="openSummitBtn" type="button" class="rangeActBtn">📖 頂上の看板</button></div>
+  <div id="rangeActions"><button id="openPartyBtn" type="button" class="rangeActBtn">⛰ パーティ</button><button id="openInviteBtn" type="button" class="rangeActBtn">✉️ 招待</button><button id="openSummitBtn" type="button" class="rangeActBtn">📖 看板</button></div>
   <div id="rangePeakPop" hidden></div>
 </div>
 <div id="summitBoard">

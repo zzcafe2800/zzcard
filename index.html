@@ -13557,7 +13557,7 @@ function _jrnBindMap(root){
 }
 function _jrnAttachMap(root){try{_jrnBindMap(root);}catch(_){}}
 function _jrnStatStrip(spd){
-  var wake="—";try{var wl=getWakeLog(),wv=Object.values(wl).filter(function(v){return typeof v==="number";});if(wv.length){var avg=wv.reduce(function(a,b){return a+b;},0)/wv.length;var hh=Math.floor(avg),mm=Math.round((avg-hh)*60);if(mm===60){hh++;mm=0;}wake=hh+":"+String(mm).padStart(2,"0");}}catch(_){}
+  var wake="—";try{var wl=getWakeLog(),tw=wl[jstKey()];if(typeof tw==="number"){var hh=Math.floor(tw),mm=Math.round((tw-hh)*60);if(mm===60){hh++;mm=0;}wake=hh+":"+String(mm).padStart(2,"0");}}catch(_){}
   var sc=0;try{sc=_zzScore().total;}catch(_){}
   var moving=spd>0;
   var spIco=spd>=13?"🚴":spd>=8?"🏃":spd>0?"🚶":"🔋";

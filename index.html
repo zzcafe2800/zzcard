@@ -2850,6 +2850,13 @@ html.lite .catDeco{animation:none;}
 .jpVig{position:absolute;inset:0;border-radius:12px;pointer-events:none;background:radial-gradient(120% 96% at 50% 34%,rgba(255,255,255,.08),transparent 44%,rgba(18,28,44,.2));}
 .jpCatLayer{position:absolute;inset:0;}
 .jpBcat{position:absolute;width:32%;max-width:78px;filter:drop-shadow(0 3px 2px rgba(0,0,0,.26));}
+.jpFx{position:absolute;inset:0;pointer-events:none;z-index:1;}
+@keyframes jpHeartFloat{0%{transform:translateY(1.5px) scale(.9);opacity:.5}50%{opacity:1}100%{transform:translateY(-4px) scale(1);opacity:.6}}
+.jpHeart{animation:jpHeartFloat 2.2s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:center;}
+@keyframes jpSpkTw{0%,100%{opacity:.25;transform:scale(.6)}50%{opacity:1;transform:scale(1.15)}}
+.jpSpk{animation:jpSpkTw 1.6s ease-in-out infinite;transform-box:fill-box;transform-origin:center;}
+@keyframes jpJumpB{0%,100%{transform:translateX(-50%) translateY(0)}45%{transform:translateX(-50%) translateY(-15%)}}
+.jpBcat.jpJump{animation:jpJumpB .95s ease-in-out infinite;}
 .jpBcat svg,.jpFc svg{width:100%;height:auto;display:block;}
 .jpFc{position:absolute;}
 .jpBtnRow{display:flex;gap:9px;justify-content:center;margin-top:14px;}
@@ -13729,7 +13736,7 @@ var _JRN_SC={
   +'<rect x="48.6" y="1.5" width="2.8" height="7" fill="#ec5a3a"/><circle cx="50" cy="1.5" r="1.3" fill="#ffd24a"/>'
   +_jsGrass(68,"#94cc86")+_jsArch("l","sakura")+_jsPetals([[28,30,20],[40,22,60],[64,34,80],[76,26,10],[20,44,40],[70,48,50]])
   );}},
-"仙台":{cap:"牛たん",type:"",tint:"sepia(.2) saturate(1.12) brightness(.96)",sky:"linear-gradient(#3a4767,#5b6a92)",bg:function(k,n){return _jsBG(
+"仙台":{cap:"鯉のぼり",type:"",tint:"sepia(.2) saturate(1.12) brightness(.96)",sky:"linear-gradient(#3a4767,#5b6a92)",bg:function(k,n){return _jsBG(
   '<defs>'+_jsRg("lan"+k,"#ffcaa0",0)+_jsRg("coal"+k,"#ff7a3a",0)+'</defs>'
   +'<rect x="0" y="0" width="100" height="44" fill="#43342a"/><rect x="0" y="42" width="100" height="4" fill="#63503f"/>'
   +'<rect x="0" y="12" width="100" height="9" fill="#7a1f1f"/><g fill="#f0e0c0" opacity=".5">'+[0,1,2,3,4,5,6,7,8,9].map(function(i){return '<rect x="'+(i*10)+'" y="12" width="4.5" height="9"/>';}).join("")+'</g><text x="50" y="19" font-size="6" text-anchor="middle" fill="#fff5e0" font-weight="bold">牛たん炭焼</text>'
@@ -13792,7 +13799,7 @@ var _JRN_SC={
   +'<path d="M17 64 l6 0 l-1 8 l-4 0 Z" fill="#e8d9b8"/><path d="M17 64 l6 0 l-.3 2 l-5.4 0 Z" fill="#f4ecd6"/>'
   +'<path d="M84 68 Q85 73 89 73 Q93 73 94 68 Z" fill="#fff"/><ellipse cx="89" cy="68" rx="5" ry="1.6" fill="#f0f6ec"/><g fill="#f2ede0"><circle cx="87" cy="67.5" r="1"/><circle cx="90" cy="67.5" r="1"/><circle cx="88.5" cy="66.5" r="1"/></g>'
   );}},
-"金沢":{cap:"金ぱく 顔ハメ",type:"face",slotY:40,slotR:11,tint:"sepia(.14) saturate(1.1) brightness(1.02)",sky:"linear-gradient(#e9dbb0,#f7efd6)",bg:function(k,n){var xs=_jrnRowX(n||3);var kc=["#b03f54","#3a6a8a","#4a8a5a"];
+"金沢":{cap:"兼六園",type:"face",slotY:40,slotR:11,tint:"sepia(.14) saturate(1.1) brightness(1.02)",sky:"linear-gradient(#e9dbb0,#f7efd6)",bg:function(k,n){var xs=_jrnRowX(n||3);var kc=["#b03f54","#3a6a8a","#4a8a5a"];
   return _jsBG(
   '<defs>'+_jsLgd("gold"+k,"#f6df82","#e0bb46")+'</defs>'
   +'<rect x="5" y="9" width="90" height="68" rx="3" fill="#b8942e"/>'
@@ -13848,7 +13855,7 @@ var _JRN_SC={
   +'<g transform="translate(28,0)"><ellipse cx="50" cy="64" rx="12" ry="4.6" fill="#f2efe8"/><path d="M38 64 Q50 74 62 64 Z" fill="#e6e0d4"/><rect x="38" y="62.8" width="24" height="1.6" fill="#c94a3a"/><ellipse cx="50" cy="64" rx="9.5" ry="3.4" fill="#d9a24a"/><g stroke="#efe4c8" stroke-width=".8" fill="none" opacity=".85"><path d="M44 63.4 Q50 61.6 56 63.4"/><path d="M45.5 65 Q50 63.6 54.5 65"/></g><ellipse cx="46" cy="63.2" rx="2.6" ry="1.7" fill="#f7dc8a"/><circle cx="46" cy="63.2" r="1" fill="#e8a83a"/><rect x="53" y="61.6" width="3.6" height="3" rx="1" fill="#5a3a2a"/><rect x="57" y="60.6" width="2.6" height="3.4" fill="#2a3a2a"/><g stroke="#fff" stroke-width="1" fill="none" opacity=".4"><path d="M46 59 Q44 55 47 51"/><path d="M54 59 Q56 55 53 51"/></g></g>'
   +'<g transform="translate(-30,3) scale(.7)"><ellipse cx="50" cy="64" rx="12" ry="4.6" fill="#f2efe8"/><path d="M38 64 Q50 74 62 64 Z" fill="#e6e0d4"/><ellipse cx="50" cy="64" rx="9.5" ry="3.4" fill="#d9a24a"/><rect x="53" y="61.6" width="3.6" height="3" rx="1" fill="#5a3a2a"/></g>'
   );}},
-"長崎":{cap:"教会",type:"",tint:"saturate(1.06) brightness(1.02)",sky:"linear-gradient(#bfe0f5,#eef8ff)",bg:function(k,n){return _jsBG(
+"長崎":{cap:"グラバー園",type:"",tint:"saturate(1.06) brightness(1.02)",sky:"linear-gradient(#bfe0f5,#eef8ff)",bg:function(k,n){return _jsBG(
   '<defs>'+_jsLg("sea"+k,"#7cc4dc","#4a9ec0")+_jsLg("stone"+k,"#f0e6d4","#dccdb6")+'</defs>'
   +_jsNcloud(74,14,.7)+_jsBirds(58,20)+_jsBirds(70,16)+'<circle cx="86" cy="10" r="5" fill="#fff6d8"/>'
   +'<rect x="0" y="60" width="100" height="8" fill="url(#sea'+k+')"/><g fill="#5a4a3a"><rect x="8" y="55" width="10" height="5"/><polygon points="8,55 18,55 13,50"/><rect x="12.4" y="48" width="1.2" height="7"/></g>'+_jsFoam(58,63,14)
@@ -13863,7 +13870,7 @@ var _JRN_SC={
   +'<g><circle cx="10" cy="63" r="1.8" fill="#ff8a8a"/><circle cx="15" cy="65" r="1.8" fill="#ffd24a"/><circle cx="20" cy="63.5" r="1.6" fill="#e89ad0"/><circle cx="84" cy="64" r="1.8" fill="#ffb0c4"/><circle cx="89" cy="63" r="1.8" fill="#fff"/><circle cx="93" cy="65" r="1.6" fill="#ffd24a"/></g><g stroke="#4a8a3a" stroke-width=".7"><line x1="10" y1="65" x2="10" y2="68"/><line x1="84" y1="66" x2="84" y2="69"/></g>'
   +_jsArch("l","leaf")
   );}},
-"鹿児島":{cap:"桜島の湯",type:"bath",slotY:50,slotR:8,tint:"sepia(.14) saturate(1.12) brightness(1.0)",sky:"linear-gradient(#ffc99a,#ffe6cc)",bg:function(k,n){return _jsBG(
+"鹿児島":{cap:"桜島",type:"bath",slotY:50,slotR:8,tint:"sepia(.14) saturate(1.12) brightness(1.0)",sky:"linear-gradient(#ffc99a,#ffe6cc)",bg:function(k,n){return _jsBG(
   '<defs>'+_jsLg("vol"+k,"#8a6a56","#5f4232")+_jsRg("lava"+k,"#ff6a3a",0)+_jsLg("onsen"+k,"#d8f2f6","#a8dee8")+'</defs>'
   +'<circle cx="18" cy="15" r="7" fill="#ffd96a" opacity=".9"/>'+_jsNcloud(76,11,.7)+_jsBirds(30,18)
   +'<path d="M12 58 Q34 34 46 20 Q49 17 51 17 Q53 17 54 20 Q66 34 88 58 Z" fill="url(#vol'+k+')"/>'
@@ -13877,7 +13884,7 @@ var _JRN_SC={
   +'<ellipse cx="30" cy="72" rx="6" ry="1.8" fill="#eef9fb" opacity=".7"/><ellipse cx="66" cy="78" rx="7" ry="2" fill="#eef9fb" opacity=".7"/>'
   +'<rect x="82" y="52" width="10" height="6" rx="1" fill="#c9a06a"/><rect x="82" y="53.6" width="10" height="1.4" fill="#a9804a"/><ellipse cx="87" cy="52" rx="5" ry="1.5" fill="#e0c090"/><rect x="90" y="49" width="1" height="5" fill="#a9804a" transform="rotate(20 90 51)"/><ellipse cx="92.5" cy="49" rx="2" ry="1.2" fill="#c9a06a"/>'
   );}},
-"那覇":{cap:"シーサー 顔ハメ",type:"face",slotY:42,slotR:11,tint:"saturate(1.16) brightness(1.04)",sky:"linear-gradient(#7fd8ec,#d6f4fb)",bg:function(k,n){var xs=_jrnRowX(n||3);return _jsBG(
+"那覇":{cap:"首里城",type:"face",slotY:42,slotR:11,tint:"saturate(1.16) brightness(1.04)",sky:"linear-gradient(#7fd8ec,#d6f4fb)",bg:function(k,n){var xs=_jrnRowX(n||3);return _jsBG(
   '<defs>'+_jsLg("sea"+k,"#4fc6d8","#2fa6c4")+'</defs>'
   +'<circle cx="82" cy="14" r="6" fill="#fff6c8"/>'+_jsNcloud(20,12,.8)+_jsBirds(46,16)
   +'<rect x="0" y="56" width="100" height="10" fill="url(#sea'+k+')"/>'+_jsFoam(6,60,14)+_jsFoam(78,61,14)
@@ -13925,7 +13932,7 @@ var _JRN_SC={
   +'<g transform="translate(86,62) scale(.9)"><ellipse cx="0" cy="6" rx="6" ry="5" fill="#8a3a2a"/><ellipse cx="0" cy="4" rx="6" ry="4.6" fill="#f0e0c0"/><ellipse cx="0" cy="4" rx="6" ry="4.6" fill="none" stroke="#6a2a1a" stroke-width=".8"/></g>'
   +'<g><rect x="30" y="40" width="1.6" height="1.6" fill="#ffd24a" transform="rotate(20 30 40)"/><rect x="66" y="44" width="1.6" height="1.6" fill="#4fc6d8" transform="rotate(40 66 44)"/><rect x="44" y="48" width="1.6" height="1.6" fill="#ff8ab0" transform="rotate(10 44 48)"/><rect x="58" y="52" width="1.6" height="1.6" fill="#8fce7a" transform="rotate(30 58 52)"/></g>'
   );}},
-"和歌山":{cap:"みかん山",type:"",tint:"saturate(1.08) brightness(1.02)",sky:"linear-gradient(#c8ecff,#eef9ff)",bg:function(k,n){return _jsBG(
+"和歌山":{cap:"那智の滝",type:"",tint:"saturate(1.08) brightness(1.02)",sky:"linear-gradient(#c8ecff,#eef9ff)",bg:function(k,n){return _jsBG(
   '<defs>'+_jsLg("sea"+k,"#7cc4dc","#4a9ec0")+_jsLg("hill"+k,"#7fc47a","#5fa85a")+'</defs>'
   +_jsNcloud(22,12,.9)+'<circle cx="82" cy="14" r="6" fill="#fff6c8"/>'+_jsBirds(50,16)+_jsBirds(64,20)
   +'<rect x="0" y="46" width="100" height="8" fill="url(#sea'+k+')"/>'+_jsFoam(10,50,12)+_jsFoam(74,51,12)
@@ -15727,6 +15734,16 @@ return buildBG;
 };
 try{window._JRN_BG=_JRN_BG;}catch(_){}
 
+function _jrnHeart(x,y,r,c){return '<path d="M'+x+' '+(y+r*0.35)+' C'+(x-r*0.9)+' '+(y-r*0.5)+' '+(x-r*0.35)+' '+(y-r*1.1)+' '+x+' '+(y-r*0.4)+' C'+(x+r*0.35)+' '+(y-r*1.1)+' '+(x+r*0.9)+' '+(y-r*0.5)+' '+x+' '+(y+r*0.35)+' Z" fill="'+c+'"/>';}
+function _jrnSpark(x,y,r){return '<path d="M'+x+' '+(y-r)+' L'+(x+r*0.26)+' '+(y-r*0.26)+' L'+(x+r)+' '+y+' L'+(x+r*0.26)+' '+(y+r*0.26)+' L'+x+' '+(y+r)+' L'+(x-r*0.26)+' '+(y+r*0.26)+' L'+(x-r)+' '+y+' L'+(x-r*0.26)+' '+(y-r*0.26)+' Z" fill="#fff7c0"/>';}
+function _jrnFxHTML(n){
+  var s='<svg class="jpFx" viewBox="0 0 100 82" preserveAspectRatio="xMidYMid slice">';
+  var H=[[22,30,3.2,"#ff7a9c"],[50,20,3.8,"#ff6a8f"],[78,28,3.2,"#ff8fab"],[36,40,2.4,"#ffa6c0"],[64,39,2.6,"#ff8fab"]];
+  for(var i=0;i<H.length;i++){s+='<g class="jpHeart" style="animation-delay:'+(i*0.3).toFixed(1)+'s">'+_jrnHeart(H[i][0],H[i][1],H[i][2],H[i][3])+'</g>';}
+  var S=[[14,22,1.8],[42,31,2.2],[60,17,2.0],[86,23,1.8],[30,15,1.6],[72,34,1.8],[52,43,1.6],[8,34,1.5],[92,36,1.5]];
+  for(var j=0;j<S.length;j++){s+='<g class="jpSpk" style="animation-delay:'+(j*0.22).toFixed(2)+'s">'+_jrnSpark(S[j][0],S[j][1],S[j][2])+'</g>';}
+  s+='</svg>';return s;
+}
 function _jrnPhotoHTML(name,emoji,members,ts,finish){
   var sc=_JRN_SC[name];
   var arr=(members||[]).slice(0,3);
@@ -15743,7 +15760,9 @@ function _jrnPhotoHTML(name,emoji,members,ts,finish){
     layer='<div class="jpCatLayer">'+layer+'</div>';
   }else{
     var tint=(!_nbg&&sc&&sc.tint)||"none";
-    layer='<div class="jpCatLayer" style="filter:'+tint+'">'+arr.map(function(m,i){return '<span class="jpBcat" style="left:'+xs[i]+'%;bottom:6%;transform:translateX(-50%)">'+_fbCatFig(m.catBody||"#1c1c1c",m.color||"#8fdcff",(m.cos||null))+'</span>';}).join("")+'</div>';
+    var _funP=[["sit","sparkle",true],["sit","content",false],["sit","wide",false]];
+    var _catsH=arr.map(function(m,i){var fp=_funP[i%_funP.length];return '<span class="jpBcat'+(fp[2]?" jpJump":"")+'" style="left:'+xs[i]+'%;bottom:6%;transform:translateX(-50%)">'+catFigureHTML(m.catBody||"#1c1c1c",m.color||"#8fdcff",fp[0],[0,0],fp[1],(m.cos||null))+'</span>';}).join("");
+    layer=_jrnFxHTML(n)+'<div class="jpCatLayer" style="filter:'+tint+'">'+_catsH+'</div>';
   }
   var bg=_nbg?_nbg:(sc?sc.bg(k,n):"");
   var sky=_nbg?"#cfe6f5":(sc?sc.sky:"linear-gradient(#cfe6f5,#eef7ff)");

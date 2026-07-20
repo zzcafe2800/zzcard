@@ -15743,7 +15743,7 @@ function _jrnPhotoHTML(name,emoji,members,ts,finish){
     layer='<div class="jpCatLayer">'+layer+'</div>';
   }else{
     var tint=(!_nbg&&sc&&sc.tint)||"none";
-    layer='<div class="jpCatLayer" style="filter:'+tint+'">'+arr.map(function(m,i){return '<span class="jpBcat" style="left:'+xs[i]+'%;bottom:6%;transform:translateX(-50%)">'+catFigureHTML(m.catBody||"#1c1c1c",m.color||"#8fdcff","stand",[0,0],(m.pose||"sparkle"),(m.cos||null))+'</span>';}).join("")+'</div>';
+    layer='<div class="jpCatLayer" style="filter:'+tint+'">'+arr.map(function(m,i){return '<span class="jpBcat" style="left:'+xs[i]+'%;bottom:6%;transform:translateX(-50%)">'+_fbCatFig(m.catBody||"#1c1c1c",m.color||"#8fdcff",(m.cos||null))+'</span>';}).join("")+'</div>';
   }
   var bg=_nbg?_nbg:(sc?sc.bg(k,n):"");
   var sky=_nbg?"#cfe6f5":(sc?sc.sky:"linear-gradient(#cfe6f5,#eef7ff)");
@@ -15800,8 +15800,8 @@ function openJrnAlbum(){
   if(list.length){
     html+='<div class="jaSecTitle">📷 とった写真（通った名所）</div><div class="jaGrid">'+list.map(function(it,ix){var mem=(it.mem||[]).map(function(m){return {catBody:m.b,color:m.c,name:m.n,cos:m.cos||null,pose:m.pose||null};});return '<div class="jaCard" data-sv="'+ix+'">'+_jrnPhotoHTML(it.name,it.emoji,mem,it.ts,it.finish)+'</div>';}).join("")+'</div>';
   }
-  var me=_meMember();var cps=[];try{cps=_jrnNamedCps();}catch(_){}
-  if(cps.length){
+  var me=_meMember();var cps=[];try{cps=(_devUnlockAll?_jrnNamedCps():[]);}catch(_){}
+  if(_devUnlockAll && cps.length){
     html+='<div class="jaSecTitle">🎨 今の自分で（ぜんぶプレビュー）</div><div class="jaGrid">'+cps.map(function(cp){return '<div class="jaCard" data-pv="'+escHtml(cp[0])+'" data-em="'+escHtml(cp[1])+'" data-fin="'+(cp[2]?1:0)+'">'+_jrnPhotoHTML(cp[0],cp[1],[me],Date.now(),cp[2])+'</div>';}).join("")+'</div>';
   }
   if(!html)html='<div class="jaEmpty">まだ 写真がないよ📷<br>日本一周で 名所に とうちゃくすると<br>ここに きねん写真が たまるよ</div>';

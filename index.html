@@ -151,7 +151,7 @@ body.exercising #hillCats .hillCat:nth-child(4n) .catFig{animation-delay:.07s;}
 @keyframes exBanPop{0%{transform:translateX(-50%) scale(.6);opacity:0}100%{transform:translateX(-50%) scale(1);opacity:1}}
 #exHint{position:absolute;bottom:max(96px,calc(env(safe-area-inset-bottom) + 86px));left:50%;transform:translateX(-50%);background:rgba(58,72,90,.85);color:#fff;font-family:"Yomogi","Kosugi Maru",sans-serif;font-weight:800;font-size:12.5px;padding:6px 16px;border-radius:999px;animation:exHintP 1.5s ease-in-out infinite;}
 @keyframes exHintP{0%,100%{opacity:.55}50%{opacity:1}}
-body.exercising #randomModeBtn,body.exercising #topProfileBar,body.exercising #topLeftStack,body.exercising #helpBtn,body.exercising #fabWrap,body.exercising #recentRow,body.exercising #streakBadge,body.exercising .hillArrow,body.exercising #homeGate,body.exercising #catShutter,body.exercising #lobbyHead,body.exercising #doneHint{opacity:0 !important;pointer-events:none !important;transition:opacity .3s;}
+body.exercising #randomModeBtn,body.exercising #topProfileBar,body.exercising #topLeftStack,body.exercising #helpBtn,body.exercising #homeAlbumBtn,body.exercising #fabWrap,body.exercising #recentRow,body.exercising #streakBadge,body.exercising .hillArrow,body.exercising #homeGate,body.exercising #catShutter,body.exercising #lobbyHead,body.exercising #doneHint{opacity:0 !important;pointer-events:none !important;transition:opacity .3s;}
 body.exercising #hillCats .catLike,body.exercising #hillCats .catStreak,body.exercising #hillCats .catStreakFire,body.exercising #hillCats .catCmt,body.exercising #hillCats .catCmtWrap,body.exercising #hillCats .catRise,body.exercising #hillCats .catTime,body.exercising #hillCats .catMark,body.exercising #hillCats .catDeco,body.exercising #hillCats .catBubble{display:none !important;}
 #volPanel .vpLbl{cursor:pointer;user-select:none;}
 #volPanel .vpLbl.muted{color:#c98b8b;text-decoration:line-through;}
@@ -2861,6 +2861,22 @@ html.lite .catDeco{animation:none;}
 .jaHead #jaClose{border:none;background:rgba(143,190,220,.18);color:#5c93ad;font-size:14px;font-weight:800;border-radius:999px;padding:7px 14px;cursor:pointer;}
 .jaTitle{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:16px;font-weight:900;color:#e8663a;}
 #jrnAlbumBody{flex:1;overflow-y:auto;padding:6px 14px 34px;}
+.jaSecTitle{font-size:13px;font-weight:800;color:#6f9fb6;margin:4px 0 10px;text-align:center;}
+.jaSecTitle+.jaSecTitle,.jaGrid+.jaSecTitle{margin-top:22px;}
+.jaCard{cursor:pointer;transition:transform .12s;}
+.jaCard:active{transform:scale(.97);}
+#homeAlbumBtn{position:fixed;top:19px;left:50px;z-index:120;width:28px;height:28px;border:none;border-radius:50%;background:none;color:#5c93ad;font-size:16px;cursor:pointer;padding:0;text-shadow:0 1px 3px rgba(255,255,255,.6);opacity:.85;}
+.sky-night #homeAlbumBtn{color:#dfe9f5;text-shadow:0 1px 3px rgba(0,0,0,.4);}
+#jrnBig{position:fixed;inset:0;z-index:3270;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(20,30,45,.82);overflow-y:auto;}
+#jrnBig[hidden]{display:none;}
+#jrnBig .jbInner{width:min(460px,94vw);margin:auto;}
+#jrnBig .jbFrame{background:#fff;border-radius:16px;padding:10px;box-shadow:0 18px 44px rgba(0,0,0,.4);}
+#jrnBig .jbFrame .jpScene{width:100%;max-width:none;}
+#jrnBig .jbFrame .jpPlace{font-size:20px;}
+#jrnBig .jbBtns{display:flex;gap:10px;margin-top:14px;justify-content:center;}
+#jrnBig .jbBtns button{border:none;border-radius:999px;padding:11px 24px;font-family:inherit;font-weight:800;font-size:14px;cursor:pointer;}
+#jrnBig .jbSave{background:linear-gradient(180deg,#7fc8a0,#4faf7c);color:#fff;box-shadow:0 6px 16px rgba(79,175,124,.35);}
+#jrnBig .jbClose{background:rgba(255,255,255,.92);color:#5c7a8a;}
 .jaGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:14px;max-width:720px;margin:0 auto;}
 .jaCard{background:#fff;border-radius:12px;padding:7px 7px 0;box-shadow:0 6px 16px rgba(60,90,120,.2);}
 .jaCard .jpScene{width:100%;max-width:none;margin-bottom:7px;}
@@ -2978,6 +2994,7 @@ button.pmTag{cursor:pointer;}
 <!-- ===================== SELECT SCREEN ===================== -->
 <div id="selectScreen">
   <button id="helpBtn" type="button" aria-label="使い方">？</button>
+  <button id="homeAlbumBtn" type="button" aria-label="アルバム">🖼</button>
 
   <button id="catShutter" type="button" aria-label="撮影"></button>
   <button id="groundPostBtn" type="button" hidden>📮 今日の結果を投稿</button>
@@ -12477,6 +12494,7 @@ $("helpBtn").addEventListener("click",()=>{playClick();showTutorial("help");});
 try{const _ht=$("htrToggle");if(_ht)_ht.addEventListener("click",e=>{e.stopPropagation();try{playClick();}catch(_){}const c=$("homeTopRight");if(c)c.classList.toggle("htrOpen");});}catch(_){}
 try{document.addEventListener("click",e=>{const c=$("homeTopRight");if(c&&c.classList.contains("htrOpen")&&!c.contains(e.target))c.classList.remove("htrOpen");});}catch(_){}
 try{const _hl=$("homeLoc");if(_hl)_hl.addEventListener("click",e=>{e.stopPropagation();try{playClick();}catch(_){}try{showStoryStats();}catch(_){}});}catch(_){}
+try{var _hab=$("homeAlbumBtn");if(_hab)_hab.addEventListener("click",function(e){e.stopPropagation();try{playClick();}catch(_){}try{openJrnAlbum();}catch(_){}});}catch(_){}
 function _applyLite(){try{const m=/Mobi|Android|iPhone|iPod|iPad/i.test(navigator.userAgent||"");const p=(window.innerHeight||0)>=(window.innerWidth||0);document.documentElement.classList.toggle("lite",m||p);}catch(_){}}
 window.addEventListener("resize",()=>{_applyLite();try{_refreshRadioAlt();}catch(_){}});window.addEventListener("orientationchange",()=>{_applyLite();try{_refreshRadioAlt();}catch(_){}});_applyLite();
 /* 一定時間 無操作で 操作UIを隠す（ホーム表示中のみ）。タップ・スクロール・移動で即復帰 */
@@ -13536,10 +13554,12 @@ function _jrnCatsHTML(members,sea){
 function _jrnPlaceCats(svg){
   const wrap=svg&&svg.parentElement;if(!wrap)return;
   const cw=wrap.querySelector(".jrnCatsWrap");if(!cw)return;
-  const r=svg.getBoundingClientRect();if(!r.width)return;
+  /* use the map svg's LOCAL square side (clientWidth), not getBoundingClientRect,
+     so cats stay aligned under CSS zoom on desktop (mobile value is identical) */
+  const S=wrap.clientWidth;if(!S)return;
   const vb=(svg.getAttribute("viewBox")||"").trim().split(/\s+/).map(parseFloat);if(vb.length<4)return;
-  cw.style.left=((_jrnCur.cx-vb[0])/vb[2]*r.width).toFixed(1)+"px";
-  cw.style.top=((_jrnCur.cy-vb[1])/vb[3]*r.height).toFixed(1)+"px";
+  cw.style.left=((_jrnCur.cx-vb[0])/vb[2]*S).toFixed(1)+"px";
+  cw.style.top=((_jrnCur.cy-vb[1])/vb[3]*S).toFixed(1)+"px";
 }
 function _jrnDrawMap(root){
   const wrap=(root||document).querySelector(".jrnMap");if(!wrap||!_jrnLast)return;
@@ -13608,7 +13628,7 @@ function _jrnBackfillAlbum(reachedIdx,members){
   var list=[];try{list=JSON.parse(localStorage.getItem(_JRN_ALBUM_KEY)||"[]");}catch(_){}
   var have={};list.forEach(function(it){if(it.code===code)have[it.name]=1;});
   var memArr=Object.values(members||{}).slice(0,3);
-  var mem=memArr.map(function(m){return {b:m.catBody||"#1c1c1c",c:m.color||"#8fdcff",n:m.name||""};});
+  var mem=memArr.map(function(m){return {b:m.catBody||"#1c1c1c",c:m.color||"#8fdcff",n:m.name||"",cos:m.cos||null,pose:m.pose||null};});
   var now=Date.now(),added=false;
   for(var i=1;i<=reachedIdx;i++){
     var cp=JOURNEY_CP[i];if(!cp||!cp[0])continue;var nm=cp[0];if(have[nm])continue;
@@ -15737,18 +15757,56 @@ function _jrnSaveAlbum(name,emoji,memArr,finish,ts){
     var code=_partyId()||"";
     var list=[];try{list=JSON.parse(localStorage.getItem(_JRN_ALBUM_KEY)||"[]");}catch(_){}
     if(list.some(function(it){return it.code===code&&it.name===name;}))return;
-    var mem=(memArr||[]).slice(0,3).map(function(m){return {b:m.catBody||"#1c1c1c",c:m.color||"#8fdcff",n:m.name||""};});
+    var mem=(memArr||[]).slice(0,3).map(function(m){return {b:m.catBody||"#1c1c1c",c:m.color||"#8fdcff",n:m.name||"",cos:m.cos||null,pose:m.pose||null};});
     list.unshift({code:code,name:name,emoji:emoji,ts:ts||Date.now(),finish:!!finish,mem:mem});
     if(list.length>80)list=list.slice(0,80);
     localStorage.setItem(_JRN_ALBUM_KEY,JSON.stringify(list));
   }catch(_){}
 }
+function _meMember(){var p=getProfile()||{};return {catBody:profileBody(),color:profileColor(),cos:getEquippedCostume()||null,pose:getEquippedPose()||null,name:(p&&p.name)||"あなた"};}
+function _jrnNamedCps(){var out=[],seen={};for(var i=0;i<JOURNEY_CP.length;i++){var c=JOURNEY_CP[i];if(c[0]&&!c[5]&&!seen[c[0]]){seen[c[0]]=1;out.push([c[0],c[1],(i===JOURNEY_CP.length-1)]);}}return out;}
+function _jrnBigShow(name,emoji,members,ts,finish){
+  var el=$("jrnBig");if(!el)return;
+  el.querySelector(".jbInner").innerHTML='<div class="jbFrame">'+_jrnPhotoHTML(name,emoji,members,ts,finish)+'</div><div class="jbBtns"><button type="button" class="jbSave">💾 保存</button><button type="button" class="jbClose">とじる</button></div>';
+  el.hidden=false;try{playPop();}catch(_){}
+  var cb=el.querySelector(".jbClose");if(cb)cb.onclick=function(){el.hidden=true;};
+  var sb=el.querySelector(".jbSave");if(sb)sb.onclick=function(){try{_savePhotoPng(el.querySelector(".jpScene"),name);}catch(e){toast("保存できなかったよ");}};
+}
+function _savePhotoPng(sceneEl,name){
+  if(!sceneEl){toast("保存できなかったよ");return;}
+  var rect=sceneEl.getBoundingClientRect();var w=Math.max(1,Math.round(rect.width)),h=Math.max(1,Math.round(rect.height));
+  var clone=sceneEl.cloneNode(true);
+  clone.style.cssText="position:relative;width:"+w+"px;height:"+h+"px;overflow:hidden;border-radius:12px;background:"+getComputedStyle(sceneEl).background;
+  var bgsvg=clone.querySelector("svg");if(bgsvg){bgsvg.setAttribute("style","position:absolute;left:0;top:0;width:100%;height:100%;display:block;");}
+  var cl=clone.querySelector(".jpCatLayer");if(cl){cl.setAttribute("style","position:absolute;left:0;top:0;right:0;bottom:0;");}
+  var vig=clone.querySelector(".jpVig");if(vig)vig.parentNode.removeChild(vig);
+  var cats=clone.querySelectorAll(".jpBcat");for(var ci=0;ci<cats.length;ci++){var b=cats[ci];var prev=b.getAttribute("style")||"";b.setAttribute("style",prev+";position:absolute;width:32%;");var cs=b.querySelector("svg");if(cs)cs.setAttribute("style","width:100%;height:auto;display:block;");}
+  var fcs=clone.querySelectorAll(".jpFc");for(var fi=0;fi<fcs.length;fi++){var f=fcs[fi];var fp=f.getAttribute("style")||"";f.setAttribute("style",fp+";position:absolute;");var fsg=f.querySelector("svg");if(fsg)fsg.setAttribute("style","width:100%;height:auto;display:block;");}
+  var xml=new XMLSerializer().serializeToString(clone);
+  var svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'"><foreignObject width="100%" height="100%"><div xmlns="http://www.w3.org/1999/xhtml" style="width:'+w+'px;height:'+h+'px;">'+xml+'</div></foreignObject></svg>';
+  var img=new Image();
+  img.onload=function(){
+    try{var sc=2;var c=document.createElement("canvas");c.width=w*sc;c.height=h*sc;var ctx=c.getContext("2d");ctx.scale(sc,sc);ctx.drawImage(img,0,0);
+    c.toBlob(function(blob){if(!blob){toast("保存できなかったよ");return;}var url=URL.createObjectURL(blob);var a=document.createElement("a");a.href=url;a.download=(name||"記念写真")+".png";document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1500);toast("保存したよ📷");},"image/png");}catch(e){toast("保存できなかったよ");}
+  };
+  img.onerror=function(){toast("保存できなかったよ");};
+  img.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg);
+}
 function openJrnAlbum(){
   var el=$("jrnAlbum");if(!el)return;
   var list=[];try{list=JSON.parse(localStorage.getItem(_JRN_ALBUM_KEY)||"[]");}catch(_){}
   var body=$("jrnAlbumBody");if(!body)return;
-  if(!list.length){body.innerHTML='<div class="jaEmpty">まだ 写真がないよ📷<br>日本一周で 名所に とうちゃくすると<br>ここに きねん写真が たまるよ</div>';}
-  else{body.innerHTML='<div class="jaGrid">'+list.map(function(it){var mem=(it.mem||[]).map(function(m){return {catBody:m.b,color:m.c,name:m.n};});return '<div class="jaCard">'+_jrnPhotoHTML(it.name,it.emoji,mem,it.ts,it.finish)+'</div>';}).join("")+'</div>';}
+  var html="";
+  if(list.length){
+    html+='<div class="jaSecTitle">📷 とった写真（通った名所）</div><div class="jaGrid">'+list.map(function(it,ix){var mem=(it.mem||[]).map(function(m){return {catBody:m.b,color:m.c,name:m.n,cos:m.cos||null,pose:m.pose||null};});return '<div class="jaCard" data-sv="'+ix+'">'+_jrnPhotoHTML(it.name,it.emoji,mem,it.ts,it.finish)+'</div>';}).join("")+'</div>';
+  }
+  var me=_meMember();var cps=[];try{cps=_jrnNamedCps();}catch(_){}
+  if(cps.length){
+    html+='<div class="jaSecTitle">🎨 今の自分で（ぜんぶプレビュー）</div><div class="jaGrid">'+cps.map(function(cp){return '<div class="jaCard" data-pv="'+escHtml(cp[0])+'" data-em="'+escHtml(cp[1])+'" data-fin="'+(cp[2]?1:0)+'">'+_jrnPhotoHTML(cp[0],cp[1],[me],Date.now(),cp[2])+'</div>';}).join("")+'</div>';
+  }
+  if(!html)html='<div class="jaEmpty">まだ 写真がないよ📷<br>日本一周で 名所に とうちゃくすると<br>ここに きねん写真が たまるよ</div>';
+  body.innerHTML=html;
+  try{body.querySelectorAll(".jaCard").forEach(function(card){card.onclick=function(){try{playClick();}catch(_){}var sv=card.getAttribute("data-sv");if(sv!==null){var it=list[+sv];if(!it)return;var mem=(it.mem||[]).map(function(m){return {catBody:m.b,color:m.c,name:m.n,cos:m.cos||null,pose:m.pose||null};});_jrnBigShow(it.name,it.emoji,mem,it.ts,it.finish);}else{_jrnBigShow(card.getAttribute("data-pv"),card.getAttribute("data-em"),[_meMember()],Date.now(),card.getAttribute("data-fin")==="1");}};});}catch(_){}
   el.hidden=false;try{playClick();}catch(_){}
 }
 function closeJrnAlbum(){var el=$("jrnAlbum");if(el)el.hidden=true;}
@@ -17569,6 +17627,7 @@ try{
 <div id="reloadPrompt" hidden><span class="rpText">🔄 新しい記録が 届いたよ</span><button id="rpReload" type="button" class="rpBtn rpPrimary">読みこむ</button><button id="rpLater" type="button" class="rpBtn rpLater">あとで</button></div>
 <div id="jrnPhoto" hidden><div class="jpInner"></div></div>
 <div id="jrnAlbum" hidden><div class="jaHead"><button id="jaClose" type="button">‹ もどる</button><div class="jaTitle">📷 日本一周アルバム</div></div><div id="jrnAlbumBody"></div></div>
+<div id="jrnBig" hidden><div class="jbInner"></div></div>
 <div id="recruitPick" hidden><div class="rpkCard"><div class="rpkTitle" id="rpkTitle">ぼしゅうタグ</div><div class="rpkSub" id="rpkSub">なかまを さがしてることを 伝えよう</div><div class="rpkBtns" id="rpkBtns"></div><button id="rpkClear" type="button" class="rpkClear">タグを はずす</button><button id="rpkClose" type="button" class="rpkClose">とじる</button></div></div>
 <div id="renamePick" hidden><div class="rpkCard"><div class="rpkTitle">グループ名</div><div class="rpkSub">パーティの名前を きめよう（空でもOK）</div><input id="renameInput" maxlength="16" class="pNameInput" placeholder="グループ名"><button id="renameSave" type="button" class="rpkClose">ほぞん</button><button id="renameCancel" type="button" class="rpkClear">やめる</button></div></div>
 <div id="partyLeaveConfirm" hidden><div class="rpkCard"><div class="rpkTitle">パーティを ぬける？</div><div class="rpkSub">また 入りなおせるよ</div><button id="plcYes" type="button" class="rpkClose plcLeave">ぬける</button><button id="plcNo" type="button" class="rpkClear">やめる</button></div></div>

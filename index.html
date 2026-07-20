@@ -2785,12 +2785,17 @@ html.lite .catDeco{animation:none;}
 #pdNoticeChk input{width:18px;height:18px;flex:0 0 auto;accent-color:#7fd8b0;cursor:pointer;}
 #pdNoticeLater{border:none;background:transparent;color:#9bbacb;font-size:12px;font-weight:800;cursor:pointer;padding:4px 10px;text-decoration:underline;}
 #pdNoticeLater:active{transform:scale(.96);}
-#reloadPrompt{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2500;display:flex;align-items:center;gap:9px;background:#fff;border-radius:16px;padding:10px 12px 10px 16px;box-shadow:0 6px 24px rgba(60,90,120,.28);border:1.5px solid #e5eef4;max-width:calc(100vw - 28px);animation:rpIn .3s cubic-bezier(.4,0,.2,1);}
+#reloadPrompt{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2500;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:9px;background:#fff;border-radius:16px;padding:10px 12px 10px 16px;box-shadow:0 6px 24px rgba(60,90,120,.28);border:1.5px solid #e5eef4;max-width:calc(100vw - 22px);animation:rpIn .3s cubic-bezier(.4,0,.2,1);}
 #reloadPrompt[hidden]{display:none;}
 .rpText{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:13px;font-weight:800;color:#4f7089;white-space:nowrap;}
 .rpBtn{border:none;border-radius:999px;font-size:12.5px;font-weight:800;padding:7px 14px;cursor:pointer;font-family:"Yomogi","Kosugi Maru",sans-serif;}
 .rpPrimary{background:linear-gradient(180deg,#7fc6f0,#5aa9e0);color:#fff;}
 .rpLater{background:#eef3f6;color:#8fa6b2;padding:7px 11px;}
+@media (max-width:410px){
+  #reloadPrompt{width:calc(100vw - 22px);max-width:none;justify-content:center;padding:11px 14px;gap:8px;}
+  .rpText{white-space:normal;flex:1 1 100%;text-align:center;font-size:12.5px;margin-bottom:1px;}
+  .rpBtn{flex:0 0 auto;}
+}
 @keyframes rpIn{from{opacity:0;transform:translate(-50%,14px);}to{opacity:1;transform:translate(-50%,0);}}
 #mtMigrate{position:fixed;inset:0;z-index:3100;display:none;align-items:center;justify-content:center;background:rgba(40,60,80,.42);padding:24px;}
 #mtMigrate:not([hidden]){display:flex;animation:rpIn .3s ease;}
@@ -2879,6 +2884,8 @@ button.pmTag{cursor:pointer;}
 .pMemberEmpty{opacity:.9;}
 #recruitPick{position:fixed;inset:0;z-index:3260;display:none;align-items:center;justify-content:center;background:rgba(40,60,80,.5);padding:24px;}
 #recruitPick:not([hidden]){display:flex;animation:rpIn .25s ease;}
+#partyLeaveConfirm,#renamePick,#speedTable{position:fixed;inset:0;z-index:3260;display:none;align-items:center;justify-content:center;background:rgba(40,60,80,.5);padding:24px;}
+#partyLeaveConfirm:not([hidden]),#renamePick:not([hidden]),#speedTable:not([hidden]){display:flex;animation:rpIn .25s ease;}
 .rpkCard{background:#fff;border-radius:22px;padding:20px 18px 16px;width:min(300px,86vw);box-shadow:0 16px 44px rgba(40,60,80,.3);text-align:center;}
 .rpkTitle{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:16px;font-weight:900;color:#e8663a;}
 .rpkSub{font-size:11.5px;font-weight:700;color:#9fb2bd;margin:4px 0 14px;}
@@ -14453,7 +14460,12 @@ async function joinParty(code){
 async function leaveParty(){
   const code=_partyId();if(!code){closeParty();return;}
   const db=await getDB();
-  if(db){try{const{ref,remove}=await import(FB_DB);await remove(ref(db,"parties/"+code+"/members/"+getUid()));await remove(ref(db,"uparty/"+getUid()));}catch(_){}}
+  if(db){try{const{ref,get,set,remove}=await import(FB_DB);
+    let iAmHost=false;try{const hs=await get(ref(db,"parties/"+code+"/host"));iAmHost=hs.exists()&&hs.val()===getUid();}catch(_){}
+    await remove(ref(db,"parties/"+code+"/members/"+getUid()));
+    await remove(ref(db,"uparty/"+getUid()));
+    if(iAmHost){try{const ms=await get(ref(db,"parties/"+code+"/members"));const rest=ms.exists()?Object.keys(ms.val()):[];if(rest.length){await set(ref(db,"parties/"+code+"/host"),rest[0]);}else{try{await remove(ref(db,"parties/"+code));}catch(_){}}}catch(_){}}
+  }catch(_){}}
   try{localStorage.removeItem(PARTY_KEY);}catch(_){}
   try{syncSoon();}catch(_){}
   toast("パーティから ぬけたよ");openParty();

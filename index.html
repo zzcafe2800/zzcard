@@ -3764,7 +3764,8 @@ body.exercising #homeZZ{opacity:0;pointer-events:none;}
 #reloadPrompt[hidden]{display:none !important;}
 
 /* ソロ⇄マルチの 丸ボタン */
-#shpModeFab{position:fixed;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:60;
+#shpPage0>#shpModeFab,#shpModeFab{position:fixed !important;right:16px !important;left:auto !important;
+  bottom:calc(84px + env(safe-area-inset-bottom)) !important;z-index:120 !important;
   width:66px;height:66px;border-radius:50%;border:none;cursor:pointer;display:flex;flex-direction:column;
   align-items:center;justify-content:center;gap:1px;line-height:1;
   background:linear-gradient(180deg,#ffa3c4,#e0588f);color:#fff;box-shadow:0 5px 0 rgba(178,66,110,.42),0 6px 14px rgba(120,150,170,.25);
@@ -3774,6 +3775,9 @@ body.exercising #homeZZ{opacity:0;pointer-events:none;}
 #smfIco{font-size:20px;}
 #smfTxt{font-size:10.5px;font-weight:900;letter-spacing:.04em;}
 #shopScreen.noparty #shpPage0>#shpModeFab{display:flex !important;}
+/* ★#shpPage0>*{position:relative} に負けていたので 強くする */
+#shopScreen #shpPage0>#shpModeFab{position:fixed !important;right:16px;left:auto;
+  bottom:calc(84px + env(safe-area-inset-bottom));z-index:60;}
 #shopScreen.moving #shpModeFab{display:none !important;}
 
 #shpSales{margin-left:auto;border:none;background:none;color:#8aa7b6;font-family:"Yomogi","Kosugi Maru",sans-serif;
@@ -3781,6 +3785,11 @@ body.exercising #homeZZ{opacity:0;pointer-events:none;}
 #shpSales.on{color:#c8863a;text-decoration:underline;text-underline-offset:3px;}
 #shpSales:active{transform:scale(.95);}
 #shpZZ{margin-left:4px;}
+
+.shpPub{display:inline-block;margin-left:7px;font-size:9.5px;font-weight:900;letter-spacing:.04em;
+  border-radius:999px;padding:2px 8px;background:rgba(120,200,150,.24);color:#3f8f5a;vertical-align:1px;
+  text-shadow:none;}
+.shpPub.priv{background:rgba(150,160,170,.2);color:#7a8a96;}
 </style>
 </head>
 <body>
@@ -20513,12 +20522,15 @@ function _tvMapSVG(){
     }
   });
   /* 家 */
-  const _drawHome=(hm,r2,col)=>{
+  const _drawHome=(hm,r2,col,label,lcol)=>{
     const hx=_jpX(hm.lng),hy=_jpY(hm.lat);
     s+='<g><path d="M'+(hx-r2*1.3).toFixed(2)+' '+(hy+r2*0.2).toFixed(2)+' L'+hx.toFixed(2)+' '+(hy-r2*1.2).toFixed(2)+
        ' L'+(hx+r2*1.3).toFixed(2)+' '+(hy+r2*0.2).toFixed(2)+' Z" fill="'+col+'" stroke="#fff" stroke-width="'+(U*1.4).toFixed(4)+'"/>'+
        '<rect x="'+(hx-r2*0.85).toFixed(2)+'" y="'+(hy+r2*0.1).toFixed(2)+'" width="'+(r2*1.7).toFixed(2)+'" height="'+(r2*1.15).toFixed(2)+
        '" fill="#fff2e2" stroke="#fff" stroke-width="'+(U*1.2).toFixed(4)+'"/></g>';
+    if(label)s+='<text x="'+hx.toFixed(2)+'" y="'+(hy-r2*1.9).toFixed(2)+'" text-anchor="middle" font-size="'+(U*9.5).toFixed(3)+
+      '" font-weight="900" fill="'+(lcol||"#8a6a52")+'" stroke="#ffffff" stroke-width="'+(U*2.6).toFixed(4)+
+      '" paint-order="stroke" style="pointer-events:none">'+_esc(label)+'</text>';
   };
   if(_tvPickMode==="move"){
     const ms=getShop();
@@ -20538,9 +20550,9 @@ function _tvMapSVG(){
        '<path d="M'+fx.toFixed(2)+' '+(fy-U*16).toFixed(2)+' L'+(fx+U*11).toFixed(2)+' '+(fy-U*12.5).toFixed(2)+
        ' L'+fx.toFixed(2)+' '+(fy-U*9).toFixed(2)+' Z" fill="#e0588f" stroke="#fff" stroke-width="'+(U*1).toFixed(4)+'"/></g>';
   }
-  getHomes().forEach(hm=>_drawHome(hm,U*7,"#e0885b"));
+  getHomes().forEach(hm=>_drawHome(hm,U*7,"#e0885b","ワープできるよ","#3f9a63"));
   if(!tvHideHome())_tvOthers.forEach(o=>{(o.hm||[]).forEach(q=>{
-    if(Array.isArray(q)&&q.length>1)_drawHome({lng:q[0],lat:q[1]},U*4.6,"#c9a08a");});});
+    if(Array.isArray(q)&&q.length>1)_drawHome({lng:q[0],lat:q[1]},U*4.6,"#c9a08a",((o.n||"だれか").slice(0,6))+"の家","#a58a72");});});
   /* じぶんの猫と 配送の車は HTMLで かさねる（_tvPlaceOverlay） */
   s+='</svg>';
   return s;
@@ -23030,14 +23042,14 @@ function _tvPlaceOthers(){
         <button class="shpMini" id="shpMove" type="button">移転</button>
         <button class="shpMini" id="shpSign" type="button">🏪 お店アイコン</button>
       </div>
-      <div class="shpCard" id="shpMadeCard">
-        <div class="shpCardTtl">つくったもの <span id="shpArtCount"></span></div>
-        <div id="shpArts"></div>
-      </div>
       <div class="shpCard" id="shpShelfCard">
-        <div class="shpCardTtl">商品棚</div>
+        <div class="shpCardTtl">商品棚<span class="shpPub">公開</span></div>
         <div class="shpSlot" id="shpSlotTxt"></div>
         <div id="shpSells"></div>
+      </div>
+      <div class="shpCard" id="shpMadeCard">
+        <div class="shpCardTtl">つくったもの <span id="shpArtCount"></span><span class="shpPub priv">非公開</span></div>
+        <div id="shpArts"></div>
       </div>
       <button id="shpMake" type="button">＋ 商品をつくる</button>
       <button id="shpDeco" type="button">🛋 お店の内装をつくる</button>

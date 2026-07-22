@@ -3762,6 +3762,25 @@ body.exercising #homeZZ{opacity:0;pointer-events:none;}
 
 #reloadPrompt{z-index:2147483000 !important;}
 #reloadPrompt[hidden]{display:none !important;}
+
+/* ソロ⇄マルチの 丸ボタン */
+#shpModeFab{position:fixed;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:60;
+  width:66px;height:66px;border-radius:50%;border:none;cursor:pointer;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:1px;line-height:1;
+  background:linear-gradient(180deg,#ffa3c4,#e0588f);color:#fff;box-shadow:0 5px 0 rgba(178,66,110,.42),0 6px 14px rgba(120,150,170,.25);
+  font-family:"Yomogi","Kosugi Maru",sans-serif;}
+#shpModeFab.multi{background:linear-gradient(180deg,#8fd0e6,#4f93b5);box-shadow:0 5px 0 rgba(64,120,148,.45),0 6px 14px rgba(120,150,170,.25);}
+#shpModeFab:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(178,66,110,.42);}
+#smfIco{font-size:20px;}
+#smfTxt{font-size:10.5px;font-weight:900;letter-spacing:.04em;}
+#shopScreen.noparty #shpPage0>#shpModeFab{display:flex !important;}
+#shopScreen.moving #shpModeFab{display:none !important;}
+
+#shpSales{margin-left:auto;border:none;background:none;color:#8aa7b6;font-family:"Yomogi","Kosugi Maru",sans-serif;
+  font-size:13px;font-weight:900;letter-spacing:.06em;padding:6px 8px;cursor:pointer;}
+#shpSales.on{color:#c8863a;text-decoration:underline;text-underline-offset:3px;}
+#shpSales:active{transform:scale(.95);}
+#shpZZ{margin-left:4px;}
 </style>
 </head>
 <body>
@@ -19403,10 +19422,16 @@ function _shpGo(p){
 function _shpTabPaint(){
   const party=isPartyShop(),p=_shpPage;
   const set=(id,on)=>{const e=$(id);if(e)e.classList.toggle("on",!!on);};
-  set("shpTabS",p===2);
-  set("shpTabP",p===0&&party);
-  set("shpTab0",p===0&&!party);
+  set("shpSales",p===2);
+  set("shpTab0",p===0);
   set("shpTab1",p===1);
+  try{
+    const i=$("smfIco"),t=$("smfTxt"),f=$("shpModeFab");
+    const on=(party||(_pNoPartyView&&!_partyId()));
+    if(i)i.textContent=on?"👥":"🏠";
+    if(t)t.textContent=on?"マルチ":"ソロ";
+    if(f)f.classList.toggle("multi",on);
+  }catch(_){}
 }
 function _shpRenderArts(){
   const box=$("shpArts"),em=$("shpArtsEmpty"),cn=$("shpArtCount");
@@ -19612,27 +19637,35 @@ function _drStrokeCount(){let n=0;_drLayers.forEach(l=>{n+=(l.s||[]).length;});r
     const sc=$("shopScreen");
     if(sc)sc.addEventListener("click",e=>{
       const t=e.target;if(!t)return;
+      if(t.closest("#shpSales")){try{playClick();}catch(_){}_shpGo(_shpPage===2?0:2);return;}
       if(t.closest("#shpZZ")){try{playClick();}catch(_){}try{openZzHelp();}catch(_){}return;}
       if(t.closest("#shpSkip")){try{playClick();}catch(_){}shpSkipGo();return;}
       if(t.closest("#shpClose")){try{playClick();}catch(_){}if(_shpStartup)shpSkipGo();else closeMyShop();return;}
+      if(t.closest("#shpModeFab")){
+        try{playClick();}catch(_){}
+        const toParty=!(isPartyShop()||(_pNoPartyView&&!_partyId()));
+        if(toParty){
+          if(!_partyId()){
+            _pNoPartyView=true;_shpGo(0);
+            try{_pRenderNoParty();}catch(_){}
+            if(!_pJoinLoaded)_pLoadJoinable();
+            try{_shpTabPaint();}catch(_){}
+            return;
+          }
+          switchShopMode("party");
+        }else{
+          _pNoPartyView=false;
+          if(isPartyShop())switchShopMode("solo");
+          else{try{_pRenderCard();_shpPaintMode();}catch(_){}}
+        }
+        _shpGo(0);
+        return;
+      }
       const it=t.closest(".incTab");
       if(it){_incTab=it.dataset.i;_incRender();try{playClick();}catch(_){}return;}
       const tab=t.closest(".shpTab");
       if(tab){
         try{playClick();}catch(_){}
-        const md=tab.dataset.mode;
-        if(md==="party"&&!_partyId()){
-          _pNoPartyView=true;
-          _shpGo(0);
-          try{_pRenderNoParty();}catch(_){}
-          if(!_pJoinLoaded)_pLoadJoinable();
-          try{_shpTabPaint();}catch(_){}
-          const tp=$("shpTabP");if(tp)tp.classList.add("on");
-          const t0=$("shpTab0");if(t0)t0.classList.remove("on");
-          return;
-        }
-        _pNoPartyView=false;
-        if(md&&md!==shopMode())switchShopMode(md);
         _shpGo(parseInt(tab.dataset.p,10));
         return;
       }
@@ -22003,7 +22036,7 @@ async function _pPullShop(){
 function _shpPaintMode(){
   try{const sc=$("shopScreen");if(sc)sc.classList.toggle("party",isPartyShop());}catch(_){}
   try{_shpTabPaint();}catch(_){}
-  const tp=$("shpTabP");if(tp)tp.classList.toggle("dim",!_partyId());
+
 }
 function switchShopMode(m){
   if(m==="party"&&!_partyId()){try{toast("パーティに 入ってないよ（⛰登山 から つくれるよ）");}catch(_){}return;}
@@ -22976,18 +23009,18 @@ function _tvPlaceOthers(){
     <button id="shpClose" type="button">✕</button>
     <span id="shpTitle">おみせ</span>
     <button id="shpSkip" type="button" hidden>スキップ ▶</button>
+    <button id="shpSales" type="button">売上</button>
     <span id="shpZZ">0 zz</span>
   </div>
   <div id="shpTabs">
-    <button class="shpTab" id="shpTabS" type="button" data-p="2">💰 売上</button>
-    <button class="shpTab" id="shpTabP" type="button" data-p="0" data-mode="party">👥 共同店</button>
-    <button class="shpTab on" id="shpTab0" type="button" data-p="0" data-mode="solo">🏠 おみせ</button>
+    <button class="shpTab on" id="shpTab0" type="button" data-p="0">🏠 おみせ</button>
     <button class="shpTab" id="shpTab1" type="button" data-p="1">🗾 たび</button>
   </div>
   <div id="shpBody">
     <div class="shpPage" id="shpPage0">
       <div id="shpBg"></div>
       <div class="shpCard" id="shpParty" hidden></div>
+      <button id="shpModeFab" type="button"><span id="smfIco">🏠</span><span id="smfTxt">ソロ</span></button>
       <div class="shpCard">
         <div class="shpCardTtl">じぶんのお店</div>
         <div class="shpName" id="shpMyName">なまえ なし</div>

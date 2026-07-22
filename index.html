@@ -3661,6 +3661,26 @@ body.exercising #homeZZ{opacity:0;pointer-events:none;}
   .slot.big{flex:0 0 190px;width:190px;min-height:230px;}
   .slot.big .slotArt{width:128px;height:128px;}
 }
+
+#zzHelp{position:fixed;inset:0;z-index:3320;display:none;align-items:center;justify-content:center;background:rgba(40,60,72,.42);padding:18px;}
+#zzHelp.show{display:flex;}
+#zzHelpCard{background:#fff;border-radius:20px;padding:16px 15px 12px;width:100%;max-width:330px;max-height:86vh;overflow-y:auto;}
+#zzHelpTtl{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:15px;font-weight:900;color:#c8863a;text-align:center;margin-bottom:10px;}
+.zhNow{text-align:center;font-size:13px;color:#8aa7b6;font-weight:800;margin-bottom:8px;}
+.zhNow b{color:#c8863a;font-size:16px;}
+.zhNote{font-size:11.5px;color:#8aa7b6;line-height:1.7;margin-bottom:9px;}
+.zhTable{border:1.4px solid #f0e2cd;border-radius:12px;overflow:hidden;margin-bottom:9px;}
+.zhRow{display:flex;align-items:center;gap:6px;padding:7px 10px;font-size:12px;font-weight:800;color:#6d8fa3;
+  border-bottom:1px solid #f5eee2;}
+.zhRow:last-child{border-bottom:none;}
+.zhRow.mid{background:#fff7e8;}
+.zhRow span:first-child{flex:1;}
+.zhSc{font-size:10.5px;color:#a9c0cd;}
+.zhZz{font-weight:900;color:#c8863a;min-width:56px;text-align:right;}
+.zhNote2{font-size:10.5px;color:#9ab6c5;line-height:1.7;}
+#zzHelpGo{width:100%;border:none;background:linear-gradient(180deg,#ffd08a,#f0a63c);color:#fff;font-size:13px;
+  font-weight:900;border-radius:13px;padding:10px;cursor:pointer;margin-top:4px;}
+#zzHelpClose{width:100%;border:none;background:none;color:#9ab6c5;font-size:12px;font-weight:800;cursor:pointer;padding:8px;}
 </style>
 </head>
 <body>
@@ -13267,7 +13287,7 @@ if(_tutSkipBtn)_tutSkipBtn.addEventListener("click",()=>{
 $("helpBtn").addEventListener("click",()=>{playClick();showTutorial("help");});
 try{const _ht=$("htrToggle");if(_ht)_ht.addEventListener("click",e=>{e.stopPropagation();try{playClick();}catch(_){}const c=$("homeTopRight");if(c)c.classList.toggle("htrOpen");});}catch(_){}
 try{document.addEventListener("click",e=>{const c=$("homeTopRight");if(c&&c.classList.contains("htrOpen")&&!c.contains(e.target))c.classList.remove("htrOpen");});}catch(_){}
-try{const _hz=$("homeZZ");if(_hz){_hz.addEventListener("click",e=>{e.stopPropagation();try{playClick();}catch(_){}try{openMyShop(0);}catch(_){}});setTimeout(()=>{try{_hz.textContent=zzFmt(getZZ());}catch(_){}},0);}}catch(_){}
+try{const _hz=$("homeZZ");if(_hz){_hz.addEventListener("click",e=>{e.stopPropagation();try{playClick();}catch(_){}try{openZzHelp();}catch(_){}});setTimeout(()=>{try{_hz.textContent=zzFmt(getZZ());}catch(_){}},0);}}catch(_){}
 try{const _hl=$("homeLoc");if(_hl){_hl.hidden=false;_hl.innerHTML='<span class="hlPin">🗾</span>店・旅';_hl.addEventListener("click",e=>{e.stopPropagation();try{playClick();}catch(_){}try{openMyShop(1);}catch(_){}});}}catch(_){}
 try{var _hab=$("homeAlbumBtn");if(_hab)_hab.addEventListener("click",function(e){e.stopPropagation();try{playClick();}catch(_){}try{openJrnAlbum();}catch(_){}});}catch(_){}
 function _applyLite(){try{const m=/Mobi|Android|iPhone|iPod|iPad/i.test(navigator.userAgent||"");const p=(window.innerHeight||0)>=(window.innerWidth||0);document.documentElement.classList.toggle("lite",m||p);}catch(_){}}
@@ -19020,7 +19040,7 @@ var ART_USES=[
   {k:"stamp",n:"スタンプ",       s:"ラリーの スタンプ（青）",  ico:"🔵"},
   {k:"furn", n:"お店のアイテム", s:"お店に かざれる",         ico:"🪑"},
   {k:"pat",  n:"お店の模様",     s:"かべ・ゆか・まど",         ico:"🧱"},
-  {k:"sign", n:"お店の見た目",   s:"地図と一覧に 出るよ",      ico:"🏪"}
+  {k:"sign", n:"お店アイコン",   s:"地図と一覧に 出るよ",      ico:"🏪"}
 ];
 const COS_PARTS=[["hat","ぼうし"],["neck","くび"],["body","からだ"],["tail","しっぽ"],["eyes","め"],["fx","エフェクト"]];
 const PAT_PARTS=[["wall","かべ"],["floor","ゆか"],["window","まど"]];
@@ -19530,7 +19550,7 @@ function _drStrokeCount(){let n=0;_drLayers.forEach(l=>{n+=(l.s||[]).length;});r
             a.use==="cos"?(artCosOn(a.id)?"👕 ぬぐ":"👕 きる"):
             a.use==="stamp"?(artStampOn(a.id)?"🔵 スタンプから はずす":"🔵 スタンプに くわえる"):
             a.use==="emo"?(artEmoOn(a.id)?"😊 絵文字から はずす":"😊 絵文字に くわえる"):
-            a.use==="sign"?((getShopIcon()&&getShopIcon().i===a.id)?"🏪 お店の見た目を やめる":"🏪 お店の見た目に する"):
+            a.use==="sign"?((getShopIcon()&&getShopIcon().i===a.id)?"🏪 お店アイコンを やめる":"🏪 お店アイコンに する"):
             "🛋 お店に かざる";
           $("artMenu").classList.add("show");}
         return;
@@ -19680,7 +19700,7 @@ function _drStrokeCount(){let n=0;_drLayers.forEach(l=>{n+=(l.s||[]).length;});r
         drawing=true;
         try{cv.setPointerCapture(e.pointerId);}catch(_){}
         if(_drMode==="fill"){
-          const ok=_drBucket(p);
+          const ok=_drBucketAll(p);
           if(!ok){try{toast("ここは ぬれなかったよ");}catch(_){}}
           drawing=false;_drRender();_drPaintMode();return;
         }
@@ -20070,8 +20090,8 @@ function _decoPlace(id){
         else if(a.use==="emo"){on=toggleArtEmo(id);msg=on?"絵文字に くわえたよ":"絵文字から はずしたよ";try{_emoChips();}catch(_){}}
         else if(a.use==="sign"){
           const cur=getShopIcon();
-          if(cur&&cur.i===id){setShopIcon(null);msg="お店の見た目を もとに もどしたよ";}
-          else{setShopIcon({u:getUid(),i:id});msg="お店の見た目に したよ！";}
+          if(cur&&cur.i===id){setShopIcon(null);msg="お店アイコンを もとに もどしたよ";}
+          else{setShopIcon({u:getUid(),i:id});msg="お店アイコンに したよ！";}
         }
         else{am.classList.remove("show");openStEdit();return;}
         am.classList.remove("show");
@@ -20656,6 +20676,14 @@ function _renderShopNotif(list){
         try{playClick();}catch(_){}try{toast(b.dataset.q==="nice"?"見え方ゆうせんに したよ":"かるさゆうせんに したよ");}catch(_){}
       });paint();}
     }catch(_){}
+    try{
+      const zh=$("zzHelp");
+      if(zh)zh.addEventListener("click",e=>{
+        const t=e.target;
+        if(t.closest("#zzHelpClose")||t===zh){zh.classList.remove("show");return;}
+        if(t.closest("#zzHelpGo")){zh.classList.remove("show");try{openMyShop(0);}catch(_){}return;}
+      });
+    }catch(_){}
     const hp=$("tvHideP");
     if(hp){
       hp.checked=tvHideP();
@@ -20923,6 +20951,100 @@ function _stDraw(){
   st.innerHTML=_stRoomSVG(d,_stPool,_stEdit,_decoSel);
 }
 let _stDeco=null;
+/* --- ぬり：えらんだ色いがい（透明でない）は 同じ色を ぜんぶ塗る --- */
+function _drBucketAll(p){
+  const cs=_drCanvasSize,S=2.2;
+  const W=Math.max(8,Math.round(cs.w*S)),H=Math.max(8,Math.round(cs.h*S));
+  const cv=document.createElement("canvas");cv.width=W;cv.height=H;
+  const ctx=cv.getContext("2d");
+  try{_artDrawLayers(ctx,_drLayers,cs,S);}catch(_){}
+  let d;try{d=ctx.getImageData(0,0,W,H).data;}catch(_){return false;}
+  const sx=Math.max(0,Math.min(W-1,Math.round(p.x*S))),sy=Math.max(0,Math.min(H-1,Math.round(p.y*S)));
+  const at=i=>[d[i*4],d[i*4+1],d[i*4+2],d[i*4+3]];
+  const s0=at(sy*W+sx),TOL=42,clear=(s0[3]<20);
+  const same=i=>{
+    const c=at(i);
+    if(clear)return c[3]<20;
+    if(c[3]<20)return false;
+    return Math.abs(c[0]-s0[0])+Math.abs(c[1]-s0[1])+Math.abs(c[2]-s0[2])<TOL;
+  };
+  /* 透明のところは つながっている所だけ／色のところは 画面ぜんぶ */
+  const mask=new Uint8Array(W*H);let total=0;
+  if(clear){
+    const st=[sy*W+sx];if(!same(st[0]))return false;
+    mask[st[0]]=1;
+    while(st.length){
+      const i=st.pop();total++;
+      const x=i%W,y=(i/W)|0;
+      if(x>0&&!mask[i-1]&&same(i-1)){mask[i-1]=1;st.push(i-1);}
+      if(x<W-1&&!mask[i+1]&&same(i+1)){mask[i+1]=1;st.push(i+1);}
+      if(y>0&&!mask[i-W]&&same(i-W)){mask[i-W]=1;st.push(i-W);}
+      if(y<H-1&&!mask[i+W]&&same(i+W)){mask[i+W]=1;st.push(i+W);}
+    }
+  }else{
+    for(let i=0;i<W*H;i++)if(same(i)){mask[i]=1;total++;}
+  }
+  if(total<6)return false;
+  if(clear&&total>W*H*0.985)return false;
+  /* かたまりごとに ふちを たどる */
+  const seen=new Uint8Array(W*H),dirs=[[1,0],[1,1],[0,1],[-1,1],[-1,0],[-1,-1],[0,-1],[1,-1]];
+  const inM=(x,y)=>(x>=0&&y>=0&&x<W&&y<H&&mask[y*W+x]===1);
+  const outs=[];
+  for(let i0=0;i0<W*H&&outs.length<24;i0++){
+    if(!mask[i0]||seen[i0])continue;
+    /* この かたまりを 取り出す */
+    const st=[i0];seen[i0]=1;let n=0;
+    while(st.length){
+      const i=st.pop();n++;
+      const x=i%W,y=(i/W)|0;
+      if(x>0&&mask[i-1]&&!seen[i-1]){seen[i-1]=1;st.push(i-1);}
+      if(x<W-1&&mask[i+1]&&!seen[i+1]){seen[i+1]=1;st.push(i+1);}
+      if(y>0&&mask[i-W]&&!seen[i-W]){seen[i-W]=1;st.push(i-W);}
+      if(y<H-1&&mask[i+W]&&!seen[i+W]){seen[i+W]=1;st.push(i+W);}
+    }
+    if(n<8)continue;
+    let cx=i0%W,cy=(i0/W)|0,bd=4,pts=[],guard=0;
+    const sx0=cx,sy0=cy;
+    do{
+      pts.push({x:cx/S,y:cy/S});
+      let found=false;
+      for(let k=1;k<=8;k++){
+        const dir=(bd+k)%8,nx=cx+dirs[dir][0],ny=cy+dirs[dir][1];
+        if(inM(nx,ny)){cx=nx;cy=ny;bd=(dir+5)%8;found=true;break;}
+      }
+      if(!found)break;
+    }while((cx!==sx0||cy!==sy0)&&++guard<20000);
+    if(pts.length<6)continue;
+    pts=_artRdp(pts,cs.w*0.0035);
+    if(pts.length>=3)outs.push(pts);
+  }
+  if(!outs.length)return false;
+  const ly=_drLayers[_drCur];if(!ly)return false;
+  _drSnap();
+  outs.reverse().forEach(pts=>{ly.s.unshift([_drCol,-1,_artPack(pts),_drAlpha]);});
+  return true;
+}
+/* --- 所持金の めやす --- */
+function _zzForDiff(diff){
+  let sc=450-diff*260;if(sc>900)sc=900;if(sc<-150)sc=-150;
+  return{sc:Math.round(sc),zz:Math.max(10,20+Math.round(Math.max(0,sc)/10))};
+}
+function openZzHelp(){
+  const el=$("zzHelp");if(!el)return;
+  const rows=[[-2,"2時間 はやい"],[-1,"1時間 はやい"],[-0.5,"30分 はやい"],[0,"ぴったり"],[0.5,"30分 おそい"],[1,"1時間 おそい"],[2,"2時間 おそい"]];
+  const p=(typeof getProfile==="function"?getProfile():null)||{};
+  const hm=(typeof profileWakeHM==="function")?profileWakeHM():{h:6,m:0};
+  $("zzHelpBody").innerHTML=
+    '<div class="zhNow">いまの もちきん <b>'+zzFmt(getZZ())+'</b></div>'+
+    '<div class="zhNote">目標の おきる時間：<b>'+hm.h+":"+String(hm.m||0).padStart(2,"0")+'</b><br>'+
+    'そこから 何時間 ずれたかで もらえる お金が かわるよ。</div>'+
+    '<div class="zhTable">'+rows.map(r=>{
+      const v=_zzForDiff(r[0]);
+      return'<div class="zhRow'+(r[0]===0?" mid":"")+'"><span>'+r[1]+'</span><span class="zhSc">スコア '+v.sc+'</span><span class="zhZz">'+v.zz+' zz</span></div>';
+    }).join("")+'</div>'+
+    '<div class="zhNote2">けいさん：<b>20zz ＋ スコア÷10</b>（スコアは 早いほど 高い・上限900）<br>体操は 1日1回まで もらえるよ。</div>';
+  el.classList.add("show");
+}
 /* --- おえかき：太さの こまかい調整・透明度・バケツ --- */
 var ART_W2=[0.005,0.008,0.012,0.017,0.026,0.036,0.05,0.068,0.095,0.13,0.17,0.22];
 /* ★番号がズレないよう 読みこみ時に かならず同じ順で 足しておく */
@@ -22160,7 +22282,9 @@ function _tvPlaceOthers(){
   const w=_tvView.w,hh=_tvView.h||w,vx=_tvView.cx-w/2,vy=_tvView.cy-hh/2;
   document.querySelectorAll("#tvOverlay .tvOth").forEach(el=>{
     const o=_tvOthers[parseInt(el.dataset.oi,10)];if(!o)return;
-    const x=(_jpX(o.lng)-vx)/w*r.width,y=(_jpY(o.lat)-vy)/hh*r.height;
+    let x=(_jpX(o.lng)-vx)/w*r.width,y=(_jpY(o.lat)-vy)/hh*r.height;
+    const hsh=_jvHash((o.n||"")+i),ang=(hsh%360)*Math.PI/180,rad=9+(hsh%7);
+    x+=Math.cos(ang)*rad;y+=Math.sin(ang)*rad;   /* 同じ場所でも かさならないように 少しずらす */
     const out=(x<-30||y<-30||x>r.width+30||y>r.height+30);
     el.style.display=out?"none":"block";
     if(!out){el.style.left=x.toFixed(1)+"px";el.style.top=y.toFixed(1)+"px";}
@@ -22380,7 +22504,7 @@ function _tvPlaceOthers(){
         <button class="shpMini" id="shpRename" type="button">なまえを かえる</button>
         <button class="shpMini" id="shpOpen" type="button">オープン中</button>
         <button class="shpMini" id="shpMove" type="button">移転</button>
-        <button class="shpMini" id="shpSign" type="button">🏪 見た目</button>
+        <button class="shpMini" id="shpSign" type="button">🏪 お店アイコン</button>
       </div>
       <div class="shpCard" id="shpMadeCard">
         <div class="shpCardTtl">つくったもの <span id="shpArtCount"></span></div>
@@ -22450,13 +22574,13 @@ function _tvPlaceOthers(){
       <button class="drBtn on" id="drMPen" type="button" data-m="pen">✏️ ペン</button>
       <button class="drBtn" id="drMLine" type="button" data-m="line">📐 つなぐ</button>
       <button class="drBtn" id="drMEra" type="button" data-m="era">🧽 けす</button>
-      <button class="drBtn" id="drMFill" type="button" data-m="fill">🪣 ぬり</button>
+      <button class="drBtn" id="drMFill" type="button" data-m="fill">🪣 バケツ</button>
       <button class="drBtn" id="drLineEnd" type="button" hidden>✓ おわり</button>
       <button class="drBtn" id="drUndo" type="button">↩</button>
       <button class="drBtn" id="drRedo" type="button">↪</button>
     </div>
     <div id="drPal"></div>
-    <div class="drRow" id="drWRow"></div>
+    <div class="drRow" id="drWRow" hidden></div>
     <div class="drRow" id="drFineRow">
       <span class="decoLbl">ふとさ</span><input type="range" id="drWFine" min="0" max="11" value="4"/>
       <span class="decoLbl">こさ</span><input type="range" id="drAlpha" min="1" max="10" value="10"/>
@@ -22566,6 +22690,14 @@ function _tvPlaceOthers(){
     <div class="zgMain">＋<b id="zgAmt">0</b><span class="zgUnit">zz</span> 獲得！</div>
     <div class="zgSub" id="zgScore"></div>
     <div class="zgNote" id="zgBase"></div>
+  </div>
+</div>
+<div id="zzHelp">
+  <div id="zzHelpCard">
+    <div id="zzHelpTtl">💰 お金の もらいかた</div>
+    <div id="zzHelpBody"></div>
+    <button id="zzHelpGo" type="button">おみせを ひらく</button>
+    <button id="zzHelpClose" type="button">とじる</button>
   </div>
 </div>
 </body>

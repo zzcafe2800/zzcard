@@ -3746,6 +3746,18 @@ body.exercising #homeZZ{opacity:0;pointer-events:none;}
 .closetItem.art svg{width:100%;height:100%;}
 .closetItem.art .ciName{position:absolute;left:0;right:0;bottom:1px;font-size:8px;font-weight:900;color:#5c93ad;
   text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 0 3px #fff,0 0 3px #fff;}
+
+/* スキップは 見つけやすく */
+#shpSkip{margin-left:auto;border:none;background:linear-gradient(180deg,#ffc46b,#f08a2c);color:#fff;
+  font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:14px;font-weight:900;letter-spacing:.06em;
+  border-radius:999px;padding:9px 20px;cursor:pointer;box-shadow:0 4px 0 rgba(196,110,26,.45),0 0 0 3px rgba(255,196,107,.28);
+  animation:shpSkipPulse 1.5s ease-in-out infinite;}
+#shpSkip[hidden]{display:none;}
+#shpSkip:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(196,110,26,.45);animation:none;}
+@keyframes shpSkipPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.06);}}
+#shpTop:has(#shpSkip:not([hidden])) #shpZZ{margin-left:6px;}
+@media (prefers-reduced-motion:reduce){#shpSkip{animation:none;}}
+@media (max-width:400px){#shpSkip{font-size:13px;padding:8px 15px;}#shpTitle{display:none;}}
 </style>
 </head>
 <body>
@@ -4372,7 +4384,7 @@ body.exercising #homeZZ{opacity:0;pointer-events:none;}
     <div id="postDoneSub">みんなのホームに表示されるよ</div>
     <div id="postDonePreview"></div>
     <div id="pdNoticeOffer" hidden>
-      <label id="pdNoticeChk"><input type="checkbox" id="pdNoticeCheck"/> <span>これから 上の通知（インストール・毎朝通知）を 表示しない</span></label>
+      <label id="pdNoticeChk"><input type="checkbox" id="pdNoticeCheck"/> <span>これから 上のバー（インストール・毎朝通知）を 表示しない</span></label>
       <button id="pdNoticeLater" type="button">今は決めない</button>
     </div>
     <div id="postDoneBtns">
@@ -5818,7 +5830,7 @@ async function postToday(anon,comment){
     try{const _ed=JSON.parse(localStorage.getItem("radio_post_edit")||"null");if(_ed&&_ed.date===date&&Number.isFinite(_ed.createdAt))_cAt=_ed.createdAt;}catch(_){}
     const _cm=(comment||"").slice(0,30);
     await set(ref(db,"posts/"+getUid()+"_"+date),{   /* キーが uid_date なので上書き＝二重投稿にならない */
-      uid:getUid(),name:anon?"匿名さん":(p.name||"匿名さん"),color:p.color||"#8fdcff",catBody:p.catBody||"#1c1c1c",acos:acosPayload(),date,stamp,createdAt:_cAt,wakeHour:Number.isFinite(p.wakeHour)?p.wakeHour:null,wakeMin:Number.isFinite(p.wakeMin)?p.wakeMin:0,streak:calcStreak().current,goume:_weekDoneCount(),comment:_cm,pose:getEquippedPose(),cos:getEquippedCostume()||null,thanks:getThanksWord(),showTime:_show,wakeHF:getActualWake(),storyJoin:(function(){try{const v=localStorage.getItem("radio_story_join");return v===null?true:v==="1";}catch(_){return true;}})()
+      uid:getUid(),name:anon?"匿名さん":(p.name||"匿名さん"),color:p.color||"#8fdcff",catBody:p.catBody||"#1c1c1c",acos:acosPayload(),cos:(getEquippedCostume()||null),date,stamp,createdAt:_cAt,wakeHour:Number.isFinite(p.wakeHour)?p.wakeHour:null,wakeMin:Number.isFinite(p.wakeMin)?p.wakeMin:0,streak:calcStreak().current,goume:_weekDoneCount(),comment:_cm,pose:getEquippedPose(),cos:getEquippedCostume()||null,thanks:getThanksWord(),showTime:_show,wakeHF:getActualWake(),storyJoin:(function(){try{const v=localStorage.getItem("radio_story_join");return v===null?true:v==="1";}catch(_){return true;}})()
     });
     try{localStorage.setItem("radio_post_edit",JSON.stringify({date,createdAt:_cAt,comment:_cm,anon:!!anon,show:_show}));}catch(_){}
     return true;
@@ -7316,7 +7328,7 @@ function getItems(){try{const v=JSON.parse(localStorage.getItem(ITEM_KEY)||"{}")
 function addItem(id){const m=getItems();m[id]=Math.min(2,(m[id]||0)+1);localStorage.setItem(ITEM_KEY,JSON.stringify(m));}
 function itemCount(id){return getItems()[id]||0;}
 function getEquip(){try{const v=JSON.parse(localStorage.getItem(EQUIP_KEY)||"{}");return(v&&typeof v==="object")?v:{};}catch(e){return{};}}
-function setEquip(e){localStorage.setItem(EQUIP_KEY,JSON.stringify(e));}
+function setEquip(e){localStorage.setItem(EQUIP_KEY,JSON.stringify(e));try{pushCosToPost();}catch(_){}}
 function getItemColors(){try{const v=JSON.parse(localStorage.getItem(ITEMCOL_KEY)||"{}");return(v&&typeof v==="object")?v:{};}catch(e){return{};}}
 function setItemColor(id,c){const m=getItemColors();m[id]=c;localStorage.setItem(ITEMCOL_KEY,JSON.stringify(m));}
 function itemColor(id){return getItemColors()[id]||itemById(id).def;}
@@ -9097,7 +9109,7 @@ function _wireTopbarOffer(){
       if(ck.checked){
         try{localStorage.setItem("radio_topbar_off","1");localStorage.setItem("radio_topbar_decided","1");}catch(_){}
         try{const bar=$("installBar");if(bar){bar.classList.remove("show");setTimeout(()=>{bar.hidden=true;},300);}}catch(_){}
-        try{toast("上の通知を これから表示しないよ");}catch(_){}
+        try{toast("上のバーを これから表示しないよ");}catch(_){}
       }else{
         try{localStorage.setItem("radio_topbar_off","0");}catch(_){}
       }
@@ -13756,6 +13768,7 @@ profileBoot();
   if(isStandalone){try{localStorage.setItem("radio_installed","1");}catch(_){}_installed=true;}   /* 一度でもアプリで開いたら記憶して、以後ブラウザでも案内を出さない */
   let deferred=null,hideTimer=null,shown=false;
   function showBar(autoHideMs){
+    try{if(localStorage.getItem("radio_topbar_off")==="1")return;}catch(_){}   /* 非表示にしていたら どこから呼ばれても 出さない */
     if(shown)return;
     shown=true;bar.hidden=false;
     requestAnimationFrame(()=>bar.classList.add("show"));
@@ -20834,7 +20847,7 @@ function _renderShopNotif(list){
           }catch(_){}
           tbPaint();
           try{playClick();}catch(_){}
-          try{toast(off?"上の おしらせバーを 表示しないよ":"つぎから 表示するよ");}catch(_){}
+          try{toast(off?"上のバーを 表示しないよ":"つぎから 表示するよ");}catch(_){}
         });
         tbPaint();
       }
@@ -21126,6 +21139,25 @@ function _stDraw(){
   st.innerHTML=_stRoomSVG(d,_stPool,_stEdit,_decoSel);
 }
 let _stDeco=null;
+
+/* --- 衣装を かえたら きょうの投稿にも 反映（ほかの人から 見えるように） --- */
+var _cosPushT=0;
+function pushCosToPost(){
+  clearTimeout(_cosPushT);
+  _cosPushT=setTimeout(async()=>{
+    try{
+      const db=await getDB();if(!db)return;
+      const{ref,get,update}=await import(FB_DB);
+      const key=getUid()+"_"+jstKey();
+      const sn=await get(ref(db,"posts/"+key));
+      if(!sn||!sn.exists())return;             /* きょう まだ投稿してなければ 何もしない */
+      await update(ref(db,"posts/"+key),{
+        acos:acosPayload(),
+        cos:(typeof getEquippedCostume==="function"?(getEquippedCostume()||null):null)
+      });
+    }catch(e){console.warn("cos push",e);}
+  },900);
+}
 /* --- 描いた衣装を ほかの人にも 見せる（既存の衣装と 同じあつかい） --- */
 var _acosCache={},_acosNeed={},_acosTimer=0;
 function acosPayload(){                    /* 投稿に のせる形 {u:uid, s:{slot:artId}} */
@@ -22481,6 +22513,7 @@ function toggleArtCos(id){
   const o=getArtCos(),slot=a.sub||"body";
   if(o[slot]===id)delete o[slot];else o[slot]=id;
   setArtCos(o);
+  try{pushCosToPost();}catch(_){}
   try{if(typeof renderCats==="function")renderCats();}catch(_){}
   try{if(typeof renderRoom==="function"&&roomVisible&&roomVisible())renderRoom();}catch(_){}
   return o[slot]===id;
@@ -22850,7 +22883,7 @@ function _tvPlaceOthers(){
     <div id="setList">
       <div class="setCard" id="setTopbar" style="cursor:default">
         <span class="setCardIco ico-adv">🔔</span>
-        <span class="setCardTxt"><b>上の おしらせバー</b><small>インストール・毎朝の通知の あんない</small>
+        <span class="setCardTxt"><b>上のバー</b><small>インストール・毎朝の通知の あんない（アプリ版でも 出ません）</small>
           <span id="setTopbarRow">
             <button class="mqBtn" type="button" data-tb="on">表示する</button>
             <button class="mqBtn" type="button" data-tb="off">表示しない</button>
@@ -22925,6 +22958,7 @@ function _tvPlaceOthers(){
   <div id="shpTop">
     <button id="shpClose" type="button">✕</button>
     <span id="shpTitle">おみせ</span>
+    <button id="shpSkip" type="button" hidden>スキップ ▶</button>
     <span id="shpZZ">0 zz</span>
   </div>
   <div id="shpTabs">
@@ -22932,7 +22966,6 @@ function _tvPlaceOthers(){
     <button class="shpTab" id="shpTabP" type="button" data-p="0" data-mode="party">👥 共同店</button>
     <button class="shpTab on" id="shpTab0" type="button" data-p="0" data-mode="solo">🏠 おみせ</button>
     <button class="shpTab" id="shpTab1" type="button" data-p="1">🗾 たび</button>
-    <button class="shpTab" id="shpSkip" type="button" hidden>スキップ ›</button>
   </div>
   <div id="shpBody">
     <div class="shpPage" id="shpPage0">

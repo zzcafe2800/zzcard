@@ -3612,6 +3612,29 @@ body.exercising #homeZZ{opacity:0;pointer-events:none;}
   border-radius:999px;padding:6px 11px;cursor:pointer;white-space:nowrap;}
 .pLeave{display:block;width:100%;border:none;background:rgba(190,190,200,.18);color:#8a94a0;font-size:11.5px;
   font-weight:900;border-radius:11px;padding:8px;cursor:pointer;margin-top:8px;}
+
+/* 商品の 追加ひょうじ */
+.slotBy{font-size:9px;color:#a9c0cd;font-weight:800;}
+.slotUse{font-size:9.5px;color:#a9c0cd;font-weight:800;}
+.slot.big{flex:0 0 118px;width:118px;min-height:150px;padding:9px 6px;}
+.slot.big .slotArt{width:74px;height:74px;}
+.slot.big .slotName{font-size:11.5px;max-width:108px;}
+.slot.big .slotPrice{font-size:11.5px;}
+/* 共同店は 青ベース（ソロのピンクと 入れかえ） */
+#shopScreen.party{background:radial-gradient(120% 80% at 50% 0%,#eef4f7 0%,#e2f0fa 45%,#dbe9f5 100%);}
+#shopScreen.party .shpCardTtl::before{background:#5b9cb8;}
+#shopScreen.party #shpMake{background:linear-gradient(180deg,#8fd0e6,#4f93b5);box-shadow:0 4px 0 rgba(64,120,148,.45);}
+#shopScreen.party .shpTab.on{background:#e0588f;box-shadow:0 3px 0 rgba(178,66,110,.4);}
+#shopScreen.party .slotSub{background:rgba(143,190,220,.22);color:#4a7f99;}
+#shopScreen.party .slotSub.edit{background:rgba(255,160,190,.2);color:#c14a79;}
+#shopScreen.party .slot.plus{background:rgba(224,240,250,.9);border-color:#9fc9dd;color:#4a7f99;}
+#shopScreen.party .slot.plus .slotName,#shopScreen.party .slot.plus .slotPrice{color:#4a7f99;}
+#shopScreen.party #shpZZ{background:linear-gradient(180deg,#eaf6fb,#d6ecf6);border-color:#a9d3e6;color:#3f7fa8;}
+#shopScreen.party .pBig{background:linear-gradient(180deg,#8fd0e6,#4f93b5);box-shadow:0 3px 0 rgba(64,120,148,.4);}
+#shopScreen.party .pApply{background:rgba(143,190,220,.22);color:#4a7f99;}
+
+.tvBy{font-size:10.5px;color:#a9c0cd;font-weight:800;}
+.tvCardBy{font-size:9px;color:#b3c6d1;font-weight:800;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 </style>
 </head>
 <body>
@@ -19114,6 +19137,11 @@ async function _shopEnsure(){
   let s=getShop();
   if(s&&Number.isFinite(s.pref))return s;
   const p=(typeof getProfile==="function"?getProfile():null)||{};
+  let ownerName=p.name||"";
+  if(isPartyShop()&&_pInfo){
+    const hm=(_pInfo.members||{})[_pInfo.host];
+    if(hm&&hm.name)ownerName=hm.name;
+  }
   let pref=Math.floor(Math.random()*47);
   /* 県ごとになるべく均等：いちばん店が少ない県をえらぶ */
   try{
@@ -19129,7 +19157,7 @@ async function _shopEnsure(){
     }
   }catch(e){console.warn("shop place",e);}
   const t=(typeof JP_TOWNS!=="undefined"&&JP_TOWNS[pref])?JP_TOWNS[pref]:["東京",139.69,35.68];
-  s={name:(p.name?p.name+"のお店":"なまえ なし"),pref:pref,
+  s={name:(ownerName?ownerName+"のお店":"なまえ なし"),pref:pref,
      lng:t[1]+(Math.random()-.5)*0.5,lat:t[2]+(Math.random()-.5)*0.35,at:Date.now()};
   setShop(s);
   return s;
@@ -19176,6 +19204,7 @@ function closeMyShop(){const sc=$("shopScreen");if(sc)sc.classList.remove("show"
   try{if(_tvBlinkT){clearInterval(_tvBlinkT);_tvBlinkT=0;}}catch(_){}}
 function _shpGo(p){
   _shpPage=p?1:0;
+  try{_pRenderCard();}catch(_){}
   if(_shpPage===1)setTimeout(()=>{try{_tvPaint();}catch(_){}},10);
   ["shpPage0","shpPage1"].forEach((id,i)=>{const e=$(id);if(e)e.hidden=(i!==_shpPage);});
   try{_shpTabPaint();}catch(_){}
@@ -19663,8 +19692,14 @@ async function _shopPushCloud(){
     const db=await getDB();if(!db)return;
     const{ref,set}=await import(FB_DB);
     const p=(typeof getProfile==="function"?getProfile():null)||{};
+    let _own=p.name||"匿名さん",_mem=null;
+    if(isPartyShop()&&_pInfo&&_pInfo.members){
+      const ks=Object.keys(_pInfo.members);
+      _mem=ks;
+      _own=ks.map(k=>(_pInfo.members[k]||{}).name||"匿名さん").join("・");
+    }
     await set(ref(db,"shops/"+shopId()),{
-      uid:shopId(),party:isPartyShop()?1:0,name:s.name||"なまえ なし",owner:p.name||"匿名さん",
+      uid:shopId(),party:isPartyShop()?1:0,name:s.name||"なまえ なし",owner:_own,members:_mem,
       pref:s.pref,lng:s.lng,lat:s.lat,at:s.at||Date.now(),
       seen:Date.now(),slots:shopSlots(),closed:s.closed?1:0,icon:getShopIcon()||null,items:s.items||{}
     });
@@ -19740,7 +19775,9 @@ function _doSell(){
   if(isNew&&Object.keys(map).length>=shopSlots()){
     try{toast("出品わくが いっぱいだよ");}catch(_){}return;
   }
-  map[id]={price:p,use:a.use,sub:a.sub||"",name:a.name||"むめい",rev:a.rev||0,by:(a.src&&a.src.u)||getUid(),at:Date.now()};
+  const _me=(typeof getProfile==="function"?getProfile():null)||{};
+  map[id]={price:p,use:a.use,sub:a.sub||"",name:a.name||"むめい",rev:a.rev||0,
+           by:(a.src&&a.src.u)||getUid(),byName:_me.name||"匿名さん",at:Date.now()};
   setSells(map);
   if(isNew)_priceStatAdd(a.use,p);
   $("priceWrap").classList.remove("show");
@@ -20351,6 +20388,7 @@ function openTvList(){
       '<span class="tvCardName">'+_esc(s.name||"お店")+'</span>'+
       '<span class="tvCardSub">'+((JP_PREFNAME&&JP_PREFNAME[s.pref])||"")+" ・ "+Math.round(_tvKmTo(s))+"km</span>"+
       '<span class="tvCardSub">'+(s.nItem||0)+"こ</span>"+
+      (s.owner?'<span class="tvCardBy">'+(s.party?"👥 ":"")+"by "+_esc(String(s.owner).slice(0,14))+"</span>":"")+
       (_tvNew(s)?'<span class="tvCardBadge">🔰</span>':"")+
       (mine?'<span class="tvCardBadge mine">じぶん</span>':"")+
       (!_tvActive(s)?'<span class="tvCardBadge off">おやすみ</span>':"")+
@@ -20366,8 +20404,9 @@ function openTvShop(uid){
   _tvCur=uid;
   const near=isVisitable(uid),mine=_isMyShop(uid);
   $("tvShopName").textContent=(s.name||"お店")+(_tvNew(s)?" 🔰":"");
-  $("tvShopSub").textContent=((JP_PREFNAME&&JP_PREFNAME[s.pref])||"")+" ・ "+Math.round(_tvKmTo(s))+"km"+
-    (near?" ・ いま 買えるよ":mine?" ・ じぶんのお店":"");
+  $("tvShopSub").innerHTML=((JP_PREFNAME&&JP_PREFNAME[s.pref])||"")+" ・ "+Math.round(_tvKmTo(s))+"km"+
+    (near?" ・ いま 買えるよ":mine?" ・ じぶんのお店":"")+
+    (s.owner?'<br><span class="tvBy">'+(s.party?"👥 ":"")+"by "+_esc(s.owner)+"</span>":"");
   const go=$("tvGoBtn");
   if(go){go.hidden=mine;go.textContent=near?"🚩 もういちど 行く":"🚩 ここへ 行く";}
   const _ord=getOrder();
@@ -20436,8 +20475,10 @@ async function _tvBuy(artId,price){
   try{
     const db=await getDB();
     if(db){const{ref,push,set}=await import(FB_DB);
-      const r=push(ref(db,"sales/"+((s.items&&s.items[artId]&&s.items[artId].by)||s.uid)));
-      await set(r,{art:artId,price:price,buyer:getUid(),at:Date.now()});}
+      const _to=(s.party&&Array.isArray(s.members)&&s.members.length)
+        ?s.members:[((s.items&&s.items[artId]&&s.items[artId].by)||s.uid)];
+      for(const _u of _to){const r=push(ref(db,"sales/"+_u));
+        await set(r,{art:artId,price:price,buyer:getUid(),at:Date.now(),shop:s.name||""});}}
   }catch(_){}
   try{playPop();}catch(_){}
   try{toast("「"+(a.name||"アイテム")+"」を かったよ！");}catch(_){}
@@ -20455,7 +20496,7 @@ async function _tvCollect(){
     Object.keys(v).forEach(k=>{
       const e=v[k]||{};sum+=e.price||0;n++;
       const a=artById(e.art);
-      logs.push({n:(a&&a.name)||"アイテム",p:e.price||0,at:e.at||Date.now(),net:e.net?1:0});
+      logs.push({n:(a&&a.name)||"アイテム",p:e.price||0,at:e.at||Date.now(),net:e.net?1:0,s:e.shop||""});
     });
     if(sum>0){
       addZZ(sum);
@@ -20484,7 +20525,7 @@ function _renderShopNotif(list){
     getSaleLog().slice(0,8).forEach(x=>{
       const d=document.createElement("div");
       d.className="notifRow notifShop";
-      d.textContent="💰 「"+x.n+"」が うれたよ ＋"+x.p+"zz"+(x.net?"（ネット注文）":"");
+      d.textContent="💰 "+(x.s?"["+x.s+"] ":"")+"「"+x.n+"」が うれたよ ＋"+x.p+"zz"+(x.net?"（ネット注文）":"");
       list.insertBefore(d,list.firstChild);
     });
   }catch(_){}
@@ -20718,8 +20759,10 @@ async function _tvDoOrder(artId,price){
   try{
     const db=await getDB();
     if(db){const{ref,push,set}=await import(FB_DB);
-      const rr=push(ref(db,"sales/"+((s.items&&s.items[artId]&&s.items[artId].by)||s.uid)));
-      await set(rr,{art:artId,price:price,buyer:getUid(),at:now,net:1});}
+      const _to2=(s.party&&Array.isArray(s.members)&&s.members.length)
+        ?s.members:[((s.items&&s.items[artId]&&s.items[artId].by)||s.uid)];
+      for(const _u of _to2){const rr=push(ref(db,"sales/"+_u));
+        await set(rr,{art:artId,price:price,buyer:getUid(),at:now,net:1,shop:s.name||""});}}
   }catch(_){}
   try{playPop();}catch(_){}
   try{toast("注文したよ！ あした とどくよ 🚚");}catch(_){}
@@ -21246,6 +21289,7 @@ async function _pPullShop(){
   }catch(e){console.warn("party shop pull",e);}
 }
 function _shpPaintMode(){
+  try{const sc=$("shopScreen");if(sc)sc.classList.toggle("party",isPartyShop());}catch(_){}
   try{_shpTabPaint();}catch(_){}
   const tp=$("shpTabP");if(tp)tp.classList.toggle("dim",!_partyId());
 }
@@ -21511,10 +21555,12 @@ function _tvShelfHTML(s,canBuy,mine,ord){
   if(!keys.length)return'<div class="tvNote">まだ なにも ならべてないみたい。</div>';
   return'<div class="shelfRow">'+keys.map(k=>{
     const it=items[k],have=!!artById(k);
-    return'<div class="slot filled">'+
+    return'<div class="slot filled big">'+
       '<span class="slotArt" data-art="'+k+'"></span>'+
       '<span class="slotName">'+_esc(it.name||"むめい")+'</span>'+
+      '<span class="slotUse">'+artUseName(it.use)+(artSubName(it.use,it.sub)?"・"+artSubName(it.use,it.sub):"")+'</span>'+
       '<span class="slotPrice">'+(it.price||0)+'zz</span>'+
+      (it.byName?'<span class="slotBy">by '+_esc(it.byName)+'</span>':"")+
       (mine?"":'<button class="slotBuy" type="button" data-buy="'+k+'" data-price="'+(it.price||0)+'"'+
         ((have||!canBuy)?" disabled":"")+">"+(have?"もってる":canBuy?"かう":"行かなきゃ")+"</button>"+
         (have?"":'<button class="slotBuy net" type="button" data-order="'+k+'" data-price="'+(it.price||0)+'"'+
@@ -21568,11 +21614,13 @@ function _shpRenderShelf(){
     const k=keys[i];
     if(k){
       const it=map[k],a=artById(k);
-      h+='<div class="slot filled" data-repr="'+k+'">'+
-         '<span class="slotArt">'+(a?artSVG(a):"")+'</span>'+
+      const own=(!isPartyShop())||(it.by===getUid())||_pIsOwner();
+      h+='<div class="slot filled"'+(own?' data-repr="'+k+'"':'')+'>'+
+         '<span class="slotArt">'+(a?artSVG(a):shopIconHTML({},40))+'</span>'+
          '<span class="slotName">'+_esc(it.name||"むめい")+'</span>'+
          '<span class="slotPrice">'+(it.price||0)+'zz</span>'+
-         '<button class="slotOff" type="button" data-unsell="'+k+'">✕</button></div>';
+         (isPartyShop()&&it.byName?'<span class="slotBy">by '+_esc(it.byName)+'</span>':"")+
+         (own?'<button class="slotOff" type="button" data-unsell="'+k+'">✕</button>':"")+'</div>';
     }else{
       h+='<div class="slot empty"><span class="slotArt"></span><span class="slotName">あき</span></div>';
     }

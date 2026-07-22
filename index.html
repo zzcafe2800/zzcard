@@ -2045,7 +2045,7 @@ body.exercising #randomModeBtn{animation:none !important;}
 .tsLoad:active{opacity:.6;}
 .tsDl{border:none;border-radius:999px;padding:13px 22px;width:100%;font-size:14px;font-weight:800;cursor:pointer;background:linear-gradient(135deg,#8fd0ef,#6bb8e0);color:#fff;transition:transform .15s;}
 .tsDl:active{transform:scale(.95);}
-#tsPostPreview{display:flex;flex-direction:column;align-items:center;gap:3px;justify-content:flex-start;min-height:176px;padding-top:2px;}
+#tsPostPreview{display:flex;flex-direction:column;align-items:center;gap:3px;justify-content:flex-start;min-height:0;padding-top:2px;}
 #tsComment{width:100%;box-sizing:border-box;border:1.5px solid #d8e8f2;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:13px;resize:none;color:#4d7790;}
 #tsComment:focus{outline:none;border-color:#8fd0ef;}
 .tsAnonRow{display:flex;align-items:center;justify-content:center;gap:8px;font-size:12.5px;font-weight:700;color:#6f9fb6;cursor:pointer;}
@@ -2748,10 +2748,10 @@ html.lite .catDeco{animation:none;}
 
 /* ===== 投稿カード：1枚目レイアウト（プレビュー横に おきた時間） ===== */
 #tsPostHead{display:flex;align-items:stretch;gap:12px;margin-bottom:10px;width:100%;}
-#tsPostHead #tsPostPreview{flex:0 0 auto;min-height:176px;}
+#tsPostHead #tsPostPreview{flex:0 0 auto;min-height:0;align-self:flex-start;}
 #tsPostRight{flex:1 1 auto;display:flex;flex-direction:column;gap:9px;min-width:0;}
 #tsPostRight #wakeAdjRow{flex:0 0 auto;margin:0;}
-#tsPostCard #tsComment{flex:1 1 auto;width:100%;box-sizing:border-box;resize:none;min-height:92px;margin:0;}
+#tsPostCard #tsComment{flex:1 1 auto;}
 #tsPostHead #tsPostPreview{flex:0 0 auto;}
 #tsPostHead #wakeAdjRow{flex:0 0 auto;margin:0;}
 /* ▼ コメント・気分は たたんでおく（朝は ひらかなくていい） */
@@ -2759,20 +2759,43 @@ html.lite .catDeco{animation:none;}
   background:#effaf4;border-radius:10px;padding:7px 8px;text-align:center;line-height:1.4;}
 #tsAutoNote[hidden]{display:none;}
 #tsMore{width:100%;margin-top:2px;}
+#tsPostRight #tsMore{margin-top:0;}
 #tsMore>summary{list-style:none;cursor:pointer;font-family:"Yomogi","Kosugi Maru",sans-serif;
   font-size:12.5px;font-weight:800;color:#6f9fb6;background:#f4fbff;border:1.5px solid #dcecf6;
   border-radius:999px;padding:8px 12px;text-align:center;user-select:none;}
 #tsMore>summary::-webkit-details-marker{display:none;}
 #tsMore>summary::marker{content:"";}
 #tsMore>summary:active{transform:scale(.98);}
-#tsMore[open]>summary{background:#eaf6ff;color:#4f88a4;}
+#tsMore[open]>summary{display:none;}   /* ひらいたら ボタンは 消す */
 #tsMoreBody{display:flex;flex-direction:column;gap:9px;padding-top:10px;}
-.tsSecLbl{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:11px;font-weight:900;
-  color:#a9c3d1;letter-spacing:.04em;margin:2px 0 -4px;padding-left:3px;}
-.tsChkRow{display:flex;flex-wrap:wrap;gap:7px 16px;justify-content:center;
-  background:#fafdff;border-radius:12px;padding:9px 8px;}
-.tsChkRow .tsAnonRow{margin:0;}
-#tsMoodRow{display:flex;justify-content:center;}
+.tsChkRow{display:flex;flex-wrap:wrap;gap:5px 12px;justify-content:center;
+  background:#fafdff;border-radius:10px;padding:7px 7px;}
+.tsChkRow .tsAnonRow{margin:0;font-size:11.5px;}
+/* ▼ ひとこと枠：テンプレ帯を 上に、気分ボタンを 右下に かさねて コンパクトに */
+#tsInputWrap{position:relative;width:100%;}
+#tsInputWrap #tsComment{width:100%;box-sizing:border-box;resize:none;
+  min-height:82px;margin:0;padding:30px 9px 34px;font-size:12.5px;}   /* 上＝チップ帯・下＝気分ボタンのぶん あける */
+/* テンプレ帯（枠の 上のなかに 重ねる。3つ見えて 左右スクロール） */
+#tsInputWrap .cmtChips{position:absolute;top:5px;left:5px;right:5px;z-index:2;margin:0;
+  display:flex;flex-wrap:nowrap;gap:4px;overflow-x:auto;overflow-y:hidden;
+  padding:1px 2px 3px;justify-content:flex-start;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;}
+#tsInputWrap .cmtChips::-webkit-scrollbar{display:none;}
+#tsInputWrap .cmtChip{flex:0 0 auto;background:rgba(244,251,255,.96);
+  box-shadow:0 1px 3px rgba(120,160,190,.16);font-size:10px;padding:3px 8px;}
+/* 気分ボタン（枠の 右下に 重ねる） */
+#tsInputWrap #tsMoodBtn{position:absolute;right:6px;bottom:6px;z-index:2;
+  padding:4px 9px;font-size:11px;box-shadow:0 2px 7px rgba(224,121,58,.22);}
+#tsInputWrap #tsMoodBtn span{margin-right:1px;}
+#tsMoreClose{display:none;align-self:flex-end;border:none;background:none;
+  color:#a9c3d1;font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:11.5px;
+  font-weight:800;cursor:pointer;padding:2px 4px 0;margin-bottom:-4px;}
+#tsMore[open] #tsMoreClose{display:block;}
+#tsMoreClose:active{transform:scale(.96);}
+/* テンプレ帯の 右はしに 「まだ右にあるよ」の うすいグラデ */
+#tsInputWrap::after{content:"";position:absolute;top:6px;right:6px;width:20px;height:24px;
+  background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.92));
+  border-radius:0 8px 8px 0;pointer-events:none;z-index:3;}
 #wakeAdjRow .waLabel{font-size:12px;line-height:1.15;}
 
 /* ===== 設定画面：参考画像風のリッチな見た目 ===== */
@@ -3517,9 +3540,13 @@ body.exercising #homeZZ{opacity:0;pointer-events:none;}
   color:#c8863a;font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:11.5px;font-weight:900;
   border-radius:999px;padding:3px 12px;cursor:pointer;box-shadow:0 2px 6px rgba(120,150,170,.18);pointer-events:auto;}
 /* ホームの 店・旅ボタンを 青に */
-#homeLoc{color:#3f7fa8 !important;background:rgba(210,236,248,.9) !important;border:1.4px solid #b6dcee !important;
-  border-radius:999px !important;padding:4px 14px !important;font-size:12.5px !important;}
-#homeLoc b{color:#3f7fa8 !important;}
+#homeLoc{color:#fff !important;background:linear-gradient(135deg,#5eb0d6,#3f8ab4) !important;
+  border:none !important;border-radius:999px !important;padding:8px 20px !important;
+  font-size:13.5px !important;font-weight:900 !important;letter-spacing:.02em;
+  box-shadow:0 4px 14px rgba(63,127,168,.32) !important;
+  animation:shopBreath 3.4s ease-in-out infinite;}
+#homeLoc b{color:#fff !important;}
+#homeLoc .hlPin{margin-right:4px;font-size:14px;}
 /* 移転モードのバナー */
 #tvMoveBar{position:absolute;left:8px;right:8px;top:8px;z-index:4;display:flex;align-items:center;gap:8px;
   background:rgba(255,255,255,.94);border-radius:13px;padding:8px 10px;box-shadow:0 3px 10px rgba(110,140,160,.25);
@@ -3737,15 +3764,19 @@ body.exercising #homeZZ{opacity:0;pointer-events:none;}
 #homeLocBadge[hidden]{display:none;}
 #homeLoc{position:relative;}
 @keyframes shopBlink{0%,100%{opacity:1;}50%{opacity:.45;}}
-@keyframes shopBlinkBtn{0%,100%{transform:scale(1);box-shadow:0 5px 14px rgba(63,127,168,.28);}
-  50%{transform:scale(1.055);box-shadow:0 8px 22px rgba(63,127,168,.5);}}
+/* ふだん：影の こさだけが ゆっくり 変わる（形も 位置も 動かない） */
+@keyframes shopBreath{0%,100%{box-shadow:0 4px 14px rgba(63,127,168,.30) !important;}
+  50%{box-shadow:0 7px 22px rgba(63,127,168,.54) !important;}}
+/* 用事がある日だけ：ほんの少し 大きくなる（1.03倍・ひかえめ） */
+@keyframes shopBlinkBtn{0%,100%{transform:scale(1);box-shadow:0 4px 14px rgba(63,127,168,.30) !important;}
+  50%{transform:scale(1.03);box-shadow:0 8px 24px rgba(63,127,168,.58) !important;}}
 #homeLoc.blink{animation:shopBlinkBtn 1.4s ease-in-out infinite;}
 @media (prefers-reduced-motion:reduce){
-  #homeLoc.blink,.tsumGo.primary{animation:none;}
+  #homeLoc,#homeLoc.blink,.tsumGo.primary{animation:none;}
 }
 #tsumHelpBtn{width:100%;border:none;background:none;color:#9ab6c5;font-size:11.5px;font-weight:800;
   cursor:pointer;padding:10px 4px 2px;text-decoration:underline;}
-#zzHelp{position:fixed;inset:0;z-index:3320;display:none;align-items:center;justify-content:center;background:rgba(40,60,72,.42);padding:18px;}
+#zzHelp{position:fixed;inset:0;z-index:3360;display:none;align-items:center;justify-content:center;background:rgba(40,60,72,.42);padding:18px;}
 #zzHelp.show{display:flex;}
 #zzHelpCard{background:#fff;border-radius:20px;padding:16px 15px 12px;width:100%;max-width:330px;max-height:86vh;overflow-y:auto;}
 #zzHelpTtl{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:15px;font-weight:900;color:#c8863a;text-align:center;margin-bottom:10px;}
@@ -4268,17 +4299,15 @@ body.exercising #homeZZ{opacity:0;pointer-events:none;}
           <div id="tsPostRight">
             <div id="wakeAdjRow"><span class="waLabel">おきた<br>じかん</span><div class="waCtrl"><button id="wakeAdjMinus" type="button" aria-label="はやく">◀</button><span id="wakeAdjTime">–</span><button id="wakeAdjPlus" type="button" aria-label="おそく">▶</button></div></div>
             <div id="tsAutoNote" hidden>とうこう ずみ</div>
-          </div>
-        </div>
         <details id="tsMore">
           <summary id="tsMoreSum">💬 コメント・気分を つける</summary>
           <div id="tsMoreBody">
-            <div class="tsSecLbl">ひとこと</div>
-            <textarea id="tsComment" maxlength="20" rows="3" placeholder="ひとこと（ひらがな）" inputmode="kana"></textarea>
-            <div class="cmtChips" id="tsCmtChips"></div>
-            <div class="tsSecLbl">きょうの 気分</div>
-            <div id="tsMoodRow"><button id="tsMoodBtn" type="button"><span>😊</span> きょうの気分</button></div>
-            <div class="tsSecLbl">こうかいの せってい</div>
+            <button id="tsMoreClose" type="button" aria-label="とじる">✕ とじる</button>
+            <div id="tsInputWrap">
+              <div class="cmtChips" id="tsCmtChips"></div>
+              <textarea id="tsComment" maxlength="20" rows="3" placeholder="ひとこと（ひらがな）" inputmode="kana"></textarea>
+              <button id="tsMoodBtn" type="button"><span>😊</span> 気分</button>
+            </div>
             <div class="tsChkRow">
               <label class="tsAnonRow"><input type="checkbox" id="tsAnon"/> 匿名で投稿する</label>
               <label class="tsAnonRow"><input type="checkbox" id="tsShowTime"/> 起床時間を表示</label>
@@ -4288,6 +4317,8 @@ body.exercising #homeZZ{opacity:0;pointer-events:none;}
             </div>
           </div>
         </details>
+          </div>
+        </div>
       </div>
     </div>
     <div id="taisoFooter"><label id="storyJoinChkRow"><input type="checkbox" id="storyJoinChk" checked/> ストーリーに参加(明日)</label><button class="tsSum" id="tsSumBtn" type="button">📋 まとめ</button><button class="tsNext" id="tsNextBtn" type="button">次へ →</button></div>
@@ -13603,7 +13634,6 @@ try{const rb=$("ppReminderBtn");if(rb)rb.addEventListener("click",()=>{playClick
 /* ラジオ体操部（部活） */
 $("joinBtn").addEventListener("click",()=>{playClick();openClub();});
 $("clubClose").addEventListener("click",()=>{playClick();closeClub();});
-try{$("openPartyBtn").addEventListener("click",()=>{try{playClick();}catch(_){}openParty();});}catch(_){}
 try{$("ssParty").addEventListener("click",()=>{try{playClick();}catch(_){}try{$("storyStats").classList.remove("show");}catch(_){}try{openParty();}catch(_){}});}catch(_){}
 try{$("ssAlbum").addEventListener("click",()=>{try{playClick();}catch(_){}try{openJrnAlbum();}catch(_){}});}catch(_){}
 try{$("jaClose").addEventListener("click",()=>{try{playClick();}catch(_){}try{closeJrnAlbum();}catch(_){}});}catch(_){}
@@ -13733,6 +13763,7 @@ try{$("smPlant").addEventListener("click",()=>{try{playClick();}catch(_){}_plant
 try{$("smPick").addEventListener("click",()=>{try{playClick();}catch(_){}$("summitMoment").classList.remove("show");openMtList();});}catch(_){}
 try{$("mtlClose").addEventListener("click",()=>{try{playClick();}catch(_){}closeMtList();});}catch(_){}
 try{const _mb=$("tsMoodBtn");if(_mb)_mb.addEventListener("click",()=>{try{playClick();}catch(_){}openMoodCard();});}catch(_){}
+try{const _mc=$("tsMoreClose");if(_mc)_mc.addEventListener("click",()=>{try{playClick();}catch(_){}try{const d=$("tsMore");if(d)d.open=false;}catch(_){}});}catch(_){}
 try{const _mcc=$("moodCancel");if(_mcc)_mcc.addEventListener("click",()=>{closeMoodCard();});}catch(_){}
 try{const _mo=$("moodCard");if(_mo)_mo.addEventListener("click",e=>{if(e.target===_mo)closeMoodCard();});}catch(_){}
 let _autoTimer=null;
@@ -21829,7 +21860,7 @@ function closeTodaySum(){const el=$("todaySum");if(el)el.classList.remove("show"
     el.addEventListener("click",e=>{
       const t=e.target;if(!t)return;
       if(t===el||(t.closest&&t.closest("#tsumClose"))){closeTodaySum();return;}
-      if(t.closest&&t.closest("#tsumHelpBtn")){try{openZzHelp();}catch(_){}return;}
+      if(t.closest&&t.closest("#tsumHelpBtn")){closeTodaySum();setTimeout(()=>{try{openZzHelp();}catch(_){}},120);return;}
       const g=t.closest&&t.closest(".tsumGo");
       if(!g)return;
       const to=g.dataset.go;
@@ -23186,7 +23217,7 @@ function _tvPlaceOthers(){
     </div>
   </div>
   <div id="rangeDots"><span class="rgDot active" data-p="0"></span><span class="rgDot" data-p="1"></span></div>
-  <div id="rangeActions"><button id="openPartyBtn" type="button" class="rangeActBtn">⛰ パーティ</button><button id="openSummitBtn" type="button" class="rangeActBtn">📖 看板</button></div>
+  <div id="rangeActions"><button id="openSummitBtn" type="button" class="rangeActBtn">📖 看板</button></div>
   <div id="rangePeakPop" hidden></div>
 </div>
 <div id="summitBoard">

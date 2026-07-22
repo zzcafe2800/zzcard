@@ -3718,6 +3718,25 @@ body.exercising #homeZZ{opacity:0;pointer-events:none;}
   width:28px;height:28px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;}
 #ibGear:active{transform:scale(.94);}
 #setTopbarRow{display:flex;gap:6px;margin-top:6px;}
+
+#incTabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px;}
+.incTab{border:1.5px solid #dceaf1;background:#fff;color:#7fa3b8;font-size:11.5px;font-weight:900;
+  border-radius:999px;padding:6px 12px;cursor:pointer;}
+.incTab.on{background:#5b9cb8;border-color:#5b9cb8;color:#fff;}
+#incSum{text-align:center;padding:4px 0 2px;}
+.incBig{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:26px;font-weight:900;color:#c8863a;}
+.incSmall{font-size:11px;color:#a0b9c6;font-weight:800;margin-top:2px;}
+#incList{max-width:900px;margin:0 auto;}
+.incRow{display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.9);border-radius:13px;
+  padding:8px 11px;margin-bottom:6px;}
+.incIco{font-size:16px;width:22px;text-align:center;flex:0 0 22px;}
+.incMid{flex:1;min-width:0;display:flex;flex-direction:column;}
+.incName{font-size:12.5px;font-weight:900;color:#4a7f99;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.incSub{font-size:10.5px;color:#a0b9c6;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.incAt{font-size:9.5px;color:#b8c9d3;font-weight:800;}
+.incZz{font-size:14px;font-weight:900;color:#c8863a;white-space:nowrap;}
+#shpPage2{overflow-y:auto;-webkit-overflow-scrolling:touch;}
+#shopScreen.party #incTabs .incTab.on{background:#e0588f;border-color:#e0588f;}
 </style>
 </head>
 <body>
@@ -19083,6 +19102,7 @@ function _zzEarnToday(){
     let sc=0;try{sc=_dayScore(dk);}catch(_){}
     const pay=zzFromScore(sc);
     addZZ(pay);
+    try{addIncome("taiso",pay,{sc:Math.round(sc)});}catch(_){}
     try{localStorage.setItem(ZZ_PAID_KEY,dk);}catch(_){}
     setTimeout(()=>{try{_zzGainShow(pay,sc);}catch(_){}},900);
     return pay;
@@ -19328,15 +19348,17 @@ function openMyShop(page){
 function closeMyShop(){const sc=$("shopScreen");if(sc)sc.classList.remove("show");
   try{if(_tvBlinkT){clearInterval(_tvBlinkT);_tvBlinkT=0;}}catch(_){}}
 function _shpGo(p){
-  _shpPage=p?1:0;
+  _shpPage=(p===1||p===2)?p:0;
   try{_pRenderCard();}catch(_){}
   if(_shpPage===1)setTimeout(()=>{try{_tvPaint();}catch(_){}},10);
-  ["shpPage0","shpPage1"].forEach((id,i)=>{const e=$(id);if(e)e.hidden=(i!==_shpPage);});
+  if(_shpPage===2)try{_incRender();}catch(_){}
+  ["shpPage0","shpPage1","shpPage2"].forEach((id,i)=>{const e=$(id);if(e)e.hidden=(i!==_shpPage);});
   try{_shpTabPaint();}catch(_){}
 }
 function _shpTabPaint(){
   const party=isPartyShop(),p=_shpPage;
   const set=(id,on)=>{const e=$(id);if(e)e.classList.toggle("on",!!on);};
+  set("shpTabS",p===2);
   set("shpTabP",p===0&&party);
   set("shpTab0",p===0&&!party);
   set("shpTab1",p===1);
@@ -19548,6 +19570,8 @@ function _drStrokeCount(){let n=0;_drLayers.forEach(l=>{n+=(l.s||[]).length;});r
       if(t.closest("#shpZZ")){try{playClick();}catch(_){}try{openZzHelp();}catch(_){}return;}
       if(t.closest("#shpSkip")){try{playClick();}catch(_){}shpSkipGo();return;}
       if(t.closest("#shpClose")){try{playClick();}catch(_){}if(_shpStartup)shpSkipGo();else closeMyShop();return;}
+      const it=t.closest(".incTab");
+      if(it){_incTab=it.dataset.i;_incRender();try{playClick();}catch(_){}return;}
       const tab=t.closest(".shpTab");
       if(tab){
         try{playClick();}catch(_){}
@@ -20552,7 +20576,7 @@ function _tvPaint(){
 /* --- お店いちらん --- */
 function openTvList(){
   const el=$("tvListInner");if(!el)return;
-  const rows=_tvShops.filter(x=>_tvActive(x)||_isMyShop(x.uid)).sort((a,b)=>_tvKmTo(a)-_tvKmTo(b));
+  const rows=_tvShops.filter(x=>_tvActive(x)).sort((a,b)=>_tvKmTo(a)-_tvKmTo(b));
   el.innerHTML=rows.length?'<div class="tvGrid">'+rows.map(s=>{
     const near=isVisitable(s.uid),mine=_isMyShop(s.uid);
     return'<div class="tvCard'+(near?" near":"")+'" data-shop="'+s.uid+'">'+
@@ -20652,7 +20676,8 @@ async function _tvBuy(artId,price){
       const _to=(s.party&&Array.isArray(s.members)&&s.members.length)
         ?s.members:[((s.items&&s.items[artId]&&s.items[artId].by)||s.uid)];
       for(const _u of _to){const r=push(ref(db,"sales/"+_u));
-        await set(r,{art:artId,price:price,buyer:getUid(),at:Date.now(),shop:s.name||""});}}
+        const _mp=(typeof getProfile==="function"?getProfile():null)||{};
+        await set(r,{art:artId,price:price,buyer:getUid(),buyerName:_mp.name||"だれか",pShop:s.party?1:0,name:(a&&a.name)||"",at:Date.now(),shop:s.name||""});}}
   }catch(_){}
   try{playPop();}catch(_){}
   try{toast("「"+(a.name||"アイテム")+"」を かったよ！");}catch(_){}
@@ -20670,7 +20695,10 @@ async function _tvCollect(){
     Object.keys(v).forEach(k=>{
       const e=v[k]||{};sum+=e.price||0;n++;
       const a=artById(e.art);
-      logs.push({n:(a&&a.name)||"アイテム",p:e.price||0,at:e.at||Date.now(),net:e.net?1:0,s:e.shop||""});
+      const nm=(a&&a.name)||e.name||"アイテム";
+      logs.push({n:nm,p:e.price||0,at:e.at||Date.now(),net:e.net?1:0,s:e.shop||""});
+      try{addIncome(e.pShop?"party":"shop",e.price||0,
+        {n:nm,by:e.buyerName||"だれか",s:e.shop||"",net:e.net?1:0,at:e.at||Date.now()});}catch(_){}
     });
     if(sum>0){
       addZZ(sum);
@@ -20972,7 +21000,8 @@ async function _tvDoOrder(artId,price){
       const _to2=(s.party&&Array.isArray(s.members)&&s.members.length)
         ?s.members:[((s.items&&s.items[artId]&&s.items[artId].by)||s.uid)];
       for(const _u of _to2){const rr=push(ref(db,"sales/"+_u));
-        await set(rr,{art:artId,price:price,buyer:getUid(),at:now,net:1,shop:s.name||""});}}
+        const _mp2=(typeof getProfile==="function"?getProfile():null)||{};
+        await set(rr,{art:artId,price:price,buyer:getUid(),buyerName:_mp2.name||"だれか",pShop:s.party?1:0,name:a.name||"",at:now,net:1,shop:s.name||""});}}
   }catch(_){}
   try{playPop();}catch(_){}
   try{toast("注文したよ！ あした とどくよ 🚚");}catch(_){}
@@ -21080,6 +21109,60 @@ function _stDraw(){
   st.innerHTML=_stRoomSVG(d,_stPool,_stEdit,_decoSel);
 }
 let _stDeco=null;
+/* --- 売り上げ／もらったお金の きろく --- */
+var INC_KEY="radio_income";
+function getIncome(){try{const a=JSON.parse(localStorage.getItem(INC_KEY)||"[]");return Array.isArray(a)?a:[];}catch(_){return[];}}
+function addIncome(t,a,meta){
+  try{
+    const l=getIncome();
+    l.unshift(Object.assign({t:t,a:Math.round(a||0),at:Date.now()},meta||{}));
+    localStorage.setItem(INC_KEY,JSON.stringify(l.slice(0,200)));
+  }catch(_){}
+  try{if(_shpPage===2)_incRender();}catch(_){}
+}
+var _incTab="all";
+var INC_TABS=[["all","総合"],["shop","おみせ"],["party","共同店"],["taiso","体操"],["like","いいね"]];
+function _incTime(ts){
+  try{
+    const d=new Date(ts),now=new Date();
+    const sameDay=(d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth()&&d.getDate()===now.getDate());
+    const hm=d.getHours()+":"+String(d.getMinutes()).padStart(2,"0");
+    return sameDay?("きょう "+hm):((d.getMonth()+1)+"/"+d.getDate()+" "+hm);
+  }catch(_){return"";}
+}
+function _incLabel(x){
+  if(x.t==="taiso")return"ラジオ体操";
+  if(x.t==="like")return"いいね"+(x.n?"（"+x.n+"）":"");
+  return(x.n||"アイテム");
+}
+function _incSub(x){
+  if(x.t==="taiso")return x.sc!=null?("スコア "+x.sc):"";
+  if(x.t==="like")return"投稿に ♡";
+  const who=x.by?("かったのは "+x.by):"";
+  const sh=x.s?("["+x.s+"] "):"";
+  return sh+who+(x.net?" ・ ネット注文":"");
+}
+function _incIcon(t){return t==="taiso"?"🌅":t==="like"?"♡":t==="party"?"👥":"🏷";}
+function _incRender(){
+  const box=$("incList"),sum=$("incSum");
+  if(!box)return;
+  const all=getIncome();
+  const rows=(_incTab==="all")?all:all.filter(x=>x.t===_incTab);
+  const day=86400000,now=Date.now();
+  const tot=rows.reduce((a,b)=>a+(b.a||0),0);
+  const t7=rows.filter(x=>now-(x.at||0)<7*day).reduce((a,b)=>a+(b.a||0),0);
+  const t1=rows.filter(x=>now-(x.at||0)<day).reduce((a,b)=>a+(b.a||0),0);
+  if(sum)sum.innerHTML='<div class="incBig">'+zzFmt(tot)+'</div>'+
+    '<div class="incSmall">24時間 '+zzFmt(t1)+' ・ 1週間 '+zzFmt(t7)+'</div>';
+  document.querySelectorAll("#incTabs .incTab").forEach(b=>b.classList.toggle("on",b.dataset.i===_incTab));
+  box.innerHTML=rows.length?rows.slice(0,120).map(x=>
+    '<div class="incRow"><span class="incIco">'+_incIcon(x.t)+'</span>'+
+    '<span class="incMid"><span class="incName">'+_esc(_incLabel(x))+'</span>'+
+    '<span class="incSub">'+_esc(_incSub(x))+'</span>'+
+    '<span class="incAt">'+_incTime(x.at)+'</span></span>'+
+    '<span class="incZz">＋'+(x.a||0)+'</span></div>').join("")
+    :'<div class="tvNote">まだ ここの きろくは ないよ。</div>';
+}
 
 /* --- お金の けいさん（ぴったり=100zz／450〜900スコアで 100〜150zz） --- */
 function zzFromScore(sc){
@@ -21113,6 +21196,7 @@ function _payLikes(list){   /* いいね 1つ 10zz */
     if(n>0){
       _likePaySave(set);
       addZZ(n*10);
+      try{addIncome("like",n*10,{n:(n>1?n+"こ":"")});}catch(_){}
       setTimeout(()=>{try{toast("♡ いいね ＋"+(n*10)+"zz！");}catch(_){}},700);
     }
   }catch(_){}
@@ -22731,6 +22815,7 @@ function _tvPlaceOthers(){
     <span id="shpZZ">0 zz</span>
   </div>
   <div id="shpTabs">
+    <button class="shpTab" id="shpTabS" type="button" data-p="2">💰 売上</button>
     <button class="shpTab" id="shpTabP" type="button" data-p="0" data-mode="party">👥 共同店</button>
     <button class="shpTab on" id="shpTab0" type="button" data-p="0" data-mode="solo">🏠 おみせ</button>
     <button class="shpTab" id="shpTab1" type="button" data-p="1">🗾 たび</button>
@@ -22760,6 +22845,13 @@ function _tvPlaceOthers(){
       </div>
       <button id="shpMake" type="button">＋ 商品をつくる</button>
       <button id="shpDeco" type="button">🛋 お店の内装をつくる</button>
+    </div>
+    <div class="shpPage" id="shpPage2" hidden>
+      <div class="shpCard">
+        <div id="incTabs"><button class="incTab" type="button" data-i="all">総合</button><button class="incTab" type="button" data-i="shop">おみせ</button><button class="incTab" type="button" data-i="party">共同店</button><button class="incTab" type="button" data-i="taiso">体操</button><button class="incTab" type="button" data-i="like">いいね</button></div>
+        <div id="incSum"></div>
+      </div>
+      <div id="incList"></div>
     </div>
     <div class="shpPage" id="shpPage1" hidden>
       <div id="tvWrap">

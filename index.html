@@ -3036,6 +3036,18 @@ button.pmTag{cursor:pointer;}
 .jvCandKm{font-size:10.5px;font-weight:800;color:#8aa7b8;}
 .jvCandVotes{font-size:10px;min-height:13px;letter-spacing:-1px;}
 .jvVoteNote{margin-top:7px;text-align:center;font-size:11px;font-weight:700;color:#9bbacb;}
+
+/* 47都道府県の目標＋旅の共有 */
+.jvGoal{margin:9px auto 0;max-width:460px;padding:0 12px;}
+.jvGoalTop{font-size:12.5px;font-weight:800;color:#4d7790;text-align:center;margin-bottom:5px;}
+.jvGoalTop b{font-size:17px;color:#e8663a;}
+.jvGoalDone{color:#2f9e6a;font-weight:900;}
+.jvGoalBar{height:7px;border-radius:999px;background:rgba(143,220,255,.25);overflow:hidden;}
+.jvGoalFill{height:100%;border-radius:999px;background:linear-gradient(90deg,#8fd0ef,#7fc9a0);transition:width .5s;}
+.jvGoalRest{margin-top:5px;font-size:11px;font-weight:700;color:#9bbacb;text-align:center;line-height:1.5;}
+.jvShare{display:flex;align-items:center;justify-content:center;gap:6px;margin:10px auto 2px;max-width:460px;
+  font-size:11.5px;font-weight:700;color:#7fa8bd;cursor:pointer;}
+.jvShare input{width:15px;height:15px;accent-color:#6bb8e0;}
 </style>
 </head>
 <body>
@@ -13812,7 +13824,8 @@ function _jvLegKm(from,to){
 }
 function _jvTownName(i){return (JP_TOWNS[i]&&JP_TOWNS[i][0])||"？";}
 var _JV_START=(function(){for(var i=0;i<JP_TOWNS.length;i++)if(JP_TOWNS[i][0]==="東京")return i;return 0;})();
-var _JV_TOWNVER=2;   /* まちの一覧を作り替えたら+1する（保存済みの番号が合わなくなるため） */
+var _JV_TOWNVER=2;
+const JP_PREFNAME=["北海道","青森","岩手","宮城","秋田","山形","福島","茨城","栃木","群馬","埼玉","千葉","東京","神奈川","新潟","富山","石川","福井","山梨","長野","岐阜","静岡","愛知","三重","滋賀","京都","大阪","兵庫","奈良","和歌山","鳥取","島根","岡山","広島","山口","徳島","香川","愛媛","高知","福岡","佐賀","長崎","熊本","大分","宮崎","鹿児島","沖縄"];   /* まちの並びと1対1 */   /* まちの一覧を作り替えたら+1する（保存済みの番号が合わなくなるため） */
 /* 種つき乱数：どの端末で計算しても同じ結果になる */
 function _jvHash(s){var h=2166136261>>>0;s=String(s);for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return h;}
 function _jvRand(seed){var h=seed>>>0;return function(){h=(Math.imul(h,1664525)+1013904223)>>>0;return h/4294967296;};}
@@ -13893,18 +13906,9 @@ function _jvWalk(pts,km){   /* 道なりにkm進んだ地点 */
 }
 /* 行き先の候補（3つ）。来た道はなるべく避ける */
 function _jvCandidates(at,route,seedStr){
-  var prev=(route&&route.length>1)?route[route.length-2]:-1;
+  /* 近い県庁所在地3つ。どっちへ進むかはパーティの自由（向きは決めない） */
   var ns=_jvAdjOf(at).map(function(e){return{to:e.to,km:_jvLegKm(at,e.to)};});
-  ns.sort(function(a,b){return a.km-b.km;});          /* 近い県庁所在地の順 */
-  var cnt={},lastAt={};
-  (route||[]).forEach(function(t,i){cnt[t]=(cnt[t]||0)+1;lastAt[t]=i;});
-  var L=(route||[]).length;
-  var r=_jvRand(_jvHash(seedStr));
-  ns=ns.map(function(o,idx){
-    var c=cnt[o.to]||0;                                   /* 行った回数が少ない所を優先 */
-    var recent=(lastAt[o.to]===undefined)?0:Math.max(0,18-(L-lastAt[o.to]));
-    return{o:o,key:c*10+recent+idx*0.3+(o.to===prev?25:0)+r()*2};
-  }).sort(function(x,y){return x.key-y.key;}).map(function(x){return x.o;});
+  ns.sort(function(a,b){return a.km-b.km;});
   return ns.slice(0,3);
 }
 /* 集計：最多得票／同数はランダム／0票なら猫が勝手に決める */
@@ -13914,6 +13918,11 @@ function _jvDecide(cands,votes,seedStr){
   Object.keys(vs).forEach(function(u){var t=vs[u];if(cnt[t]!==undefined){cnt[t]++;total++;}});
   var mx=0;cands.forEach(function(c){if(cnt[c.to]>mx)mx=cnt[c.to];});
   var top=(mx>0)?cands.filter(function(c){return cnt[c.to]===mx;}):cands.slice();
+  if(mx===0&&_jvLast&&_jvLast.route){          /* 猫まかせ：まだ行ってない県を選びたがる */
+    var been={};_jvLast.route.forEach(function(t){been[t]=1;});
+    var fresh=top.filter(function(c){return !been[c.to];});
+    if(fresh.length)top=fresh;
+  }
   var r=_jvRand(_jvHash(seedStr));
   var pick=top[Math.floor(r()*top.length)%top.length];
   return{pick:pick,counts:cnt,total:total,byCat:(mx===0),tie:(top.length>1&&mx>0)};
@@ -14039,9 +14048,22 @@ function _jvMapSVG(route,km,st,cands){
           +'<text x="'+x.toFixed(2)+'" y="'+(y-w*0.022).toFixed(2)+'" text-anchor="middle" font-size="'+(w*0.028).toFixed(4)+'" fill="#3d6b85" stroke="#fff" stroke-width="'+(w*0.008).toFixed(4)+'" paint-order="stroke" font-weight="800">'+escHtml(_jvTownName(c.to))+'</text>';
     });
   }
+  /* ほかの組・ソロの人（ズームしても画面上の大きさは一定） */
+  var oth="";
+  try{
+    var R=w*0.011,F=w*0.026;
+    (_jvOthers||[]).forEach(function(o){
+      var ox=_jpX(o.lng),oy=_jpY(o.lat);
+      if(ox<vx-w*0.1||ox>vx+w*1.1||oy<vy-w*0.1||oy>vy+w*1.1)return;
+      oth+='<circle cx="'+(ox-R*0.55).toFixed(2)+'" cy="'+(oy-R*0.8).toFixed(2)+'" r="'+(R*0.36).toFixed(4)+'" fill="'+(o.ear||"#8fdcff")+'"/>'
+         +'<circle cx="'+(ox+R*0.55).toFixed(2)+'" cy="'+(oy-R*0.8).toFixed(2)+'" r="'+(R*0.36).toFixed(4)+'" fill="'+(o.ear||"#8fdcff")+'"/>'
+         +'<circle cx="'+ox.toFixed(2)+'" cy="'+oy.toFixed(2)+'" r="'+R.toFixed(4)+'" fill="'+(o.body||"#1c1c1c")+'" stroke="#fff" stroke-width="'+(w*0.0035).toFixed(4)+'"/>';
+      if(o.name)oth+='<text x="'+ox.toFixed(2)+'" y="'+(oy+R*2.4).toFixed(2)+'" text-anchor="middle" font-size="'+F.toFixed(4)+'" fill="#5b7d92" stroke="#fff" stroke-width="'+(w*0.007).toFixed(4)+'" paint-order="stroke" font-weight="800">'+escHtml(o.name)+(o.solo?"":"組")+'</text>';
+    });
+  }catch(_){}
   return '<svg class="jrnMapSvg" style="touch-action:none;cursor:grab" viewBox="'+vx.toFixed(2)+' '+vy.toFixed(2)+' '+w.toFixed(2)+' '+w.toFixed(2)+'" preserveAspectRatio="xMidYMid slice">'
     +'<rect x="-6" y="-6" width="'+(_jpW+12).toFixed(1)+'" height="'+(_jpH+12).toFixed(1)+'" fill="#cfe8f5"/>'
-    +_jrnLandPaths()+_jvBgPaths(vx,vy,w)+trailD+dots+pins+'</svg>';
+    +_jrnLandPaths()+_jvBgPaths(vx,vy,w)+trailD+dots+oth+pins+'</svg>';
 }
 /* ---- 位置ログ（GPSっぽい行） ---- */
 function _jvLogHTML(st,route){
@@ -14074,6 +14096,47 @@ function _jvVoteHTML(cands,votes,members,open){
     +'<div class="jvVoteNote">'+(mine!==undefined?"えらんだよ。あしたの あさ 出発！":"1人1票・あしたの あさ しめきり")+'</div></div>';
 }
 
+/* ===== 旅の共有：ほかの組の現在地を地図に出す（読み込んだ時だけ更新） ===== */
+var JV_SHARE_KEY="radio_jv_share";
+function _jvShareOn(){try{return localStorage.getItem(JV_SHARE_KEY)!=="0";}catch(_){return true;}}
+function _jvSetShare(v){try{localStorage.setItem(JV_SHARE_KEY,v?"1":"0");}catch(_){}}
+var _jvOthers=[],_jvOthersLoaded=false;
+function _jvShareId(){return _partyId()||("solo_"+getUid());}
+async function _jvPushShare(here,st,visitedPref){
+  if(!_jvShareOn())return;
+  try{
+    var db=await getDB();if(!db)return;
+    var m=await import(FB_DB);
+    var p=getProfile()||{};
+    await m.set(m.ref(db,"jshare/"+_jvShareId()),{
+      name:(p.name||"匿名さん"),solo:_partyId()?0:1,
+      lng:Math.round(here.lng*1000)/1000, lat:Math.round(here.lat*1000)/1000,
+      town:_jvTownName(st.at), pref:visitedPref, at:Date.now(),
+      body:profileBody(), ear:profileColor()
+    });
+  }catch(e){console.warn("旅の共有に失敗",e);}
+}
+async function _jvLoadOthers(){
+  if(_jvOthersLoaded)return _jvOthers;      /* 読み込んだ時だけ更新 */
+  _jvOthersLoaded=true;
+  try{
+    var db=await getDB();if(!db)return _jvOthers;
+    var m=await import(FB_DB);
+    var snap=await m.get(m.ref(db,"jshare"));
+    if(!snap.exists())return _jvOthers;
+    var v=snap.val(),me=_jvShareId(),now=Date.now(),out=[];
+    Object.keys(v).forEach(function(k){
+      var o=v[k];
+      if(!o||k===me)return;
+      if(!isFinite(o.lng)||!isFinite(o.lat))return;
+      if(o.at&&now-o.at>30*86400000)return;   /* 1か月以上むかしのは出さない */
+      out.push(o);
+    });
+    out.sort(function(a,b){return (b.at||0)-(a.at||0);});
+    _jvOthers=out.slice(0,60);
+  }catch(e){console.warn("ほかの組の読込に失敗",e);}
+  return _jvOthers;
+}
 /* ---- 保存まわり（Firebase journey/<パーティ>） ---- */
 var _jvData=null,_jvBusy=false,_jvLast=null;
 async function _jvWrite(patch){
@@ -14163,13 +14226,24 @@ function _renderJourney(el,days,members,jdata){
   try{_setHomeLoc(km);}catch(_){}
   var spd=_jrnCurrentSpeed(days);
   var elapsed=0;try{var dks=Object.keys(days||{}).sort();if(dks.length){var a=new Date(dks[0]+"T00:00:00"),b=new Date(jstKey()+"T00:00:00");elapsed=Math.max(1,Math.round((b-a)/86400000)+1);}}catch(_){}
-  var visited=(function(){var s={},n=0;route.forEach(function(t,i){if(st.moving&&i>st.leg)return;if(!s[t]){s[t]=1;n++;}});return n;})();
+  var _seen={},visited=0;
+  route.forEach(function(t,i){if(st.moving&&i>st.leg)return;if(!_seen[t]){_seen[t]=1;visited++;}});
+  var prefLeft=[];for(var _p=0;_p<JP_PREFNAME.length;_p++)if(!_seen[_p])prefLeft.push(JP_PREFNAME[_p]);
   el.innerHTML=_jrnStatStrip(spd)
     +'<div class="jvHead">'+_jvLogHTML(st,route)+'</div>'
     +'<div class="jrnMap">'+_jvMapSVG(route,km,st,cands)+_jrnCatsHTML(members,false)+_JRN_CTRLS
-    +'<div class="jrnTotal">'+(elapsed>0?"🗓️旅"+elapsed+"日目 ・ ":"")+'つうか '+visited+'まち ・ '+Math.round(km)+'km</div></div>'
-    +(cands?_jvVoteHTML(cands,votes,members,open):"");
+    +'<div class="jrnTotal">'+(elapsed>0?"🗓️旅"+elapsed+"日目 ・ ":"")+Math.round(km)+'km</div></div>'
+    +'<div class="jvGoal"><div class="jvGoalTop"><b>'+visited+'</b> / 47 都道府県'
+      +(visited>=47?' <span class="jvGoalDone">ぜんぶ まわった！🎉</span>':'')+'</div>'
+      +'<div class="jvGoalBar"><div class="jvGoalFill" style="width:'+Math.round(visited/47*100)+'%"></div></div>'
+      +(prefLeft.length&&prefLeft.length<=8?'<div class="jvGoalRest">のこり：'+escHtml(prefLeft.join("・"))+'</div>':'')
+    +'</div>'
+    +(cands?_jvVoteHTML(cands,votes,members,open):"")
+    +'<label class="jvShare"><input type="checkbox" id="jvShareChk"'+(_jvShareOn()?" checked":"")+'/> 旅を共有（ほかの人の地図に出る）</label>';
   try{_jrnAttachMap(el);}catch(_){}
+  try{var _c=$("jvShareChk");if(_c)_c.onchange=function(){_jvSetShare(_c.checked);try{toast(_c.checked?"旅を共有するよ":"共有をやめたよ");}catch(_){}};}catch(_){}
+  try{_jvPushShare(here,st,visited);}catch(_){}
+  if(!_jvOthersLoaded)_jvLoadOthers().then(function(list){ if(list&&list.length){try{_jrnDrawMap(el);}catch(_){}} });
 }
 
 let _jrnPhotoBusy=false;

@@ -3713,11 +3713,17 @@ body.exercising #homeZZ{opacity:0;pointer-events:none;}
 #shopScreen.moving #shpTabs{display:none !important;}
 #shopScreen.moving #shpBody{padding-bottom:calc(6px + env(safe-area-inset-bottom));}
 #shopScreen.moving #tvMoveBar{font-size:12.5px;}
+
+#ibGear{flex:0 0 auto;border:none;background:rgba(255,255,255,.22);color:inherit;font-size:15px;line-height:1;
+  width:28px;height:28px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;}
+#ibGear:active{transform:scale(.94);}
+#setTopbarRow{display:flex;gap:6px;margin-top:6px;}
 </style>
 </head>
 <body>
 <script>(function(){try{var m=/Mobi|Android|iPhone|iPod|iPad/i.test(navigator.userAgent||"");var p=(window.innerHeight||0)>=(window.innerWidth||0);if(m||p)document.documentElement.classList.add("lite");}catch(e){}})();</script>
 <div id="installBar" hidden>
+  <button id="ibGear" type="button" aria-label="設定">⚙</button>
   <span class="ibIcon" aria-hidden="true"><svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg"><circle cx="40" cy="45" r="22" fill="#1c1c1c"/><path d="M24 33 L20 14 L39 28 Z" fill="#1c1c1c" stroke="#1c1c1c" stroke-width="5" stroke-linejoin="round"/><path d="M56 33 L60 14 L41 28 Z" fill="#1c1c1c" stroke="#1c1c1c" stroke-width="5" stroke-linejoin="round"/><circle cx="33" cy="46" r="6.5" fill="#fff"/><circle cx="47" cy="46" r="6.5" fill="#fff"/><circle cx="33" cy="47" r="5" fill="#1c1c1c"/><circle cx="47" cy="47" r="5" fill="#1c1c1c"/></svg></span>
   <span id="ibText">アプリとしてインストールできます</span>
   <button id="ibInstall" type="button">インストール</button>
@@ -11151,18 +11157,17 @@ function roomAmbientSVG(W,H,floorY,band,winX,winY,winW,winH,hr){
   return s+'</g>';
 }
 function renderBackdrop(){
-  try{_selfCosOn();}catch(_){}
   const bd=$("roomBackdrop");if(!bd)return;
-  bd.innerHTML=roomSceneSVG("back");
+  try{_selfCosOn();bd.innerHTML=roomSceneSVG("back");}finally{try{_selfCosOff();}catch(_){}}
   const food=document.getElementById("roomFood");if(food)food.addEventListener("click",e=>{e.stopPropagation();feedCat();});
   _roomBackHr=jstHour();
 }
 let _roomBackHr=-1;
 function renderRoom(){
-  try{_selfCosOn();}catch(_){}
   if(_sendoffAnimating||_firstMeetActive)return;   /* 演出中は割り込み描画で上書きしない */
   if(typeof outingPhase==="function"&&outingPhase()!=="none"){ renderRoomAway(); refreshOutingUI(); return; }
-  $("roomScene").innerHTML=roomSceneSVG("actors");
+  /* ★自分の猫だけに 描いた衣装を つける（ここだけON→すぐOFF） */
+  try{_selfCosOn();$("roomScene").innerHTML=roomSceneSVG("actors");}finally{try{_selfCosOff();}catch(_){}}
   refreshGachaBadge();refreshAffBar();refreshRoomStatus();
   const ball=document.getElementById("roomBall");if(ball)ball.addEventListener("pointerdown",startBallDrag);
   const cc=document.querySelector("#roomScene .rmCat");
@@ -20490,6 +20495,13 @@ function _tvBind(){
   svg.addEventListener("wheel",e=>{e.preventDefault();_tvView.w*=(e.deltaY<0?0.82:1.2);_tvDrawSoon();},{passive:false});
 }
 function _tvTapMap(e,svg){
+  if(_tvPickMode==="move"){   /* 移転さきえらび中は 地上だけ */
+    const r0=svg.getBoundingClientRect(),w0=_tvView.w,h0=_tvView.h||w0;
+    const gx0=(_tvView.cx-w0/2)+(e.clientX-r0.left)/r0.width*w0;
+    const gy0=(_tvView.cy-h0/2)+(e.clientY-r0.top)/r0.height*h0;
+    _tvLandTap(JP_BOUNDS[0]+gx0/_jpCos,JP_BOUNDS[3]-gy0);
+    return;
+  }
   const r=svg.getBoundingClientRect(),w=_tvView.w,hh=_tvView.h||w;
   const gx=(_tvView.cx-w/2)+(e.clientX-r.left)/r.width*w;
   const gy=(_tvView.cy-hh/2)+(e.clientY-r.top)/r.height*hh;
@@ -20755,6 +20767,32 @@ function _renderShopNotif(list){
         try{ta.dispatchEvent(new Event("input",{bubbles:true}));}catch(_){}
         try{playClick();}catch(_){}
       },true);
+    }catch(_){}
+    try{
+      const g=$("ibGear");
+      if(g)g.addEventListener("click",e=>{
+        e.stopPropagation();try{playClick();}catch(_){}
+        try{openSettings();}catch(_){}
+      });
+      const tb=$("setTopbarRow");
+      const tbOff=()=>{try{return localStorage.getItem("radio_topbar_off")==="1";}catch(_){return false;}};
+      const tbPaint=()=>{document.querySelectorAll("#setTopbarRow .mqBtn").forEach(b=>
+        b.classList.toggle("on",(b.dataset.tb==="off")===tbOff()));};
+      if(tb){
+        tb.addEventListener("click",e=>{
+          const b=e.target&&e.target.closest?e.target.closest(".mqBtn"):null;if(!b)return;
+          e.stopPropagation();
+          const off=(b.dataset.tb==="off");
+          try{localStorage.setItem("radio_topbar_off",off?"1":"0");localStorage.setItem("radio_topbar_decided","1");}catch(_){}
+          try{const bar=$("installBar");
+            if(bar){if(off){bar.classList.remove("show");setTimeout(()=>{bar.hidden=true;},300);}}
+          }catch(_){}
+          tbPaint();
+          try{playClick();}catch(_){}
+          try{toast(off?"上の おしらせバーを 表示しないよ":"つぎから 表示するよ");}catch(_){}
+        });
+        tbPaint();
+      }
     }catch(_){}
     try{
       const mq=$("setMapQRow");
@@ -22613,6 +22651,15 @@ function _tvPlaceOthers(){
       <div class="setHeadTxt"><div id="setTitle">基本設定</div><div class="setHeadSub">アプリの基本的な設定を変更します。</div></div>
     </div>
     <div id="setList">
+      <div class="setCard" id="setTopbar" style="cursor:default">
+        <span class="setCardIco ico-adv">🔔</span>
+        <span class="setCardTxt"><b>上の おしらせバー</b><small>インストール・毎朝の通知の あんない</small>
+          <span id="setTopbarRow">
+            <button class="mqBtn" type="button" data-tb="on">表示する</button>
+            <button class="mqBtn" type="button" data-tb="off">表示しない</button>
+          </span>
+        </span>
+      </div>
       <div class="setCard" id="setMapQ" style="cursor:default">
         <span class="setCardIco ico-adv">🗺</span>
         <span class="setCardTxt"><b>地図の 見え方</b><small>おもいときは「かるさ」に</small>

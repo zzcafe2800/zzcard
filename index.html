@@ -14068,19 +14068,26 @@ function _jvMapSVG(route,km,st,cands){
   if(!_jrnView)_jrnView={cx:cx,cy:cy,w:_jpW*0.16};
   _jrnView=_jrnClampView(_jrnView);
   var w=_jrnView.w,vx=_jrnView.cx-w/2,vy=_jrnView.cy-w/2;
-  /* 足あと＝通ってきた道だけ（これから行く道は描かない） */
-  var trail="";
+  /* 足あと＝通ってきた道だけ。新しいほど濃く、古いほど薄く（消えはしない） */
+  var lastLeg=st.moving?st.leg:route.length-2;
+  var nLeg=Math.max(1,lastLeg+1);
+  var trailD="";
   for(var i=0;i+1<route.length;i++){
+    if(st.moving&&i>st.leg)break;
     var seg=_jvLegPts(route[i],route[i+1],i);if(!seg)continue;
     var upto=seg.length;
     if(st.moving&&i===st.leg){var wl=_jvWalk(seg,st.doneKm);upto=wl.idx+1;}
-    else if(st.moving&&i>st.leg)break;
     var d="M";
     for(var j=0;j<upto;j++)d+=(j?"L":"")+_jpX(seg[j][0]).toFixed(3)+" "+_jpY(seg[j][1]).toFixed(3)+" ";
     if(st.moving&&i===st.leg)d+="L"+cx.toFixed(3)+" "+cy.toFixed(3);
-    trail+=d+" ";
+    /* 新しさ 0(いちばん古い)〜1(いま) */
+    var fresh=nLeg<=1?1:(i/(nLeg-1));
+    var e=Math.pow(fresh,0.55);                 /* 直近をはっきり、古いのはゆっくり薄く */
+    var R=Math.round(255-(255-255)*(1-e)), G=Math.round(122+(206-122)*(1-e)), B=Math.round(47+(175-47)*(1-e));
+    var op=(0.42+0.53*e).toFixed(2);            /* 0.42より薄くはならない＝必ず見える */
+    var wd=(w*(0.0048+0.0034*e)).toFixed(4);
+    trailD+='<path d="'+d+'" fill="none" stroke="rgb('+R+','+G+','+B+')" stroke-width="'+wd+'" stroke-linecap="round" stroke-linejoin="round" opacity="'+op+'"/>';
   }
-  var trailD=trail?'<path d="'+trail+'" fill="none" stroke="#ff8a3d" stroke-width="'+(w*0.008).toFixed(4)+'" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"/>':"";
   /* まだ行ってない県庁所在地は薄い丸、行った所は色つきの丸 */
   var seen={},dots="",faint="";
   route.forEach(function(t,idx){

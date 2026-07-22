@@ -3748,14 +3748,15 @@ body.exercising #homeZZ{opacity:0;pointer-events:none;}
   text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 0 3px #fff,0 0 3px #fff;}
 
 /* スキップは 見つけやすく */
-#shpSkip{margin-left:auto;border:none;background:linear-gradient(180deg,#ffc46b,#f08a2c);color:#fff;
+#shpSkip{position:absolute;left:50%;transform:translateX(-50%);border:none;background:linear-gradient(180deg,#ffc46b,#f08a2c);color:#fff;
   font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:14px;font-weight:900;letter-spacing:.06em;
   border-radius:999px;padding:9px 20px;cursor:pointer;box-shadow:0 4px 0 rgba(196,110,26,.45),0 0 0 3px rgba(255,196,107,.28);
   animation:shpSkipPulse 1.5s ease-in-out infinite;}
 #shpSkip[hidden]{display:none;}
-#shpSkip:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(196,110,26,.45);animation:none;}
-@keyframes shpSkipPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.06);}}
-#shpTop:has(#shpSkip:not([hidden])) #shpZZ{margin-left:6px;}
+#shpSkip:active{transform:translateX(-50%) translateY(2px);box-shadow:0 2px 0 rgba(196,110,26,.45);animation:none;}
+@keyframes shpSkipPulse{0%,100%{transform:translateX(-50%) scale(1);}50%{transform:translateX(-50%) scale(1.06);}}
+#shpTop{position:relative;}
+
 @media (prefers-reduced-motion:reduce){#shpSkip{animation:none;}}
 @media (max-width:400px){#shpSkip{font-size:13px;padding:8px 15px;}#shpTitle{display:none;}}
 
@@ -7641,7 +7642,7 @@ function renderHillPage(){
     const rot=Math.max(-7,Math.min(7,(i-center)*2.6));
     fig.style.transform=`rotate(${rot}deg)`;
     cont.appendChild(el);
-    figs.push({pose:fig.querySelector(".catPose"),z:fig.querySelector(".catZ"),body,ear,cur:pose,dir:0,name:po.name||"匿名さん",time:catTimeLabel(po.createdAt),rise:riseTxt,comment,riseEl,cos:po.cos||(po.isSelf?getEquippedCostume():null)});
+    figs.push({self:!!po.isSelf,acos:po.acos||null,pose:fig.querySelector(".catPose"),z:fig.querySelector(".catZ"),body,ear,cur:pose,dir:0,name:po.name||"匿名さん",time:catTimeLabel(po.createdAt),rise:riseTxt,comment,riseEl,cos:po.cos||(po.isSelf?getEquippedCostume():null)});
   });
   _catFigs=figs;
   startCatLife(figs);
@@ -7683,7 +7684,12 @@ function updateCatEyes(f){
   if(f.cur==="sleep")return;
   f.eyeDir=EYE_DIRS[Math.floor(Math.random()*EYE_DIRS.length)];
   if(Math.random()<0.4)f.expr=EXPRESSIONS[Math.floor(Math.random()*EXPRESSIONS.length)];
-  f.pose.innerHTML=catFigureHTML(f.body,f.ear,f.cur,f.eyeDir,f.expr,f.cos);
+  /* ★描きなおす時も 描いた衣装を たもつ（自分＝じぶんの／他人＝その人の） */
+  try{
+    if(f.self)_selfCosOn();
+    else _artCosOverride=(typeof acosSVG==="function"?(acosSVG(f.acos)||null):null);
+    f.pose.innerHTML=catFigureHTML(f.body,f.ear,f.cur,f.eyeDir,f.expr,f.cos);
+  }finally{try{_selfCosOff();}catch(_){}_artCosOverride=null;}
 }
 let _photoMode=false;
 function openCommentPop(name,comment){

@@ -3052,13 +3052,9 @@ button.pmTag{cursor:pointer;}
 /* ほかの組・ソロの人（ズームしても大きさは固定） */
 .jvOthWrap{position:absolute;inset:0;pointer-events:none;z-index:1;}
 .jvOth{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;}
-.jvOthCat{position:relative;width:15px;height:15px;display:block;}
-.jvOthCat i{position:absolute;top:0;width:6px;height:6px;border-radius:50% 50% 20% 20%;}
-.jvOthCat i:first-child{left:0;}
-.jvOthCat i:nth-child(2){right:0;}
-.jvOthCat b{position:absolute;left:1px;top:3px;width:13px;height:12px;border-radius:50%;box-shadow:0 0 0 1.5px #fff;}
-.jvOthName{margin-top:1px;font-size:8px;font-weight:800;color:#5b7d92;white-space:nowrap;
-  background:rgba(255,255,255,.78);border-radius:5px;padding:0 3px;}
+.jvOthDot{width:8px;height:8px;border-radius:50%;box-shadow:0 0 0 1.5px rgba(255,255,255,.9),0 1px 2px rgba(0,0,0,.2);}
+.jvOthName{margin-top:2px;font-size:7.5px;font-weight:700;color:#6d8fa3;white-space:nowrap;
+  background:rgba(255,255,255,.72);border-radius:4px;padding:0 3px;letter-spacing:-.2px;}
 /* 自分たちの猫も小さめ固定に */
 .jrnCat{width:20px !important;}
 .jrnCatsWrap.sea .jrnCat{width:17px !important;}
@@ -14103,9 +14099,8 @@ function _jvOthersHTML(){
   if(!list.length)return "";
   return '<div class="jvOthWrap">'+list.map(function(o,i){
     return '<div class="jvOth" data-i="'+i+'">'
-      +'<span class="jvOthCat"><i style="background:'+(o.ear||"#8fdcff")+'"></i><i style="background:'+(o.ear||"#8fdcff")+'"></i>'
-      +'<b style="background:'+(o.body||"#1c1c1c")+'"></b></span>'
-      +(o.name?'<span class="jvOthName">'+escHtml(o.name)+(o.solo?"":"組")+'</span>':'')
+      +'<span class="jvOthDot" style="background:'+(o.body||"#7fa8bd")+'"></span>'
+      +(o.name?'<span class="jvOthName">'+escHtml(o.name)+'</span>':'')
       +'</div>';
   }).join("")+'</div>';
 }

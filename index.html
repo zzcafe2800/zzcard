@@ -3062,6 +3062,17 @@ button.pmTag{cursor:pointer;}
 
 .jvShare small{font-weight:700;color:#9bbacb;font-size:10px;margin-left:2px;}
 .jvShareNote{text-align:center;font-size:10.5px;font-weight:700;color:#9bbacb;margin:10px auto 2px;max-width:460px;}
+
+/* ★一時的：日本一周の整備中表示（公開時はJV_MAINTENANCEをfalseにするだけ／CSSは残しても害なし） */
+.jvMaint{display:flex;align-items:center;justify-content:center;min-height:300px;padding:22px 14px;}
+.jvMaintCard{width:min(420px,94%);text-align:center;padding:26px 20px 22px;border-radius:22px;
+  background:linear-gradient(180deg,#fffdf7,#fff4e2);border:2px dashed #f0c58a;
+  box-shadow:0 10px 30px rgba(214,160,90,.18);}
+.jvMaintIcon{font-size:38px;line-height:1;margin-bottom:10px;}
+.jvMaintTtl{font-size:16px;font-weight:900;color:#c8802f;margin-bottom:12px;}
+.jvMaintMsg{font-size:13px;font-weight:700;color:#8a6b48;line-height:1.9;}
+.jvMaintMsg b{color:#e8663a;font-size:15px;}
+.jvMaintSub{margin-top:14px;font-size:11px;font-weight:700;color:#bda17f;}
 </style>
 </head>
 <body>
@@ -14288,7 +14299,19 @@ async function _jvCommit(route,at,cands,votes,open){
   finally{_jvBusy=false;}
 }
 /* ---- 画面 ---- */
+/* ===================================================================
+   ★一時的：日本一周だけ「整備中」にする。公開するときは false にするだけ
+   =================================================================== */
+const JV_MAINTENANCE=true;
+const JV_MAINT_HTML='<div class="jvMaint">'
+  +'<div class="jvMaintCard">'
+  +'<div class="jvMaintIcon">🚧</div>'
+  +'<div class="jvMaintTtl">日本一周は いま 整備中</div>'
+  +'<div class="jvMaintMsg">もっと 楽しくなるように<br>作りなおしています。<br><b>2〜3日後</b> に また あそべるよ！</div>'
+  +'<div class="jvMaintSub">🐾 ねこは ちょっと おやすみちゅう</div>'
+  +'</div></div>';
 function _renderJourney(el,days,members,jdata,host){
+  if(JV_MAINTENANCE){if(el)el.innerHTML=JV_MAINT_HTML;return;}   /* ★整備中：どこから呼ばれても止める */
   try{var _mu=getUid();if(members&&members[_mu]){var _mp=getProfile()||{};members=Object.assign({},members);
     members[_mu]={name:_mp.name||"あなた",catBody:profileBody(),color:profileColor(),cos:getEquippedCostume()||null,pose:getEquippedPose()||null,at:Date.now()};}}catch(_){}
   var mc=Object.keys(members||{}).length||1;
@@ -16586,6 +16609,7 @@ function _showJrnPhoto(idx,members){
 
 function _fillJourney(el){
   if(!el)return;
+  if(JV_MAINTENANCE){el.innerHTML=JV_MAINT_HTML;return;}   /* ★整備中はここで止める */
   const code=_partyId();
   if(!code){
     const pos0=_jrnPos(0);_jrnLast={pos:pos0,progressKm:0,members:{},days:{},mc:1};
@@ -17425,6 +17449,7 @@ function _ssJrnTick(){
     if(!(el&&el.classList.contains("show"))){if(_ssJrnTimer){clearInterval(_ssJrnTimer);_ssJrnTimer=null;}return;}
     try{_syncMyPartyLook();}catch(_){}
     var code=_partyId();
+    if(JV_MAINTENANCE){var _e=$("ssJourney");if(_e)_e.innerHTML=JV_MAINT_HTML;return;}   /* ★整備中 */
     if(!code){if(_jrnLast&&_jrnLast.days)_renderJourney($("ssJourney"),_jrnLast.days,_jrnLast.members);return;}
     (async()=>{try{var db=await getDB();if(!db)return;var mod=await import(FB_DB);var snap=await mod.get(mod.ref(db,"parties/"+code));if(snap.exists()){var v=snap.val();_renderJourney($("ssJourney"),v.days||{},v.members||{});}}catch(_){}})();
   }catch(_){}

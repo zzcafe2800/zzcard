@@ -1994,10 +1994,10 @@ body.exercising #randomModeBtn{animation:none !important;}
 #taisoScreen{position:fixed;inset:0;z-index:2620;display:none;overflow-y:auto;
   background:linear-gradient(180deg,#eef7ff 0%,#f6fbff 45%,#fff6ee 100%);
   padding:max(16px,env(safe-area-inset-top)) 18px max(20px,env(safe-area-inset-bottom));}
-#taisoScreen.visible{display:flex;flex-direction:column;justify-content:center;}
-#taisoInner{width:100%;max-width:840px;margin:0 auto;}
+#taisoScreen.visible{display:flex;flex-direction:column;justify-content:flex-start;}
+#taisoInner{width:100%;max-width:840px;margin:auto;}
 #taisoHead{text-align:center;font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:20px;font-weight:900;color:#4d7790;letter-spacing:.08em;margin:4px 0 16px;}
-#taisoCards{display:flex;gap:18px;align-items:stretch;}
+#taisoCards{display:flex;gap:18px;align-items:flex-start;}
 @media (max-width:720px){#taisoScreen.visible{justify-content:flex-start;}#taisoCards{flex-direction:column;align-items:center;gap:14px;}.taisoCard{width:100%;max-width:460px;}#taisoInner{max-width:460px;}}
 .taisoCard{flex:1;min-width:0;background:#fff;border-radius:22px;padding:16px 16px 15px;box-shadow:0 10px 28px rgba(120,160,190,.18);display:flex;flex-direction:column;gap:12px;}
 .tsCardTitle{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:15px;font-weight:900;color:#5c93ad;text-align:center;}
@@ -2280,7 +2280,9 @@ body.exercising #randomModeBtn{animation:none !important;}
 .rangeArrow:active{transform:translateY(-50%) scale(.92);}
 #rangePrev{left:6px;}#rangeNext{right:6px;}
 @media (hover:none){.rangeArrow{display:none;}}
-#rangeDots{display:flex;gap:8px;justify-content:center;padding:8px 0 4px;flex:0 0 auto;}
+#rangeDots{display:none;}
+#rangePrev,#rangeNext{display:none;}
+#rangeDotsOld{display:flex;gap:8px;justify-content:center;padding:8px 0 4px;flex:0 0 auto;}
 .rgDot{width:8px;height:8px;border-radius:50%;background:#c3d5e0;transition:all .22s;cursor:pointer;}
 .rgDot.active{background:#7fb8dd;width:20px;border-radius:4px;}
 #summitMoment{position:fixed;inset:0;z-index:3200;display:none;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(180deg,#ffe9c8 0%,#ffdbe4 42%,#d4ecfa 100%);overflow-y:auto;padding:calc(24px + env(safe-area-inset-top)) 20px calc(24px + env(safe-area-inset-bottom));}
@@ -2483,7 +2485,9 @@ body.exercising #randomModeBtn{animation:none !important;}
   background:rgba(140,150,170,.85);color:#fff;box-shadow:0 4px 12px rgba(100,110,130,.28);font-family:"Yomogi","Kosugi Maru",sans-serif;}
 #storyTestBtn[hidden]{display:none;}
 #storyTestBtn:active{transform:scale(.94);}
-#taisoFooter{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:10px;margin-top:18px;}
+#taisoFooter{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:10px 12px;margin-top:18px;}
+#taisoFooter #storyJoinChkRow{flex:1 0 100%;}
+@media (min-width:721px){#taisoScreen{padding-top:56px;}}
 #storyJoinChkRow{display:flex;align-items:center;justify-content:center;gap:8px;font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:13px;font-weight:800;color:#5c93ad;cursor:pointer;background:rgba(255,255,255,.88);border:1.5px solid rgba(143,220,255,.5);border-radius:999px;padding:8px 18px;}
 #storyJoinChkRow input{width:17px;height:17px;accent-color:#7fd8b0;cursor:pointer;}
 #taisoBack{position:fixed;left:16px;top:max(16px,env(safe-area-inset-top));z-index:20;border:none;border-radius:999px;padding:9px 15px;
@@ -2763,6 +2767,12 @@ html.lite .catDeco{animation:none;}
 #tsMore>summary:active{transform:scale(.98);}
 #tsMore[open]>summary{background:#eaf6ff;color:#4f88a4;}
 #tsMoreBody{display:flex;flex-direction:column;gap:9px;padding-top:10px;}
+.tsSecLbl{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:11px;font-weight:900;
+  color:#a9c3d1;letter-spacing:.04em;margin:2px 0 -4px;padding-left:3px;}
+.tsChkRow{display:flex;flex-wrap:wrap;gap:7px 16px;justify-content:center;
+  background:#fafdff;border-radius:12px;padding:9px 8px;}
+.tsChkRow .tsAnonRow{margin:0;}
+#tsMoodRow{display:flex;justify-content:center;}
 #wakeAdjRow .waLabel{font-size:12px;line-height:1.15;}
 
 /* ===== 設定画面：参考画像風のリッチな見た目 ===== */
@@ -3708,10 +3718,31 @@ body.exercising #homeZZ{opacity:0;pointer-events:none;}
 .tsumNRow .tsumName{color:#4f88a4;}
 .tsumBar{height:6px;border-radius:99px;background:#e2eef5;overflow:hidden;margin-top:5px;}
 .tsumBar>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#8fdcff,#57b6e0);}
-#tsumBtns{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:14px;}
+#tsumBtns{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:14px;}
 .tsumGo{border:1.5px solid #dcecf6;background:#f4fbff;color:#5b8ba4;font-family:"Yomogi","Kosugi Maru",sans-serif;
   font-size:12.5px;font-weight:800;border-radius:13px;padding:11px 6px;cursor:pointer;}
 .tsumGo:active{background:#e6f4fc;transform:scale(.97);}
+.tsumGo{line-height:1.35;}
+.tsumGo.primary{border:none;color:#fff;padding:12px 4px;
+  background:linear-gradient(135deg,#5ea9cf,#3f7fa8);box-shadow:0 6px 16px rgba(63,127,168,.32);
+  animation:shopBlink 1.5s ease-in-out infinite;}
+.tsumGo.primary:active{background:linear-gradient(135deg,#5299bd,#356d92);}
+#tsumShopHint{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:12px;font-weight:800;
+  color:#5b8ba4;background:#eef7fc;border-radius:12px;padding:10px 11px;margin-top:12px;
+  text-align:center;line-height:1.5;}
+#tsumShopHint[hidden]{display:none;}
+#homeLocBadge{position:absolute;top:-6px;right:-7px;min-width:17px;height:17px;padding:0 4px;
+  border-radius:999px;background:#ff7a7a;color:#fff;font-size:9.5px;font-weight:900;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(255,122,122,.5);}
+#homeLocBadge[hidden]{display:none;}
+#homeLoc{position:relative;}
+@keyframes shopBlink{0%,100%{opacity:1;}50%{opacity:.45;}}
+@keyframes shopBlinkBtn{0%,100%{transform:scale(1);box-shadow:0 5px 14px rgba(63,127,168,.28);}
+  50%{transform:scale(1.055);box-shadow:0 8px 22px rgba(63,127,168,.5);}}
+#homeLoc.blink{animation:shopBlinkBtn 1.4s ease-in-out infinite;}
+@media (prefers-reduced-motion:reduce){
+  #homeLoc.blink,.tsumGo.primary{animation:none;}
+}
 #tsumHelpBtn{width:100%;border:none;background:none;color:#9ab6c5;font-size:11.5px;font-weight:800;
   cursor:pointer;padding:10px 4px 2px;text-decoration:underline;}
 #zzHelp{position:fixed;inset:0;z-index:3320;display:none;align-items:center;justify-content:center;background:rgba(40,60,72,.42);padding:18px;}
@@ -4242,11 +4273,16 @@ body.exercising #homeZZ{opacity:0;pointer-events:none;}
         <details id="tsMore">
           <summary id="tsMoreSum">💬 コメント・気分を つける</summary>
           <div id="tsMoreBody">
+            <div class="tsSecLbl">ひとこと</div>
             <textarea id="tsComment" maxlength="20" rows="3" placeholder="ひとこと（ひらがな）" inputmode="kana"></textarea>
             <div class="cmtChips" id="tsCmtChips"></div>
+            <div class="tsSecLbl">きょうの 気分</div>
             <div id="tsMoodRow"><button id="tsMoodBtn" type="button"><span>😊</span> きょうの気分</button></div>
-            <label class="tsAnonRow"><input type="checkbox" id="tsAnon"/> 匿名で投稿する</label>
-            <label class="tsAnonRow"><input type="checkbox" id="tsShowTime"/> 起床時間を表示</label>
+            <div class="tsSecLbl">こうかいの せってい</div>
+            <div class="tsChkRow">
+              <label class="tsAnonRow"><input type="checkbox" id="tsAnon"/> 匿名で投稿する</label>
+              <label class="tsAnonRow"><input type="checkbox" id="tsShowTime"/> 起床時間を表示</label>
+            </div>
             <div class="tsFoot">
               <button class="tsPost" id="tsPostBtn" type="button">投稿する</button>
             </div>
@@ -4616,6 +4652,10 @@ body.exercising #homeZZ{opacity:0;pointer-events:none;}
     <div class="recCard">
       <div class="recEye"><span class="recEyeDot" style="background:#63ccff;"></span><span id="recGraphTitle">起きた時間の うつりかわり</span><button id="recGraphModeBtn" type="button" class="recCalModeBtn">😊 気分で見る</button></div>
       <div id="recGraph"></div>
+    </div>
+    <div class="recCard">
+      <div class="recEye"><span class="recEyeDot" style="background:#ffd08a;"></span>あさの きぶん（14日）</div>
+      <div id="recMoods"></div>
     </div>
     <div class="recCard">
       <div class="recEye"><span class="recEyeDot" style="background:#ffa6c8;"></span><span id="recCalTitle">カレンダー</span><button id="recCalModeBtn" type="button" class="recCalModeBtn">😊 気分で見る</button></div>
@@ -5432,7 +5472,7 @@ function _recDot(dm){ return dm<=10 ? "#63ccff" : "#ff9e4d"; }
 function _floatHM(f){ let h=Math.floor(f),m=Math.round((f-h)*60); if(m===60){h++;m=0;} return fmtHM(h,m); }
 function openRecord(){ $("recordScreen").classList.add("visible"); buildRecord(); }
 function closeRecord(){ $("recordScreen").classList.remove("visible"); }
-function buildRecord(){ try{buildRecSummary();}catch(_){} try{buildRecGraph();}catch(_){} try{buildRecCalendar();}catch(_){} try{buildRecWeekday();}catch(_){} }
+function buildRecord(){ try{buildRecSummary();}catch(_){} try{buildRecGraph();}catch(_){} try{buildRecCalendar();}catch(_){} try{buildRecWeekday();}catch(_){} try{_renderRecMoods();}catch(_){} }
 function buildRecSummary(){
   const wl=getWakeLog();
   const rec=Object.entries(wl).filter(([k,v])=>Number.isFinite(v)).sort((a,b)=>a[0]<b[0]?1:-1).slice(0,30);
@@ -9046,6 +9086,15 @@ function taisoNext(){
   const away=(typeof outingPhase==="function"&&outingPhase()==="away");
   if(away){ try{showSelect();}catch(_){} }   /* 猫が外→ホーム */
   else { goToCatRoomAfterPost(); }            /* 猫の部屋（いってらっしゃい） */
+  /* ★ 体操が おわった直後＝手が空いて zzを持っている瞬間に まとめを 1日1回だけ出す。
+     朝の入口に 地図を置くのを やめたぶん、ここで おみせ・たびに 気づけるようにする */
+  try{
+    const k="radio_sum_shown",today=jstKey();
+    if(localStorage.getItem(k)!==today){
+      localStorage.setItem(k,today);
+      setTimeout(()=>{try{openTodaySum();}catch(_){}},950);
+    }
+  }catch(_){}
 }
 function afterStampReady(){ autoStampFlow(); }
 function startRandomMode(skipRoulette){
@@ -13531,7 +13580,7 @@ $("helpBtn").addEventListener("click",()=>{playClick();showTutorial("help");});
 try{const _ht=$("htrToggle");if(_ht)_ht.addEventListener("click",e=>{e.stopPropagation();try{playClick();}catch(_){}const c=$("homeTopRight");if(c)c.classList.toggle("htrOpen");});}catch(_){}
 try{document.addEventListener("click",e=>{const c=$("homeTopRight");if(c&&c.classList.contains("htrOpen")&&!c.contains(e.target))c.classList.remove("htrOpen");});}catch(_){}
 try{const _hz=$("homeZZ");if(_hz){_hz.addEventListener("click",e=>{e.stopPropagation();try{openTodaySum();}catch(_){try{openZzHelp();}catch(__){}}});setTimeout(()=>{try{_hz.textContent=zzFmt(getZZ());}catch(_){}},0);}}catch(_){}
-try{const _hl=$("homeLoc");if(_hl){_hl.hidden=false;_hl.innerHTML='<span class="hlPin">🗾</span>おみせ・たび';_hl.addEventListener("click",e=>{e.stopPropagation();try{playClick();}catch(_){}try{openMyShop(1);}catch(_){}});}}catch(_){}
+try{const _hl=$("homeLoc");if(_hl){_hl.hidden=false;_hl.innerHTML='<span class="hlPin">🗾</span>おみせ・たび<span id="homeLocBadge" hidden></span>';setTimeout(()=>{try{_homeLocBadge();}catch(_){}},0);_hl.addEventListener("click",e=>{e.stopPropagation();try{playClick();}catch(_){}try{openMyShop(1);}catch(_){}});}}catch(_){}
 try{var _hab=$("homeAlbumBtn");if(_hab)_hab.addEventListener("click",function(e){e.stopPropagation();try{playClick();}catch(_){}try{openJrnAlbum();}catch(_){}});}catch(_){}
 function _applyLite(){try{const m=/Mobi|Android|iPhone|iPod|iPad/i.test(navigator.userAgent||"");const p=(window.innerHeight||0)>=(window.innerWidth||0);document.documentElement.classList.toggle("lite",m||p);}catch(_){}}
 window.addEventListener("resize",()=>{_applyLite();try{_refreshRadioAlt();}catch(_){}});window.addEventListener("orientationchange",()=>{_applyLite();try{_refreshRadioAlt();}catch(_){}});_applyLite();
@@ -17561,7 +17610,9 @@ function openRange(){
     $("rangeScreen").classList.add("show");
     try{const _sbb=$("openSummitBtn");if(_sbb)_sbb.style.display=_conquered(_targetMt())?"":"none";}catch(_){}
     setTimeout(()=>{const sc=$("rangeScroll");if(sc){sc.scrollLeft=sc.scrollWidth;}},70);
-    try{_initRangeCarousel();_rangeGo(0,false);_renderPartyClimbPage();_rangeStartAuto();}catch(_){}
+    /* ★ 日本一周ページへの 横スワイプ・点・矢印・5秒自動送りを やめて 登山だけに。
+     もどす場合は _initRangeCarousel();_renderPartyClimbPage();_rangeStartAuto(); を 足す */
+  try{_rangeGo(0,false);}catch(_){}
     try{setTimeout(()=>{try{_maybeShowMtMigrate();}catch(_){}},450);}catch(_){}
     [...$("rangeInner").querySelectorAll(".rgPeak")].forEach(gp=>{gp.addEventListener("click",()=>_showPeakDetail(parseInt(gp.dataset.i,10),weeks));});
   }catch(e){console.warn("range",e);}
@@ -19257,7 +19308,8 @@ function spendZZ(n){const z=getZZ();if(z<n)return false;setZZ(z-n);return true;}
 function zzFmt(n){try{return (n||0).toLocaleString("ja-JP")+" zz";}catch(_){return (n||0)+" zz";}}
 function _zzPaint(){try{const e=$("shpZZ");if(e)e.textContent=zzFmt(getZZ());}catch(_){}
   try{["tvShopZZ","tvListZZ"].forEach(id=>{const x=$(id);if(x)x.textContent=zzFmt(getZZ());});}catch(_){}
-  try{const h=$("homeZZ");if(h)h.textContent=zzFmt(getZZ());}catch(_){}}
+  try{const h=$("homeZZ");if(h)h.textContent=zzFmt(getZZ());}catch(_){}
+  try{_homeLocBadge();}catch(_){}}
 /* 体操の報酬：早起きスコア連動（20〜110zz／1日1回） */
 function _zzEarnToday(){
   try{
@@ -19489,6 +19541,8 @@ let _shpPage=0;
 function openMyShop(page){
   const sc=$("shopScreen");if(!sc)return;
   sc.classList.add("show");
+  try{localStorage.setItem(SHOPSEEN_KEY,"1");}catch(_){}   /* 一度でも見たら NEWは消す */
+  try{_homeLocBadge();}catch(_){}
   _zzPaint();
   _shpPaintShop();
   try{_shpBgPaint();}catch(_){}
@@ -21731,6 +21785,36 @@ function _tsumRender(){
     }
   }catch(_){}
   if(nowBox)nowBox.innerHTML=n||'<div class="tsumEmpty">とくに ないよ</div>';
+  /* まだ おみせを ひらいたことが ない人に ひとこと（気づかれないと 意味がないので） */
+  try{
+    const hint=$("tsumShopHint");
+    if(hint){
+      let seen=false;try{seen=localStorage.getItem(SHOPSEEN_KEY)==="1";}catch(_){}
+      if(!seen){
+        hint.innerHTML="🏪 もらった zz で 絵を かいて 売ったり、<br>日本を たびして 人の お店に 行けるよ";
+        hint.hidden=false;
+      }else hint.hidden=true;
+    }
+  }catch(_){}
+}
+var SHOPSEEN_KEY="radio_shop_seen";
+/* ホームの「おみせ・たび」ボタンの バッジ。
+   まだ 一度も ひらいていない人には NEW、そのあとは 用事がある時だけ ! */
+function _homeLocBadge(){
+  try{
+    const b=$("homeLocBadge");if(!b)return;
+    let seen=false;try{seen=localStorage.getItem(SHOPSEEN_KEY)==="1";}catch(_){}
+    if(!seen){b.textContent="NEW";b.hidden=false;return;}
+    let n=0;
+    try{n+=_tsumIncomeToday().filter(x=>x.t==="shop"||x.t==="party").length;}catch(_){}
+    try{if(typeof _tvArrived!=="undefined"&&_tvArrived)n++;}catch(_){}
+    if(n>0){b.textContent="!";b.hidden=false;}else b.hidden=true;
+  }catch(_){}
+  /* 用事がある時（NEW か !）だけ ボタンを 点滅させる */
+  try{
+    const hl=$("homeLoc"),bb=$("homeLocBadge");
+    if(hl)hl.classList.toggle("blink",!!(bb&&!bb.hidden));
+  }catch(_){}
 }
 function openTodaySum(){
   const el=$("todaySum");if(!el)return;
@@ -21755,7 +21839,6 @@ function closeTodaySum(){const el=$("todaySum");if(el)el.classList.remove("show"
         try{
           if(to==="range")openRange();
           else if(to==="shop")openMyShop(1);
-          else if(to==="rec")openRecord();
           else if(to==="inc")openMyShop(2);
         }catch(err){console.warn("tsum go",err);}
       },160);
@@ -23491,11 +23574,11 @@ function _tvPlaceOthers(){
     <div id="tsumList"></div>
     <div id="tsumNowTtl">いま</div>
     <div id="tsumNow"></div>
+    <div id="tsumShopHint" hidden></div>
     <div id="tsumBtns">
+      <button class="tsumGo primary" type="button" data-go="shop">🗾 おみせ<br>たび</button>
       <button class="tsumGo" type="button" data-go="range">⛰ 登山</button>
-      <button class="tsumGo" type="button" data-go="shop">🗾 おみせ・たび</button>
-      <button class="tsumGo" type="button" data-go="rec">📖 きろく</button>
-      <button class="tsumGo" type="button" data-go="inc">💰 売上めいさい</button>
+      <button class="tsumGo" type="button" data-go="inc">💰 売上</button>
     </div>
     <button id="tsumHelpBtn" type="button">お金の もらいかた</button>
   </div>

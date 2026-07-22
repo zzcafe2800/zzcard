@@ -13584,7 +13584,18 @@ function _jrnPos(km){
   let reachedNamed=0;for(let j=0;j<JOURNEY_CP.length;j++){if(!JOURNEY_CP[j][5]&&JOURNEY_CP[j][4]<=km+0.5)reachedNamed=j;}
   return {i:i,t:t,lat:lat,lng:lng,prev:prevN,next:nextN,remainKm:Math.max(0,nextN[4]-km),reachedIdx:reachedNamed,sea:!!a[6],done:km>=JOURNEY_TOTAL-0.5};
 }
-function _jrnLandPaths(){return JP_POLY.map(poly=>{let d="M";poly.forEach((pt,i)=>{d+=(i?"L":"")+_jpX(pt[0]).toFixed(2)+" "+_jpY(pt[1]).toFixed(2)+" ";});return '<path d="'+d+'Z" fill="#dcecd2" stroke="#dcecd2" stroke-width="0.035" stroke-linejoin="round"/><path d="'+d+'Z" fill="none" stroke="#b3cfa6" stroke-width="0.012"/>';}).join("");}
+var _jrnLandCache=null;
+function _jrnLandPaths(){
+  if(_jrnLandCache===null){
+    _jrnLandCache=JP_POLY.map(function(poly){
+      var d="M";
+      poly.forEach(function(pt,k){d+=(k?"L":"")+_jpX(pt[0]).toFixed(2)+" "+_jpY(pt[1]).toFixed(2)+" ";});
+      return '<path d="'+d+'Z" fill="#dcecd2" stroke="#dcecd2" stroke-width="0.035" stroke-linejoin="round"/>'
+           + '<path d="'+d+'Z" fill="none" stroke="#b3cfa6" stroke-width="0.012"/>';
+    }).join("");
+  }
+  return _jrnLandCache;
+}
 var _JP_RIDGES=[
  [[142.9,44.3],[142.85,43.9],[142.9,43.55],[143.0,43.2],[142.85,42.9],[142.7,42.5],[142.5,42.15]],
  [[141.0,43.2],[140.8,42.9],[140.6,42.5],[140.9,42.6]],
@@ -13756,6 +13767,7 @@ function _jrnDrawMap(root){
   const wrap=(root||document).querySelector(".jrnMap");if(!wrap||!_jrnLast)return;
   const old=wrap.querySelector(".jrnMapSvg");const html=_jvLast?_jvMapSVG(_jvLast.route,_jvLast.km,_jvLast.st,_jvLast.cands):_jrnMapSVG(_jrnLast.pos,_jrnLast.progressKm);
   if(old)old.outerHTML=html;else wrap.insertAdjacentHTML("afterbegin",html);
+  try{_jvSyncOthers(root);}catch(_){}
   _jrnBindMap(root);
 }
 function _jrnBindMap(root){
@@ -14104,6 +14116,20 @@ function _jvOthersHTML(){
       +'</div>';
   }).join("")+'</div>';
 }
+function _jvSyncOthers(root){        /* あとから届いたプレイヤーを地図に差し込む */
+  try{
+    var wrap=(root||document).querySelector(".jrnMap");if(!wrap)return;
+    var old=wrap.querySelector(".jvOthWrap");
+    var html=_jvOthersHTML();
+    if(old){ if(html)old.outerHTML=html; else old.remove(); }
+    else if(html){
+      var svg=wrap.querySelector(".jrnMapSvg");
+      if(svg)svg.insertAdjacentHTML("afterend",html); else wrap.insertAdjacentHTML("afterbegin",html);
+    }
+    var sv=wrap.querySelector(".jrnMapSvg");
+    if(sv)_jvPlaceOthers(sv);
+  }catch(e){console.warn("プレイヤー表示の更新に失敗",e);}
+}
 function _jvPlaceOthers(svg){
   var wrap=svg&&svg.parentElement;if(!wrap)return;
   var ow=wrap.querySelector(".jvOthWrap");if(!ow)return;
@@ -14161,7 +14187,7 @@ function _jvShareOn(){
 function _jvSetShare(v){try{localStorage.setItem(JV_SHARE_KEY,v?"1":"0");}catch(_){}}
 var _jvOthers=[],_jvOthersLoaded=false;
 function _jvShareId(){return _partyId()||("solo_"+getUid());}
-async function _jvPushShare(here,st,visitedPref){
+async function _jvPushShare(here,st,visitedPref,doneAt){
   if(!_jvShareOn())return;
   try{
     var db=await getDB();if(!db)return;
@@ -14170,7 +14196,7 @@ async function _jvPushShare(here,st,visitedPref){
     await m.set(m.ref(db,"jshare/"+_jvShareId()),{
       name:(p.name||"匿名さん"),solo:_partyId()?0:1,
       lng:Math.round(here.lng*1000)/1000, lat:Math.round(here.lat*1000)/1000,
-      town:_jvTownName(st.at), pref:visitedPref, at:Date.now(),
+      town:_jvTownName(st.at), pref:visitedPref, at:Date.now(), doneAt:doneAt||Date.now(),
       body:profileBody(), ear:profileColor()
     });
   }catch(e){console.warn("旅の共有に失敗",e);}
@@ -14195,11 +14221,12 @@ async function _jvLoadOthers(){
       var o=v[k];
       if(!o||k===me)return;
       if(!isFinite(o.lng)||!isFinite(o.lat))return;
-      if(o.at&&now-o.at>30*86400000)return;   /* 1か月以上むかしのは出さない */
+      var last=o.doneAt||o.at||0;
+      if(!last||now-last>3*86400000)return;   /* 3日以内に体操した人・パーティだけ */
       out.push(o);
     });
     out.sort(function(a,b){return (b.at||0)-(a.at||0);});
-    _jvOthers=out.slice(0,60);
+    _jvOthers=out.slice(0,80);
   }catch(e){console.warn("ほかの組の読込に失敗",e);}
   return _jvOthers;
 }
@@ -14319,17 +14346,22 @@ function _renderJourney(el,days,members,jdata,host){
       var solo=!_partyId();
       var leader=solo||(host&&host===getUid());
       if(!leader)return '<div class="jvShareNote">'+(_jvShareOn()?"":"")+'旅の共有は リーダーが きめるよ</div>';
-      return '<label class="jvShare"><input type="checkbox" id="jvShareChk"'+(_jvShareOn()?" checked":"")+'/> 旅を共有（ほかの人の地図に出る）'+(solo?"":"<small>※パーティの代表として</small>")+'</label>';
+      return '<label class="jvShare"><input type="checkbox" id="jvShareChk"'+(_jvShareOn()?"":" checked")+'/> 旅を共有しない（地図に出さない）'+(solo?"":"<small>※パーティの代表として</small>")+'</label>';
     })();
   try{_jrnAttachMap(el);}catch(_){}
   try{var _c=$("jvShareChk");if(_c)_c.onchange=function(){
-    _jvSetShare(_c.checked); _jvShareRemote=_c.checked?1:0;
-    if(_partyId())_jvWrite({share:_c.checked?1:0});
-    if(!_c.checked){try{_jvRemoveShare();}catch(_){}}
-    try{toast(_c.checked?"旅を共有するよ":"共有をやめたよ");}catch(_){}
+    var on=!_c.checked;                       /* チェック＝共有しない */
+    _jvSetShare(on); _jvShareRemote=on?1:0;
+    if(_partyId())_jvWrite({share:on?1:0});
+    if(on){try{_jvPushShare(here,st,visited,_lastDone||Date.now());}catch(_){}}
+    else{try{_jvRemoveShare();}catch(_){}}
+    try{toast(on?"旅を共有するよ":"共有をやめたよ");}catch(_){}
   };}catch(_){}
-  try{_jvPushShare(here,st,visited);}catch(_){}
-  if(!_jvOthersLoaded)_jvLoadOthers().then(function(list){ if(list&&list.length){try{_jrnDrawMap(el);}catch(_){}} });
+  var _lastDone=0;
+  try{Object.keys(days||{}).forEach(function(dk){var d2=days[dk];if(d2&&typeof d2==="object")Object.keys(d2).forEach(function(u){var e2=d2[u];if(e2&&typeof e2.at==="number"&&e2.at>_lastDone)_lastDone=e2.at;});});}catch(_){}
+  try{_jvPushShare(here,st,visited,_lastDone||Date.now());}catch(_){}
+  if(!_jvOthersLoaded)_jvLoadOthers().then(function(){try{_jvSyncOthers(el);}catch(_){}});
+  else try{_jvSyncOthers(el);}catch(_){}
 }
 
 let _jrnPhotoBusy=false;
@@ -16557,12 +16589,17 @@ function _fillJourney(el){
   (async()=>{
     try{
       const db=await getDB();if(!db){el.innerHTML='<div class="jrnLoading">いまは よみこめないよ</div>';return;}
-      const{ref,get}=await import(FB_DB);
-      const snap=await get(ref(db,"parties/"+code));
+      const m=await import(FB_DB);
+      const pP=m.get(m.ref(db,"parties/"+code));          /* 3つ同時に取りに行く */
+      const pJ=m.get(m.ref(db,"journey/"+code));
+      const pO=_jvOthersLoaded?null:_jvLoadOthers();
+      const [snap,jsnap]=await Promise.all([pP,pJ]);
       if(!snap.exists()){el.innerHTML='<div class="jrnLoading">パーティが 見つからないよ</div>';return;}
       const v=snap.val();
-      const jd=await _jvLoad(code);
-      _renderJourney(el,v.days||{},v.members||{},jd||{},v.host||null);
+      const jd=jsnap.exists()?jsnap.val():{};
+      _jvData=jd;
+      _renderJourney(el,v.days||{},v.members||{},jd,v.host||null);
+      if(pO)pO.then(function(){try{_jvSyncOthers(el);}catch(_){}});
     }catch(e){console.warn("日本一周の表示に失敗",e);el.innerHTML='<div class="jrnLoading">よみこめなかったよ</div>';}
   })();
 }

@@ -2815,7 +2815,7 @@ html.lite .catDeco{animation:none;}
 #pdNoticeChk input{width:18px;height:18px;flex:0 0 auto;accent-color:#7fd8b0;cursor:pointer;}
 #pdNoticeLater{border:none;background:transparent;color:#9bbacb;font-size:12px;font-weight:800;cursor:pointer;padding:4px 10px;text-decoration:underline;}
 #pdNoticeLater:active{transform:scale(.96);}
-#reloadPrompt{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:3600;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:9px;background:#fff;border-radius:16px;padding:10px 12px 10px 16px;box-shadow:0 6px 24px rgba(60,90,120,.28);border:1.5px solid #e5eef4;max-width:calc(100vw - 22px);animation:rpIn .3s cubic-bezier(.4,0,.2,1);}
+#reloadPrompt{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:9px;background:#fff;border-radius:16px;padding:10px 12px 10px 16px;box-shadow:0 6px 24px rgba(60,90,120,.28);border:1.5px solid #e5eef4;max-width:calc(100vw - 22px);animation:rpIn .3s cubic-bezier(.4,0,.2,1);}
 #reloadPrompt[hidden]{display:none;}
 .rpText{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:13px;font-weight:800;color:#4f7089;white-space:nowrap;}
 .rpBtn{border:none;border-radius:999px;font-size:12.5px;font-weight:800;padding:7px 14px;cursor:pointer;font-family:"Yomogi","Kosugi Maru",sans-serif;}
@@ -3758,6 +3758,9 @@ body.exercising #homeZZ{opacity:0;pointer-events:none;}
 #shpTop:has(#shpSkip:not([hidden])) #shpZZ{margin-left:6px;}
 @media (prefers-reduced-motion:reduce){#shpSkip{animation:none;}}
 @media (max-width:400px){#shpSkip{font-size:13px;padding:8px 15px;}#shpTitle{display:none;}}
+
+#reloadPrompt{z-index:2147483000 !important;}
+#reloadPrompt[hidden]{display:none !important;}
 </style>
 </head>
 <body>
@@ -5562,7 +5565,15 @@ let _bigPushT=null;
 function syncBigSoon(){try{if(_bigPushT)clearTimeout(_bigPushT);_bigPushT=setTimeout(()=>{cloudBigPush(false);},2500);}catch(_){}}
 /* リロードのループ防止：直近にリロードしてたら再リロードしない（ロード→即リロードの無限ループを断つ） */
 let _reloadPromptShown=false;
-function _showReloadPrompt(){try{const el=$("reloadPrompt");if(!el||_reloadPromptShown)return;_reloadPromptShown=true;el.hidden=false;const rb=$("rpReload"),lb=$("rpLater");if(rb)rb.onclick=()=>{try{location.reload();}catch(_){}};if(lb)lb.onclick=()=>{el.hidden=true;_reloadPromptShown=false;};}catch(_){}}
+var _rpSnooze=0;
+function _showReloadPrompt(){try{
+  if(Date.now()<_rpSnooze)return;                      /* 「あとで」から 1分は 出さない */
+  const el=$("reloadPrompt");if(!el||_reloadPromptShown)return;
+  _reloadPromptShown=true;el.hidden=false;
+  const rb=$("rpReload"),lb=$("rpLater");
+  if(rb)rb.onclick=()=>{try{location.reload();}catch(_){}};
+  if(lb)lb.onclick=()=>{el.hidden=true;_reloadPromptShown=false;_rpSnooze=Date.now()+60000;};
+}catch(_){}}
 function _canSyncReload(){try{const last=+(localStorage.getItem("radio_last_reload")||0);if(Date.now()-last<30000)return false;localStorage.setItem("radio_last_reload",String(Date.now()));return true;}catch(_){return true;}}
 /* 起動時：クラウドに新しい記録があれば（画像も）取り込んで一度だけ再読み込み */
 (async()=>{try{

@@ -2007,10 +2007,38 @@ body.exercising #randomModeBtn{animation:none !important;}
 #autoStampFly.press{animation:autoStampIn .55s cubic-bezier(.2,1.6,.35,1) forwards;}
 @keyframes autoStampIn{0%{opacity:0;transform:translateY(-64px) scale(2.3) rotate(-14deg);}55%{opacity:1;transform:translateY(5px) scale(.9) rotate(-3deg);}100%{opacity:1;transform:translateY(0) scale(1) rotate(0);}}
 @media (prefers-reduced-motion:reduce){#autoStampFly.press{animation:none;opacity:1;}}
-#tsTodayStamp{position:absolute;left:8px;bottom:8px;display:none;align-items:center;gap:5px;background:rgba(255,255,255,.9);border-radius:12px;padding:3px 8px 3px 6px;box-shadow:0 3px 9px rgba(0,0,0,.12);}
+#tsStageBar{position:absolute;left:8px;bottom:8px;display:flex;align-items:center;gap:6px;z-index:2;}
+#tsTodayStamp{display:none;align-items:center;gap:5px;background:rgba(255,255,255,.9);border-radius:12px;padding:3px 8px 3px 6px;box-shadow:0 3px 9px rgba(0,0,0,.12);}
 #tsTodayStamp.on{display:flex;}
 #tsTodayStamp .tsTsLbl{font-size:10px;font-weight:800;color:#8aa7b8;}
 #tsTodayStampImg{width:26px;height:26px;object-fit:contain;}
+/* きょうのスタンプの横：過去のスタンプラリーを見返す本アイコン */
+#tsBookBtn{display:flex;align-items:center;gap:4px;border:none;cursor:pointer;font-family:var(--font);
+  background:rgba(255,255,255,.9);border-radius:12px;padding:4px 8px 4px 6px;box-shadow:0 3px 9px rgba(0,0,0,.12);
+  font-size:10px;font-weight:800;color:#8aa7b8;transition:transform .15s;}
+#tsBookBtn:active{transform:scale(.94);}
+#tsBookBtn[hidden]{display:none;}
+#tsBookBtn svg{width:19px;height:19px;display:block;flex:0 0 auto;}
+#tsBookCount{background:linear-gradient(135deg,#8fd0ef,#6bb8e0);color:#fff;border-radius:999px;padding:1px 6px;font-size:9px;font-weight:900;}
+/* スタンプ帳（過去のカードを見返して保存） */
+#stampBook{position:fixed;inset:0;z-index:2700;display:none;align-items:center;justify-content:center;
+  background:rgba(200,234,255,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding:20px;}
+#stampBook.visible{display:flex;}
+#sbkBox{width:min(420px,94vw);border-radius:24px;padding:15px 15px 17px;text-align:center;
+  background:rgba(255,255,255,.97);border:1.5px solid rgba(143,220,255,.4);box-shadow:0 24px 60px rgba(111,205,255,.26);}
+#sbkHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+#sbkTitle{font-size:15px;font-weight:900;color:#4d7790;}
+#sbkClose{border:none;background:transparent;font-size:16px;font-weight:900;color:#9bbacb;cursor:pointer;padding:4px 6px;}
+#sbkStage{position:relative;border-radius:14px;overflow:hidden;background:rgba(143,220,255,.12);aspect-ratio:1920/1200;}
+#sbkImg{width:100%;height:100%;object-fit:contain;display:block;}
+#sbkLoading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#7fa8bd;}
+#sbkLoading[hidden]{display:none;}
+#sbkNav{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:10px;}
+#sbkNav button{border:none;background:rgba(143,220,255,.18);color:#5c93ad;width:34px;height:34px;border-radius:999px;font-size:17px;font-weight:900;cursor:pointer;}
+#sbkNav button:disabled{opacity:.35;cursor:default;}
+#sbkLabel{font-size:13px;font-weight:800;color:#5c93ad;min-width:78px;}
+#sbkFoot{margin-top:12px;}
+#sbkSave:disabled{opacity:.5;cursor:default;}
 .tsFoot{display:flex;justify-content:center;align-items:center;gap:10px;margin-top:auto;}
 .tsLoad{font-size:12.5px;font-weight:800;color:#4f9fca;cursor:pointer;text-decoration:underline;text-underline-offset:3px;}
 .tsLoad:active{opacity:.6;}
@@ -3325,7 +3353,10 @@ button.pmTag{cursor:pointer;}
         <div id="autoPreviewStage">
           <img id="autoPreviewImg" alt="ラジオ体操カード"/>
           <div id="autoStampFlyWrap"><img id="autoStampFly" alt=""/></div>
-          <div id="tsTodayStamp"><span class="tsTsLbl">きょう</span><img id="tsTodayStampImg" alt=""/></div>
+          <div id="tsStageBar">
+            <div id="tsTodayStamp"><span class="tsTsLbl">きょう</span><img id="tsTodayStampImg" alt=""/></div>
+            <button id="tsBookBtn" type="button" hidden aria-label="スタンプ帳（過去のカード）"><svg viewBox="0 0 24 24" fill="none"><path d="M4 4.5h5.4a2.6 2.6 0 012.6 2.6v12.4a2 2 0 00-2-1.9H4z" stroke="#6bb8e0" stroke-width="1.6" stroke-linejoin="round"/><path d="M20 4.5h-5.4a2.6 2.6 0 00-2.6 2.6v12.4a2 2 0 012-1.9H20z" stroke="#6bb8e0" stroke-width="1.6" stroke-linejoin="round"/></svg><span id="tsBookCount">0</span></button>
+          </div>
         </div>
         <div class="tsFoot">
           <button class="tsDl" id="tsDownloadBtn" type="button">保存</button>
@@ -5007,10 +5038,10 @@ async function renderFeed(){
   }catch(e){box.innerHTML='<div class="ppListMsg">なし</div>';console.warn(e);}
 }
 async function postToday(anon,comment){
-  if(_devNoPost){console.warn("【テスト】投稿スキップ（_devNoPost）");return;}
+  if(_devNoPost){console.warn("【テスト】投稿スキップ（_devNoPost）");return false;}
   const p=getProfile()||{};
-  const stamp=todayStamp();if(!stamp)return;
-  const db=await getDB();if(!db)return;
+  const stamp=todayStamp();if(!stamp){console.warn("投稿中止：きょうのスタンプが見つからない");return false;}
+  const db=await getDB();if(!db){console.warn("投稿中止：Firebaseに接続できない");return false;}
   try{
     const{ref,set}=await import(FB_DB);
     const date=jstKey();
@@ -5022,7 +5053,8 @@ async function postToday(anon,comment){
       uid:getUid(),name:anon?"匿名さん":(p.name||"匿名さん"),color:p.color||"#8fdcff",catBody:p.catBody||"#1c1c1c",date,stamp,createdAt:_cAt,wakeHour:Number.isFinite(p.wakeHour)?p.wakeHour:null,wakeMin:Number.isFinite(p.wakeMin)?p.wakeMin:0,streak:calcStreak().current,goume:_weekDoneCount(),comment:_cm,pose:getEquippedPose(),cos:getEquippedCostume()||null,thanks:getThanksWord(),showTime:_show,wakeHF:getActualWake(),storyJoin:(function(){try{const v=localStorage.getItem("radio_story_join");return v===null?true:v==="1";}catch(_){return true;}})()
     });
     try{localStorage.setItem("radio_post_edit",JSON.stringify({date,createdAt:_cAt,comment:_cm,anon:!!anon,show:_show}));}catch(_){}
-  }catch(e){console.warn("post failed",e);}
+    return true;
+  }catch(e){console.warn("post failed",e);return false;}
 }
 function postRiseText(show){
   const wl=getWakeLog()[jstKey()];let h,m;
@@ -7918,6 +7950,52 @@ function setTaisoCard(url){
   const img=$("autoPreviewImg");if(img)img.src=url||"";
   const wrap=$("autoStampFlyWrap");if(wrap)wrap.style.display="none";
 }
+/* ===== スタンプ帳：いっぱいになった過去のカードを見返して保存する ===== */
+let _bookCards=[],_bookIdx=0,_bookCache={},_bookSeq=0;
+/* 最後のカード＝今つかってる途中のカードなので、それ以外＝過去のカード */
+function pastStampCards(){
+  const c=getStampCards();
+  return c.slice(0,Math.max(0,c.length-1))
+          .map((card,i)=>({card:card||[],no:i+1}))
+          .filter(x=>x.card.length>0);
+}
+function refreshStampBookBtn(){
+  const b=$("tsBookBtn");if(!b)return;
+  const n=pastStampCards().length;
+  b.hidden=(n===0);   /* 過去のカードが無いうちは出さない */
+  const c=$("tsBookCount");if(c)c.textContent=n;
+}
+async function _bookRender(){
+  const it=_bookCards[_bookIdx];if(!it)return;
+  const img=$("sbkImg"),ld=$("sbkLoading"),lb=$("sbkLabel"),sv=$("sbkSave");
+  if(lb)lb.textContent=it.no+"枚目";
+  const key=String(it.no),seq=++_bookSeq;
+  if(_bookCache[key]){if(img)img.src=_bookCache[key];if(ld)ld.hidden=true;if(sv)sv.disabled=false;return;}
+  if(img)img.removeAttribute("src");
+  if(ld)ld.hidden=false;
+  if(sv)sv.disabled=true;
+  let url="";
+  try{url=await renderAutoCard(it.card,it.no);}catch(e){console.warn("スタンプ帳の描画に失敗",e);}
+  if(seq!==_bookSeq)return;   /* 連打したとき、古い描画があとから上書きしないように */
+  if(url){_bookCache[key]=url;if(img)img.src=url;}
+  if(ld)ld.hidden=true;
+  if(sv)sv.disabled=!url;
+}
+function _bookMove(d){
+  if(_bookCards.length<=1)return;
+  _bookIdx=(_bookIdx+d+_bookCards.length)%_bookCards.length;
+  _bookRender();
+}
+function openStampBook(){
+  _bookCards=pastStampCards();
+  if(!_bookCards.length){try{toast("まだ 過去のカードは ないよ");}catch(_){}return;}
+  _bookIdx=_bookCards.length-1;   /* いちばん新しい過去カードから見せる */
+  const one=_bookCards.length<=1;
+  const p=$("sbkPrev"),n=$("sbkNext");if(p)p.disabled=one;if(n)n.disabled=one;
+  const sb=$("stampBook");if(sb)sb.classList.add("visible");
+  _bookRender();
+}
+function closeStampBook(){const sb=$("stampBook");if(sb)sb.classList.remove("visible");}
 /* 当たったスタンプが 次の空きマスに ぽんっと押される演出 */
 function animateTaisoStamp(beforeUrl,fullUrl,stampSrc,slotIdx){
   const img=$("autoPreviewImg");if(img)img.src=beforeUrl||"";
@@ -7998,19 +8076,21 @@ function tsResetPost(){
   const b=$("tsPostBtn");if(b){b.textContent=posted?"投稿を へんしゅう":"投稿する";b.disabled=false;b.classList.toggle("posted",posted);}
   const nb=$("tsNextBtn");if(nb){const away=(typeof outingPhase==="function"&&outingPhase()==="away");nb.textContent=away?"ホームへ":"おへやへ →";}
   try{refreshWakeAdj();}catch(_){}
+  try{refreshStampBookBtn();}catch(_){}   /* 過去のカードがあれば本アイコンを出す */
   tsUpdatePreview();
 }
 async function tsDoPost(){
   const wasEdit=postedToday();
   const b=$("tsPostBtn");if(b)b.disabled=true;
   const c=hiraOnly(($("tsComment").value||"").trim())||_todayMoodText();
-  try{
-    await postToday($("tsAnon").checked,c);   /* 同じ日は上書き＝差し替え（二重にならない） */
-    markPosted();refreshSaveBtn();refreshGroundPost();
-    try{ if(!$("selectScreen").classList.contains("hidden"))loadHillCats(); }catch(_){}
-    if(b){b.textContent="投稿を へんしゅう";b.classList.add("posted");b.disabled=false;}
-    try{toast(wasEdit?"とうこうを こうしんしたよ":"とうこうしたよ！");}catch(_){}
-  }catch(_){ if(b)b.disabled=false; try{toast("投稿できなかったみたい");}catch(__){} }
+  let ok=false;
+  try{ ok=await postToday($("tsAnon").checked,c); }   /* 同じ日は上書き＝差し替え（二重にならない） */
+  catch(_){ ok=false; }
+  if(!ok){ if(b)b.disabled=false; try{toast("投稿できなかったみたい");}catch(__){} return; }
+  markPosted();refreshSaveBtn();refreshGroundPost();
+  try{ loadHillCats(); }catch(_){}   /* 投稿できたら丘を即こうしん（自分の猫に反映） */
+  if(b){b.textContent="投稿を へんしゅう";b.classList.add("posted");b.disabled=false;}
+  try{toast(wasEdit?"とうこうを こうしんしたよ":"とうこうしたよ！");}catch(_){}
 }
 function taisoNext(){
   $("taisoScreen").classList.remove("visible");
@@ -8227,9 +8307,11 @@ function _wireTopbarOffer(){
 $("postYes").addEventListener("click",async()=>{
   playClick();const c=($("postComment").value||"").trim();
   $("postConfirm").classList.remove("visible");
-  await postToday($("postAnon").checked,c);
-  markPosted();refreshSaveBtn();refreshGroundPost();
-  try{ if(!$("selectScreen").classList.contains("hidden"))loadHillCats(); }catch(_){}   /* 投稿後、ホームの自分の枠を即更新 */
+  const _ok=await postToday($("postAnon").checked,c);
+  if(_ok)markPosted();
+  refreshSaveBtn();refreshGroundPost();
+  try{ loadHillCats(); }catch(_){}   /* 投稿後、ホームの自分の枠を即更新 */
+  if(!_ok){try{toast("投稿できなかったみたい");}catch(_){}}
   const away=(typeof outingPhase==="function"&&outingPhase()==="away");
   if(away){ /* おでかけ中：投稿したらスタンプラリーに戻る（見送りなし） */ }
   else{ showSendoffChoice(true); }   /* 投稿後→やめる/見送り */
@@ -12574,6 +12656,30 @@ $("tabRequests").addEventListener("click",()=>{playClick();switchFriendTab("requ
 /* きろく（起床時間の記録） */
 $("recClose").addEventListener("click",()=>{playClick();closeRecord();});
 $("tsDownloadBtn").addEventListener("click",()=>{playClick();if(_autoCardUrl)dlCard(_autoCardUrl,"radio-card.png");});
+/* スタンプ帳（過去のカード） */
+try{
+  $("tsBookBtn").addEventListener("click",()=>{playClick();openStampBook();});
+  $("sbkClose").addEventListener("click",()=>{playClick();closeStampBook();});
+  $("sbkPrev").addEventListener("click",()=>{playClick();_bookMove(-1);});
+  $("sbkNext").addEventListener("click",()=>{playClick();_bookMove(1);});
+  $("sbkSave").addEventListener("click",()=>{
+    playClick();
+    const it=_bookCards[_bookIdx];const u=it&&_bookCache[String(it.no)];
+    if(u)dlCard(u,"radio-card-"+it.no+".png");
+    else{try{toast("まだ よみこみ中だよ");}catch(_){}}
+  });
+  $("stampBook").addEventListener("click",e=>{if(e.target===$("stampBook"))closeStampBook();});
+  /* 左右スワイプでもページめくり（スマホ用） */
+  (function(){
+    const st=$("sbkStage");if(!st)return;
+    let x0=null,y0=null,drag=false;
+    const dn=(x,y)=>{x0=x;y0=y;drag=true;};
+    const up=(x,y)=>{if(!drag||x0==null){drag=false;return;}drag=false;const dx=x-x0,dy=y-y0;x0=null;
+      if(Math.abs(dx)<38||Math.abs(dx)<Math.abs(dy))return;_bookMove(dx<0?1:-1);};
+    st.addEventListener("touchstart",e=>{if(e.touches&&e.touches[0])dn(e.touches[0].clientX,e.touches[0].clientY);},{passive:true});
+    st.addEventListener("touchend",e=>{if(e.changedTouches&&e.changedTouches[0])up(e.changedTouches[0].clientX,e.changedTouches[0].clientY);},{passive:true});
+  })();
+}catch(_){}
 _wireHiraInput($("tsComment"),tsUpdatePreview);
 $("tsAnon").addEventListener("change",tsUpdatePreview);
 function _wireWakeRepeat(btn,dir){
@@ -17738,6 +17844,24 @@ try{
       </button>
       <button class="setBackBtn" id="setBack" type="button">もどる</button>
     </div>
+  </div>
+</div>
+<div id="stampBook">
+  <div id="sbkBox">
+    <div id="sbkHead">
+      <span id="sbkTitle">スタンプ帳</span>
+      <button id="sbkClose" type="button" aria-label="とじる">✕</button>
+    </div>
+    <div id="sbkStage">
+      <img id="sbkImg" alt="過去のスタンプラリー"/>
+      <div id="sbkLoading">よみこみ中…</div>
+    </div>
+    <div id="sbkNav">
+      <button id="sbkPrev" type="button" aria-label="まえのカード">‹</button>
+      <span id="sbkLabel">–</span>
+      <button id="sbkNext" type="button" aria-label="つぎのカード">›</button>
+    </div>
+    <div id="sbkFoot"><button id="sbkSave" class="tsDl" type="button">このカードを保存</button></div>
   </div>
 </div>
 </body>

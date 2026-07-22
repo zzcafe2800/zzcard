@@ -7763,7 +7763,7 @@ function recomputeNotifs(){
   });
   list.sort((a,b)=>(b.at||0)-(a.at||0));   /* 最近のいいねが一番上 */
   _notifList=list;
-  try{_payLikes(list);}catch(_){}   /* いいね 1つ 100zz */
+  try{_payLikes(list);}catch(_){}   /* いいね 1つ 10zz */
   const unread=list.filter(n=>!_notifSeenSet.has(n.id)).length;
   const c=$("tpbCount");const _tot=unread+(_hasPartyInvite?1:0)+(_hasPartyApply?1:0);if(c){c.textContent=_tot;c.classList.toggle("show",_tot>0);}
   try{const _nb=(_tot>0);if(window._favBadgeOn!==_nb){window._favBadgeOn=_nb;if(window._setFavBadge)window._setFavBadge(_nb);}}catch(_){}
@@ -21060,7 +21060,7 @@ function _likePaySave(set){
   try{const a=Array.from(set);localStorage.setItem(LIKEPAID_KEY,JSON.stringify(a.slice(-400)));}catch(_){}
 }
 var _likePayInit=false;
-function _payLikes(list){
+function _payLikes(list){   /* いいね 1つ 10zz */
   try{
     if(!Array.isArray(list))return;
     const set=_likePaidSet();
@@ -21074,8 +21074,8 @@ function _payLikes(list){
     list.forEach(x=>{if(!set.has(x.id)){set.add(x.id);n++;}});
     if(n>0){
       _likePaySave(set);
-      addZZ(n*100);
-      setTimeout(()=>{try{toast("♡ いいね ＋"+(n*100)+"zz！");}catch(_){}},700);
+      addZZ(n*10);
+      setTimeout(()=>{try{toast("♡ いいね ＋"+(n*10)+"zz！");}catch(_){}},700);
     }
   }catch(_){}
 }
@@ -21226,7 +21226,7 @@ function openZzHelp(){
     }).join("")+'</div>'+
     '<div class="zhNote2">ぴったり起きると <b>100zz</b>。そこから 早いほど ふえて <b>150zz</b> まで。<br>'+
     'ねぼうすると 少なくなるよ（さいてい 10zz）。体操は 1日1回まで。<br>'+
-    '♡ 投稿に いいねが つくと <b>1つ 100zz</b> もらえるよ。</div>';
+    '♡ 投稿に いいねが つくと <b>1つ 10zz</b> もらえるよ。</div>';
   el.classList.add("show");
 }
 /* --- おえかき：太さの こまかい調整・透明度・バケツ --- */

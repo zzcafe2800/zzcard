@@ -3790,6 +3790,16 @@ body.exercising #homeZZ{opacity:0;pointer-events:none;}
   border-radius:999px;padding:2px 8px;background:rgba(120,200,150,.24);color:#3f8f5a;vertical-align:1px;
   text-shadow:none;}
 .shpPub.priv{background:rgba(150,160,170,.2);color:#7a8a96;}
+
+#zgFade{position:absolute;left:0;right:0;top:0;bottom:0;pointer-events:none;
+  background:radial-gradient(60% 34% at 50% 46%,rgba(255,255,255,.92) 0%,rgba(255,255,255,.72) 45%,rgba(255,255,255,0) 78%);}
+#zzGain.go #zgFade{opacity:1;}
+#zgFade{opacity:0;transition:opacity .25s ease;}
+#zgBox{position:relative;z-index:1;}
+#tvPrivacyNote{position:absolute;left:8px;top:8px;z-index:3;font-size:9.5px;font-weight:800;color:#8aa7b6;
+  text-shadow:0 0 4px #fff,0 0 4px #fff,0 0 4px #fff;pointer-events:none;max-width:60%;line-height:1.4;}
+#tvOrderMini:not([hidden])~#tvPrivacyNote{top:56px;}
+#shopScreen.moving #tvPrivacyNote{display:none;}
 </style>
 </head>
 <body>
@@ -17498,6 +17508,7 @@ function _setTargetMt(m){
 function _nextTallerMt(overAlt){const asc=[...REAL_MTS].sort((a,b)=>a[0]-b[0]);return asc.find(x=>x[0]>overAlt)||null;}
 let _mtMigShown=false;
 function _maybeShowMtMigrate(){
+  return;   /* ★登山の案内は 出さない（お店アップデートで 役目おわり） */
   try{
     if(_mtMigShown)return;
     if(new Date(jstKey()+"T00:00:00").getDay()===0)return;
@@ -17743,6 +17754,7 @@ function _smShowPickNext(){
   }catch(_){}
 }
 function _maybeShowSummitMoment(){
+  return;   /* ★登頂の演出は 出さない */
   try{
     if(new Date(jstKey()+"T00:00:00").getDay()!==0){try{_maybeShowMtMigrate();}catch(_){}}
     return;   /* 登頂演出（7日達成）は一旦オフ */
@@ -22882,7 +22894,7 @@ function _tvPlaceOthers(){
     <div class="ssBtnRow"><button id="ssParty" type="button" class="ssSideBtn">👥 誰かと</button><button id="ssNext" type="button">スキップ</button><button id="ssAlbum" type="button" class="ssSideBtn">📷 アルバム</button></div>
   </div>
 </div>
-<div id="reloadPrompt" hidden><span class="rpText">🔄 新しい記録が 届いたよ</span><button id="rpReload" type="button" class="rpBtn rpPrimary">読みこむ</button><button id="rpLater" type="button" class="rpBtn rpLater">あとで</button></div>
+<div id="reloadPrompt" hidden><span class="rpText">🔄 新しい記録が 届いたよ</span><button id="rpReload" type="button" class="rpBtn rpPrimary">読みこむ</button><button id="rpLater" type="button" class="rpBtn rpLater">あとで（1分後）</button></div>
 <div id="jrnPhoto" hidden><div class="jpInner"></div></div>
 <div id="jrnAlbum" hidden><div class="jaHead"><button id="jaClose" type="button">‹ もどる</button><div class="jaTitle">📷 日本一周アルバム</div></div><div id="jrnAlbumBody"></div></div>
 <div id="jrnBig" hidden><div class="jbInner"></div></div>
@@ -23078,6 +23090,7 @@ function _tvPlaceOthers(){
           <button id="tvMoveBack" type="button">‹ おみせにもどる</button>
         </div>
         <div id="tvOrderMini" hidden></div>
+        <div id="tvPrivacyNote">※ スマホの位置情報は つかっていません</div>
         <div id="tvCorner">
           <button id="shpBuildHome" type="button">🏠 家をたてる</button>
           <button id="tvOpenList" type="button">🏘 お店一覧</button>
@@ -23231,6 +23244,7 @@ function _tvPlaceOthers(){
   </div>
 </div>
 <div id="zzGain" hidden>
+  <div id="zgFade"></div>
   <div id="zgBox">
     <div class="zgMain">＋<b id="zgAmt">0</b><span class="zgUnit">zz</span> 獲得！</div>
     <div class="zgSub" id="zgScore"></div>

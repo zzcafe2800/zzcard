@@ -3697,6 +3697,22 @@ body.exercising #homeZZ{opacity:0;pointer-events:none;}
 #shpZZ{cursor:pointer;}
 #shpZZ:active{transform:scale(.96);}
 #zzHelpGo[hidden]{display:none;}
+
+.tvZZ{margin-left:auto;font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:13.5px;font-weight:900;color:#c8863a;
+  background:linear-gradient(180deg,#fff6e0,#ffeac4);border:1.5px solid #f0cf92;border-radius:999px;padding:5px 12px;
+  box-shadow:0 2px 0 rgba(214,168,96,.3);cursor:pointer;position:relative;z-index:3;}
+.tvZZ:active{transform:scale(.96);}
+
+/* 移転さきを えらんでいる間は 地図と もどるボタンだけ */
+#shopScreen.moving #tvToggles,
+#shopScreen.moving #tvCorner,
+#shopScreen.moving #tvReload,
+#shopScreen.moving #tvOrderMini,
+#shopScreen.moving #tvStatus,
+#shopScreen.moving #tvProg,
+#shopScreen.moving #shpTabs{display:none !important;}
+#shopScreen.moving #shpBody{padding-bottom:calc(6px + env(safe-area-inset-bottom));}
+#shopScreen.moving #tvMoveBar{font-size:12.5px;}
 </style>
 </head>
 <body>
@@ -3729,8 +3745,6 @@ body.exercising #homeZZ{opacity:0;pointer-events:none;}
       '<circle cx="40" cy="45" r="24" fill="'+body+'"/>'+tri(-1,40,45,24)+tri(1,40,45,24)+
       '<circle cx="32" cy="46" r="8" fill="#fff"/><circle cx="48" cy="46" r="8" fill="#fff"/>'+
       '<circle cx="32" cy="47" r="6.4" fill="#1c1c1c"/><circle cx="48" cy="47" r="6.4" fill="#1c1c1c"/>'+
-      '<circle cx="34" cy="44.6" r="2" fill="#fff"/><circle cx="50" cy="44.6" r="2" fill="#fff"/>'+
-      '<path d="M36.5 55 Q40 58 43.5 55" fill="none" stroke="#1c1c1c" stroke-width="1.6" stroke-linecap="round"/>'+
       '</svg>';
     var el=document.getElementById("bcInner");
     if(el){el.innerHTML=svg;el.style.fontSize="0";}
@@ -19053,6 +19067,7 @@ function addZZ(n){return setZZ(getZZ()+(n||0));}
 function spendZZ(n){const z=getZZ();if(z<n)return false;setZZ(z-n);return true;}
 function zzFmt(n){try{return (n||0).toLocaleString("ja-JP")+" zz";}catch(_){return (n||0)+" zz";}}
 function _zzPaint(){try{const e=$("shpZZ");if(e)e.textContent=zzFmt(getZZ());}catch(_){}
+  try{["tvShopZZ","tvListZZ"].forEach(id=>{const x=$(id);if(x)x.textContent=zzFmt(getZZ());});}catch(_){}
   try{const h=$("homeZZ");if(h)h.textContent=zzFmt(getZZ());}catch(_){}}
 /* 体操の報酬：早起きスコア連動（20〜110zz／1日1回） */
 function _zzEarnToday(){
@@ -20396,6 +20411,16 @@ function _tvMapSVG(){
        '<rect x="'+(hx-r2*0.85).toFixed(2)+'" y="'+(hy+r2*0.1).toFixed(2)+'" width="'+(r2*1.7).toFixed(2)+'" height="'+(r2*1.15).toFixed(2)+
        '" fill="#fff2e2" stroke="#fff" stroke-width="'+(U*1.2).toFixed(4)+'"/></g>';
   };
+  if(_tvPickMode==="move"){
+    const ms=getShop();
+    if(ms&&Number.isFinite(ms.lng)){
+      const mx2=_jpX(ms.lng),my2=_jpY(ms.lat),rr=U*17;
+      s+='<g><circle cx="'+mx2.toFixed(2)+'" cy="'+my2.toFixed(2)+'" r="'+rr.toFixed(2)+
+         '" fill="none" stroke="#5b9cb8" stroke-width="'+(U*2.2).toFixed(4)+'" stroke-dasharray="'+(U*5).toFixed(3)+' '+(U*4).toFixed(3)+'"/>'+
+         '<text x="'+mx2.toFixed(2)+'" y="'+(my2-rr-U*4).toFixed(2)+'" text-anchor="middle" font-size="'+(U*11).toFixed(3)+
+         '" font-weight="900" fill="#4a7f99" stroke="#fff" stroke-width="'+(U*3).toFixed(4)+'" paint-order="stroke">いまのお店</text></g>';
+    }
+  }
   const _fg=getFlag();
   if(_fg){
     const fx=_jpX(_fg.lng),fy=_jpY(_fg.lat);
@@ -20528,6 +20553,7 @@ function openTvList(){
       (!_tvActive(s)?'<span class="tvCardBadge off">おやすみ</span>':"")+
     "</div>";
   }).join("")+'</div>':'<div class="tvNote">まだ お店が ないみたい。</div>';
+  try{_zzPaint();}catch(_){}
   $("tvList").classList.add("show");
 }
 /* --- お店の中 --- */
@@ -20568,6 +20594,7 @@ function openTvShop(uid){
     $("tvShopItems").insertAdjacentHTML("beforeend",
       '<div class="tvNote">買うには 一度 じっさいに 行く ひつようが あるよ。<br>着いたら 1週間は ここから 買えるようになる。<br>いそぐなら 🚚 ネット注文！</div>');
   $("tvShop").classList.add("show");
+  try{_zzPaint();}catch(_){}
   _tvFillArts(s);
   try{_tvShopBg(uid);}catch(_){}
 }
@@ -20772,6 +20799,7 @@ function _renderShopNotif(list){
     const tl=$("tvList");
     if(tl)tl.addEventListener("click",e=>{
       const t=e.target;
+      if(t.closest("#tvListZZ")){try{playClick();}catch(_){}try{openZzHelp();}catch(_){}return;}
       if(t.closest("#tvListBack")){tl.classList.remove("show");return;}
       const r=t.closest("[data-shop]");
       if(r){try{playClick();}catch(_){}openTvShop(r.dataset.shop);return;}
@@ -20779,6 +20807,7 @@ function _renderShopNotif(list){
     const ts=$("tvShop");
     if(ts)ts.addEventListener("click",e=>{
       const t=e.target;
+      if(t.closest("#tvShopZZ")){try{playClick();}catch(_){}try{openZzHelp();}catch(_){}return;}
       if(t.closest("#tvShopBack")){ts.classList.remove("show");return;}
       if(t.closest("#tvGoBtn")){
         const s=_tvShopById(_tvCur);if(!s)return;
@@ -21831,7 +21860,9 @@ async function _artDeleteCloud(id){
 /* --- 移転モードのバナー --- */
 function _tvMoveBar(){
   const b=$("tvMoveBar");if(!b)return;
-  b.hidden=(_tvPickMode!=="move");
+  const on=(_tvPickMode==="move");
+  b.hidden=!on;
+  try{const sc=$("shopScreen");if(sc)sc.classList.toggle("moving",on);}catch(_){}
 }
 /* --- 体操のあと：もらえた zz を どーんと出す --- */
 function _zzGainShow(pay,sc){
@@ -21947,7 +21978,10 @@ function _tvBgPaths2(vx,vy,vw,vh,U){
 const HIDEHOME_KEY="radio_tv_hidehome";
 function tvHideHome(){try{return localStorage.getItem(HIDEHOME_KEY)==="1";}catch(_){return false;}}
 /* --- お店の移転（距離ぶん お金がかかる） --- */
-function moveCost(km){return Math.round(500+Math.max(0,km)*4);}
+function moveCost(km){   /* 600zz 〜 3000zz におさめる（2200kmで上限） */
+  const t=Math.min(1,Math.max(0,km)/2200);
+  return Math.round((600+2400*t)/10)*10;
+}
 function moveShop(){
   const s=getShop();if(!s)return;
   if(getTrip()){try{toast("たびの とちゅうは 移転できないよ");}catch(_){}return;}
@@ -22757,6 +22791,7 @@ function _tvPlaceOthers(){
   <div class="tvTop">
     <button class="tvTopBtn" id="tvListBack" type="button">‹ もどる</button>
     <span class="tvTtl">お店一覧</span>
+    <span class="tvZZ" id="tvListZZ">0 zz</span>
   </div>
   <div class="tvBody"><div class="tvInner" id="tvListInner"></div></div>
 </div>
@@ -22764,6 +22799,7 @@ function _tvPlaceOthers(){
   <div class="tvTop">
     <button class="tvTopBtn" id="tvShopBack" type="button">‹ もどる</button>
     <span class="tvTtl">おみせ</span>
+    <span class="tvZZ" id="tvShopZZ">0 zz</span>
   </div>
   <div id="tvShopBg"></div>
   <div class="tvBody"><div class="tvInner">

@@ -2063,6 +2063,9 @@ body.exercising #randomModeBtn{animation:none !important;}
 #taisoFooter{display:flex;justify-content:center;margin-top:18px;}
 .tsNext{border:none;border-radius:999px;padding:14px 46px;font-size:15px;font-weight:900;cursor:pointer;color:#fff;background:linear-gradient(135deg,#7fc9a0,#5db98a);box-shadow:0 8px 20px rgba(93,185,138,.4);transition:transform .15s;}
 .tsNext:active{transform:scale(.96);}
+.tsSum{border:1.5px solid #dcecf6;border-radius:999px;padding:12px 20px;font-family:"Yomogi","Kosugi Maru",sans-serif;
+  font-size:13px;font-weight:800;cursor:pointer;color:#5b8ba4;background:#f4fbff;margin-right:8px;}
+.tsSum:active{transform:scale(.96);background:#e6f4fc;}
 .tsSub{font-size:11px;font-weight:800;color:#5c93ad;background:rgba(143,220,255,.18);border-radius:999px;padding:3px 12px;margin-bottom:6px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;}
 .tsSub.isComment{color:#d46a9a;background:#fff0f6;white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis;text-align:center;}
 #postConfirmBtns{display:flex;gap:10px;}
@@ -2747,6 +2750,19 @@ html.lite .catDeco{animation:none;}
 #tsPostCard #tsComment{flex:1 1 auto;width:100%;box-sizing:border-box;resize:none;min-height:92px;margin:0;}
 #tsPostHead #tsPostPreview{flex:0 0 auto;}
 #tsPostHead #wakeAdjRow{flex:0 0 auto;margin:0;}
+/* ▼ コメント・気分は たたんでおく（朝は ひらかなくていい） */
+#tsAutoNote{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:12px;font-weight:800;color:#63b894;
+  background:#effaf4;border-radius:10px;padding:7px 8px;text-align:center;line-height:1.4;}
+#tsAutoNote[hidden]{display:none;}
+#tsMore{width:100%;margin-top:2px;}
+#tsMore>summary{list-style:none;cursor:pointer;font-family:"Yomogi","Kosugi Maru",sans-serif;
+  font-size:12.5px;font-weight:800;color:#6f9fb6;background:#f4fbff;border:1.5px solid #dcecf6;
+  border-radius:999px;padding:8px 12px;text-align:center;user-select:none;}
+#tsMore>summary::-webkit-details-marker{display:none;}
+#tsMore>summary::marker{content:"";}
+#tsMore>summary:active{transform:scale(.98);}
+#tsMore[open]>summary{background:#eaf6ff;color:#4f88a4;}
+#tsMoreBody{display:flex;flex-direction:column;gap:9px;padding-top:10px;}
 #wakeAdjRow .waLabel{font-size:12px;line-height:1.15;}
 
 /* ===== 設定画面：参考画像風のリッチな見た目 ===== */
@@ -3662,6 +3678,42 @@ body.exercising #homeZZ{opacity:0;pointer-events:none;}
   .slot.big .slotArt{width:128px;height:128px;}
 }
 
+/* ===== きょうの まとめ ===== */
+#todaySum{position:fixed;inset:0;z-index:3340;display:none;align-items:center;justify-content:center;
+  background:rgba(40,60,72,.44);padding:16px;}
+#todaySum.show{display:flex;}
+#tsumCard{position:relative;background:#fff;border-radius:22px;padding:18px 15px 13px;width:100%;
+  max-width:440px;max-height:88vh;overflow-y:auto;box-shadow:0 14px 40px rgba(40,70,90,.24);}
+#tsumClose{position:absolute;top:9px;right:11px;border:none;background:none;color:#a9c3d1;
+  font-size:19px;font-weight:900;cursor:pointer;line-height:1;padding:4px 6px;}
+#tsumTtl{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:15px;font-weight:900;color:#c8863a;text-align:center;}
+#tsumBig{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:38px;font-weight:900;color:#f0a63c;
+  text-align:center;line-height:1.15;margin-top:6px;}
+#tsumHave{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:12.5px;font-weight:800;color:#9ab6c5;
+  text-align:center;margin-bottom:12px;}
+#tsumList{display:flex;flex-direction:column;gap:6px;}
+.tsumRow{display:flex;align-items:center;gap:9px;background:#fbfdff;border-radius:12px;padding:9px 11px;}
+.tsumIco{font-size:16px;flex:0 0 auto;width:22px;text-align:center;}
+.tsumMid{flex:1 1 auto;min-width:0;}
+.tsumName{display:block;font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:13px;font-weight:800;
+  color:#5b8ba4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.tsumSub{display:block;font-size:10.5px;font-weight:700;color:#a9c3d1;}
+.tsumZz{flex:0 0 auto;font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:14px;font-weight:900;color:#f0a63c;}
+.tsumEmpty{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:12.5px;font-weight:700;
+  color:#b6cdd9;text-align:center;padding:12px 4px;line-height:1.6;}
+#tsumNowTtl{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:12px;font-weight:900;color:#bcd3de;
+  text-align:center;margin:14px 0 7px;}
+#tsumNow{display:flex;flex-direction:column;gap:6px;}
+.tsumNRow{display:flex;align-items:center;gap:9px;background:#f4fbff;border-radius:12px;padding:9px 11px;}
+.tsumNRow .tsumName{color:#4f88a4;}
+.tsumBar{height:6px;border-radius:99px;background:#e2eef5;overflow:hidden;margin-top:5px;}
+.tsumBar>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#8fdcff,#57b6e0);}
+#tsumBtns{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:14px;}
+.tsumGo{border:1.5px solid #dcecf6;background:#f4fbff;color:#5b8ba4;font-family:"Yomogi","Kosugi Maru",sans-serif;
+  font-size:12.5px;font-weight:800;border-radius:13px;padding:11px 6px;cursor:pointer;}
+.tsumGo:active{background:#e6f4fc;transform:scale(.97);}
+#tsumHelpBtn{width:100%;border:none;background:none;color:#9ab6c5;font-size:11.5px;font-weight:800;
+  cursor:pointer;padding:10px 4px 2px;text-decoration:underline;}
 #zzHelp{position:fixed;inset:0;z-index:3320;display:none;align-items:center;justify-content:center;background:rgba(40,60,72,.42);padding:18px;}
 #zzHelp.show{display:flex;}
 #zzHelpCard{background:#fff;border-radius:20px;padding:16px 15px 12px;width:100%;max-width:330px;max-height:86vh;overflow-y:auto;}
@@ -4184,18 +4236,25 @@ body.exercising #homeZZ{opacity:0;pointer-events:none;}
           <div id="tsPostPreview"></div>
           <div id="tsPostRight">
             <div id="wakeAdjRow"><span class="waLabel">おきた<br>じかん</span><div class="waCtrl"><button id="wakeAdjMinus" type="button" aria-label="はやく">◀</button><span id="wakeAdjTime">–</span><button id="wakeAdjPlus" type="button" aria-label="おそく">▶</button></div></div>
-            <textarea id="tsComment" maxlength="20" rows="3" placeholder="ひとこと（ひらがな）" inputmode="kana"></textarea>
-            <div id="tsMoodRow"><button id="tsMoodBtn" type="button"><span>😊</span> きょうの気分</button></div>
+            <div id="tsAutoNote" hidden>とうこう ずみ</div>
           </div>
         </div>
-        <label class="tsAnonRow"><input type="checkbox" id="tsAnon"/> 匿名で投稿する</label>
-        <label class="tsAnonRow"><input type="checkbox" id="tsShowTime"/> 起床時間を表示</label>
-        <div class="tsFoot">
-          <button class="tsPost" id="tsPostBtn" type="button">投稿する</button>
-        </div>
+        <details id="tsMore">
+          <summary id="tsMoreSum">💬 コメント・気分を つける</summary>
+          <div id="tsMoreBody">
+            <textarea id="tsComment" maxlength="20" rows="3" placeholder="ひとこと（ひらがな）" inputmode="kana"></textarea>
+            <div class="cmtChips" id="tsCmtChips"></div>
+            <div id="tsMoodRow"><button id="tsMoodBtn" type="button"><span>😊</span> きょうの気分</button></div>
+            <label class="tsAnonRow"><input type="checkbox" id="tsAnon"/> 匿名で投稿する</label>
+            <label class="tsAnonRow"><input type="checkbox" id="tsShowTime"/> 起床時間を表示</label>
+            <div class="tsFoot">
+              <button class="tsPost" id="tsPostBtn" type="button">投稿する</button>
+            </div>
+          </div>
+        </details>
       </div>
     </div>
-    <div id="taisoFooter"><label id="storyJoinChkRow"><input type="checkbox" id="storyJoinChk" checked/> ストーリーに参加(明日)</label><button class="tsNext" id="tsNextBtn" type="button">次へ →</button></div>
+    <div id="taisoFooter"><label id="storyJoinChkRow"><input type="checkbox" id="storyJoinChk" checked/> ストーリーに参加(明日)</label><button class="tsSum" id="tsSumBtn" type="button">📋 まとめ</button><button class="tsNext" id="tsNextBtn" type="button">次へ →</button></div>
   </div>
 </div>
 
@@ -8810,6 +8869,7 @@ async function autoStampFlow(){
   try{const ts=$("tsTodayStampImg"),tw=$("tsTodayStamp");if(ts&&tw){ts.src=_stampSrc(src);tw.classList.add("on");}}catch(_){}
   tsResetPost();
   $("taisoScreen").classList.add("visible");
+  setTimeout(()=>{try{_autoPostToday();}catch(_){}},400);   /* ★ コメント空でも 自動でとうこう */
   if(!r.added){ setTaisoCard(fullUrl); return; }   /* きょうは押し済み→そのまま表示 */
   let beforeUrl="";try{beforeUrl=await renderAutoCard(r.cur.slice(0,r.slot),r.no);}catch(_){}
   animateTaisoStamp(beforeUrl,fullUrl,src,r.slot);
@@ -8941,7 +9001,8 @@ function tsResetPost(){
   try{const _mm=_moodMap(),_m=_mm[jstKey()],_mb=$("tsMoodBtn");if(_mb)_mb.innerHTML=_m?('<span>'+_m.e+'</span> '+_m.l):('<span>😊</span> きょうの気分');}catch(_){}
   const a=$("tsAnon");if(a)a.checked=same?!!ed.anon:false;
   const ht=$("tsShowTime");if(ht)ht.checked=same?!!ed.show:false;
-  const b=$("tsPostBtn");if(b){b.textContent=posted?"投稿を へんしゅう":"投稿する";b.disabled=false;b.classList.toggle("posted",posted);}
+  const b=$("tsPostBtn");if(b){b.textContent=posted?"コメントを こうしん":"投稿する";b.disabled=false;b.classList.toggle("posted",posted);}
+  try{const an=$("tsAutoNote");if(an)an.hidden=!posted;}catch(_){}   /* 自動でとうこう ずみ の しるし */
   try{_emoChipsSoon();}catch(_){}
   const nb=$("tsNextBtn");if(nb){const away=(typeof outingPhase==="function"&&outingPhase()==="away");nb.textContent=away?"ホームへ":"おへやへ →";}
   try{refreshWakeAdj();}catch(_){}
@@ -8958,8 +9019,27 @@ async function tsDoPost(){
   if(!ok){ if(b)b.disabled=false; try{toast("投稿できなかったみたい");}catch(__){} return; }
   markPosted();refreshSaveBtn();refreshGroundPost();
   try{ loadHillCats(); }catch(_){}   /* 投稿できたら丘を即こうしん（自分の猫に反映） */
-  if(b){b.textContent="投稿を へんしゅう";b.classList.add("posted");b.disabled=false;}
+  if(b){b.textContent="コメントを こうしん";b.classList.add("posted");b.disabled=false;}
+  try{const an=$("tsAutoNote");if(an)an.hidden=false;}catch(_){}
   try{toast(wasEdit?"とうこうを こうしんしたよ":"とうこうしたよ！");}catch(_){}
+}
+/* ★ 体操したら コメント空でも 自動でとうこう（朝の タップを へらす）
+   あとから「コメントを こうしん」で いつでも 書きたせる */
+async function _autoPostToday(){
+  try{
+    if(postedToday())return;
+    const c=hiraOnly((($("tsComment")&&$("tsComment").value)||"").trim())||_todayMoodText();
+    let ok=false;
+    try{ ok=await postToday(!!($("tsAnon")&&$("tsAnon").checked),c); }catch(_){ ok=false; }
+    if(!ok)return;
+    markPosted();
+    try{refreshSaveBtn();}catch(_){}
+    try{refreshGroundPost();}catch(_){}
+    try{loadHillCats();}catch(_){}
+    const b2=$("tsPostBtn");
+    if(b2){b2.textContent="コメントを こうしん";b2.classList.add("posted");b2.disabled=false;}
+    try{const an=$("tsAutoNote");if(an)an.hidden=false;}catch(_){}
+  }catch(_){}
 }
 function taisoNext(){
   $("taisoScreen").classList.remove("visible");
@@ -13450,7 +13530,7 @@ if(_tutSkipBtn)_tutSkipBtn.addEventListener("click",()=>{
 $("helpBtn").addEventListener("click",()=>{playClick();showTutorial("help");});
 try{const _ht=$("htrToggle");if(_ht)_ht.addEventListener("click",e=>{e.stopPropagation();try{playClick();}catch(_){}const c=$("homeTopRight");if(c)c.classList.toggle("htrOpen");});}catch(_){}
 try{document.addEventListener("click",e=>{const c=$("homeTopRight");if(c&&c.classList.contains("htrOpen")&&!c.contains(e.target))c.classList.remove("htrOpen");});}catch(_){}
-try{const _hz=$("homeZZ");if(_hz){_hz.addEventListener("click",e=>{e.stopPropagation();try{playClick();}catch(_){}try{openZzHelp();}catch(_){}});setTimeout(()=>{try{_hz.textContent=zzFmt(getZZ());}catch(_){}},0);}}catch(_){}
+try{const _hz=$("homeZZ");if(_hz){_hz.addEventListener("click",e=>{e.stopPropagation();try{openTodaySum();}catch(_){try{openZzHelp();}catch(__){}}});setTimeout(()=>{try{_hz.textContent=zzFmt(getZZ());}catch(_){}},0);}}catch(_){}
 try{const _hl=$("homeLoc");if(_hl){_hl.hidden=false;_hl.innerHTML='<span class="hlPin">🗾</span>おみせ・たび';_hl.addEventListener("click",e=>{e.stopPropagation();try{playClick();}catch(_){}try{openMyShop(1);}catch(_){}});}}catch(_){}
 try{var _hab=$("homeAlbumBtn");if(_hab)_hab.addEventListener("click",function(e){e.stopPropagation();try{playClick();}catch(_){}try{openJrnAlbum();}catch(_){}});}catch(_){}
 function _applyLite(){try{const m=/Mobi|Android|iPhone|iPod|iPad/i.test(navigator.userAgent||"");const p=(window.innerHeight||0)>=(window.innerWidth||0);document.documentElement.classList.toggle("lite",m||p);}catch(_){}}
@@ -13570,6 +13650,7 @@ try{_wireWakeRepeat($("wakeAdjPlus"),1);}catch(_){}
 try{const _h=$("tsShowTime");if(_h)_h.addEventListener("change",tsUpdatePreview);}catch(_){}
 $("tsPostBtn").addEventListener("click",()=>{playClick();tsDoPost();});
 $("tsNextBtn").addEventListener("click",()=>{playClick();taisoNext();});
+try{const _sb=$("tsSumBtn");if(_sb)_sb.addEventListener("click",()=>{try{openTodaySum();}catch(_){}});}catch(_){}
 $("taisoBack").addEventListener("click",()=>{try{playClick();}catch(_){}$("taisoScreen").classList.remove("visible");try{showSelect();}catch(_){}try{updateTop();}catch(_){}});
 /* 横幅が変わったら丘の猫を並べ直す（PCでウィンドウをリサイズしたとき） */
 let _hillResizeT=null;
@@ -13645,7 +13726,7 @@ function maybeAutoStory(){
 }
 function doTitlePlay(){
   $("titleScreen").classList.remove("visible");
-  if(getProfile()){showSelect();updateTop();try{showStoryStats();}catch(_){}}   /* 2回目以降：すぐに きろく（ホームを一瞬映さない） */
+  if(getProfile()){showSelect();updateTop();}   /* ★2回目以降：まっすぐ ホームへ（地図も きろくも 自動では出さない＝朝の タップを へらす） */
   else if(!getProfile()){ showTutorial("first"); }  /* 初回：まず ゲーム説明 → はじめる で物語へ */
   else { openProfileSetup(false); }                /* 説明・物語は見た → 設定へ */
   try{_removeBootCover();}catch(_){}
@@ -18247,7 +18328,7 @@ function _ssJrnTick(){
   }catch(_){}
 }
 function showStoryStats(){
-  try{ setTimeout(()=>{try{openTravelFirst();}catch(e){console.warn("travel first",e);}},0); return; }catch(_){}
+  /* ★ ここで たび画面に とばしていたのを やめた（起動は ホーム直行） */
   try{
     const el=$("storyStats");if(!el)return;
     el.classList.add("show");
@@ -20891,6 +20972,15 @@ function _renderShopNotif(list){
     try{
       const cc=$("tsCmtChips");
       if(cc)cc.addEventListener("click",e=>{
+        const tp=e.target&&e.target.closest?e.target.closest(".cmtTpl"):null;
+        if(tp){   /* れいぶんチップ：コメント欄に 入れる */
+          e.stopPropagation();
+          const ta2=$("tsComment");if(!ta2)return;
+          ta2.value=((ta2.value||"")+tp.textContent).slice(0,20);
+          try{ta2.dispatchEvent(new Event("input",{bubbles:true}));}catch(_){}
+          try{playClick();}catch(_){}
+          return;
+        }
         const b=e.target&&e.target.closest?e.target.closest(".emoChip"):null;
         if(!b)return;
         e.stopPropagation();
@@ -21309,6 +21399,14 @@ function syncExtraSoon(){
     try{_decoPullCloud();}catch(_){}
     try{_shopPullSolo();}catch(_){}
   },3200);
+  /* ★ 取りに行かなくても もらえるように：おみせ画面を ひらかなくても
+     売上・とどいた荷物・旅の とうちゃく を 起動のときに 受けとる
+     （_tvPullState で 注文と旅が もどってから 走らせる） */
+  setTimeout(()=>{
+    try{_tvCollect();}catch(_){}         /* 売れたぶんの zz */
+    try{_tvDeliver();}catch(_){}         /* とどいた 荷物 */
+    try{_tvCheckArrive(true);}catch(_){} /* 旅の とうちゃく（quiet＝画面は かってに ひらかない） */
+  },5400);
 }
 /* ソロ店も クラウドから ひろう（別の端末で 作った場合） */
 async function _shopPullSolo(){
@@ -21546,6 +21644,124 @@ function _zzForDiff(diff){
   let sc=450-diff*260;if(sc>900)sc=900;if(sc<-150)sc=-150;
   return{sc:Math.round(sc),zz:zzFromScore(sc)};
 }
+/* =====================================================================
+   きょうの まとめ ── その日の けっかを 1枚に あつめる
+   （zz・売れた・いいね・合目・旅・荷物 を べつべつの画面で 見に行かなくていい）
+   ===================================================================== */
+function _tsumIsToday(ts){
+  try{
+    const d=new Date(ts||0),n=new Date();
+    return d.getFullYear()===n.getFullYear()&&d.getMonth()===n.getMonth()&&d.getDate()===n.getDate();
+  }catch(_){return false;}
+}
+function _tsumIncomeToday(){
+  try{return getIncome().filter(x=>_tsumIsToday(x.at));}catch(_){return[];}
+}
+/* 旅の のこり（km と おおよその日数） */
+function _tsumTrip(){
+  try{
+    const t=getTrip();if(!t)return null;
+    const total=t.total||0,km=Math.min(total,t.km||0);
+    const rest=Math.max(0,total-km);
+    let sp=0;try{sp=_tvDayKm(_dayScore(jstKey()));}catch(_){}
+    if(!(sp>0))sp=300;
+    return{rest:rest,total:total,km:km,days:Math.max(1,Math.ceil(rest/sp)),flag:!!t.flag,shop:t.shop||""};
+  }catch(_){return null;}
+}
+function _tsumRender(){
+  const big=$("tsumBig"),have=$("tsumHave"),list=$("tsumList"),nowBox=$("tsumNow");
+  if(!list)return;
+  /* --- きょう もらった ぶん --- */
+  const inc=_tsumIncomeToday();
+  const sum=inc.reduce((a,b)=>a+(b.a||0),0);
+  if(big)big.textContent="＋"+sum.toLocaleString("ja-JP")+" zz";
+  if(have){let z=0;try{z=getZZ();}catch(_){}have.textContent="もちきん "+zzFmt(z);}
+  let h="";
+  inc.slice(0,12).forEach(x=>{
+    let nm="もらった",sub="",ico="・";
+    try{nm=_incLabel(x);}catch(_){}
+    try{sub=_incSub(x);}catch(_){}
+    try{ico=_incIcon(x.t);}catch(_){}
+    h+='<div class="tsumRow"><span class="tsumIco">'+ico+'</span>'+
+       '<span class="tsumMid"><span class="tsumName">'+_esc(nm)+'</span>'+
+       (sub?'<span class="tsumSub">'+_esc(sub)+'</span>':'')+'</span>'+
+       '<span class="tsumZz">＋'+(x.a||0)+'</span></div>';
+  });
+  if(!h){
+    let done=false;try{done=todayDone();}catch(_){}
+    h='<div class="tsumEmpty">'+(done?"きょうは もう おわってるよ。<br>ゆっくり してね":"まだ きょうの ラジオ体操を してないよ")+'</div>';
+  }
+  list.innerHTML=h;
+  /* --- いまの じょうたい --- */
+  let n="";
+  try{   /* 合目 */
+    const wd=Math.max(0,Math.min(7,_weekDoneCount()));
+    n+='<div class="tsumNRow"><span class="tsumIco">⛰</span><span class="tsumMid">'+
+       '<span class="tsumName">今週 '+wd+' / 7 合目</span>'+
+       '<div class="tsumBar"><i style="width:'+Math.round(wd/7*100)+'%"></i></div></span></div>';
+  }catch(_){}
+  try{   /* 目標の山 */
+    const mt=_targetMt();
+    if(mt)n+='<div class="tsumNRow"><span class="tsumIco">🎯</span><span class="tsumMid">'+
+       '<span class="tsumName">目標は '+_esc(mt.name)+'</span>'+
+       '<span class="tsumSub">'+mt.alt+' m</span></span></div>';
+  }catch(_){}
+  try{   /* 連続 */
+    const st=calcStreak().current;
+    if(st>=2)n+='<div class="tsumNRow"><span class="tsumIco">🔥</span><span class="tsumMid">'+
+       '<span class="tsumName">'+st+'日 つづいてるよ</span></span></div>';
+  }catch(_){}
+  try{   /* 旅 */
+    const tp=_tsumTrip();
+    if(tp){
+      let nm=tp.flag?"はた の ところ":"お店";
+      try{const sh=tp.shop&&_tvShopById(tp.shop);if(sh&&sh.name)nm=sh.name;}catch(_){}
+      n+='<div class="tsumNRow"><span class="tsumIco">🗾</span><span class="tsumMid">'+
+         '<span class="tsumName">'+_esc(nm)+' まで あと '+tp.days+'日</span>'+
+         '<span class="tsumSub">のこり '+Math.round(tp.rest)+' km</span>'+
+         '<div class="tsumBar"><i style="width:'+(tp.total>0?Math.round(tp.km/tp.total*100):0)+'%"></i></div></span></div>';
+    }
+  }catch(_){}
+  try{   /* 荷物 */
+    const o=getOrder();
+    if(o){
+      const left=Math.max(0,Math.ceil(((o.eta||0)-Date.now())/3600000));
+      n+='<div class="tsumNRow"><span class="tsumIco">🚚</span><span class="tsumMid">'+
+         '<span class="tsumName">'+_esc(o.name||"荷物")+(left>0?(" あと "+left+"時間"):" もうすぐ とどくよ")+'</span></span></div>';
+    }
+  }catch(_){}
+  if(nowBox)nowBox.innerHTML=n||'<div class="tsumEmpty">とくに ないよ</div>';
+}
+function openTodaySum(){
+  const el=$("todaySum");if(!el)return;
+  try{_tsumRender();}catch(e){console.warn("tsum",e);}
+  el.classList.add("show");
+  try{playClick();}catch(_){}
+}
+function closeTodaySum(){const el=$("todaySum");if(el)el.classList.remove("show");}
+(function(){
+  try{
+    const el=$("todaySum");if(!el)return;
+    el.addEventListener("click",e=>{
+      const t=e.target;if(!t)return;
+      if(t===el||(t.closest&&t.closest("#tsumClose"))){closeTodaySum();return;}
+      if(t.closest&&t.closest("#tsumHelpBtn")){try{openZzHelp();}catch(_){}return;}
+      const g=t.closest&&t.closest(".tsumGo");
+      if(!g)return;
+      const to=g.dataset.go;
+      closeTodaySum();
+      try{playClick();}catch(_){}
+      setTimeout(()=>{
+        try{
+          if(to==="range")openRange();
+          else if(to==="shop")openMyShop(1);
+          else if(to==="rec")openRecord();
+          else if(to==="inc")openMyShop(2);
+        }catch(err){console.warn("tsum go",err);}
+      },160);
+    });
+  }catch(_){}
+})();
 function openZzHelp(){
   const el=$("zzHelp");if(!el)return;
   try{
@@ -21854,9 +22070,23 @@ function _emoStart(){
     }catch(_){}
   },1200);
 }
+/* コメントの れいぶんチップ（タップで 入力できる） */
+var CMT_TEMPLATES=["おはよう","はやおき","ねむい","きもちいい","がんばった","さむいね","またあした","やったー","いい朝","ねむれなかった"];
+function _cmtTemplChips(){
+  try{
+    const box=$("tsCmtChips");if(!box)return;
+    if(box.querySelector(".cmtTpl"))return;   /* 1回だけ ならべる */
+    CMT_TEMPLATES.forEach(t=>{
+      const b=document.createElement("button");
+      b.type="button";b.className="cmtChip cmtTpl";b.textContent=t;
+      box.appendChild(b);
+    });
+  }catch(_){}
+}
 /* コメント入力に 絵文字チップを ならべる */
 function _emoChips(){
   const box=$("tsCmtChips");if(!box)return;
+  try{_cmtTemplChips();}catch(_){}
   const mine=getArtEmos().filter(id=>artById(id));
   box.querySelectorAll(".emoChip").forEach(e=>e.remove());
   mine.forEach(id=>{
@@ -23251,6 +23481,26 @@ function _tvPlaceOthers(){
     <div class="zgNote" id="zgBase"></div>
   </div>
 </div>
+<!-- ===================== きょうの まとめ（1枚に あつめる） ===================== -->
+<div id="todaySum">
+  <div id="tsumCard">
+    <button id="tsumClose" type="button" aria-label="とじる">✕</button>
+    <div id="tsumTtl">きょうの まとめ</div>
+    <div id="tsumBig">＋0 zz</div>
+    <div id="tsumHave">もちきん 0 zz</div>
+    <div id="tsumList"></div>
+    <div id="tsumNowTtl">いま</div>
+    <div id="tsumNow"></div>
+    <div id="tsumBtns">
+      <button class="tsumGo" type="button" data-go="range">⛰ 登山</button>
+      <button class="tsumGo" type="button" data-go="shop">🗾 おみせ・たび</button>
+      <button class="tsumGo" type="button" data-go="rec">📖 きろく</button>
+      <button class="tsumGo" type="button" data-go="inc">💰 売上めいさい</button>
+    </div>
+    <button id="tsumHelpBtn" type="button">お金の もらいかた</button>
+  </div>
+</div>
+
 <div id="zzHelp">
   <div id="zzHelpCard">
     <div id="zzHelpTtl">💰 お金の もらいかた</div>

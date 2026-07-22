@@ -7890,12 +7890,31 @@ async function loadStampCardsFB(){
     if(cards.length)saveStampCards(cards);
   }catch(_){}
 }
+/* 10マス目（Taiso Pro枠）には文字が印刷されているので、押す前に枠の地色でそっと隠す。
+   色はカード画像そのものから拾うので、card.pngを差し替えても自動で馴染む */
+function _maskTaisoPro(ctx,cx,cy){
+  let col="#f1f1f2";
+  try{
+    const s=[];
+    for(let k=0;k<8;k++){   /* 文字の外・円の縁より内側(0.90R)を8方向サンプル */
+      const t=k*Math.PI/4;
+      const d=ctx.getImageData(Math.round(cx+Math.cos(t)*AUTO_CR*0.90),Math.round(cy+Math.sin(t)*AUTO_CR*0.90),1,1).data;
+      if(d[3]>200)s.push([d[0],d[1],d[2]]);
+    }
+    if(s.length){
+      const med=i=>{const v=s.map(c=>c[i]).sort((a,b)=>a-b);return v[Math.floor(v.length/2)];};
+      col="rgb("+med(0)+","+med(1)+","+med(2)+")";
+    }
+  }catch(_){}   /* 画像が読めない等は既定色でフォールバック */
+  ctx.save();ctx.fillStyle=col;ctx.beginPath();ctx.arc(cx,cy,AUTO_CR*0.88,0,Math.PI*2);ctx.fill();ctx.restore();
+}
 async function renderAutoCard(a,cardNo){
   const cv=document.createElement("canvas");cv.width=AUTO_CW;cv.height=AUTO_CH;
   const ctx=cv.getContext("2d");
   try{const bg=await loadImg(RAND_CARD);ctx.drawImage(bg,0,0,AUTO_CW,AUTO_CH);}catch(_){ctx.fillStyle="#4a86a8";ctx.fillRect(0,0,AUTO_CW,AUTO_CH);}
   for(let i=0;i<a.length&&i<AUTO_MAX;i++){
     const cx=AUTO_SLOTS[i][0],cy=AUTO_SLOTS[i][1];
+    if(i===AUTO_MAX-1)_maskTaisoPro(ctx,cx,cy);   /* Taiso Pro の文字を隠してから押す */
     try{const st=await loadImg(a[i].src);const s=AUTO_CR*1.9;ctx.drawImage(st,cx-s/2,cy-s/2,s,s);}catch(_){}
     ctx.fillStyle="#eaf6ff";ctx.font="bold 46px 'Yomogi','Kosugi Maru',sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";
     ctx.shadowColor="rgba(18,45,78,.55)";ctx.shadowBlur=7;ctx.shadowOffsetY=1;   /* 背景の青に埋もれないよう明るい色＋影 */

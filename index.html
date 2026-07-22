@@ -3140,6 +3140,8 @@ button.pmTag{cursor:pointer;}
 .shpTab{border:none;background:rgba(255,255,255,.62);color:#7fa3b8;font-family:"Yomogi","Kosugi Maru",sans-serif;
   font-size:13px;font-weight:900;border-radius:999px;padding:7px 20px;cursor:pointer;transition:.18s;}
 .shpTab.on{background:#5b9cb8;color:#fff;box-shadow:0 3px 0 rgba(74,131,155,.4);}
+.shpTabIco{display:inline-flex;vertical-align:middle;width:1.15em;height:1.15em;margin-right:1px;}
+.shpTabIco svg{width:100%;height:100%;display:block;}
 #shpBody{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 14px calc(26px + env(safe-area-inset-bottom));}
 .shpPage{max-width:460px;margin:0 auto;}
 .shpPage[hidden]{display:none;}
@@ -3147,6 +3149,20 @@ button.pmTag{cursor:pointer;}
 .shpCardTtl{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:13px;font-weight:900;color:#5c8aa3;margin-bottom:8px;}
 .shpName{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:19px;font-weight:900;color:#4a7f99;}
 .shpPlace{font-size:12px;color:#8aa7b6;margin-top:3px;}
+/* じぶんのお店：左＝アイコン＋変更、右＝名前など */
+.shpMyCard{display:flex;align-items:flex-start;gap:13px;}
+.shpMyRight{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:2px;}
+.shpMyBtns{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.shpMyBtns .shpMini{margin-top:0;}
+.shpIconBtn{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:3px;
+  border:none;background:none;cursor:pointer;padding:2px;}
+.shpIconBtn:active{transform:scale(.96);}
+.shpIconArt{display:flex;align-items:center;justify-content:center;
+  width:58px;height:58px;border-radius:15px;background:#fff;
+  box-shadow:0 2px 8px rgba(120,150,170,.2);overflow:hidden;}
+.shpIconArt svg{width:88%;height:88%;display:block;}
+.shpIconEdit{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:11px;font-weight:800;
+  color:#5c93ad;background:rgba(143,190,220,.18);border-radius:999px;padding:2px 12px;}
 .shpMini{border:none;background:rgba(143,190,220,.16);color:#5c93ad;font-size:12px;font-weight:800;border-radius:999px;padding:6px 13px;cursor:pointer;margin-top:9px;}
 #shpMake{width:100%;border:none;background:linear-gradient(180deg,#ffa3c4,#e0588f);color:#fff;
   font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:15px;font-weight:900;border-radius:18px;padding:14px;cursor:pointer;
@@ -19566,6 +19582,7 @@ async function _shopEnsure(){
 function _shpPaintShop(){
   const s=getShop();
   try{const ob=$("shpOpen");if(ob){ob.textContent=shopOpen()?"🟢 オープン中":"🔴 準備中";ob.style.opacity=shopOpen()?"1":".7";}}catch(_){}
+  try{const _ic=$("shpMyIcon");if(_ic)_ic.innerHTML=shopIconHTML({icon:getShopIcon()||null,party:isPartyShop()?1:0},52);}catch(_){}
   const nm=$("shpMyName"),pl=$("shpMyPlace");
   if(nm)nm.textContent=s&&s.name?s.name:"なまえ なし";
   if(pl){
@@ -19621,6 +19638,14 @@ function _shpTabPaint(){
   set("shpSales",p===2);
   set("shpTab0",p===0);
   set("shpTab1",p===1);
+  /* おみせタブの 絵文字を 自分のお店アイコンに（未設定なら デフォルトの お店イラスト） */
+  try{
+    const ico=$("shpTab0Ico");
+    if(ico){
+      const sh={icon:getShopIcon()||null,party:party?1:0};
+      ico.innerHTML=shopIconHTML(sh,20);
+    }
+  }catch(_){}
   try{
     const i=$("smfIco"),t=$("smfTxt"),f=$("shpModeFab");
     const on=(party||(_pNoPartyView&&!_partyId()));
@@ -23390,7 +23415,7 @@ function _tvPlaceOthers(){
     <span id="shpZZ">0 zz</span>
   </div>
   <div id="shpTabs">
-    <button class="shpTab on" id="shpTab0" type="button" data-p="0">🏠 おみせ</button>
+    <button class="shpTab on" id="shpTab0" type="button" data-p="0"><span class="shpTabIco" id="shpTab0Ico">🏠</span> おみせ</button>
     <button class="shpTab" id="shpTab1" type="button" data-p="1">🗾 たび</button>
   </div>
   <div id="shpBody">
@@ -23398,14 +23423,21 @@ function _tvPlaceOthers(){
       <div id="shpBg"></div>
       <div class="shpCard" id="shpParty" hidden></div>
       <button id="shpModeFab" type="button"><span id="smfIco">🏠</span><span id="smfTxt">ソロ</span></button>
-      <div class="shpCard">
-        <div class="shpCardTtl">じぶんのお店</div>
-        <div class="shpName" id="shpMyName">なまえ なし</div>
-        <div class="shpPlace" id="shpMyPlace">ばしょ：－</div>
-        <button class="shpMini" id="shpRename" type="button">なまえを かえる</button>
-        <button class="shpMini" id="shpOpen" type="button">オープン中</button>
-        <button class="shpMini" id="shpMove" type="button">移転</button>
-        <button class="shpMini" id="shpSign" type="button">🏪 お店アイコン</button>
+      <div class="shpCard shpMyCard">
+        <button class="shpIconBtn" id="shpSign" type="button" aria-label="お店アイコンを 変更">
+          <span class="shpIconArt" id="shpMyIcon"></span>
+          <span class="shpIconEdit">変更</span>
+        </button>
+        <div class="shpMyRight">
+          <div class="shpCardTtl">じぶんのお店</div>
+          <div class="shpName" id="shpMyName">なまえ なし</div>
+          <div class="shpPlace" id="shpMyPlace">ばしょ：－</div>
+          <div class="shpMyBtns">
+            <button class="shpMini" id="shpRename" type="button">なまえを かえる</button>
+            <button class="shpMini" id="shpOpen" type="button">オープン中</button>
+            <button class="shpMini" id="shpMove" type="button">移転</button>
+          </div>
+        </div>
       </div>
       <div class="shpCard" id="shpShelfCard">
         <div class="shpCardTtl">商品棚<span class="shpPub">公開</span></div>

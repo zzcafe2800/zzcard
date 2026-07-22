@@ -2747,7 +2747,7 @@ html.lite .catDeco{animation:none;}
 .catCmt .rc.read{color:#b58f6a;}
 
 /* ===== 投稿カード：1枚目レイアウト（プレビュー横に おきた時間） ===== */
-#tsPostHead{display:flex;align-items:stretch;gap:12px;margin-bottom:10px;width:100%;}
+#tsPostHead{position:relative;display:flex;align-items:stretch;gap:12px;margin-bottom:10px;width:100%;}
 #tsPostHead #tsPostPreview{flex:0 0 auto;min-height:0;align-self:flex-start;}
 #tsPostRight{flex:1 1 auto;display:flex;flex-direction:column;gap:9px;min-width:0;}
 #tsPostRight #wakeAdjRow{flex:0 0 auto;margin:0;}
@@ -2787,10 +2787,14 @@ html.lite .catDeco{animation:none;}
 #tsInputWrap #tsMoodBtn{position:absolute;right:6px;bottom:6px;z-index:2;
   padding:4px 9px;font-size:11px;box-shadow:0 2px 7px rgba(224,121,58,.22);}
 #tsInputWrap #tsMoodBtn span{margin-right:1px;}
-#tsMoreClose{display:none;align-self:flex-end;border:none;background:none;
+#tsMoreClose{display:none;position:absolute;top:0;right:0;z-index:4;border:none;background:none;
   color:#a9c3d1;font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:11.5px;
-  font-weight:800;cursor:pointer;padding:2px 4px 0;margin-bottom:-4px;}
-#tsMore[open] #tsMoreClose{display:block;}
+  font-weight:800;cursor:pointer;padding:2px 6px;}
+#tsMoreClose:active{transform:scale(.96);}
+/* チェック＋投稿ボタン：ふだんは 出さず、コメント欄を ひらいたとき（.tsMoreOpen）だけ 出す */
+#tsPostExtra{display:none;margin-top:4px;}
+#tsPostCard.tsMoreOpen #tsPostExtra{display:block;}
+#tsPostCard.tsMoreOpen #tsMoreClose{display:block;}
 #tsMoreClose:active{transform:scale(.96);}
 /* テンプレ帯の 右はしに 「まだ右にあるよ」の うすいグラデ */
 #tsInputWrap::after{content:"";position:absolute;top:6px;right:6px;width:20px;height:24px;
@@ -4299,24 +4303,26 @@ body.exercising #homeZZ{opacity:0;pointer-events:none;}
           <div id="tsPostRight">
             <div id="wakeAdjRow"><span class="waLabel">おきた<br>じかん</span><div class="waCtrl"><button id="wakeAdjMinus" type="button" aria-label="はやく">◀</button><span id="wakeAdjTime">–</span><button id="wakeAdjPlus" type="button" aria-label="おそく">▶</button></div></div>
             <div id="tsAutoNote" hidden>とうこう ずみ</div>
-        <details id="tsMore">
-          <summary id="tsMoreSum">💬 コメント・気分を つける</summary>
-          <div id="tsMoreBody">
-            <button id="tsMoreClose" type="button" aria-label="とじる">✕ とじる</button>
-            <div id="tsInputWrap">
-              <div class="cmtChips" id="tsCmtChips"></div>
-              <textarea id="tsComment" maxlength="20" rows="3" placeholder="ひとこと（ひらがな）" inputmode="kana"></textarea>
-              <button id="tsMoodBtn" type="button"><span>😊</span> 気分</button>
-            </div>
-            <div class="tsChkRow">
-              <label class="tsAnonRow"><input type="checkbox" id="tsAnon"/> 匿名で投稿する</label>
-              <label class="tsAnonRow"><input type="checkbox" id="tsShowTime"/> 起床時間を表示</label>
-            </div>
-            <div class="tsFoot">
-              <button class="tsPost" id="tsPostBtn" type="button">投稿する</button>
-            </div>
+            <details id="tsMore">
+              <summary id="tsMoreSum">💬 コメント・気分を つける</summary>
+              <div id="tsMoreBody">
+                <div id="tsInputWrap">
+                  <div class="cmtChips" id="tsCmtChips"></div>
+                  <textarea id="tsComment" maxlength="20" rows="3" placeholder="ひとこと（ひらがな）" inputmode="kana"></textarea>
+                  <button id="tsMoodBtn" type="button"><span>😊</span> 気分</button>
+                </div>
+              </div>
+            </details>
           </div>
-        </details>
+          <button id="tsMoreClose" type="button" aria-label="とじる">✕ とじる</button>
+        </div>
+        <div id="tsPostExtra">
+          <div class="tsChkRow">
+            <label class="tsAnonRow"><input type="checkbox" id="tsAnon"/> 匿名で投稿する</label>
+            <label class="tsAnonRow"><input type="checkbox" id="tsShowTime"/> 起床時間を表示</label>
+          </div>
+          <div class="tsFoot">
+            <button class="tsPost" id="tsPostBtn" type="button">投稿する</button>
           </div>
         </div>
       </div>
@@ -13764,6 +13770,9 @@ try{$("smPick").addEventListener("click",()=>{try{playClick();}catch(_){}$("summ
 try{$("mtlClose").addEventListener("click",()=>{try{playClick();}catch(_){}closeMtList();});}catch(_){}
 try{const _mb=$("tsMoodBtn");if(_mb)_mb.addEventListener("click",()=>{try{playClick();}catch(_){}openMoodCard();});}catch(_){}
 try{const _mc=$("tsMoreClose");if(_mc)_mc.addEventListener("click",()=>{try{playClick();}catch(_){}try{const d=$("tsMore");if(d)d.open=false;}catch(_){}});}catch(_){}
+/* コメント欄(details)の 開閉に あわせて、チェック＋投稿ボタン＋とじる の 表示を 切りかえる
+   （カード全幅に出す #tsPostExtra と、右上の ✕とじる は .tsMoreOpen で制御） */
+try{const _dt=$("tsMore");if(_dt)_dt.addEventListener("toggle",()=>{try{const c=$("tsPostCard");if(c)c.classList.toggle("tsMoreOpen",_dt.open);}catch(_){}});}catch(_){}
 try{const _mcc=$("moodCancel");if(_mcc)_mcc.addEventListener("click",()=>{closeMoodCard();});}catch(_){}
 try{const _mo=$("moodCard");if(_mo)_mo.addEventListener("click",e=>{if(e.target===_mo)closeMoodCard();});}catch(_){}
 let _autoTimer=null;

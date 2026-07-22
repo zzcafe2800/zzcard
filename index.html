@@ -13811,6 +13811,58 @@ var _JV_START=(function(){for(var i=0;i<JP_TOWNS.length;i++)if(JP_TOWNS[i][0]===
 /* 種つき乱数：どの端末で計算しても同じ結果になる */
 function _jvHash(s){var h=2166136261>>>0;s=String(s);for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return h;}
 function _jvRand(seed){var h=seed>>>0;return function(){h=(Math.imul(h,1664525)+1013904223)>>>0;return h/4294967296;};}
+/* ---- 旧バージョンの進み具合を引き継ぐ ---- */
+function _jvNearestTown(lng,lat){
+  var best=0,bd=1e9;
+  for(var i=0;i<JP_TOWNS.length;i++){
+    var d=_jvKm([lng,lat],[JP_TOWNS[i][1],JP_TOWNS[i][2]]);
+    if(d<bd){bd=d;best=i;}
+  }
+  return best;
+}
+function _jvPath(from,to){   /* まちは90個なので素朴なダイクストラで十分 */
+  if(from===to)return[from];
+  var dist={},prev={},vis={};dist[from]=0;
+  for(;;){
+    var u=-1,bd=1e9;
+    for(var k in dist){var kk=+k;if(!vis[kk]&&dist[kk]<bd){bd=dist[kk];u=kk;}}
+    if(u<0||u===to)break;
+    vis[u]=1;
+    _jvAdjOf(u).forEach(function(e){
+      var w=_jvLegKm(u,e.to);if(w<=0)return;
+      var nd=dist[u]+w;
+      if(dist[e.to]===undefined||nd<dist[e.to]){dist[e.to]=nd;prev[e.to]=u;}
+    });
+  }
+  if(dist[to]===undefined)return null;
+  var path=[to],c=to,guard=0;
+  while(c!==from){c=prev[c];if(c===undefined||++guard>400)return null;path.push(c);}
+  return path.reverse();
+}
+function _jvRouteKm(route){var s=0;for(var i=0;i+1<route.length;i++)s+=_jvLegKm(route[i],route[i+1]);return s;}
+/* 旧ルート(JOURNEY_CP)を頭からたどり直して、通ったまちを順に拾う。
+   ＝「今いる場所」だけでなく“旅してきた道のり”をまるごと引き継ぐ
+   （一周して東京に戻っていた人も、足あとが全部のこる） */
+function _jvBuildMigration(km){
+  var seq=[],last=-1;
+  try{
+    for(var d=0;d<=km;d+=25){
+      var pos=_jrnPos(d);
+      var t=_jvNearestTown(pos.lng,pos.lat);
+      var near=_jvKm([pos.lng,pos.lat],[JP_TOWNS[t][1],JP_TOWNS[t][2]]);
+      if(near<=45&&t!==last){seq.push(t);last=t;}
+    }
+  }catch(e){console.warn("旧ルートの読み取りに失敗",e);}
+  var route=[_JV_START];
+  for(var i=0;i<seq.length;i++){
+    var t=seq[i],cur=route[route.length-1];
+    if(t===cur)continue;
+    var sub=_jvPath(cur,t);
+    if(sub&&sub.length>1)route=route.concat(sub.slice(1));
+    if(route.length>400)break;
+  }
+  return{route:route,base:km-_jvRouteKm(route),migrated:true,town:route[route.length-1],towns:route.length};
+}
 /* 旅の状態：通算kmが今どの区間のどこか */
 function _jvState(route,km){
   var acc=0;
@@ -14030,8 +14082,16 @@ function _renderJourney(el,days,members,jdata){
   var km=_jrnProgressKm(days,mc);
   if(jdata!==undefined&&jdata!==null)_jvData=jdata;
   var jd=_jvData||{};
+  if(!jd.migrated){          /* 旧バージョンからの引き継ぎ（1回だけ） */
+    var mg=_jvBuildMigration(km);
+    jd={route:mg.route,base:mg.base,migrated:true,votes:null,open:null};
+    _jvData=jd;
+    _jvWrite({route:mg.route,base:mg.base,migrated:true,open:null,votes:null});
+    try{ if(mg.route.length>1)toast("これまでの旅を ひきついだよ（"+mg.towns+"まち・"+_jvTownName(mg.town)+"）"); }catch(_){}
+  }
+  var base=jd.base||0;
   var route=(jd.route&&jd.route.length)?jd.route.slice():[_JV_START];
-  var st=_jvState(route,km);
+  var st=_jvState(route,km-base);
   var votes=jd.votes||{},open=jd.open||null,cands=null;
   if(!st.moving){
     if(!open){open=jstKey();jd.open=open;_jvData=jd;_jvWrite({open:open});}
@@ -14042,7 +14102,7 @@ function _renderJourney(el,days,members,jdata){
   }
   var here=st.moving?_jvWalk(_jvLegPts(st.from,st.to),st.doneKm):{lng:JP_TOWNS[st.at][1],lat:JP_TOWNS[st.at][2]};
   _jrnLast={pos:{lat:here.lat,lng:here.lng,sea:false},progressKm:km,members:members,days:days,mc:mc};
-  _jvLast={route:route,km:km,st:st,cands:cands};
+  _jvLast={route:route,km:km-base,st:st,cands:cands};
   try{_setHomeLoc(km);}catch(_){}
   var spd=_jrnCurrentSpeed(days);
   var elapsed=0;try{var dks=Object.keys(days||{}).sort();if(dks.length){var a=new Date(dks[0]+"T00:00:00"),b=new Date(jstKey()+"T00:00:00");elapsed=Math.max(1,Math.round((b-a)/86400000)+1);}}catch(_){}

@@ -20195,6 +20195,14 @@ function _tvCheckArrive(quiet){
 }
 let _tvArrived=null;
 /* --- いまの居場所 --- */
+function _townOff(uid){
+  /* 同じ県に湧いても かさならないよう uid から きまる ずれ（最大 約12km） */
+  try{
+    const h=_jvHash(uid||getUid());
+    const ang=(h%3600)/3600*Math.PI*2,rad=0.03+((h>>>12)%100)/100*0.09;
+    return{x:Math.cos(ang)*rad*1.2,y:Math.sin(ang)*rad};
+  }catch(_){return{x:0,y:0};}
+}
 function _tvHere(){
   const t=getTrip();
   if(t&&t.tail){
@@ -20208,9 +20216,9 @@ function _tvHere(){
     }
   }
   if(!t||!t.route||t.route.length<2){
-    const i=myTown();
+    const i=myTown(),of=_townOff();
     if(t&&t.tail){const tp=_tvTailPts(t);if(tp&&tp.length){const w=_jvWalk(tp,t.km||0);return{lng:w.lng,lat:w.lat,moving:true,tail:1};}}
-    return{lng:JP_TOWNS[i][1],lat:JP_TOWNS[i][2],town:i,moving:false};
+    return{lng:JP_TOWNS[i][1]+of.x,lat:JP_TOWNS[i][2]+of.y,town:i,moving:false};
   }
   let acc=0;
   for(let i=0;i+1<t.route.length;i++){
@@ -22282,9 +22290,7 @@ function _tvPlaceOthers(){
   const w=_tvView.w,hh=_tvView.h||w,vx=_tvView.cx-w/2,vy=_tvView.cy-hh/2;
   document.querySelectorAll("#tvOverlay .tvOth").forEach(el=>{
     const o=_tvOthers[parseInt(el.dataset.oi,10)];if(!o)return;
-    let x=(_jpX(o.lng)-vx)/w*r.width,y=(_jpY(o.lat)-vy)/hh*r.height;
-    const hsh=_jvHash((o.n||"")+i),ang=(hsh%360)*Math.PI/180,rad=9+(hsh%7);
-    x+=Math.cos(ang)*rad;y+=Math.sin(ang)*rad;   /* 同じ場所でも かさならないように 少しずらす */
+    const x=(_jpX(o.lng)-vx)/w*r.width,y=(_jpY(o.lat)-vy)/hh*r.height;
     const out=(x<-30||y<-30||x>r.width+30||y>r.height+30);
     el.style.display=out?"none":"block";
     if(!out){el.style.left=x.toFixed(1)+"px";el.style.top=y.toFixed(1)+"px";}

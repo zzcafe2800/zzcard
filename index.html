@@ -3681,6 +3681,22 @@ body.exercising #homeZZ{opacity:0;pointer-events:none;}
 #zzHelpGo{width:100%;border:none;background:linear-gradient(180deg,#ffd08a,#f0a63c);color:#fff;font-size:13px;
   font-weight:900;border-radius:13px;padding:10px;cursor:pointer;margin-top:4px;}
 #zzHelpClose{width:100%;border:none;background:none;color:#9ab6c5;font-size:12px;font-weight:800;cursor:pointer;padding:8px;}
+
+#drWDot{display:inline-block;border-radius:50%;background:#1c1c1c;flex:0 0 auto;min-width:3px;min-height:3px;
+  box-shadow:0 0 0 1px rgba(120,150,170,.25);transition:width .08s,height .08s;}
+#drFineRow{gap:8px;}
+
+/* 共同店に 入っていないときは カードだけ 見せる */
+#shopScreen.noparty #shpPage0>*:not(#shpParty){display:none !important;}
+#shopScreen.noparty #shpPage0::after{display:none !important;}
+#shopScreen.noparty #shpBg{display:none !important;}
+#shopScreen.noparty #shpParty{margin-top:4px;}
+
+#bootCover .bcInner svg{display:block;filter:drop-shadow(0 3px 8px rgba(90,120,140,.25));}
+
+#shpZZ{cursor:pointer;}
+#shpZZ:active{transform:scale(.96);}
+#zzHelpGo[hidden]{display:none;}
 </style>
 </head>
 <body>
@@ -3693,7 +3709,35 @@ body.exercising #homeZZ{opacity:0;pointer-events:none;}
   <button id="ibClose" type="button" aria-label="閉じる">✕</button>
 </div>
 <div id="app">
-  <div id="bootCover"><div class="bcInner">🌅</div></div>
+  <div id="bootCover"><div class="bcInner" id="bcInner">🌅</div></div>
+<script>
+/* 起動カバーの絵を「じぶんの猫の顔」にする（モジュールより先に動くので ここで つくる） */
+(function(){
+  try{
+    var p=null;try{p=JSON.parse(localStorage.getItem("radio_profile")||"null");}catch(_){}
+    if(!p||typeof p!=="object")return;
+    var body=p.catBody||"#1c1c1c",ear=p.color||"#8fdcff";
+    function tri(sign,hx,hy,hr){
+      var ob=[hx+sign*0.84*hr,hy-0.44*hr],ib=[hx+sign*0.18*hr,hy-0.60*hr],pk=[hx+sign*0.54*hr,hy-1.12*hr];
+      var cx=(ob[0]+ib[0]+pk[0])/3,cy=(ob[1]+ib[1]+pk[1])/3;
+      function sh(q){return[cx+(q[0]-cx)*0.5,cy+(q[1]-cy)*0.52];}
+      var o2=sh(ob),i2=sh(ib),p2=sh(pk);
+      return'<path d="M'+ob[0]+' '+ob[1]+' L'+pk[0]+' '+pk[1]+' L'+ib[0]+' '+ib[1]+' Z" fill="'+body+'" stroke="'+body+'" stroke-width="'+(hr*0.24)+'" stroke-linejoin="round"/>'+
+            '<path d="M'+o2[0]+' '+o2[1]+' L'+p2[0]+' '+p2[1]+' L'+i2[0]+' '+i2[1]+' Z" fill="'+ear+'"/>';
+    }
+    var svg='<svg viewBox="0 0 80 80" width="96" height="96" xmlns="http://www.w3.org/2000/svg">'+
+      '<circle cx="40" cy="45" r="24" fill="'+body+'"/>'+tri(-1,40,45,24)+tri(1,40,45,24)+
+      '<circle cx="32" cy="46" r="8" fill="#fff"/><circle cx="48" cy="46" r="8" fill="#fff"/>'+
+      '<circle cx="32" cy="47" r="6.4" fill="#1c1c1c"/><circle cx="48" cy="47" r="6.4" fill="#1c1c1c"/>'+
+      '<circle cx="34" cy="44.6" r="2" fill="#fff"/><circle cx="50" cy="44.6" r="2" fill="#fff"/>'+
+      '<path d="M36.5 55 Q40 58 43.5 55" fill="none" stroke="#1c1c1c" stroke-width="1.6" stroke-linecap="round"/>'+
+      '</svg>';
+    var el=document.getElementById("bcInner");
+    if(el){el.innerHTML=svg;el.style.fontSize="0";}
+  }catch(_){}
+})();
+</script>
+
 
 <!-- ===================== SELECT SCREEN ===================== -->
 <div id="selectScreen">
@@ -19330,7 +19374,10 @@ function openDraw(use,sub,id){
   if(t)t.textContent="おえかき・"+artUseName(_drUse)+(artSubName(_drUse,_drSub)?"（"+artSubName(_drUse,_drSub)+"）":"");
   $("drawScreen").classList.add("show");
   _drSizeStage();
+  _drAlpha=10;
+  try{const _al=$("drAlpha");if(_al)_al.value=10;}catch(_){}
   _drPaintPal();_drPaintW();_drPaintLayers();_drPaintMode();
+  try{_drPaintAlpha();}catch(_){}
   _drSetUnder(null);
   _drCatBg(_drUse==="cos");
   const cb=$("drCatBtn");if(cb)cb.hidden=(_drUse!=="cos");
@@ -19477,6 +19524,7 @@ function _drStrokeCount(){let n=0;_drLayers.forEach(l=>{n+=(l.s||[]).length;});r
     const sc=$("shopScreen");
     if(sc)sc.addEventListener("click",e=>{
       const t=e.target;if(!t)return;
+      if(t.closest("#shpZZ")){try{playClick();}catch(_){}try{openZzHelp();}catch(_){}return;}
       if(t.closest("#shpSkip")){try{playClick();}catch(_){}shpSkipGo();return;}
       if(t.closest("#shpClose")){try{playClick();}catch(_){}if(_shpStartup)shpSkipGo();else closeMyShop();return;}
       const tab=t.closest(".shpTab");
@@ -19484,6 +19532,7 @@ function _drStrokeCount(){let n=0;_drLayers.forEach(l=>{n+=(l.s||[]).length;});r
         try{playClick();}catch(_){}
         const md=tab.dataset.mode;
         if(md==="party"&&!_partyId()){
+          _pNoPartyView=true;
           _shpGo(0);
           try{_pRenderNoParty();}catch(_){}
           if(!_pJoinLoaded)_pLoadJoinable();
@@ -19492,6 +19541,7 @@ function _drStrokeCount(){let n=0;_drLayers.forEach(l=>{n+=(l.s||[]).length;});r
           const t0=$("shpTab0");if(t0)t0.classList.remove("on");
           return;
         }
+        _pNoPartyView=false;
         if(md&&md!==shopMode())switchShopMode(md);
         _shpGo(parseInt(tab.dataset.p,10));
         return;
@@ -19500,14 +19550,14 @@ function _drStrokeCount(){let n=0;_drLayers.forEach(l=>{n+=(l.s||[]).length;});r
       if(t.closest("#shpDeco")){if(!pCan("deco")){pDeny("deco");return;}try{playClick();}catch(_){}openStEdit();return;}
       if(t.closest("#pMake")){
         try{playClick();}catch(_){}
-        createParty().then(()=>{_pLoaded=false;setShopMode("party");_shpPaintMode();
+        createParty().then(()=>{_pLoaded=false;_pNoPartyView=false;setShopMode("party");_shpPaintMode();
           return _pLoad(true);}).then(()=>{_pRenderCard();_shpPaintShop();_shpRenderSells();}).catch(()=>{});
         return;
       }
       if(t.closest("#pJoin")){
         const c=prompt("あいことば（6文字）");
         if(c&&c.trim()){
-          joinParty(c.trim()).then(()=>{_pLoaded=false;setShopMode("party");_shpPaintMode();
+          joinParty(c.trim()).then(()=>{_pLoaded=false;_pNoPartyView=false;setShopMode("party");_shpPaintMode();
             return _pLoad(true);}).then(()=>{_pRenderCard();_shpPaintShop();_shpRenderSells();}).catch(()=>{});
         }
         return;
@@ -19619,7 +19669,7 @@ function _drStrokeCount(){let n=0;_drLayers.forEach(l=>{n+=(l.s||[]).length;});r
         _drLine=null;_drPaintMode();_drRender();return;
       }
       const c=t.closest(".drCol");
-      if(c){_drCol=parseInt(c.dataset.c,10);_drPaintPal();return;}
+      if(c){_drCol=parseInt(c.dataset.c,10);_drPaintPal();_drPaintAlpha();return;}
       const w2=t.closest(".drW");
       if(w2){_drWi=parseInt(w2.dataset.w,10);_drPaintW();return;}
       if(t.closest("#drLyAdd")){
@@ -19700,6 +19750,9 @@ function _drStrokeCount(){let n=0;_drLayers.forEach(l=>{n+=(l.s||[]).length;});r
         drawing=true;
         try{cv.setPointerCapture(e.pointerId);}catch(_){}
         if(_drMode==="fill"){
+          const rc=_drRecolor(p);
+          if(rc==="done"){drawing=false;_drRender();_drPaintMode();return;}
+          if(rc==="same"){try{toast("おなじ色だよ");}catch(_){}drawing=false;return;}
           const ok=_drBucketAll(p);
           if(!ok){try{toast("ここは ぬれなかったよ");}catch(_){}}
           drawing=false;_drRender();_drPaintMode();return;
@@ -20019,9 +20072,9 @@ function _decoPlace(id){
       const wf=$("drWFine"),al=$("drAlpha");
       if(wf)wf.addEventListener("input",()=>{
         const L=_wList(),i=Math.max(0,Math.min(L.length-1,parseInt(wf.value,10)||0));
-        _drWi=L[i];_drPaintW();
+        _drWi=L[i];_drPaintW();_drPaintWDot();
       });
-      if(al)al.addEventListener("input",()=>{_drAlpha=Math.max(1,Math.min(10,parseInt(al.value,10)||10));});
+      if(al)al.addEventListener("input",()=>{_drAlpha=Math.max(1,Math.min(10,parseInt(al.value,10)||10));_drPaintAlpha();});
     }catch(_){}
     ["drPasteS","drPasteR"].forEach(id=>{
       const el=$(id);if(!el)return;
@@ -20959,6 +21012,56 @@ function _stDraw(){
   st.innerHTML=_stRoomSVG(d,_stPool,_stEdit,_decoSel);
 }
 let _stDeco=null;
+
+/* --- 太さの見本と 色の こさ表示 --- */
+function _hex2rgba(hex,a){
+  try{
+    const h=hex.replace("#","");
+    const r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16);
+    return"rgba("+r+","+g+","+b+","+a+")";
+  }catch(_){return hex;}
+}
+function _drPaintWDot(){
+  const d=$("drWDot");if(!d)return;
+  const px=Math.max(2,Math.min(56,(ART_W[_drWi]||ART_W[1])*_drCanvasSize.w*_drScale));
+  d.style.width=px+"px";d.style.height=px+"px";
+  d.style.background=_hex2rgba(ART_PAL[_drCol]||"#1c1c1c",Math.max(0.06,_drAlpha/10));
+}
+/* いま えらんでいる色を こさつきで 見せる */
+function _drPaintAlpha(){
+  try{
+    const sel=document.querySelector("#drPal .drCol.on");
+    if(sel)sel.style.background=_hex2rgba(ART_PAL[_drCol]||"#1c1c1c",Math.max(0.06,_drAlpha/10));
+  }catch(_){}
+  _drPaintWDot();
+}
+/* --- ぬり：色のところは その色の線を ぜんぶ ぬりかえる --- */
+function _drRecolor(p){
+  const cs=_drCanvasSize,S=2.2;
+  const W=Math.max(8,Math.round(cs.w*S)),H=Math.max(8,Math.round(cs.h*S));
+  const cv=document.createElement("canvas");cv.width=W;cv.height=H;
+  const ctx=cv.getContext("2d");
+  try{_artDrawLayers(ctx,_drLayers,cs,S);}catch(_){}
+  let d;try{d=ctx.getImageData(0,0,W,H).data;}catch(_){return null;}
+  const x=Math.max(0,Math.min(W-1,Math.round(p.x*S))),y=Math.max(0,Math.min(H-1,Math.round(p.y*S)));
+  const i=(y*W+x)*4;
+  if(d[i+3]<20)return null;                         /* 透明＝ふつうの ぬり */
+  let best=-1,bd=1e9;
+  for(let k=0;k<ART_PAL.length;k++){
+    const h=ART_PAL[k].replace("#","");
+    const r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16);
+    const dd=Math.abs(r-d[i])+Math.abs(g-d[i+1])+Math.abs(b-d[i+2]);
+    if(dd<bd){bd=dd;best=k;}
+  }
+  if(best<0)return null;
+  if(best===_drCol)return"same";
+  let n=0;
+  const hit=ly=>{(ly.s||[]).forEach(st=>{if(st[0]===best){st[0]=_drCol;if(_drAlpha<10)st[3]=_drAlpha;else if(st.length>3)st[3]=10;n++;}});};
+  const cur=_drLayers[_drCur];
+  if(cur){_drSnap();hit(cur);}
+  if(!n){_drLayers.forEach(l=>{if(l!==cur)hit(l);});}
+  return n?"done":null;
+}
 /* --- ぬり：えらんだ色いがい（透明でない）は 同じ色を ぜんぶ塗る --- */
 function _drBucketAll(p){
   const cs=_drCanvasSize,S=2.2;
@@ -21039,6 +21142,10 @@ function _zzForDiff(diff){
 }
 function openZzHelp(){
   const el=$("zzHelp");if(!el)return;
+  try{
+    const opened=$("shopScreen")&&$("shopScreen").classList.contains("show");
+    const go=$("zzHelpGo");if(go)go.hidden=!!opened;
+  }catch(_){}
   const rows=[[-2,"2時間 はやい"],[-1,"1時間 はやい"],[-0.5,"30分 はやい"],[0,"ぴったり"],[0.5,"30分 おそい"],[1,"1時間 おそい"],[2,"2時間 おそい"]];
   const p=(typeof getProfile==="function"?getProfile():null)||{};
   const hm=(typeof profileWakeHM==="function")?profileWakeHM():{h:6,m:0};
@@ -21162,8 +21269,9 @@ async function _pDoLeave(){
   if(!confirm("共同店から ぬける？\n※ お店じたいは のこるけど、あなたは 見られなくなるよ"))return;
   try{await leaveParty();}catch(_){}
   try{localStorage.removeItem(PARTY_KEY);}catch(_){}
-  _pInfo=null;_pLoaded=false;_pJoinLoaded=false;
+  _pInfo=null;_pLoaded=false;_pJoinLoaded=false;_pNoPartyView=true;
   setShopMode("solo");
+  try{_pLoadJoinable();}catch(_){}
   try{_shpPaintMode();_shpPaintShop();_shpRenderArts();_shpRenderSells();_pRenderCard();}catch(_){}
   try{toast("共同店から ぬけたよ");}catch(_){}
 }
@@ -21477,9 +21585,17 @@ async function _pVote(uid){
   _pRenderCard();
 }
 /* --- パーティのカード（お店ページ） --- */
+var _pNoPartyView=false;
+function _pApplyNoParty(){
+  try{const sc=$("shopScreen");if(sc)sc.classList.toggle("noparty",!!_pNoPartyView&&!_partyId());}catch(_){}
+}
 function _pRenderCard(){
   const box=$("shpParty");if(!box)return;
-  if(!isPartyShop()){box.hidden=true;return;}
+  if(!isPartyShop()){
+    if(_pNoPartyView&&!_partyId()){_pRenderNoParty();_pApplyNoParty();return;}
+    box.hidden=true;_pApplyNoParty();return;
+  }
+  _pApplyNoParty();
   if(!_partyId()){_pRenderNoParty();return;}
   box.hidden=false;
   if(!_pInfo){box.innerHTML='<div class="shpCardTtl">みんなの店</div><div class="pNote">よみこみ中…</div>';return;}
@@ -22588,7 +22704,7 @@ function _tvPlaceOthers(){
     <div id="drPal"></div>
     <div class="drRow" id="drWRow" hidden></div>
     <div class="drRow" id="drFineRow">
-      <span class="decoLbl">ふとさ</span><input type="range" id="drWFine" min="0" max="11" value="4"/>
+      <span class="decoLbl">ふとさ</span><input type="range" id="drWFine" min="0" max="11" value="4"/><span id="drWDot"></span>
       <span class="decoLbl">こさ</span><input type="range" id="drAlpha" min="1" max="10" value="10"/>
     </div>
     <div class="drRow" id="drLayerRow"></div>

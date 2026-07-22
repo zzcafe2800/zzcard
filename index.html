@@ -7838,12 +7838,13 @@ function showDailyIntro(onDone){
   },560);
   setTimeout(finish,2150);
 }
-/* ===== スタンプ自動化（テンプレ1920×1200固定・5×2の円・9マス。Taiso Pro枠は使わない） ===== */
+/* ===== スタンプ自動化（テンプレ1920×1200固定・5×2の円・10マス。最後の1マスがTaiso Pro枠） ===== */
 const AUTO_STAMP_KEY="radio_auto_stamp";     /* 自動モード ON/OFF */
 const AUTO_CARD_KEY="radio_auto_card";       /* 旧：単一カード（移行用） */
 const STAMP_CARDS_KEY="radio_stamp_cards";   /* 全カード履歴 [[{src,date}...], ...] 最後が今のカード */
 const AUTO_CW=1920,AUTO_CH=1200,AUTO_CR=156;
-const AUTO_SLOTS=[[240,426],[602,426],[965,426],[1326,426],[1688,426],[240,794],[602,794],[965,794],[1326,794]];
+const AUTO_SLOTS=[[240,426],[602,426],[965,426],[1326,426],[1688,426],[240,794],[602,794],[965,794],[1326,794],[1688,794]];
+const AUTO_MAX=AUTO_SLOTS.length;   /* 1枚に押せる数＝10（最後がTaiso Pro枠） */
 function isAutoStamp(){return localStorage.getItem(AUTO_STAMP_KEY)==="1";}
 function setAutoStamp(v){try{localStorage.setItem(AUTO_STAMP_KEY,v?"1":"0");}catch(_){}}
 function getStampCards(){
@@ -7855,13 +7856,13 @@ function getStampCards(){
 }
 function saveStampCards(c){try{localStorage.setItem(STAMP_CARDS_KEY,JSON.stringify(c));}catch(_){}try{syncBigSoon();}catch(_){}}
 function currentCardNo(){return getStampCards().length;}
-/* 今日のスタンプを次の空きマスへ記録。9マス埋まったら次のカードへ自動で繰り上がり。
+/* 今日のスタンプを次の空きマスへ記録。10マス（最後のTaiso Pro枠まで）埋まったら次のカードへ自動で繰り上がり。
    記録内容：使ったスタンプ(src)・どのマス(配列index)・何日(date)・何枚目(配列の位置) */
 function autoAddStamp(src,dateLabel){
   const cards=getStampCards();
   let cur=cards[cards.length-1];
   if(cur.length&&cur[cur.length-1].date===dateLabel)return{cards,cur,no:cards.length,slot:cur.length-1,added:false};   /* きょうは押し済み */
-  if(cur.length>=9){ cur=[]; cards.push(cur); }   /* taisopro手前まで埋まった→次のカード */
+  if(cur.length>=AUTO_MAX){ cur=[]; cards.push(cur); }   /* taisopro枠まで埋まった→次のカード */
   cur.push({src,date:dateLabel});
   saveStampCards(cards);
   return{cards,cur,no:cards.length,slot:cur.length-1,added:true};
@@ -7893,7 +7894,7 @@ async function renderAutoCard(a,cardNo){
   const cv=document.createElement("canvas");cv.width=AUTO_CW;cv.height=AUTO_CH;
   const ctx=cv.getContext("2d");
   try{const bg=await loadImg(RAND_CARD);ctx.drawImage(bg,0,0,AUTO_CW,AUTO_CH);}catch(_){ctx.fillStyle="#4a86a8";ctx.fillRect(0,0,AUTO_CW,AUTO_CH);}
-  for(let i=0;i<a.length&&i<9;i++){
+  for(let i=0;i<a.length&&i<AUTO_MAX;i++){
     const cx=AUTO_SLOTS[i][0],cy=AUTO_SLOTS[i][1];
     try{const st=await loadImg(a[i].src);const s=AUTO_CR*1.9;ctx.drawImage(st,cx-s/2,cy-s/2,s,s);}catch(_){}
     ctx.fillStyle="#eaf6ff";ctx.font="bold 46px 'Yomogi','Kosugi Maru',sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";
@@ -7912,7 +7913,7 @@ let _autoCardUrl="",_lastStampSrc="";
 function detectFilledCount(cv){
   const W=cv.width,H=cv.height,ctx=cv.getContext("2d");
   const sx=W/AUTO_CW,sy=H/AUTO_CH,R=Math.round(120*sx);let count=0;
-  for(let i=0;i<9;i++){
+  for(let i=0;i<AUTO_MAX;i++){
     const cx=Math.round(AUTO_SLOTS[i][0]*sx),cy=Math.round(AUTO_SLOTS[i][1]*sy);
     const x0=Math.max(0,cx-R),y0=Math.max(0,cy-R),w=Math.min(W,cx+R)-x0,h=Math.min(H,cy+R)-y0;
     if(w<=0||h<=0)break;

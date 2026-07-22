@@ -13812,6 +13812,7 @@ function _jvLegKm(from,to){
 }
 function _jvTownName(i){return (JP_TOWNS[i]&&JP_TOWNS[i][0])||"？";}
 var _JV_START=(function(){for(var i=0;i<JP_TOWNS.length;i++)if(JP_TOWNS[i][0]==="東京")return i;return 0;})();
+var _JV_TOWNVER=2;   /* まちの一覧を作り替えたら+1する（保存済みの番号が合わなくなるため） */
 /* 種つき乱数：どの端末で計算しても同じ結果になる */
 function _jvHash(s){var h=2166136261>>>0;s=String(s);for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return h;}
 function _jvRand(seed){var h=seed>>>0;return function(){h=(Math.imul(h,1664525)+1013904223)>>>0;return h/4294967296;};}
@@ -13869,6 +13870,8 @@ function _jvBuildMigration(km){
 }
 /* 旅の状態：通算kmが今どの区間のどこか */
 function _jvState(route,km){
+  route=(route||[]).filter(function(t){return t>=0&&t<JP_TOWNS.length;});
+  if(!route.length)route=[_JV_START];
   var acc=0;
   for(var i=0;i+1<route.length;i++){
     var L=_jvLegKm(route[i],route[i+1]);
@@ -14129,11 +14132,17 @@ function _renderJourney(el,days,members,jdata){
   var km=_jrnProgressKm(days,mc);
   if(jdata!==undefined&&jdata!==null)_jvData=jdata;
   var jd=_jvData||{};
-  if(!jd.migrated){          /* 旧バージョンからの引き継ぎ（1回だけ） */
+  var _routeOK=(function(){        /* 保存されている番号が今のまち一覧に収まっているか */
+    var r=jd.route;
+    if(!r||!r.length)return false;
+    for(var i=0;i<r.length;i++){var t=r[i];if(!(t>=0&&t<JP_TOWNS.length))return false;}
+    return true;
+  })();
+  if(!jd.migrated||jd.tv!==_JV_TOWNVER||!_routeOK){   /* 旧バージョン／まち一覧が変わった時に作り直す */
     var mg=_jvBuildMigration(km);
-    jd={route:mg.route,base:mg.base,migrated:true,votes:null,open:null};
+    jd={route:mg.route,base:mg.base,migrated:true,tv:_JV_TOWNVER,votes:null,open:null};
     _jvData=jd;
-    _jvWrite({route:mg.route,base:mg.base,migrated:true,open:null,votes:null});
+    _jvWrite({route:mg.route,base:mg.base,migrated:true,tv:_JV_TOWNVER,open:null,votes:null});
     try{ if(mg.route.length>1)toast("これまでの旅を ひきついだよ（"+mg.towns+"まち・"+_jvTownName(mg.town)+"）"); }catch(_){}
   }
   var base=jd.base||0;
@@ -16394,7 +16403,7 @@ function _fillJourney(el){
       const v=snap.val();
       const jd=await _jvLoad(code);
       _renderJourney(el,v.days||{},v.members||{},jd||{});
-    }catch(_){el.innerHTML='<div class="jrnLoading">よみこめなかったよ</div>';}
+    }catch(e){console.warn("日本一周の表示に失敗",e);el.innerHTML='<div class="jrnLoading">よみこめなかったよ</div>';}
   })();
 }
 function _renderPartyClimbPage(){_fillJourney($("partyClimbPage"));}

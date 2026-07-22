@@ -2815,7 +2815,7 @@ html.lite .catDeco{animation:none;}
 #pdNoticeChk input{width:18px;height:18px;flex:0 0 auto;accent-color:#7fd8b0;cursor:pointer;}
 #pdNoticeLater{border:none;background:transparent;color:#9bbacb;font-size:12px;font-weight:800;cursor:pointer;padding:4px 10px;text-decoration:underline;}
 #pdNoticeLater:active{transform:scale(.96);}
-#reloadPrompt{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2500;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:9px;background:#fff;border-radius:16px;padding:10px 12px 10px 16px;box-shadow:0 6px 24px rgba(60,90,120,.28);border:1.5px solid #e5eef4;max-width:calc(100vw - 22px);animation:rpIn .3s cubic-bezier(.4,0,.2,1);}
+#reloadPrompt{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:3600;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:9px;background:#fff;border-radius:16px;padding:10px 12px 10px 16px;box-shadow:0 6px 24px rgba(60,90,120,.28);border:1.5px solid #e5eef4;max-width:calc(100vw - 22px);animation:rpIn .3s cubic-bezier(.4,0,.2,1);}
 #reloadPrompt[hidden]{display:none;}
 .rpText{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:13px;font-weight:800;color:#4f7089;white-space:nowrap;}
 .rpBtn{border:none;border-radius:999px;font-size:12.5px;font-weight:800;padding:7px 14px;cursor:pointer;font-family:"Yomogi","Kosugi Maru",sans-serif;}
@@ -3737,6 +3737,15 @@ body.exercising #homeZZ{opacity:0;pointer-events:none;}
 .incZz{font-size:14px;font-weight:900;color:#c8863a;white-space:nowrap;}
 #shpPage2{overflow-y:auto;-webkit-overflow-scrolling:touch;}
 #shopScreen.party #incTabs .incTab.on{background:#e0588f;border-color:#e0588f;}
+
+.ppChestMeds,#ppMtBadge{display:none !important;}
+@media (max-width:640px){#reloadPrompt{left:8px;right:8px;transform:none;max-width:none;}}
+
+.closetItem.art{position:relative;padding:3px;display:flex;align-items:center;justify-content:center;
+  background:repeating-conic-gradient(#f5f8fa 0 25%,#fff 0 50%) 0 0/10px 10px;}
+.closetItem.art svg{width:100%;height:100%;}
+.closetItem.art .ciName{position:absolute;left:0;right:0;bottom:1px;font-size:8px;font-weight:900;color:#5c93ad;
+  text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 0 3px #fff,0 0 3px #fff;}
 </style>
 </head>
 <body>
@@ -5444,7 +5453,7 @@ function getUid(){
   return u;
 }
 /* ===== 連動（PC⇄スマホ）：ローカル記録をクラウドに自動同期。復元IDでuidを揃えた端末どうしが同じ状態になる ===== */
-const SYNC_EXCLUDE=["radio_uid","radio_art","radio_orders","radio_deco","radio_deco_p","radio_tv_hidep","radio_tv_noshare","radio_tv_hidehome","radio_tv_quality","radio_stamp_cards","radio_auto_card","radio_unlock_all","radio_sync_meta","radio_syncbig_meta","radio_glogin","radio_gredirect"];
+const SYNC_EXCLUDE=["radio_uid","radio_art","radio_orders","radio_deco","radio_deco_p","radio_topbar_off","radio_topbar_decided","radio_tv_hidep","radio_tv_noshare","radio_tv_hidehome","radio_tv_quality","radio_stamp_cards","radio_auto_card","radio_unlock_all","radio_sync_meta","radio_syncbig_meta","radio_glogin","radio_gredirect"];
 const SYNC_META_KEY="radio_sync_meta";
 function _syncCollect(){const o={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(!k||k.indexOf("radio_")!==0)continue;if(SYNC_EXCLUDE.indexOf(k)>=0)continue;const v=localStorage.getItem(k);if(v!=null&&v.length<200000)o[k]=v;}return o;}
 function _syncHash(str){let h=0;for(let i=0;i<str.length;i++){h=(h*31+str.charCodeAt(i))>>>0;}return h.toString(36);}
@@ -5618,6 +5627,7 @@ async function getDB(){
    ※Firebaseコンソールで「Googleサインイン有効化＋ドメイン許可」が必要。 */
 const FB_AUTH="https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
 const GLOGIN_KEY="radio_glogin";
+function _afterLoginSyncExtra(){try{_syncExtraDone=false;syncExtraSoon();}catch(_){}}
 function _gInfo(){try{return JSON.parse(localStorage.getItem(GLOGIN_KEY)||"null");}catch(_){return null;}}
 function _saveGInfo(o){try{localStorage.setItem(GLOGIN_KEY,JSON.stringify(o));}catch(_){}}
 function _clearGInfo(){try{localStorage.removeItem(GLOGIN_KEY);}catch(_){}}
@@ -5657,6 +5667,7 @@ async function _afterGoogleUser(user){
     if(appUid===cur){
       _saveGInfo({email:user.email||"",name:user.displayName||"",gid,alt:v.alt||""});
       toast("Googleでログインしたよ");_renderGoogleUI();
+      try{_afterLoginSyncExtra();}catch(_){}   /* あとから足したデータも そろえる */
     }else{
       /* 競合：この端末とGoogleで記録が違う→どっちを使うか選ばせる（どちらも消さない） */
       _gPending={gid,thisUid:cur,gUid:appUid,email:user.email||"",name:user.displayName||""};
@@ -5807,7 +5818,7 @@ async function postToday(anon,comment){
     try{const _ed=JSON.parse(localStorage.getItem("radio_post_edit")||"null");if(_ed&&_ed.date===date&&Number.isFinite(_ed.createdAt))_cAt=_ed.createdAt;}catch(_){}
     const _cm=(comment||"").slice(0,30);
     await set(ref(db,"posts/"+getUid()+"_"+date),{   /* キーが uid_date なので上書き＝二重投稿にならない */
-      uid:getUid(),name:anon?"匿名さん":(p.name||"匿名さん"),color:p.color||"#8fdcff",catBody:p.catBody||"#1c1c1c",date,stamp,createdAt:_cAt,wakeHour:Number.isFinite(p.wakeHour)?p.wakeHour:null,wakeMin:Number.isFinite(p.wakeMin)?p.wakeMin:0,streak:calcStreak().current,goume:_weekDoneCount(),comment:_cm,pose:getEquippedPose(),cos:getEquippedCostume()||null,thanks:getThanksWord(),showTime:_show,wakeHF:getActualWake(),storyJoin:(function(){try{const v=localStorage.getItem("radio_story_join");return v===null?true:v==="1";}catch(_){return true;}})()
+      uid:getUid(),name:anon?"匿名さん":(p.name||"匿名さん"),color:p.color||"#8fdcff",catBody:p.catBody||"#1c1c1c",acos:acosPayload(),date,stamp,createdAt:_cAt,wakeHour:Number.isFinite(p.wakeHour)?p.wakeHour:null,wakeMin:Number.isFinite(p.wakeMin)?p.wakeMin:0,streak:calcStreak().current,goume:_weekDoneCount(),comment:_cm,pose:getEquippedPose(),cos:getEquippedCostume()||null,thanks:getThanksWord(),showTime:_show,wakeHF:getActualWake(),storyJoin:(function(){try{const v=localStorage.getItem("radio_story_join");return v===null?true:v==="1";}catch(_){return true;}})()
     });
     try{localStorage.setItem("radio_post_edit",JSON.stringify({date,createdAt:_cAt,comment:_cm,anon:!!anon,show:_show}));}catch(_){}
     return true;
@@ -7555,7 +7566,13 @@ function renderHillPage(){
     }
     const body=po.catBody||"#1c1c1c",ear=po.color||"#8fdcff";
     const pose=po.isSelf?getEquippedPose():(po.pose||"sit");
-    const fig=buildCatFig(body,ear,po.isSelf?getEquippedCostume():null,pose);
+    let fig;
+    if(po.isSelf){try{_selfCosOn();fig=buildCatFig(body,ear,getEquippedCostume(),pose);}finally{try{_selfCosOff();}catch(_){}}}
+    else{
+      let ov="";try{ov=acosSVG(po.acos);}catch(_){}
+      try{_artCosOverride=ov||null;fig=buildCatFig(body,ear,po.cos||null,pose);}
+      finally{_artCosOverride=null;}
+    }
     if(po.isSelf){
       if(all.length<=1){   /* 自分だけ＝本当に誰もいない時だけ */
         const lonely=document.createElement("div");lonely.className="catBubble";lonely.textContent="だれもいないにゃ…";el.appendChild(lonely);
@@ -11907,27 +11924,10 @@ function roomCapture(){
 function openProfilePanel(bagMode){
   const p=getProfile()||{};
   $("ppAvatar").innerHTML=catFaceSvg(profileBody(),profileColor(),getEquippedCostume());
-  try{
-    const meds=_mountainMedals(),av=$("ppAvatar");
-    if(av&&meds.length){
-      const T=["🥇","🥈","🥉"],n=Math.min(meds.length,5),fs=n<=2?15:(n<=3?13:11);
-      const ov=document.createElement("div");ov.className="ppChestMeds";
-      ov.innerHTML=meds.slice(0,5).map((m,i)=>`<span class="ppChestMed" style="font-size:${fs}px">${T[i]||"🏅"}</span>`).join("");
-      av.appendChild(ov);
-    }
-  }catch(_){}
+  /* 称号メダル（胸）は 廃止 */
   $("ppName").firstChild.textContent=(p.name||"匿名さん")+" ";
   $("ppStreakInline").textContent="🔥"+calcStreak().current;
-  try{
-    const meds=_mountainMedals(),_b=$("ppMtBadge");
-    if(_b){
-      if(!meds.length){_b.innerHTML="";_b.classList.remove("many");}
-      else{const T=["🥇","🥈","🥉"];
-        _b.innerHTML=meds.slice(0,3).map((m,i)=>`<span class="ppMed ppMed${i}"><span class="pmMedal">${T[i]}</span>${m.alt}m級『${m.name}』</span>`).join("")+(meds.length>3?`<span class="ppMedMore">ほか+${meds.length-3}座</span>`:"");
-        _b.classList.toggle("many",meds.length>=3);
-      }
-    }
-  }catch(_){}
+  try{const _b=$("ppMtBadge");if(_b){_b.innerHTML="";_b.classList.remove("many");}}catch(_){}   /* 称号メダルは 廃止 */
   $("ppComment").textContent=p.comment||"（コメントなし）";
   try{const st=$("ppPubStatus");if(st){const pub=(p.isPublic!==false);st.textContent=pub?"🌱 公開中":"🔒 非公開中";st.classList.toggle("priv",!pub);}}catch(_){}
   $("ppId").value=p.id||"";$("ppPw").value=p.pw||"";
@@ -12839,14 +12839,27 @@ function devReplayIntro(){
 let _closetTab="cos";
 function renderCloset(){
   const cos=getEquippedCostume();
-  $("closetPreview").innerHTML=catFigureHTML(profileBody(),profileColor(),getEquippedPose(),null,null,cos);
+  try{_selfCosOn();$("closetPreview").innerHTML=catFigureHTML(profileBody(),profileColor(),getEquippedPose(),null,null,cos);}
+  finally{try{_selfCosOff();}catch(_){}}
   const bar=$("closetBar");bar.innerHTML="";
   const items=getItems();
   const eq=getEquip();
   /* なしタイル */
   const none=document.createElement("div");none.className="closetItem none";none.textContent="なし";
-  none.onclick=()=>{playClick();setEquip({});renderCloset();refreshCostumeEverywhere();};
+  none.onclick=()=>{playClick();setEquip({});try{setArtCos({});}catch(_){}renderCloset();refreshCostumeEverywhere();};
   bar.appendChild(none);
+  /* 描いた／買った 衣装（お絵かきのもの）を さきに ならべる */
+  try{
+    const mine=getArts().filter(a=>a&&a.use==="cos");
+    mine.forEach(a=>{
+      const tile=document.createElement("div");
+      tile.className="closetItem art"+(artCosOn(a.id)?" equipped":"");
+      tile.innerHTML=artSVG(a)+'<span class="ciName">'+_esc(a.name||"むめい")+'</span>';
+      tile.title=a.name||"";
+      tile.onclick=()=>{try{playClick();}catch(_){}toggleArtCos(a.id);renderCloset();try{refreshCostumeEverywhere();}catch(_){}};
+      bar.appendChild(tile);
+    });
+  }catch(_){}
   const hasIt=it=>((items[it.id]||0)>0)||_devUnlockAll;
   const sortedItems=[...ITEMS].sort((a,b)=>(hasIt(b)?1:0)-(hasIt(a)?1:0));   /* 持ってる衣装を先頭に */
   sortedItems.forEach(it=>{
@@ -13371,7 +13384,7 @@ $("helpBtn").addEventListener("click",()=>{playClick();showTutorial("help");});
 try{const _ht=$("htrToggle");if(_ht)_ht.addEventListener("click",e=>{e.stopPropagation();try{playClick();}catch(_){}const c=$("homeTopRight");if(c)c.classList.toggle("htrOpen");});}catch(_){}
 try{document.addEventListener("click",e=>{const c=$("homeTopRight");if(c&&c.classList.contains("htrOpen")&&!c.contains(e.target))c.classList.remove("htrOpen");});}catch(_){}
 try{const _hz=$("homeZZ");if(_hz){_hz.addEventListener("click",e=>{e.stopPropagation();try{playClick();}catch(_){}try{openZzHelp();}catch(_){}});setTimeout(()=>{try{_hz.textContent=zzFmt(getZZ());}catch(_){}},0);}}catch(_){}
-try{const _hl=$("homeLoc");if(_hl){_hl.hidden=false;_hl.innerHTML='<span class="hlPin">🗾</span>店・旅';_hl.addEventListener("click",e=>{e.stopPropagation();try{playClick();}catch(_){}try{openMyShop(1);}catch(_){}});}}catch(_){}
+try{const _hl=$("homeLoc");if(_hl){_hl.hidden=false;_hl.innerHTML='<span class="hlPin">🗾</span>おみせ・たび';_hl.addEventListener("click",e=>{e.stopPropagation();try{playClick();}catch(_){}try{openMyShop(1);}catch(_){}});}}catch(_){}
 try{var _hab=$("homeAlbumBtn");if(_hab)_hab.addEventListener("click",function(e){e.stopPropagation();try{playClick();}catch(_){}try{openJrnAlbum();}catch(_){}});}catch(_){}
 function _applyLite(){try{const m=/Mobi|Android|iPhone|iPod|iPad/i.test(navigator.userAgent||"");const p=(window.innerHeight||0)>=(window.innerWidth||0);document.documentElement.classList.toggle("lite",m||p);}catch(_){}}
 window.addEventListener("resize",()=>{_applyLite();try{_refreshRadioAlt();}catch(_){}});window.addEventListener("orientationchange",()=>{_applyLite();try{_refreshRadioAlt();}catch(_){}});_applyLite();
@@ -14381,7 +14394,7 @@ var JRN_PLACES=[
 [8160,"静岡県","富士市"],[8210,"静岡県","伊豆市"],[8260,"静岡県","下田市"],[8310,"静岡県","伊東市"],[8340,"静岡県","熱海市"],[8390,"神奈川県","小田原市"],[8430,"神奈川県","藤沢市"],[8480,"神奈川県","横浜市"],[8520,"神奈川県","川崎市"],[8551,"東京都","港区"]
 ];
 function _jrnPlaceAt(km){km=Math.max(0,km||0);var r=JRN_PLACES[0];for(var i=0;i<JRN_PLACES.length;i++){if(JRN_PLACES[i][0]<=km)r=JRN_PLACES[i];else break;}return {pref:r[1],city:r[2]};}
-function _setHomeLoc(km){_homeKm=km;var el=$("homeLoc");if(el){el.hidden=false;el.innerHTML='<span class="hlPin">🗾</span>店・旅';return;}if(0){var p=_jrnPlaceAt(km);el.innerHTML='<span class="hlPin">📍</span>'+escHtml(p.pref)+' <b>'+escHtml(p.city)+'</b>';el.classList.remove("hlHidden");el.hidden=false;}try{var sc=$("selectScreen");if(sc&&!sc.classList.contains("hidden")&&typeof renderHomeScenery==="function")renderHomeScenery(_homeTier());}catch(_){}}
+function _setHomeLoc(km){_homeKm=km;var el=$("homeLoc");if(el){el.hidden=false;el.innerHTML='<span class="hlPin">🗾</span>おみせ・たび';return;}if(0){var p=_jrnPlaceAt(km);el.innerHTML='<span class="hlPin">📍</span>'+escHtml(p.pref)+' <b>'+escHtml(p.city)+'</b>';el.classList.remove("hlHidden");el.hidden=false;}try{var sc=$("selectScreen");if(sc&&!sc.classList.contains("hidden")&&typeof renderHomeScenery==="function")renderHomeScenery(_homeTier());}catch(_){}}
 var _myPartyUids=new Set();
 function _refreshHomeLoc(){
   try{
@@ -17256,7 +17269,7 @@ function _jrnSaveAlbum(name,emoji,memArr,finish,ts){
     localStorage.setItem(_JRN_ALBUM_KEY,JSON.stringify(list));
   }catch(_){}
 }
-function _meMember(){var p=getProfile()||{};return {catBody:profileBody(),color:profileColor(),cos:getEquippedCostume()||null,pose:getEquippedPose()||null,name:(p&&p.name)||"あなた"};}
+function _meMember(){var p=getProfile()||{};return {catBody:profileBody(),color:profileColor(),cos:getEquippedCostume()||null,acos:acosPayload(),pose:getEquippedPose()||null,name:(p&&p.name)||"あなた"};}
 function _jrnNamedCps(){var out=[],seen={};for(var i=0;i<JOURNEY_CP.length;i++){var c=JOURNEY_CP[i];if(c[0]&&!c[5]&&!seen[c[0]]){seen[c[0]]=1;out.push([c[0],c[1],(i===JOURNEY_CP.length-1)]);}}return out;}
 function _jrnBigShow(name,emoji,members,ts,finish){
   var el=$("jrnBig");if(!el)return;
@@ -19337,6 +19350,8 @@ function openMyShop(page){
   try{_tvCollect();}catch(_){}
   try{_tvPullState();}catch(_){}
   try{_artRefreshBought();}catch(_){}
+  try{_decoPullCloud();}catch(_){}
+  try{_shopPullSolo();}catch(_){}
   try{_shpPaintMode();}catch(_){}
   _pLoad().then(()=>{try{_pRenderCard();}catch(_){}return _pPullShop();}).then(()=>{try{_shpRenderSells();}catch(_){}}).catch(()=>{});
   try{_tvDeliver();}catch(_){}
@@ -19957,6 +19972,7 @@ function getDeco(){
   return{wall:null,floor:null,window:null,items:[]};
 }
 function setDeco(d){
+  try{d.at=Date.now();}catch(_){}
   try{localStorage.setItem(isPartyShop()?DECOP_KEY:DECO_KEY,JSON.stringify(d));syncSoon();}catch(_){}
   _decoPushCloud(d);
 }
@@ -20784,6 +20800,7 @@ function _renderShopNotif(list){
       }
     });
     try{_POOL_BASE=_POOL_BASE0;_syncStampPool();}catch(_){}
+    try{syncExtraSoon();}catch(_){}
     try{
       const cc=$("tsCmtChips");
       if(cc)cc.addEventListener("click",e=>{
@@ -21109,6 +21126,100 @@ function _stDraw(){
   st.innerHTML=_stRoomSVG(d,_stPool,_stEdit,_decoSel);
 }
 let _stDeco=null;
+/* --- 描いた衣装を ほかの人にも 見せる（既存の衣装と 同じあつかい） --- */
+var _acosCache={},_acosNeed={},_acosTimer=0;
+function acosPayload(){                    /* 投稿に のせる形 {u:uid, s:{slot:artId}} */
+  try{
+    const o=getArtCos(),ks=Object.keys(o||{});
+    if(!ks.length)return null;
+    const s={};ks.forEach(k=>{if(o[k])s[k]=o[k];});
+    return Object.keys(s).length?{u:getUid(),s:s}:null;
+  }catch(_){return null;}
+}
+function _acosArt(u,i){
+  const k=u+"/"+i;
+  if(_acosCache[k])return _acosCache[k];
+  const mine=artById(i);
+  if(mine&&mine.use==="cos"){_acosCache[k]=mine;return mine;}
+  if(_acosNeed[k]===undefined){
+    _acosNeed[k]=1;
+    (async()=>{
+      try{
+        const db=await getDB();if(!db)return;
+        const{ref,get}=await import(FB_DB);
+        const sn=await get(ref(db,"art/"+u+"/"+i));
+        const a=sn&&sn.val?sn.val():null;
+        if(a){_acosCache[k]=a;_acosRepaintSoon();}
+      }catch(_){}
+    })();
+  }
+  return null;
+}
+function _acosRepaintSoon(){
+  clearTimeout(_acosTimer);
+  _acosTimer=setTimeout(()=>{
+    try{if(typeof _applyHillFromVal==="function"&&typeof _lastPostsVal!=="undefined"&&_lastPostsVal)_applyHillFromVal(_lastPostsVal);}catch(_){}
+    try{if(typeof refreshCostumeEverywhere==="function")refreshCostumeEverywhere();}catch(_){}
+  },260);
+}
+/* その人ぶんの 衣装SVG（猫と同じ座標なので そのまま かさねられる） */
+function acosSVG(ac){
+  try{
+    if(!ac||!ac.u||!ac.s)return"";
+    let out="";
+    _ACOS_ORDER.forEach(slot=>{
+      const id=ac.s[slot];if(!id)return;
+      const a=_acosArt(ac.u,id);if(!a)return;
+      const cs=artCanvasSize("cos","");
+      (a.L||[]).forEach(ly=>{if(ly&&ly.on===0)return;(ly&&ly.s||[]).forEach(st=>{out+=_artStrokePath(st,cs);});});
+    });
+    return out;
+  }catch(_){return"";}
+}
+/* --- ログイン同期：あとから 足した ぶんも そろえる --- */
+async function _decoPullCloud(){
+  try{
+    const db=await getDB();if(!db)return;
+    const{ref,get}=await import(FB_DB);
+    const sn=await get(ref(db,"deco/"+shopId()));
+    const v=sn&&sn.val?sn.val():null;if(!v)return;
+    let loc=null;try{loc=JSON.parse(localStorage.getItem(isPartyShop()?DECOP_KEY:DECO_KEY)||"null");}catch(_){}
+    const la=(loc&&loc.at)||0,ca=v.at||0;
+    if(loc&&la>=ca)return;                       /* 手元のほうが 新しい */
+    v.items=Array.isArray(v.items)?v.items:[];
+    try{localStorage.setItem(isPartyShop()?DECOP_KEY:DECO_KEY,JSON.stringify(v));}catch(_){}
+    try{_shpBgPaint();}catch(_){}
+    try{if($("stShop")&&$("stShop").classList.contains("show"))_stDraw();}catch(_){}
+  }catch(e){console.warn("deco pull",e);}
+}
+/* 起動して すこししたら 追加ぶんも まとめて そろえる */
+var _syncExtraDone=false;
+function syncExtraSoon(){
+  if(_syncExtraDone)return;_syncExtraDone=true;
+  setTimeout(()=>{
+    try{_artPullCloud();}catch(_){}
+    try{_zzPull();}catch(_){}
+    try{_tvPullState();}catch(_){}
+    try{_decoPullCloud();}catch(_){}
+    try{_shopPullSolo();}catch(_){}
+  },3200);
+}
+/* ソロ店も クラウドから ひろう（別の端末で 作った場合） */
+async function _shopPullSolo(){
+  try{
+    if(isPartyShop())return;
+    const db=await getDB();if(!db)return;
+    const{ref,get}=await import(FB_DB);
+    const sn=await get(ref(db,"shops/"+getUid()));
+    const v=sn&&sn.val?sn.val():null;if(!v)return;
+    const cur=getShop();
+    if(cur&&Number.isFinite(cur.pref)&&(cur.at||0)>=(v.at||0))return;
+    const next=Object.assign({},cur||{},{name:v.name||((cur&&cur.name)||"なまえ なし"),
+      pref:v.pref,lng:v.lng,lat:v.lat,at:v.at||Date.now(),closed:v.closed?1:0,items:v.items||{}});
+    try{localStorage.setItem(SHOP_KEY,JSON.stringify(next));}catch(_){}
+    try{_shpPaintShop();_shpRenderSells();}catch(_){}
+  }catch(e){console.warn("shop pull",e);}
+}
 /* --- 売り上げ／もらったお金の きろく --- */
 var INC_KEY="radio_income";
 function getIncome(){try{const a=JSON.parse(localStorage.getItem(INC_KEY)||"[]");return Array.isArray(a)?a:[];}catch(_){return[];}}
@@ -21853,7 +21964,7 @@ function switchShopMode(m){
   _shpPaintShop();try{_shpBgPaint();}catch(_){}_shpRenderArts();_shpRenderSells();
   try{_zzPaint();}catch(_){}
   _shopEnsure().then(()=>{_shpPaintShop();_shopPushCloud();}).catch(()=>{});
-  _pLoad(true).then(()=>{_pRenderCard();return _pPullShop();}).then(()=>{try{_shpRenderSells();}catch(_){}}).catch(()=>{});
+  _pLoad(true).then(()=>{_pRenderCard();return _pPullShop();}).then(()=>{try{_shpRenderSells();}catch(_){}return _decoPullCloud();}).catch(()=>{});
   try{playClick();}catch(_){}
 }
 /* --- 旗までの 経路：まちで終わらず 旗の場所まで つなぐ --- */
@@ -22375,7 +22486,9 @@ function toggleArtCos(id){
   return o[slot]===id;
 }
 const _ACOS_ORDER=["body","tail","neck","eyes","hat","fx"];
+var _artCosOverride=null;
 function _artCosSVG(){
+  if(_artCosOverride)return _artCosOverride;
   if(!_artCosSelf)return"";
   let s="";
   try{

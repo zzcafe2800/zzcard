@@ -7763,6 +7763,7 @@ function recomputeNotifs(){
   });
   list.sort((a,b)=>(b.at||0)-(a.at||0));   /* 最近のいいねが一番上 */
   _notifList=list;
+  try{_payLikes(list);}catch(_){}   /* いいね 1つ 100zz */
   const unread=list.filter(n=>!_notifSeenSet.has(n.id)).length;
   const c=$("tpbCount");const _tot=unread+(_hasPartyInvite?1:0)+(_hasPartyApply?1:0);if(c){c.textContent=_tot;c.classList.toggle("show",_tot>0);}
   try{const _nb=(_tot>0);if(window._favBadgeOn!==_nb){window._favBadgeOn=_nb;if(window._setFavBadge)window._setFavBadge(_nb);}}catch(_){}
@@ -19075,7 +19076,7 @@ function _zzEarnToday(){
     const dk=jstKey();
     if(localStorage.getItem(ZZ_PAID_KEY)===dk)return 0;
     let sc=0;try{sc=_dayScore(dk);}catch(_){}
-    const pay=Math.max(10,20+Math.round(Math.max(0,sc)/10));
+    const pay=zzFromScore(sc);
     addZZ(pay);
     try{localStorage.setItem(ZZ_PAID_KEY,dk);}catch(_){}
     setTimeout(()=>{try{_zzGainShow(pay,sc);}catch(_){}},900);
@@ -21042,6 +21043,43 @@ function _stDraw(){
 }
 let _stDeco=null;
 
+/* --- お金の けいさん（ぴったり=100zz／450〜900スコアで 100〜150zz） --- */
+function zzFromScore(sc){
+  sc=Math.max(-150,Math.min(900,Math.round(sc||0)));
+  let z;
+  if(sc<=450) z=20+Math.max(0,sc)*(80/450);      /* 0→20 ・ ぴったり450→100 */
+  else        z=100+(sc-450)*(50/450);           /* 450→100 ・ 900→150 */
+  return Math.max(10,Math.round(z));
+}
+/* --- いいねを もらったら 1つ 100zz --- */
+var LIKEPAID_KEY="radio_like_paid";
+function _likePaidSet(){
+  try{const a=JSON.parse(localStorage.getItem(LIKEPAID_KEY)||"[]");return new Set(Array.isArray(a)?a:[]);}catch(_){return new Set();}
+}
+function _likePaySave(set){
+  try{const a=Array.from(set);localStorage.setItem(LIKEPAID_KEY,JSON.stringify(a.slice(-400)));}catch(_){}
+}
+var _likePayInit=false;
+function _payLikes(list){
+  try{
+    if(!Array.isArray(list))return;
+    const set=_likePaidSet();
+    if(!_likePayInit){                     /* はじめての時は 今までのぶんは 払わない（記録だけ） */
+      _likePayInit=true;
+      if(!localStorage.getItem(LIKEPAID_KEY)){
+        list.forEach(n=>set.add(n.id));_likePaySave(set);return;
+      }
+    }
+    let n=0;
+    list.forEach(x=>{if(!set.has(x.id)){set.add(x.id);n++;}});
+    if(n>0){
+      _likePaySave(set);
+      addZZ(n*100);
+      setTimeout(()=>{try{toast("♡ いいね ＋"+(n*100)+"zz！");}catch(_){}},700);
+    }
+  }catch(_){}
+}
+
 /* --- 太さの見本と 色の こさ表示 --- */
 function _hex2rgba(hex,a){
   try{
@@ -21167,7 +21205,7 @@ function _drBucketAll(p){
 /* --- 所持金の めやす --- */
 function _zzForDiff(diff){
   let sc=450-diff*260;if(sc>900)sc=900;if(sc<-150)sc=-150;
-  return{sc:Math.round(sc),zz:Math.max(10,20+Math.round(Math.max(0,sc)/10))};
+  return{sc:Math.round(sc),zz:zzFromScore(sc)};
 }
 function openZzHelp(){
   const el=$("zzHelp");if(!el)return;
@@ -21186,7 +21224,9 @@ function openZzHelp(){
       const v=_zzForDiff(r[0]);
       return'<div class="zhRow'+(r[0]===0?" mid":"")+'"><span>'+r[1]+'</span><span class="zhSc">スコア '+v.sc+'</span><span class="zhZz">'+v.zz+' zz</span></div>';
     }).join("")+'</div>'+
-    '<div class="zhNote2">けいさん：<b>20zz ＋ スコア÷10</b>（スコアは 早いほど 高い・上限900）<br>体操は 1日1回まで もらえるよ。</div>';
+    '<div class="zhNote2">ぴったり起きると <b>100zz</b>。そこから 早いほど ふえて <b>150zz</b> まで。<br>'+
+    'ねぼうすると 少なくなるよ（さいてい 10zz）。体操は 1日1回まで。<br>'+
+    '♡ 投稿に いいねが つくと <b>1つ 100zz</b> もらえるよ。</div>';
   el.classList.add("show");
 }
 /* --- おえかき：太さの こまかい調整・透明度・バケツ --- */

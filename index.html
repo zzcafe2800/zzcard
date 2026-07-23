@@ -6121,9 +6121,13 @@ function postPreviewHTML(comment,anon,show){
   const name=escHtml(anon?"匿名さん":(p.name||"匿名さん"));
   const streak=calcStreak().current;
   const st=streak>=2?`<span class="catStreak">連続${streak}日</span>`:"";
-  const _cos=getEquippedCostume();return `<div class="ppTopChip"><span class="avt">${catFaceSvg(body,ear,_cos)}</span><span class="nm">${name}</span></div>`+
+  const _cos=getEquippedCostume();
+  let _fig="";
+  try{_selfCosOn();_fig=catFigureHTML(body,ear,"sit",[0,0],"normal",_cos);}
+  catch(_){_fig="";}finally{try{_selfCosOff();}catch(_){}}
+  return `<div class="ppTopChip"><span class="avt">${catFaceSvg(body,ear,_cos)}</span><span class="nm">${name}</span></div>`+
     `<div class="ppSub" id="ppSub">${escHtml(postRiseText(show))}</div>`+
-    `<div class="ppCatWrap">${catFigureHTML(body,ear,"sit",[0,0],"normal",_cos)}</div>`+st;
+    `<div class="ppCatWrap">${_fig}</div>`+st;
 }
 let _ppSubTimer=null;
 function updatePostPreview(){
@@ -7899,7 +7903,12 @@ function renderHillPage(){
     /* 🔥連続は catNameRow（名前の右）へ移動済み */
     fig.querySelector(".catPose").style.animationDelay=(-Math.random()*4.6).toFixed(2)+"s";
     fig.style.cursor="pointer";
-    fig.addEventListener("click",e=>{e.stopPropagation();try{if(comment)_readComment(lab,comment);else{try{playMeow((po.voice)||"");}catch(_){}}}catch(_){}});   /* 猫タップ＝カードの文字を読み演出（吹き出しは出さない） */
+    fig.addEventListener("click",e=>{
+      e.stopPropagation();
+      /* じぶん＝いまの すがた（買った衣装も ついた状態）を 見る */
+      if(po.isSelf){try{playClick();}catch(_){}try{openProfilePanel(true);}catch(_){}return;}
+      try{if(comment)_readComment(lab,comment);else{try{playMeow((po.voice)||"");}catch(_){}}}catch(_){}
+    });   /* 猫タップ＝カードの文字を読み演出（吹き出しは出さない） */
     const rot=Math.max(-7,Math.min(7,(i-center)*2.6));
     fig.style.transform=`rotate(${rot}deg)`;
     cont.appendChild(el);
@@ -8034,7 +8043,7 @@ function nyanCapture(){
   playShutter();
   const W=1080,H=720;
   const sk=SKY_PHOTO[currentSkyKey()];
-  const cats=_catFigs.length?_catFigs.map(f=>({body:f.body,ear:f.ear,pose:f.cur,dir:f.eyeDir||[0,0],expr:f.expr||"normal",name:f.name||"",time:f.time||"",cos:f.cos||null,rise:f.rise||""})):[{body:"#1c1c1c",ear:"#7fd0ff",pose:"sleep",dir:[0,0],expr:"normal",name:"",time:"",cos:null,rise:""}];
+  const cats=_catFigs.length?_catFigs.map(f=>({body:f.body,ear:f.ear,pose:f.cur,dir:f.eyeDir||[0,0],expr:f.expr||"normal",name:f.name||"",time:f.time||"",cos:f.cos||null,rise:f.rise||"",self:!!f.self,acos:f.acos||null})):[{body:"#1c1c1c",ear:"#7fd0ff",pose:"sleep",dir:[0,0],expr:"normal",name:"",time:"",cos:null,rise:""}];
   const n=cats.length,center=(n-1)/2;
   const span=Math.min(940,n*168),step=n>1?span/(n-1):0,startX=W/2-span/2;
   let nodes="";
@@ -8044,7 +8053,15 @@ function nyanCapture(){
     const y=H-150-ch*0.6;
     const rot=Math.max(-7,Math.min(7,(i-center)*2.6));
     const cx=x+cw/2,cy=y+ch/2;
-    nodes+=`<g transform="rotate(${rot} ${cx} ${cy})"><svg x="${x}" y="${y}" width="${cw}" height="${ch}" viewBox="0 0 120 124">${catInner(c.body,c.ear,c.pose||"sit",c.dir,c.expr,c.cos)}</svg></g>`;
+    /* 買った/かいた 衣装は じぶんモード（自分）か override（ほかの人）が いる */
+    let _in="";
+    try{
+      if(c.self){try{_selfCosOn();}catch(_){}}
+      else{try{_artCosOverride=acosSVG(c.acos)||null;}catch(_){_artCosOverride=null;}}
+      _in=catInner(c.body,c.ear,c.pose||"sit",c.dir,c.expr,c.cos);
+    }catch(_){_in="";}
+    finally{try{_selfCosOff();}catch(_){}_artCosOverride=null;}
+    nodes+=`<g transform="rotate(${rot} ${cx} ${cy})"><svg x="${x}" y="${y}" width="${cw}" height="${ch}" viewBox="0 0 120 124">${_in}</svg></g>`;
     if(c.name){
       nodes+=`<text x="${cx}" y="${y-14}" font-family="sans-serif" font-size="20" font-weight="800" text-anchor="middle" fill="${sk.t}" opacity=".62">${escHtml(c.name)}</text>`;
     }
@@ -9167,9 +9184,12 @@ function tsUpdatePreview(){
   const rise=postRiseText(show);
   const streak=calcStreak().current;
   const st=streak>=2?`<span class="catStreak">連続${streak}日</span>`:"";
+  let _figH="";
+  try{_selfCosOn();_figH=catFigureHTML(body,ear,"sit",[0,0],"normal",cos);}
+  catch(_){_figH="";}finally{try{_selfCosOff();}catch(_){}}
   el.innerHTML='<div class="ppTopChip"><span class="avt">'+catFaceSvg(body,ear,cos)+'</span><span class="nm">'+name+'</span></div>'+
     '<div class="tsSub" id="tsSub">'+escHtml(rise)+'</div>'+
-    '<div class="ppCatWrap">'+catFigureHTML(body,ear,"sit",[0,0],"normal",cos)+'</div>'+st;
+    '<div class="ppCatWrap">'+_figH+'</div>'+st;
   if(_tsSubTimer){clearInterval(_tsSubTimer);_tsSubTimer=null;}
   if(c){   /* コメントありなら 起床 ↔ コメント を交互に（ホームと同じ） */
     let showC=false;

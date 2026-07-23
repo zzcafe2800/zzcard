@@ -3223,6 +3223,12 @@ button.pmTag{cursor:pointer;}
 #drUnder img{width:100%;height:100%;object-fit:contain;opacity:.3;}
 #drCatBg svg{width:100%;height:100%;opacity:.22;}
 #drCanvas{position:relative;display:block;touch-action:none;cursor:crosshair;}
+#drStabRow{gap:8px;}
+.drStabChk{display:flex;align-items:center;gap:5px;font-family:"Yomogi","Kosugi Maru",sans-serif;
+  font-size:11.5px;font-weight:800;color:#7fa3b8;white-space:nowrap;cursor:pointer;}
+.drStabChk input{width:15px;height:15px;}
+#drStab{flex:1 1 auto;min-width:60px;max-width:150px;}
+#drStab:disabled{opacity:.35;}
 #drZoomBtn{position:absolute;right:6px;top:6px;z-index:5;border:none;border-radius:999px;
   padding:4px 10px;font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:11px;font-weight:800;
   color:#fff;background:rgba(70,110,135,.72);cursor:pointer;}
@@ -3245,7 +3251,59 @@ button.pmTag{cursor:pointer;}
 .drLy{border:1.6px solid #dceaf1;background:#fff;color:#6d90a5;font-size:11.5px;font-weight:800;border-radius:11px;padding:6px 10px;cursor:pointer;}
 .drLy.on{background:#ffe4ef;border-color:#e0588f;color:#c14a79;}
 .drLy.off{opacity:.42;text-decoration:line-through;}
+/* レイヤーの ふだ（プレビューつき） */
+.drLyEnd{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:9.5px;font-weight:800;
+  color:#b3cbd8;align-self:center;letter-spacing:.03em;flex:0 0 auto;}
+.drLyT{position:relative;flex:0 0 auto;width:46px;height:46px;border-radius:11px;
+  border:1.8px solid #dceaf1;background:
+  linear-gradient(45deg,#f2f6f9 25%,transparent 25%,transparent 75%,#f2f6f9 75%),
+  linear-gradient(45deg,#f2f6f9 25%,#fff 25%,#fff 75%,#f2f6f9 75%);
+  background-size:8px 8px;background-position:0 0,4px 4px;
+  cursor:grab;overflow:hidden;touch-action:none;}
+.drLyT.on{border-color:#e0588f;box-shadow:0 0 0 2px rgba(224,88,143,.28);}
+.drLyT.off{opacity:.4;}
+.drLyT.drag{opacity:.55;transform:scale(.92);cursor:grabbing;}
+.drLyT.over{border-color:#5eb0d6;box-shadow:0 0 0 3px rgba(94,176,214,.35);}
+.drLyTh{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
+.drLyN{position:absolute;left:2px;top:1px;font-family:"Yomogi","Kosugi Maru",sans-serif;
+  font-size:9.5px;font-weight:900;color:#7fa3b8;background:rgba(255,255,255,.8);
+  border-radius:5px;padding:0 3px;pointer-events:none;}
+.drLyNow{position:absolute;right:1px;top:0;font-size:11px;pointer-events:none;}
+.drLyHide{position:absolute;right:2px;bottom:1px;font-size:10px;opacity:.75;pointer-events:none;}
 #drHint{font-size:11px;color:#9ab6c5;text-align:center;margin-top:2px;}
+#tsumTk{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:12px;font-weight:800;
+  color:#7fa3b8;margin-top:4px;}
+#tsumTk[hidden]{display:none;}
+#tsumTk b{color:#e0793a;}
+#tkUse{position:fixed;inset:0;z-index:3390;display:none;align-items:center;justify-content:center;background:rgba(40,60,72,.5);padding:20px;}
+#tkUse.show{display:flex;}
+#tkUseCard{background:#fff;border-radius:22px;padding:18px 15px 13px;width:100%;max-width:330px;text-align:center;}
+#tkUseTtl{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:16px;font-weight:900;color:#5c93ad;margin-bottom:10px;}
+#tkUseBody{display:flex;flex-direction:column;gap:8px;text-align:left;}
+.tkUseRow{display:flex;align-items:center;gap:9px;background:#f7fcff;border-radius:13px;padding:10px 12px;
+  font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:12px;font-weight:800;color:#5c8aa3;cursor:pointer;}
+.tkUseRow input{width:17px;height:17px;}
+#tkUseTot{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:14px;font-weight:900;color:#3d6f8c;margin:11px 0 4px;}
+#tkUseGo{width:100%;border:none;border-radius:999px;padding:12px;margin-top:4px;
+  font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:14px;font-weight:900;color:#fff;cursor:pointer;
+  background:linear-gradient(135deg,#ffc46b,#ff9e4d);}
+#tkUseGo:active{transform:scale(.97);}
+#tkUseCancel{margin-top:8px;border:none;background:none;color:#a9c3d1;
+  font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:12px;font-weight:800;cursor:pointer;padding:4px;}
+#tkPick{position:fixed;inset:0;z-index:3380;display:none;align-items:center;justify-content:center;background:rgba(40,60,72,.5);padding:20px;}
+#tkPick.show{display:flex;}
+#tkPickCard{background:#fff;border-radius:22px;padding:18px 15px 13px;width:100%;max-width:330px;text-align:center;}
+#tkPickTtl{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:17px;font-weight:900;color:#5c93ad;}
+#tkPickSub{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:12px;font-weight:800;color:#a9c3d1;margin:2px 0 11px;}
+#tkPickList{display:flex;flex-direction:column;gap:9px;}
+.tkCard{display:flex;align-items:center;gap:11px;text-align:left;border:2px solid #d8ecf7;
+  background:linear-gradient(180deg,#fbfeff,#eef8ff);border-radius:16px;padding:12px 13px;cursor:pointer;}
+.tkCard:active{transform:scale(.97);}
+.tkIco{flex:0 0 auto;font-size:27px;line-height:1;}
+.tkTx{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:11.5px;font-weight:700;color:#7fa3b8;line-height:1.5;}
+.tkTx b{color:#3d6f8c;font-size:13.5px;font-weight:900;}
+#tkPickSkip{margin-top:11px;border:none;background:none;color:#a9c3d1;
+  font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:12px;font-weight:800;cursor:pointer;padding:4px;}
 #drNameWrap{position:fixed;inset:0;z-index:3300;display:none;align-items:center;justify-content:center;background:rgba(40,60,72,.42);padding:20px;}
 #drNameWrap.show{display:flex;}
 #drNameCard{background:#fff;border-radius:20px;padding:18px 16px 14px;width:100%;max-width:300px;text-align:center;}
@@ -9180,10 +9238,12 @@ function taisoNext(){
      朝の入口に 地図を置くのを やめたぶん、ここで おみせ・たびに 気づけるようにする */
   try{
     const k="radio_sum_shown",today=jstKey();
-    if(localStorage.getItem(k)!==today){
-      localStorage.setItem(k,today);
-      setTimeout(()=>{try{openTodaySum();}catch(_){}},950);
-    }
+    const needSum=(localStorage.getItem(k)!==today);
+    if(needSum)localStorage.setItem(k,today);
+    /* もらえる日は チケットを 先に。えらび終わってから まとめを 出す */
+    let offered=false;
+    try{offered=_tkOffer(needSum);}catch(_){}
+    if(!offered&&needSum)setTimeout(()=>{try{openTodaySum();}catch(_){}},950);
   }catch(_){}
 }
 function afterStampReady(){ autoStampFlow(); }
@@ -19836,28 +19896,70 @@ function openDraw(use,sub,id){
 }
 function closeDraw(){$("drawScreen").classList.remove("show");_drSetUnder(null);}
 /* ===== おえかきの ズーム／いどう ===== */
-var _drZoom=1,_drTx=0,_drTy=0,_drPinch=null,_drCancelStroke=null,_drPtrs=null;
+var _drZoom=1,_drRot=0,_drTx=0,_drTy=0,_drPinch=null,_drCancelStroke=null,_drPtrs=null;
+/* 手ブレ補正：_drSm＝おくれて ついてくる点、_drRaw＝ゆびの ほんとうの点 */
+var _drStabOn=false,_drStabLv=5,_drSm=null,_drRaw=null;
+var STAB_KEY="radio_dr_stab";
+function _drStabLoad(){
+  try{
+    const v=JSON.parse(localStorage.getItem(STAB_KEY)||"null");
+    if(v&&typeof v==="object"){
+      _drStabOn=!!v.on;
+      _drStabLv=Math.max(1,Math.min(9,parseInt(v.lv,10)||5));
+    }
+  }catch(_){}
+  try{
+    const c=$("drStabOn"),r=$("drStab");
+    if(c)c.checked=_drStabOn;
+    if(r){r.value=String(_drStabLv);r.disabled=!_drStabOn;}
+  }catch(_){}
+}
+function _drStabSave(){
+  try{localStorage.setItem(STAB_KEY,JSON.stringify({on:_drStabOn?1:0,lv:_drStabLv}));}catch(_){}
+}
+/* 絵の中の 位置(px) → 画面(#drStageの中)の 位置 */
+function _drL2S(lx,ly){
+  const a=_drRot*Math.PI/180,ca=Math.cos(a),sa=Math.sin(a);
+  return{x:_drTx+_drZoom*(lx*ca-ly*sa),y:_drTy+_drZoom*(lx*sa+ly*ca)};
+}
+/* 画面(#drStageの中)の 位置 → 絵の中の 位置(px)。回転も もどす */
+function _drS2L(sx,sy){
+  const a=_drRot*Math.PI/180,ca=Math.cos(a),sa=Math.sin(a);
+  const dx=sx-_drTx,dy=sy-_drTy;
+  return{x:(dx*ca+dy*sa)/_drZoom,y:(-dx*sa+dy*ca)/_drZoom};
+}
+/* ある点を うごかさないまま ズーム／かたむけ を かえる */
+function _drSetView(z,rot,px,py){
+  const L=_drS2L(px,py);
+  _drZoom=Math.max(1,Math.min(6,z));
+  _drRot=((rot%360)+360)%360;
+  const a=_drRot*Math.PI/180,ca=Math.cos(a),sa=Math.sin(a);
+  _drTx=px-_drZoom*(L.x*ca-L.y*sa);
+  _drTy=py-_drZoom*(L.x*sa+L.y*ca);
+  _drApplyView();
+}
 function _drApplyView(){
   const st=$("drStage");if(!st)return;
   const w=st.clientWidth||0,h=st.clientHeight||0;
-  /* はしっこより 外へ 行かないように とめる */
-  _drTx=Math.min(0,Math.max(w-w*_drZoom,_drTx));
-  _drTy=Math.min(0,Math.max(h-h*_drZoom,_drTy));
-  const tf="translate("+_drTx.toFixed(2)+"px,"+_drTy.toFixed(2)+"px) scale("+_drZoom.toFixed(4)+")";
+  const cv=$("drCanvas"),cw=(cv&&cv.clientWidth)||w,ch=(cv&&cv.clientHeight)||h;
+  /* 絵の まん中が 画面の外に 出ないように とめる（かたむけても 見うしなわない） */
+  const c=_drL2S(cw/2,ch/2);
+  const gx=Math.min(w*0.92,Math.max(w*0.08,c.x)),gy=Math.min(h*0.92,Math.max(h*0.08,c.y));
+  _drTx+=gx-c.x;_drTy+=gy-c.y;
+  const tf="translate("+_drTx.toFixed(2)+"px,"+_drTy.toFixed(2)+"px) rotate("+_drRot.toFixed(2)+"deg) scale("+_drZoom.toFixed(4)+")";
   ["drCanvas","drUnder","drCatBg"].forEach(id=>{
     const el=$(id);if(!el)return;
     el.style.transformOrigin="0 0";el.style.transform=tf;
   });
   const b=$("drZoomBtn");
-  if(b){b.textContent=Math.round(_drZoom*100)+"% ✕";b.hidden=(_drZoom<=1.001);}
+  if(b){
+    const r=Math.round(_drRot)%360;
+    b.textContent=Math.round(_drZoom*100)+"%"+(r?" / "+(r>180?r-360:r)+"°":"")+" ✕";
+    b.hidden=(_drZoom<=1.001&&r===0&&Math.abs(_drTx)<1&&Math.abs(_drTy)<1);
+  }
 }
-function _drResetView(){_drZoom=1;_drTx=0;_drTy=0;_drApplyView();}
-function _drZoomAt(z,sx,sy){   /* sx,sy＝#drStage の 中での 位置 */
-  const nz=Math.max(1,Math.min(6,z));
-  _drTx=sx-(sx-_drTx)*nz/_drZoom;
-  _drTy=sy-(sy-_drTy)*nz/_drZoom;
-  _drZoom=nz;_drApplyView();
-}
+function _drResetView(){_drZoom=1;_drRot=0;_drTx=0;_drTy=0;_drApplyView();}
+function _drZoomAt(z,sx,sy){_drSetView(z,_drRot,sx,sy);}
 function _drSizeStage(){
   const cs=_drCanvasSize,stage=$("drStage"),cv=$("drCanvas");if(!stage||!cv)return;
   let w=Math.min((window.innerWidth||360)-30,360);
@@ -19901,10 +20003,13 @@ function _drRender(){
 }
 function _drSnap(){try{_drUndo.push(JSON.stringify(_drLayers));if(_drUndo.length>25)_drUndo.shift();_drRedo.length=0;}catch(_){}_drPaintMode();}
 function _drPos(e){
-  const cv=$("drCanvas"),r=cv.getBoundingClientRect(),cs=_drCanvasSize;
-  /* 実際に 表示されている 大きさから 逆算するので、ズームしていても ずれない */
-  if(!r.width||!r.height)return{x:0,y:0};
-  return{x:(e.clientX-r.left)/r.width*cs.w,y:(e.clientY-r.top)/r.height*cs.h};
+  const st=$("drStage"),cv=$("drCanvas"),cs=_drCanvasSize;
+  if(!st||!cv)return{x:0,y:0};
+  const r=st.getBoundingClientRect();
+  const cw=cv.clientWidth||1,chh=cv.clientHeight||1;
+  /* ズーム・かたむけを 逆算して 絵の中の 位置に なおす */
+  const L=_drS2L(e.clientX-r.left,e.clientY-r.top);
+  return{x:L.x/cw*cs.w,y:L.y/chh*cs.h};
 }
 function _drAddStroke(pts){
   if(!pts||!pts.length)return;
@@ -19941,15 +20046,96 @@ function _drPaintW(){
 }
 function _drPaintLayers(){
   const r=$("drLayerRow");if(!r)return;
-  let h="";
+  let h='<span class="drLyEnd">した</span>';
   _drLayers.forEach((ly,i)=>{
-    h+='<button class="drLy'+(i===_drCur?" on":"")+(ly.on===0?" off":"")+'" type="button" data-ly="'+i+'">'+(i+1)+'</button>';
+    h+='<div class="drLyT'+(i===_drCur?" on":"")+(ly.on===0?" off":"")+'" data-ly="'+i+'">'+
+       '<canvas class="drLyTh" data-i="'+i+'" width="46" height="46"></canvas>'+
+       '<span class="drLyN">'+(i+1)+'</span>'+
+       (i===_drCur?'<span class="drLyNow">✏️</span>':'')+
+       (ly.on===0?'<span class="drLyHide">👁</span>':'')+
+       '</div>';
   });
+  h+='<span class="drLyEnd">うえ</span>';
   h+='<button class="drLy" type="button" id="drLyAdd">＋</button>';
   h+='<button class="drLy" type="button" id="drLyEye">👁</button>';
   h+='<button class="drLy" type="button" id="drLyUp">↑</button>';
   h+='<button class="drLy" type="button" id="drLyDel">🗑</button>';
   r.innerHTML=h;
+  try{_drPaintLayerThumbs();}catch(_){}
+  try{_drLyBindDrag();}catch(_){}
+}
+/* いちばん 近い レイヤーの ふだを さがす */
+function _drLyAt(cx,cy){
+  const row=$("drLayerRow");if(!row)return null;
+  let best=null,bd=1e9;
+  row.querySelectorAll(".drLyT").forEach(x=>{
+    const r=x.getBoundingClientRect();
+    const dx=Math.max(r.left-cx,0,cx-r.right),dy=Math.max(r.top-cy,0,cy-r.bottom);
+    const d=Math.hypot(dx,dy);
+    if(d<bd){bd=d;best=x;}
+  });
+  return bd<60?best:null;
+}
+/* つかんで 左右に うごかすと 重なり順が 入れかわる */
+var _drLyDragged=false;
+function _drLyBindDrag(){
+  const row=$("drLayerRow");if(!row||row.dataset.dbind)return;
+  row.dataset.dbind="1";
+  let from=null,sx=0,sy=0,moved=false,el=null;
+  const clr=()=>{row.querySelectorAll(".drLyT").forEach(x=>x.classList.remove("over","drag"));};
+  row.addEventListener("pointerdown",e=>{
+    const t=e.target&&e.target.closest?e.target.closest(".drLyT"):null;
+    if(!t)return;
+    from=parseInt(t.dataset.ly,10);el=t;sx=e.clientX;sy=e.clientY;moved=false;
+    try{row.setPointerCapture(e.pointerId);}catch(_){}
+  });
+  row.addEventListener("pointermove",e=>{
+    if(from==null)return;
+    if(!moved&&Math.hypot(e.clientX-sx,e.clientY-sy)<8)return;
+    if(!moved){moved=true;if(el)el.classList.add("drag");}
+    e.preventDefault();
+    row.querySelectorAll(".drLyT").forEach(x=>x.classList.remove("over"));
+    const over=_drLyAt(e.clientX,e.clientY);
+    if(over&&over!==el)over.classList.add("over");
+  });
+  const up=e=>{
+    if(from==null)return;
+    const over=moved?_drLyAt(e.clientX,e.clientY):null;
+    clr();
+    if(moved&&over){
+      const to=parseInt(over.dataset.ly,10);
+      if(to!==from&&_drLayers[from]!=null){
+        _drSnap();
+        const a=_drLayers.splice(from,1)[0];
+        _drLayers.splice(to,0,a);
+        _drCur=to;
+        _drPaintLayers();_drRender();
+        try{playClick();}catch(_){}
+      }
+    }
+    _drLyDragged=moved;
+    from=null;el=null;moved=false;
+  };
+  row.addEventListener("pointerup",up);
+  row.addEventListener("pointercancel",up);
+}
+/* レイヤーごとの 小さい プレビューを かく */
+function _drPaintLayerThumbs(){
+  const r=$("drLayerRow");if(!r)return;
+  const cs=_drCanvasSize;
+  r.querySelectorAll("canvas.drLyTh").forEach(cv=>{
+    const i=parseInt(cv.dataset.i,10);
+    const ly=_drLayers[i];if(!ly)return;
+    const W=cv.width,H=cv.height,ctx=cv.getContext("2d");
+    if(!ctx)return;
+    ctx.clearRect(0,0,W,H);
+    const sc=Math.min(W/cs.w,H/cs.h);
+    ctx.save();
+    ctx.translate((W-cs.w*sc)/2,(H-cs.h*sc)/2);
+    /* かくれているレイヤーも 中身は 見せる（うすさは CSSで） */
+    try{_artDrawLayers(ctx,[{on:1,s:ly.s}],cs,sc);}catch(_){}
+    ctx.restore();
+  });
 }
 function _drPaintMode(){
   [["drMPen","pen"],["drMLine","line"],["drMEra","era"],["drMFill","fill"]].forEach(([id,m])=>{
@@ -20176,7 +20362,10 @@ function _drStrokeCount(){let n=0;_drLayers.forEach(l=>{n+=(l.s||[]).length;});r
         _drPaintLayers();_drRender();return;
       }
       const ly2=t.closest("[data-ly]");
-      if(ly2){_drCur=parseInt(ly2.dataset.ly,10);_drPaintLayers();return;}
+      if(ly2){
+        if(_drLyDragged){_drLyDragged=false;return;}   /* いま 入れかえた ぶんは えらばない */
+        _drCur=parseInt(ly2.dataset.ly,10);_drPaintLayers();return;
+      }
       if(t.closest("#drPasteBtn")){try{playClick();}catch(_){}_drPasteList();return;}
       if(t.closest("#drPasteOk")){_drPasteStrokes();return;}
       if(t.closest("#drPasteNo")){_drPaste=null;const pb=$("drPasteBar");if(pb)pb.hidden=true;_drRender();return;}
@@ -20247,7 +20436,7 @@ function _drStrokeCount(){let n=0;_drLayers.forEach(l=>{n+=(l.s||[]).length;});r
           drawing=false;_drRender();_drPaintMode();return;
         }
         if(_drMode==="era"){_drSnap();_drErase(p);_drRender();return;}
-        _drPts=[p];_drRender();
+        _drPts=[p];_drSm={x:p.x,y:p.y};_drRaw={x:p.x,y:p.y};_drRender();
       });
       cv.addEventListener("pointermove",e=>{
         if(!drawing||_drPinch)return;
@@ -20255,13 +20444,30 @@ function _drStrokeCount(){let n=0;_drLayers.forEach(l=>{n+=(l.s||[]).length;});r
         const p=_drPos(e);
         if(_drMode==="era"){_drErase(p);_drRender();return;}
         if(!_drPts)return;
+        _drRaw={x:p.x,y:p.y};
+        let q=p;
+        if(_drStabOn){
+          if(!_drSm)_drSm={x:p.x,y:p.y};
+          const k=1-(_drStabLv/10);          /* つよいほど ゆっくり ついてくる */
+          _drSm.x+=(p.x-_drSm.x)*k;_drSm.y+=(p.y-_drSm.y)*k;
+          q={x:_drSm.x,y:_drSm.y};
+        }
         const last=_drPts[_drPts.length-1];
-        if(Math.hypot(last.x-p.x,last.y-p.y)<_drCanvasSize.w*0.003)return;
-        _drPts.push(p);_drRender();
+        if(Math.hypot(last.x-q.x,last.y-q.y)<_drCanvasSize.w*0.003)return;
+        _drPts.push(q);_drRender();
       });
       const end=()=>{
         if(!drawing)return;drawing=false;
+        /* 手ブレ補正で おくれた ぶんを 最後に 追いつかせる */
+        if(_drStabOn&&_drMode!=="era"&&_drPts&&_drPts.length&&_drSm&&_drRaw){
+          for(let i=0;i<7;i++){
+            _drSm.x+=(_drRaw.x-_drSm.x)*0.5;_drSm.y+=(_drRaw.y-_drSm.y)*0.5;
+            _drPts.push({x:_drSm.x,y:_drSm.y});
+          }
+          _drPts.push({x:_drRaw.x,y:_drRaw.y});
+        }
         if(_drMode!=="era"&&_drPts&&_drPts.length){_drSnap();_drAddStroke(_drPts);}
+        try{_drPaintLayerThumbs();}catch(_){}
         _drPts=null;_drRender();_drPaintMode();
       };
       cv.addEventListener("pointerup",end);
@@ -20277,8 +20483,9 @@ function _drStrokeCount(){let n=0;_drLayers.forEach(l=>{n+=(l.s||[]).length;});r
           try{if(_drCancelStroke)_drCancelStroke();}catch(_){}
           const a=[..._drPtrs.values()];
           const m=stRel((a[0].x+a[1].x)/2,(a[0].y+a[1].y)/2);
-          _drPinch={d0:Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)||1,z0:_drZoom,
-                    mx:m.x,my:m.y,tx0:_drTx,ty0:_drTy};
+          _drPinch={d0:Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)||1,z0:_drZoom,r0:_drRot,
+                    ang0:Math.atan2(a[1].y-a[0].y,a[1].x-a[0].x)*180/Math.PI,
+                    turned:false,mx:m.x,my:m.y};
         }
       },true);
       cv.addEventListener("pointermove",e=>{
@@ -20290,10 +20497,19 @@ function _drStrokeCount(){let n=0;_drLayers.forEach(l=>{n+=(l.s||[]).length;});r
         const d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);
         const m=stRel((a[0].x+a[1].x)/2,(a[0].y+a[1].y)/2);
         const nz=Math.max(1,Math.min(6,_drPinch.z0*(d/_drPinch.d0)));
-        /* ゆびの まん中を うごかさずに ひろげ、まん中が 動いたぶん ずらす＝いどう */
-        _drTx=_drPinch.mx-(_drPinch.mx-_drPinch.tx0)*nz/_drPinch.z0+(m.x-_drPinch.mx);
-        _drTy=_drPinch.my-(_drPinch.my-_drPinch.ty0)*nz/_drPinch.z0+(m.y-_drPinch.my);
-        _drZoom=nz;_drApplyView();
+        /* ひねり：8度 まわすまでは かたむけない（うっかり回転ぼうし） */
+        let ang=Math.atan2(a[1].y-a[0].y,a[1].x-a[0].x)*180/Math.PI-_drPinch.ang0;
+        while(ang>180)ang-=360; while(ang<-180)ang+=360;
+        if(!_drPinch.turned&&Math.abs(ang)>8)_drPinch.turned=true;
+        const nr=_drPinch.turned?(_drPinch.r0+ang):_drRot;
+        /* ゆびの まん中を うごかさずに ズーム＋かたむけ、そのあと 中心の 動いたぶん ずらす */
+        _drSetView(nz,nr,_drPinch.mx,_drPinch.my);
+        _drTx+=m.x-_drPinch.mx;_drTy+=m.y-_drPinch.my;
+        _drPinch.mx=m.x;_drPinch.my=m.y;
+        _drPinch.d0=d||_drPinch.d0;_drPinch.z0=nz;
+        _drPinch.ang0=Math.atan2(a[1].y-a[0].y,a[1].x-a[0].x)*180/Math.PI;
+        _drPinch.r0=nr;
+        _drApplyView();
       },true);
       const offPtr=e=>{_drPtrs.delete(e.pointerId);if(_drPtrs.size<2)_drPinch=null;};
       cv.addEventListener("pointerup",offPtr,true);
@@ -20317,6 +20533,39 @@ function _drStrokeCount(){let n=0;_drLayers.forEach(l=>{n+=(l.s||[]).length;});r
       });
       window.addEventListener("pointerup",()=>{pan=null;});
       cv.addEventListener("contextmenu",e=>{e.preventDefault();});
+      /* 手ブレ補正の スイッチと つよさ */
+      try{
+        const sc=$("drStabOn"),sr=$("drStab");
+        if(sc)sc.addEventListener("change",()=>{
+          _drStabOn=!!sc.checked;
+          if(sr)sr.disabled=!_drStabOn;
+          _drStabSave();
+        });
+        if(sr)sr.addEventListener("input",()=>{
+          _drStabLv=Math.max(1,Math.min(9,parseInt(sr.value,10)||5));
+          _drStabSave();
+        });
+        _drStabLoad();
+      }catch(_){}
+      /* パソコン：Q=はんとけいまわり E=とけいまわり／WASD=つかんで うごかす */
+      window.addEventListener("keydown",e=>{
+        const ds=$("drawScreen");
+        if(!ds||!ds.classList.contains("show"))return;
+        const t=e.target,tn=t&&t.tagName;
+        if(tn==="INPUT"||tn==="TEXTAREA"||(t&&t.isContentEditable))return;
+        if(e.ctrlKey||e.metaKey||e.altKey)return;
+        const k=(e.key||"").toLowerCase();
+        const w=(stg.clientWidth||0)/2,h=(stg.clientHeight||0)/2;
+        const step=30;
+        if(k==="q"){_drSetView(_drZoom,_drRot-15,w,h);}
+        else if(k==="e"){_drSetView(_drZoom,_drRot+15,w,h);}
+        else if(k==="w"){_drTy-=step;_drApplyView();}
+        else if(k==="s"){_drTy+=step;_drApplyView();}
+        else if(k==="a"){_drTx-=step;_drApplyView();}
+        else if(k==="d"){_drTx+=step;_drApplyView();}
+        else return;
+        e.preventDefault();
+      });
       /* ズーム中だけ 出る「もどす」ボタン */
       try{const zb=$("drZoomBtn");if(zb)zb.addEventListener("click",e=>{
         e.stopPropagation();try{playClick();}catch(_){}_drResetView();
@@ -21493,7 +21742,10 @@ async function _tvDoOrder(artId,price){
   const s=_tvShopById(_tvCur);if(!s)return;
   if(getOrder()){try{toast("いま はいそう中だよ。ひとつずつ ね");}catch(_){}return;}
   if(artById(artId)){try{toast("もう もってるよ");}catch(_){}return;}
-  const km=_tvOrderKm(s),fee=_tvFee(km),tot=price+fee;
+  const km=_tvOrderKm(s),fee0=_tvFee(km);
+  const _use=await _tkAskUse(fee0);
+  if(!_use)return;                       /* やめた */
+  const fee=_use.free?0:fee0,tot=price+fee;
   if(getZZ()<tot){try{toast("お金が たりないよ（ぜんぶで "+tot+"zz）");}catch(_){}return;}
   if(!confirm("ほんとうに 買いますか？\n\n「"+((_tvArtCache[artId]&&_tvArtCache[artId].name)||"この商品")+"」\n商品 "+price+"zz ＋ 送料 "+fee+"zz ＝ ごうけい "+tot+"zz\n\n・あした とどきます\n・前ばらいで、あとから キャンセルは できません"))return;
   /* 品物は 注文したときに 受けとっておく（前払いなので 必ず とどく） */
@@ -21528,7 +21780,10 @@ async function _tvDoOrder(artId,price){
   const now=Date.now();
   a.src={u:((s.items&&s.items[artId]&&s.items[artId].by)||s.uid),i:artId};
   setOrder({shop:s.uid,shopName:s.name||"お店",art:artId,a:a,name:a.name||"アイテム",
-            price:price,fee:fee,at:now,eta:now+86400000,lng:s.lng,lat:s.lat,path:path});
+            price:price,fee:fee,at:now,eta:now+(_use.fast?300000:86400000),lng:s.lng,lat:s.lat,path:path});
+  /* つかった ぶんを へらす */
+  try{if(_use.fast||_use.free){const _t=getTickets();
+    if(_use.fast)_t.fast=0;if(_use.free)_t.free=0;setTickets(_t);}}catch(_){}
   try{
     const db=await getDB();
     if(db){const{ref,push,set}=await import(FB_DB);
@@ -21539,12 +21794,147 @@ async function _tvDoOrder(artId,price){
         await set(rr,{art:artId,price:price,buyer:getUid(),buyerName:_mp2.name||"だれか",pShop:s.party?1:0,name:a.name||"",at:now,net:1,shop:s.name||""});}}
   }catch(_){}
   try{playPop();}catch(_){}
-  try{toast("注文したよ！ あした とどくよ 🚚");}catch(_){}
+  try{toast(_use.fast?"注文したよ！ 5分で とどくよ 🚀":"注文したよ！ 24時間後に とどくよ 🚚");}catch(_){}
   _tvOrderMode=false;
   openTvShop(_tvCur);
   try{_tvPaint();}catch(_){}
 }
 /* --- とどく --- */
+/* ===== ごほうびチケット ===== */
+var TICKET_KEY="radio_tickets",TICKETDAY_KEY="radio_ticket_day";
+function getTickets(){
+  try{const v=JSON.parse(localStorage.getItem(TICKET_KEY)||"{}");
+    return{fast:(v&&v.fast>0)?1:0,free:(v&&v.free>0)?1:0};}catch(_){return{fast:0,free:0};}
+}
+function setTickets(t){
+  try{localStorage.setItem(TICKET_KEY,JSON.stringify({fast:t&&t.fast?1:0,free:t&&t.free?1:0}));syncSoon();}catch(_){}
+  try{_tkPaintCount();}catch(_){}
+}
+/* きょうは もらえる日か（遅起きは なし） */
+function _tkTodayOK(){
+  try{
+    const w=getWakeLog()[jstKey()];
+    if(!Number.isFinite(w))return false;
+    return (w-profileWake())<1;   /* 差が1時間いじょう おそい＝遅起き→なし */
+  }catch(_){return false;}
+}
+/* 体操のあと よぶ。出すなら true */
+function _tkOffer(thenSum){
+  try{
+    if(localStorage.getItem(TICKETDAY_KEY)===jstKey())return false;   /* きょうは もう出した */
+    if(!_tkTodayOK())return false;                                     /* 遅起き */
+    const t=getTickets();
+    if(t.fast&&t.free)return false;                                    /* 両方 満ぱい＝これまで通り */
+    _tkThenSum=!!thenSum;
+    setTimeout(()=>{try{_tkOpenPick();}catch(_){}},950);
+    return true;
+  }catch(_){return false;}
+}
+var _tkThenSum=false;
+var _tkUseRes=null;
+/* 買う直前に よぶ。{fast,free} を かえす。やめたら null */
+function _tkAskUse(fee){
+  return new Promise(res=>{
+    let t={fast:0,free:0};try{t=getTickets();}catch(_){}
+    if(!t.fast&&!t.free){res({fast:0,free:0});return;}   /* もってない＝これまで通り */
+    _tkUseRes=res;
+    const b=$("tkUseBody");
+    if(b)b.innerHTML=
+      (t.free?'<label class="tkUseRow"><input type="checkbox" id="tkUseFree"/> 🎫 送料むりょう（送料 '+fee+'zz → 0zz）</label>':'')+
+      (t.fast?'<label class="tkUseRow"><input type="checkbox" id="tkUseFast"/> 🚀 そくたつ（5分で とどく）</label>':'');
+    try{_tkUseTot(fee);}catch(_){}
+    try{["tkUseFree","tkUseFast"].forEach(id=>{const e=$(id);if(e)e.addEventListener("change",()=>_tkUseTot(fee));});}catch(_){}
+    const w=$("tkUse");if(w)w.classList.add("show");
+  });
+}
+function _tkUseTot(fee){
+  const f=$("tkUseFree"),el=$("tkUseTot");
+  if(el)el.textContent="送料 "+((f&&f.checked)?0:fee)+"zz";
+}
+function _tkUseClose(v){
+  const w=$("tkUse");if(w)w.classList.remove("show");
+  const r=_tkUseRes;_tkUseRes=null;
+  if(r)r(v);
+}
+/* はいそう中の 荷物に そくたつを つかう */
+function _tkRush(){
+  const o=getOrder();
+  if(!o){try{toast("いま はいそう中の 荷物は ないよ");}catch(_){}return;}
+  const t=getTickets();
+  if(!t.fast){try{toast("そくたつチケットを もってないよ");}catch(_){}return;}
+  const rest=Math.max(0,(o.eta||0)-Date.now());
+  if(rest<=300000){try{toast("もうすぐ とどくよ");}catch(_){}return;}
+  if(!confirm("そくたつチケットを つかう？\n\n「"+(o.name||"アイテム")+"」が 5分で とどくよ🚀"))return;
+  o.eta=Date.now()+300000;
+  setOrder(o);
+  t.fast=0;setTickets(t);
+  try{playPop();}catch(_){}
+  try{toast("そくたつ！ あと5分で とどくよ🚀");}catch(_){}
+  try{_tvPaint();}catch(_){}
+}
+function _tkOpenPick(){
+  const box=$("tkPickList");if(!box)return;
+  const t=getTickets();
+  let h="";
+  if(!t.fast)h+='<button class="tkCard" type="button" data-tk="fast">'+
+    '<span class="tkIco">🚀</span><span class="tkTx"><b>そくたつチケット</b><br>'+
+    'はいそう中でも つかえて 5分で とどく</span></button>';
+  if(!t.free)h+='<button class="tkCard" type="button" data-tk="free">'+
+    '<span class="tkIco">🎫</span><span class="tkTx"><b>送料むりょうチケット</b><br>'+
+    '買うときに つかうと 送料が 0zz</span></button>';
+  box.innerHTML=h;
+  const w=$("tkPick");if(w)w.classList.add("show");
+}
+function _tkClosePick(){
+  const w=$("tkPick");if(w)w.classList.remove("show");
+  try{localStorage.setItem(TICKETDAY_KEY,jstKey());}catch(_){}
+  if(_tkThenSum){_tkThenSum=false;setTimeout(()=>{try{openTodaySum();}catch(_){}},350);}
+}
+function _tkTake(kind){
+  const t=getTickets();
+  if(kind==="fast"&&!t.fast)t.fast=1;
+  else if(kind==="free"&&!t.free)t.free=1;
+  else return;
+  setTickets(t);
+  try{playPop();}catch(_){}
+  try{toast(kind==="fast"?"そくたつチケットを もらった！🚀":"送料むりょうチケットを もらった！🎫");}catch(_){}
+  _tkClosePick();
+}
+/* まとめ画面などに もっている数を 出す */
+function _tkPaintCount(){
+  try{
+    const el=$("tsumTk");if(!el)return;
+    const t=getTickets();
+    el.innerHTML=(t.fast||t.free)
+      ?('もってるチケット：'+(t.fast?'<b>🚀そくたつ</b> ':'')+(t.free?'<b>🎫送料むりょう</b>':''))
+      :'';
+    el.hidden=!(t.fast||t.free);
+  }catch(_){}
+}
+try{
+  const _tp=document.getElementById("tkPick");
+  if(_tp)_tp.addEventListener("click",e=>{
+    const c=e.target.closest?e.target.closest(".tkCard"):null;
+    if(c){try{playClick();}catch(_){}_tkTake(c.dataset.tk);return;}
+    if(e.target.closest&&e.target.closest("#tkPickSkip")){try{playClick();}catch(_){}_tkClosePick();return;}
+  });
+  const _tu=document.getElementById("tkUse");
+  if(_tu)_tu.addEventListener("click",e=>{
+    if(e.target.closest&&e.target.closest("#tkUseGo")){
+      try{playClick();}catch(_){}
+      const f=document.getElementById("tkUseFree"),q=document.getElementById("tkUseFast");
+      _tkUseClose({free:(f&&f.checked)?1:0,fast:(q&&q.checked)?1:0});return;
+    }
+    if((e.target.closest&&e.target.closest("#tkUseCancel"))||e.target===_tu){
+      try{playClick();}catch(_){}_tkUseClose(null);return;
+    }
+  });
+  /* 地図の トラックを タップ＝そくたつを つかう */
+  document.addEventListener("click",e=>{
+    const tr=e.target&&e.target.closest?e.target.closest("#tvTruck"):null;
+    if(tr){try{playClick();}catch(_){}try{_tkRush();}catch(_){}}
+  });
+}catch(_){}
 function _tvDeliver(){
   const o=getOrder();if(!o)return false;
   if(Date.now()<(o.eta||0))return false;
@@ -21925,7 +22315,7 @@ function _drBucketAll(p){
     return Math.abs(c[0]-s0[0])+Math.abs(c[1]-s0[1])+Math.abs(c[2]-s0[2])<TOL;
   };
   /* 透明のところは つながっている所だけ／色のところは 画面ぜんぶ */
-  const mask=new Uint8Array(W*H);let total=0;
+  let mask=new Uint8Array(W*H);let total=0;
   if(clear){
     const st=[sy*W+sx];if(!same(st[0]))return false;
     mask[st[0]]=1;
@@ -21942,6 +22332,23 @@ function _drBucketAll(p){
   }
   if(total<6)return false;
   if(clear&&total>W*H*0.985)return false;
+  /* すきま よけ：ふちを すこし ふくらませて 線の下に もぐりこませる
+     （ふちは 線の 手前で 止まるので、そのままだと 細い すきまが 見える） */
+  try{
+    const GROW=Math.max(2,Math.round(S*1.4));
+    for(let g=0;g<GROW;g++){
+      const nx=new Uint8Array(mask);
+      for(let y=0;y<H;y++){
+        const row=y*W;
+        for(let x=0;x<W;x++){
+          const i=row+x;
+          if(mask[i])continue;
+          if((x>0&&mask[i-1])||(x<W-1&&mask[i+1])||(y>0&&mask[i-W])||(y<H-1&&mask[i+W])){nx[i]=1;total++;}
+        }
+      }
+      mask=nx;
+    }
+  }catch(_){}
   /* かたまりごとに ふちを たどる */
   const seen=new Uint8Array(W*H),dirs=[[1,0],[1,1],[0,1],[-1,1],[-1,0],[-1,-1],[0,-1],[1,-1]];
   const inM=(x,y)=>(x>=0&&y>=0&&x<W&&y<H&&mask[y*W+x]===1);
@@ -22104,6 +22511,7 @@ function _homeLocBadge(){
   }catch(_){}
 }
 function openTodaySum(){
+  try{_tkPaintCount();}catch(_){}
   const el=$("todaySum");if(!el)return;
   try{_tsumRender();}catch(e){console.warn("tsum",e);}
   el.classList.add("show");
@@ -23756,6 +24164,10 @@ function _tvPlaceOthers(){
       <span class="decoLbl">ふとさ</span><input type="range" id="drWFine" min="0" max="11" value="4"/><span id="drWDot"></span>
       <span class="decoLbl">こさ</span><input type="range" id="drAlpha" min="1" max="10" value="10"/>
     </div>
+    <div class="drRow" id="drStabRow">
+      <label class="drStabChk"><input type="checkbox" id="drStabOn"/> 手ブレ補正</label>
+      <input type="range" id="drStab" min="1" max="9" value="5" disabled/>
+    </div>
     <div class="drRow" id="drLayerRow"></div>
     <div class="drRow">
       <button class="drBtn" id="drPasteBtn" type="button">🧩 そざい</button>
@@ -23771,6 +24183,23 @@ function _tvPlaceOthers(){
       <button class="drBtn" id="drPasteNo" type="button">やめる</button>
     </div>
     <div id="drHint">ゆびで なぞって かこう</div>
+  </div>
+</div>
+<div id="tkUse">
+  <div id="tkUseCard">
+    <div id="tkUseTtl">チケットを つかう？</div>
+    <div id="tkUseBody"></div>
+    <div id="tkUseTot"></div>
+    <button id="tkUseGo" type="button">これで 買う</button>
+    <button id="tkUseCancel" type="button">やめる</button>
+  </div>
+</div>
+<div id="tkPick">
+  <div id="tkPickCard">
+    <div id="tkPickTtl">きょうも おきられたね！</div>
+    <div id="tkPickSub">どちらか ひとつ もらえるよ</div>
+    <div id="tkPickList"></div>
+    <button id="tkPickSkip" type="button">いまは いらない</button>
   </div>
 </div>
 <div id="drNameWrap">
@@ -23873,6 +24302,7 @@ function _tvPlaceOthers(){
     <div id="tsumTtl">きょうの まとめ</div>
     <div id="tsumBig">＋0 zz</div>
     <div id="tsumHave">もちきん 0 zz</div>
+    <div id="tsumTk" hidden></div>
     <div id="tsumList"></div>
     <div id="tsumNowTtl">いま</div>
     <div id="tsumNow"></div>

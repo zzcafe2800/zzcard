@@ -3265,6 +3265,7 @@ button.pmTag{cursor:pointer;}
 .drLyT.drag{opacity:.55;transform:scale(.92);cursor:grabbing;}
 .drLyT.over{border-color:#5eb0d6;box-shadow:0 0 0 3px rgba(94,176,214,.35);}
 .drLyTh{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
+#drLyA{flex:0 1 90px;min-width:60px;}
 .drLyN{position:absolute;left:2px;top:1px;font-family:"Yomogi","Kosugi Maru",sans-serif;
   font-size:9.5px;font-weight:900;color:#7fa3b8;background:rgba(255,255,255,.8);
   border-radius:5px;padding:0 3px;pointer-events:none;}
@@ -19634,6 +19635,19 @@ function _artRdp(pts,eps){
 }
 
 /* ===== 絵をかたちにする（SVG／canvas 両方） ===== */
+/* レイヤーぜんたいの こさ（ly.a）を かけながら SVGに する */
+function _artLayersSVG(a,cs,tn){
+  let out="";
+  ((a&&a.L)||[]).forEach(ly=>{
+    if(ly&&ly.on===0)return;
+    let inner="";
+    ((ly&&ly.s)||[]).forEach(st=>{inner+=_artStrokePath(st,cs,tn);});
+    if(!inner)return;
+    const la=(ly&&ly.a!=null&&ly.a<10)?Math.max(0,ly.a)/10:1;
+    out+=(la<1)?('<g opacity="'+la.toFixed(2)+'">'+inner+'</g>'):inner;
+  });
+  return out;
+}
 function _artStrokePath(st,cs){
   const pts=_artUnpack(st[2]);if(!pts.length)return"";
   const col=_artTintCol(ART_PAL[st[0]]||"#1c1c1c",arguments[2]);
@@ -19654,7 +19668,7 @@ function artSVG(a,cls){
   let inner=_artSvgCache[key];
   if(inner==null){
     const cs=artCanvasSize(a.use,a.sub);inner="";
-    (a.L||[]).forEach(ly=>{if(ly&&ly.on===0)return;(ly&&ly.s||[]).forEach(st=>{inner+=_artStrokePath(st,cs);});});
+    inner+=_artLayersSVG(a,cs);
     _artSvgCache[key]=inner;
   }
   const cs=artCanvasSize(a.use,a.sub);
@@ -19666,17 +19680,19 @@ function artSVGTinted(a,cls){
   const tn=artTintOf(a);
   if(!tn)return artSVG(a,cls);
   const cs=artCanvasSize(a.use,a.sub);let inner="";
-  (a.L||[]).forEach(ly=>{if(ly&&ly.on===0)return;(ly&&ly.s||[]).forEach(st=>{inner+=_artStrokePath(st,cs,tn);});});
+  inner+=_artLayersSVG(a,cs,tn);
   return'<svg class="'+(cls||"")+'" viewBox="0 0 '+cs.w+' '+cs.h+'" xmlns="http://www.w3.org/2000/svg">'+inner+'</svg>';
 }
 function _artDrawLayers(ctx,layers,cs,scale){
   ctx.lineCap="round";ctx.lineJoin="round";
   (layers||[]).forEach(ly=>{
     if(!ly||ly.on===0)return;
+    /* レイヤーぜんたいの こさ */
+    const _la=(ly.a!=null&&ly.a<10)?Math.max(0,ly.a)/10:1;
     (ly.s||[]).forEach(st=>{
       const pts=_artUnpack(st[2]);if(!pts.length)return;
       ctx.strokeStyle=ctx.fillStyle=ART_PAL[st[0]]||"#1c1c1c";
-      const _op=(st[3]==null||st[3]>=10)?1:Math.max(0.05,st[3]/10);
+      const _op=((st[3]==null||st[3]>=10)?1:Math.max(0.05,st[3]/10))*_la;
       ctx.globalAlpha=_op;
       if(st[1]===-1){
         ctx.beginPath();ctx.moveTo(pts[0].x*scale,pts[0].y*scale);
@@ -20058,11 +20074,30 @@ function _drPaintLayers(){
   h+='<span class="drLyEnd">うえ</span>';
   h+='<button class="drLy" type="button" id="drLyAdd">＋</button>';
   h+='<button class="drLy" type="button" id="drLyEye">👁</button>';
-  h+='<button class="drLy" type="button" id="drLyUp">↑</button>';
   h+='<button class="drLy" type="button" id="drLyDel">🗑</button>';
+  h+='<span class="drLyEnd">こさ</span><input type="range" id="drLyA" min="0" max="10" value="10"/>';
   r.innerHTML=h;
+  try{
+    const av=$("drLyA"),cl=_drLayers[_drCur];
+    if(av)av.value=String((cl&&cl.a!=null)?cl.a:10);
+  }catch(_){}
   try{_drPaintLayerThumbs();}catch(_){}
   try{_drLyBindDrag();}catch(_){}
+  try{_drLyBindAlpha();}catch(_){}
+}
+/* レイヤーの こさ バー */
+function _drLyBindAlpha(){
+  const el=$("drLyA");if(!el||el.dataset.abind)return;
+  el.dataset.abind="1";
+  let snapped=false;
+  el.addEventListener("pointerdown",()=>{snapped=false;});
+  el.addEventListener("input",()=>{
+    const ly=_drLayers[_drCur];if(!ly)return;
+    if(!snapped){try{_drSnap();}catch(_){}snapped=true;}   /* 取り消しは 1回ぶんだけ */
+    ly.a=Math.max(0,Math.min(10,parseInt(el.value,10)));
+    try{_drRender();}catch(_){}
+    try{_drPaintLayerThumbs();}catch(_){}
+  });
 }
 /* いちばん 近い レイヤーの ふだを さがす */
 function _drLyAt(cx,cy){
@@ -20087,7 +20122,6 @@ function _drLyBindDrag(){
     const t=e.target&&e.target.closest?e.target.closest(".drLyT"):null;
     if(!t)return;
     from=parseInt(t.dataset.ly,10);el=t;sx=e.clientX;sy=e.clientY;moved=false;
-    try{row.setPointerCapture(e.pointerId);}catch(_){}
   });
   row.addEventListener("pointermove",e=>{
     if(from==null)return;
@@ -20113,11 +20147,17 @@ function _drLyBindDrag(){
         try{playClick();}catch(_){}
       }
     }
-    _drLyDragged=moved;
+    if(!moved&&from!=null&&_drLayers[from]){
+      /* うごかしていない＝タップ＝そのレイヤーを えらぶ */
+      _drCur=from;try{playClick();}catch(_){}
+      _drPaintLayers();
+    }
+    _drLyDragged=true;    /* このあとの click は 無視させる（二重に ならないように） */
     from=null;el=null;moved=false;
   };
   row.addEventListener("pointerup",up);
   row.addEventListener("pointercancel",up);
+  window.addEventListener("pointerup",up);
 }
 /* レイヤーごとの 小さい プレビューを かく */
 function _drPaintLayerThumbs(){
@@ -20133,7 +20173,7 @@ function _drPaintLayerThumbs(){
     ctx.save();
     ctx.translate((W-cs.w*sc)/2,(H-cs.h*sc)/2);
     /* かくれているレイヤーも 中身は 見せる（うすさは CSSで） */
-    try{_artDrawLayers(ctx,[{on:1,s:ly.s}],cs,sc);}catch(_){}
+    try{_artDrawLayers(ctx,[{on:1,s:ly.s,a:ly.a}],cs,sc);}catch(_){}
     ctx.restore();
   });
 }
@@ -20350,12 +20390,6 @@ function _drStrokeCount(){let n=0;_drLayers.forEach(l=>{n+=(l.s||[]).length;});r
       if(t.closest("#drLyEye")){
         const ly=_drLayers[_drCur];if(ly){ly.on=(ly.on===0)?1:0;_drPaintLayers();_drRender();}return;
       }
-      if(t.closest("#drLyUp")){
-        if(_drCur<_drLayers.length-1){_drSnap();
-          const a=_drLayers[_drCur];_drLayers[_drCur]=_drLayers[_drCur+1];_drLayers[_drCur+1]=a;_drCur++;
-          _drPaintLayers();_drRender();}
-        return;
-      }
       if(t.closest("#drLyDel")){
         if(_drLayers.length<=1){_drSnap();_drLayers=[{on:1,s:[]}];_drCur=0;_drPaintLayers();_drRender();return;}
         _drSnap();_drLayers.splice(_drCur,1);if(_drCur>=_drLayers.length)_drCur=_drLayers.length-1;
@@ -20559,10 +20593,10 @@ function _drStrokeCount(){let n=0;_drLayers.forEach(l=>{n+=(l.s||[]).length;});r
         const step=30;
         if(k==="q"){_drSetView(_drZoom,_drRot-15,w,h);}
         else if(k==="e"){_drSetView(_drZoom,_drRot+15,w,h);}
-        else if(k==="w"){_drTy-=step;_drApplyView();}
-        else if(k==="s"){_drTy+=step;_drApplyView();}
-        else if(k==="a"){_drTx-=step;_drApplyView();}
-        else if(k==="d"){_drTx+=step;_drApplyView();}
+        else if(k==="w"){_drTy+=step;_drApplyView();}   /* 上を 見る */
+        else if(k==="s"){_drTy-=step;_drApplyView();}   /* 下を 見る */
+        else if(k==="a"){_drTx+=step;_drApplyView();}   /* 左を 見る */
+        else if(k==="d"){_drTx-=step;_drApplyView();}   /* 右を 見る */
         else return;
         e.preventDefault();
       });
@@ -20718,7 +20752,7 @@ async function _decoPushCloud(d){
 function _decoInner(id){
   const a=id?artById(id):null;if(!a)return null;
   const cs=artCanvasSize(a.use,a.sub);let inner="";
-  (a.L||[]).forEach(ly=>{if(ly&&ly.on===0)return;(ly&&ly.s||[]).forEach(st=>{inner+=_artStrokePath(st,cs);});});
+  inner+=_artLayersSVG(a,cs);
   return{inner,cs};
 }
 /* かべ・ゆか（背景レイヤーに一面どーん） */
@@ -21970,7 +22004,7 @@ function _decoInner2(id,pool){
   let a=(pool&&pool[id])||artById(id);
   if(!a)return null;
   const cs=artCanvasSize(a.use,a.sub);let inner="";
-  (a.L||[]).forEach(ly=>{if(ly&&ly.on===0)return;(ly&&ly.s||[]).forEach(st=>{inner+=_artStrokePath(st,cs);});});
+  inner+=_artLayersSVG(a,cs);
   return{inner,cs};
 }
 function _stRoomSVG(d,pool,edit,sel){
@@ -22098,7 +22132,7 @@ function acosSVG(ac){
       const id=ac.s[slot];if(!id)return;
       const a=_acosArt(ac.u,id);if(!a)return;
       const cs=artCanvasSize("cos","");
-      (a.L||[]).forEach(ly=>{if(ly&&ly.on===0)return;(ly&&ly.s||[]).forEach(st=>{out+=_artStrokePath(st,cs);});});
+      out+=_artLayersSVG(a,cs);
     });
     return out;
   }catch(_){return"";}
@@ -22723,7 +22757,7 @@ function shopIconInner(sh,size){
   const a=shopIconArt(sh);
   if(a&&a.L){
     const cs=artCanvasSize(a.use,a.sub);let inner="";
-    (a.L||[]).forEach(ly=>{if(ly&&ly.on===0)return;(ly&&ly.s||[]).forEach(st=>{inner+=_artStrokePath(st,cs);});});
+    inner+=_artLayersSVG(a,cs);
     const sc=size/cs.w;
     return'<g transform="scale('+sc.toFixed(4)+')">'+inner+'</g>';
   }
@@ -22800,7 +22834,7 @@ function _emoSVG(a,px){
   if(!a)return"";
   const cs=artCanvasSize("emo","");
   let inner="";
-  (a.L||[]).forEach(ly=>{if(ly&&ly.on===0)return;(ly&&ly.s||[]).forEach(st=>{inner+=_artStrokePath(st,cs);});});
+  inner+=_artLayersSVG(a,cs);
   return'<svg viewBox="0 0 '+cs.w+' '+cs.h+'" width="'+(px||16)+'" height="'+(px||16)+'" xmlns="http://www.w3.org/2000/svg">'+inner+'</svg>';
 }
 /* 文字を 安全にして [e:uid:id] を 絵にする */
@@ -23619,7 +23653,7 @@ function _artCosSVG(){
       const a=artById(id);if(!a)return;
       const cs=artCanvasSize("cos","");
       const tn=artTintOf(a);
-      (a.L||[]).forEach(ly=>{if(ly&&ly.on===0)return;(ly&&ly.s||[]).forEach(st=>{s+=_artStrokePath(st,cs,tn);});});
+      s+=_artLayersSVG(a,cs,tn);
     });
   }catch(_){}
   return s;

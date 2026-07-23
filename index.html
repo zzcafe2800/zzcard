@@ -1457,12 +1457,19 @@ body.exercising #randomModeBtn{animation:none !important;}
   box-shadow:0 14px 34px rgba(111,205,255,.24);order:3;margin-top:2px;}
 .tutArt svg{width:100%;height:auto;display:block;}
 .tutDesc{font-size:13px;color:#7aa5bc;line-height:1.7;font-weight:600;order:4;}
+.tutArrow:disabled{display:none;}
 .tutArrow{position:fixed;top:50%;transform:translateY(-50%);width:46px;height:46px;border:none;border-radius:50%;
   background:rgba(255,255,255,.82);color:#5c93ad;font-size:24px;cursor:pointer;box-shadow:0 6px 16px rgba(111,205,255,.22);z-index:2;}
 #tutPrev{left:12px;}#tutNext{right:12px;}
 .tutArrow:disabled{opacity:.3;cursor:default;}
 #tutDots{display:flex;gap:8px;margin-top:24px;}
 .tutDot{width:9px;height:9px;border-radius:50%;background:rgba(120,170,200,.35);transition:background .2s;}
+.tutMenu{display:flex;flex-direction:column;gap:9px;width:min(340px,86vw);order:3;margin-top:2px;}
+.tutRow{display:flex;align-items:center;gap:13px;background:#fff;border-radius:16px;
+  padding:12px 15px;box-shadow:0 3px 12px rgba(120,160,190,.14);text-align:left;}
+.tutRowIco{flex:0 0 auto;font-size:30px;line-height:1;width:42px;text-align:center;}
+.tutRowTxt{flex:1 1 auto;font-size:12.5px;color:#7aa5bc;line-height:1.5;font-weight:600;}
+.tutRowTxt b{color:#3d6f8c;font-size:14px;font-weight:800;}
 .tutDot.active{background:#5c93ad;}
 #tutStartRow{display:flex;gap:12px;align-items:center;margin-top:22px;}
 #tutStart{margin-top:0;height:52px;padding:0 34px;border:none;border-radius:999px;cursor:pointer;
@@ -2001,6 +2008,16 @@ body.exercising #randomModeBtn{animation:none !important;}
 @media (max-width:720px){#taisoScreen.visible{justify-content:flex-start;}#taisoCards{flex-direction:column;align-items:center;gap:14px;}.taisoCard{width:100%;max-width:460px;}#taisoInner{max-width:460px;}}
 .taisoCard{flex:1;min-width:0;background:#fff;border-radius:22px;padding:16px 16px 15px;box-shadow:0 10px 28px rgba(120,160,190,.18);display:flex;flex-direction:column;gap:12px;}
 .tsCardTitle{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:15px;font-weight:900;color:#5c93ad;text-align:center;}
+#tsRangeCard{cursor:pointer;}
+#tsRangeMini{width:100%;overflow:hidden;border-radius:14px;background:linear-gradient(180deg,#eaf6ff,#f6fbff);
+  margin-top:2px;display:flex;align-items:center;justify-content:center;min-height:120px;}
+#tsRangeMini svg{width:100%;height:auto;display:block;}
+#tsRangeStat{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:12px;font-weight:800;
+  color:#7fa3b8;text-align:center;margin-top:8px;line-height:1.5;}
+.tsRangeMore{margin-top:10px;border:none;border-radius:999px;padding:9px 14px;width:100%;
+  font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:12.5px;font-weight:800;cursor:pointer;
+  color:#5b8ba4;background:rgba(143,190,220,.16);}
+.tsRangeMore:active{transform:scale(.97);}
 #autoPreviewStage{position:relative;width:100%;aspect-ratio:1920/1200;}
 #autoPreviewImg{width:100%;height:100%;border-radius:14px;box-shadow:0 6px 16px rgba(0,0,0,.12);background:#eaf3f8;object-fit:contain;display:block;}
 #autoStampFlyWrap{position:absolute;width:15.4%;aspect-ratio:1;transform:translate(-50%,-50%);pointer-events:none;display:none;}
@@ -4342,6 +4359,12 @@ body.exercising #homeZZ{opacity:0;pointer-events:none;}
           </div>
         </div>
       </div>
+      <div class="taisoCard" id="tsRangeCard">
+        <div class="tsCardTitle">これまでの山脈</div>
+        <div id="tsRangeMini"></div>
+        <div id="tsRangeStat"></div>
+        <button class="tsRangeMore" id="tsRangeMore" type="button">大きく 見る ▸</button>
+      </div>
     </div>
     <div id="taisoFooter"><label id="storyJoinChkRow"><input type="checkbox" id="storyJoinChk" checked/> ストーリーに参加(明日)</label><button class="tsSum" id="tsSumBtn" type="button">📋 まとめ</button><button class="tsNext" id="tsNextBtn" type="button">次へ →</button></div>
   </div>
@@ -4412,36 +4435,19 @@ body.exercising #homeZZ{opacity:0;pointer-events:none;}
   <button id="tutPrev" class="tutArrow" type="button">‹</button>
   <button id="tutNext" class="tutArrow" type="button">›</button>
   <div id="tutPages">
-    <div class="tutPage" data-i="0">
-      <div class="tutIcon">🐱</div>
-      <div class="tutSub">このゲームは？</div>
-      <div class="tutArt"><div class="tutBigIco">🗾</div></div>
-      <div class="tutTitle">猫と 日本一周</div>
-      <div class="tutDesc">猫たちが ラジオ体操しながら<br>日本を 旅するよ。いろんな街で 体操！</div>
+      <div class="tutPage" data-i="0">
+        <div class="tutIcon">🐱</div>
+        <div class="tutSub">ラジオ体操部って？</div>
+        <div class="tutTitle">あさ おきて できること</div>
+        <div class="tutMenu">
+          <div class="tutRow"><span class="tutRowIco">⏰</span><span class="tutRowTxt"><b>目標時間を きめて</b><br>のんびり めざせる</span></div>
+          <div class="tutRow"><span class="tutRowIco">🐈</span><span class="tutRowTxt"><b>なかまと やる</b><br>丘に みんなの 猫が あつまる</span></div>
+          <div class="tutRow"><span class="tutRowIco">🎨</span><span class="tutRowTxt"><b>絵を かいて 売れる</b><br>お店を ひらいて 日本を たび</span></div>
+          <div class="tutRow"><span class="tutRowIco">⛰</span><span class="tutRowTxt"><b>山が つみあがる</b><br>つづけるほど 記録が のこる</span></div>
+        </div>
+      </div>
     </div>
-    <div class="tutPage" data-i="1" hidden>
-      <div class="tutIcon">☀️</div>
-      <div class="tutSub">あさの しゅうかん</div>
-      <div class="tutArt"><div class="tutBigIco">⏰</div></div>
-      <div class="tutTitle">目標時間に おきて 体操</div>
-      <div class="tutDesc">きめた時間に おきて「はじめる」！<br>はやおきほど スコアUP。</div>
-    </div>
-    <div class="tutPage" data-i="2" hidden>
-      <div class="tutIcon">🚶</div>
-      <div class="tutSub">すすもう</div>
-      <div class="tutArt"><div class="tutBigIco">👣</div></div>
-      <div class="tutTitle">体操で 旅が すすむ</div>
-      <div class="tutDesc">体操した ぶんだけ 猫が 前へ。<br>コツコツ 日本一周を めざそう。</div>
-    </div>
-    <div class="tutPage" data-i="3" hidden>
-      <div class="tutIcon">👥</div>
-      <div class="tutSub">いっしょに</div>
-      <div class="tutArt"><div class="tutBigIco">🎉</div></div>
-      <div class="tutTitle">みんなと ひとりと</div>
-      <div class="tutDesc">パーティで みんなと、ソロで ひとりでも。<br>フレンドを さそって あさ活！</div>
-    </div>
-  </div>
-  <div id="tutDots"><span class="tutDot active"></span><span class="tutDot"></span><span class="tutDot"></span><span class="tutDot"></span></div>
+  <div id="tutDots" style="display:none"></div>
   <div id="tutStartRow"><button id="tutStart" type="button">はじめる</button></div>
 </div>
 
@@ -8967,6 +8973,30 @@ async function autoStampFlow(){
   let beforeUrl="";try{beforeUrl=await renderAutoCard(r.cur.slice(0,r.slot),r.no);}catch(_){}
   animateTaisoStamp(beforeUrl,fullUrl,src,r.slot);
 }
+function _renderTsRange(){
+  try{
+    const box=$("tsRangeMini");if(!box)return;
+    let weeks=[],rs={peaks:0,total:0,perfect:0,best:0};
+    try{weeks=_rangeData();rs=_rangeStats(weeks);}catch(_){}
+    /* 中身が ある週だけ。無ければ「まだ これから」表示 */
+    const has=weeks.some(w=>w&&w.days>0);
+    if(!has){
+      box.innerHTML='<div style="font-family:Yomogi,Kosugi Maru,sans-serif;font-size:12.5px;'+
+        'font-weight:800;color:#a9c3d1;padding:22px 8px;text-align:center;line-height:1.6;">'+
+        'まいにち つづけると<br>ここに 山が つみあがるよ⛰</div>';
+    }else{
+      /* まとめと同じ _rangeSVG を 使う（幅は カードに あわせて 小さめ） */
+      let svg="";try{svg=_rangeSVG(weeks,260);}catch(_){svg="";}
+      box.innerHTML=svg||'<div style="padding:22px;color:#a9c3d1;">…</div>';
+      /* いちばん新しい山（右端）を 見せる */
+      setTimeout(()=>{try{box.scrollLeft=box.scrollWidth;}catch(_){}},30);
+    }
+    const st=$("tsRangeStat");
+    if(st){
+      st.textContent="のぼった山 "+(rs.peaks||0)+"つ ・ パーフェクト週 "+(rs.perfect||0)+"かい";
+    }
+  }catch(_){}
+}
 function setTaisoCard(url){
   const img=$("autoPreviewImg");if(img)img.src=url||"";
   const wrap=$("autoStampFlyWrap");if(wrap)wrap.style.display="none";
@@ -9100,6 +9130,7 @@ function tsResetPost(){
   const nb=$("tsNextBtn");if(nb){const away=(typeof outingPhase==="function"&&outingPhase()==="away");nb.textContent=away?"ホームへ":"おへやへ →";}
   try{refreshWakeAdj();}catch(_){}
   try{refreshStampBookBtn();}catch(_){}   /* 過去のカードがあれば本アイコンを出す */
+  try{_renderTsRange();}catch(_){}         /* これまでの山脈ミニを 最新に */
   tsUpdatePreview();
 }
 async function tsDoPost(){
@@ -13752,6 +13783,7 @@ try{const _h=$("tsShowTime");if(_h)_h.addEventListener("change",tsUpdatePreview)
 $("tsPostBtn").addEventListener("click",()=>{playClick();tsDoPost();});
 $("tsNextBtn").addEventListener("click",()=>{playClick();taisoNext();});
 try{const _sb=$("tsSumBtn");if(_sb)_sb.addEventListener("click",()=>{try{openTodaySum();}catch(_){}});}catch(_){}
+try{const _rc=$("tsRangeCard");if(_rc)_rc.addEventListener("click",()=>{try{playClick();}catch(_){}try{openRange();}catch(_){}});}catch(_){}
 $("taisoBack").addEventListener("click",()=>{try{playClick();}catch(_){}$("taisoScreen").classList.remove("visible");try{showSelect();}catch(_){}try{updateTop();}catch(_){}});
 /* 横幅が変わったら丘の猫を並べ直す（PCでウィンドウをリサイズしたとき） */
 let _hillResizeT=null;

@@ -1274,7 +1274,7 @@ body.exercising #randomModeBtn{animation:none !important;}
 .recUnit{font-size:11px;font-weight:800;}
 .recNote{margin-top:10px;font-size:12px;font-weight:800;color:#5aa06f;background:#eefaf0;border-radius:12px;padding:8px 12px;display:inline-block;}
 .recEmpty{text-align:center;font-size:12px;font-weight:700;color:#b7c7d2;line-height:1.7;padding:22px 8px;}
-#recCal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:4px;}
+#recCal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:4px;grid-auto-rows:1fr;}
 .rcH{font-size:9.5px;font-weight:800;color:#b7c7d2;text-align:center;padding-bottom:2px;}
 .rcH.sun{color:#e79ab0;}.rcH.sat{color:#8bb6e0;}
 .rcCell{aspect-ratio:1;border-radius:9px;background:#f3f6f9;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#c4d0d9;}
@@ -1927,7 +1927,7 @@ body.exercising #randomModeBtn{animation:none !important;}
 #moodCard.show{display:flex;}
 #moodBox{width:min(340px,92vw);background:#fff;border-radius:22px;padding:20px;box-shadow:0 14px 44px rgba(40,60,80,.32);}
 #moodTitle{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:16px;font-weight:900;color:#5c8aa3;text-align:center;margin-bottom:14px;}
-#moodGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;}
+#moodGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;max-height:52vh;overflow-y:auto;padding:2px 3px;-webkit-overflow-scrolling:touch;}
 .moodItem{border:none;background:#f4fbff;border-radius:14px;padding:10px 4px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;}
 .moodItem:active{background:#e2f4ff;transform:scale(.95);}
 .moodE{font-size:22px;line-height:1;}
@@ -3095,7 +3095,22 @@ button.pmTag{cursor:pointer;}
 #fsResultBox{flex:1 1 auto;overflow-y:auto;padding:4px 16px 26px;display:flex;flex-direction:column;align-items:center;gap:9px;}
 .recCalModeBtn{margin-left:8px;border:1.5px solid #ffd0e0;background:#fff;color:#e08aa8;font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:11px;font-weight:800;border-radius:999px;padding:3px 10px;cursor:pointer;vertical-align:middle;}
 .recCalModeBtn:active{transform:scale(.96);}
-.rcCell.moodcell{background:#fff4ef;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;}
+/* このごろのわたし：範囲トグル・言葉・差を小さく */
+.recRangeSeg{display:inline-flex;gap:4px;margin-left:8px;vertical-align:middle;}
+.recRangeBtn{border:1.5px solid #cfe8f5;background:#fff;color:#7fa8bd;font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:10.5px;font-weight:800;border-radius:999px;padding:2px 10px;cursor:pointer;}
+.recRangeBtn.on{background:linear-gradient(135deg,#8fd3f0,#63bde4);border-color:#63bde4;color:#fff;}
+.recDiffV{font-size:15px!important;}
+.recSumWord{margin-top:9px;font-size:12px;font-weight:800;color:#5f7a89;background:#f3f9fc;border-radius:12px;padding:8px 12px;line-height:1.5;text-align:center;}
+.recSumWord:empty{display:none;}
+/* AIぶんせきカード */
+.recAdvice{font-size:12.5px;font-weight:700;color:#5c6f88;line-height:1.7;min-height:20px;}
+.recAdvice .raLoad{color:#a8b6c8;font-weight:800;}
+.recAdvice .raBody{white-space:pre-wrap;}
+.recAdvice .raTag{display:inline-block;font-size:10px;font-weight:900;color:#a07fd0;background:#f2ecfb;border-radius:99px;padding:1px 9px;margin-bottom:6px;}
+/* 睡眠時間の評価 */
+.recSleepEval{margin-top:8px;font-size:12px;font-weight:800;color:#4e8060;background:#f0f8f2;border-radius:12px;padding:8px 12px;line-height:1.5;text-align:center;}
+.recSleepEval:empty{display:none;}
+.rcCell.moodcell{background:#fff4ef;aspect-ratio:auto;min-height:38px;padding:3px 1px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;line-height:1;overflow:hidden;}
 .rcMoodE{font-size:14px;line-height:1.1;}
 .rcMoodD{font-size:8px;color:#c3aeb0;line-height:1;}
 .rcMoodL{font-size:7.5px;color:#c98a6a;font-weight:800;line-height:1;margin-top:1px;white-space:nowrap;overflow:hidden;max-width:100%;text-overflow:ellipsis;}
@@ -5898,12 +5913,13 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
   <div id="recScroll">
     <div class="recCard">
       <div class="recTape"></div>
-      <div class="recEye"><span class="recEyeDot" style="background:#8fdcff;"></span>このごろの わたし</div>
+      <div class="recEye"><span class="recEyeDot" style="background:#8fdcff;"></span>このごろの わたし<span id="recRangeSeg" class="recRangeSeg"><button type="button" class="recRangeBtn on" data-rd="7">1週間</button><button type="button" class="recRangeBtn" data-rd="3">3日</button></span></div>
       <div class="recSum">
         <div class="recSumBox"><div class="recSumLbl">平均起床</div><div class="recSumVal" id="recAvg">--:--</div></div>
-        <div class="recSumBox o"><div class="recSumLbl">目標との差</div><div class="recSumVal" id="recDiff">--</div></div>
+        <div class="recSumBox o"><div class="recSumLbl">目標との差</div><div class="recSumVal recDiffV" id="recDiff">--</div></div>
         <div class="recSumBox p"><div class="recSumLbl">連続</div><div class="recSumVal" id="recStreak">0<span class="recUnit">日</span></div></div>
       </div>
+      <div id="recSumWord" class="recSumWord"></div>
     </div>
     <div class="recCard">
       <div class="recEye"><span class="recEyeDot" style="background:#63ccff;"></span><span id="recGraphTitle">起きた時間の うつりかわり</span></div>
@@ -5911,8 +5927,8 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
       <div id="recGraph"></div>
     </div>
     <div class="recCard">
-      <div class="recEye"><span class="recEyeDot" style="background:#ffd08a;"></span>あさの きぶん（14日）</div>
-      <div id="recMoods"></div>
+      <div class="recEye"><span class="recEyeDot" style="background:#c9a8f0;"></span>わたしの ぶんせき</div>
+      <div id="recAdvice" class="recAdvice"></div>
     </div>
     <div class="recCard">
       <div class="recEye"><span class="recEyeDot" style="background:#ffa6c8;"></span><span id="recCalTitle">カレンダー</span><button id="recCalModeBtn" type="button" class="recCalModeBtn">😊 気分で見る</button></div>
@@ -5922,6 +5938,11 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
         <span class="rl"><span class="rlDot" style="background:#ffd6a0;"></span>ふつう</span>
         <span class="rl"><span class="rlDot" style="background:#ffb387;"></span>ゆっくり</span>
       </div>
+    </div>
+    <div class="recCard">
+      <div class="recEye"><span class="recEyeDot" style="background:#a6d8b0;"></span>ねむった 時間</div>
+      <div id="recSleep"></div>
+      <div id="recSleepEval" class="recSleepEval"></div>
     </div>
     <div class="recCard">
       <div class="recEye"><span class="recEyeDot" style="background:#ffc46b;"></span>曜日べつの 起きた時間</div>
@@ -6730,20 +6751,121 @@ function _recDot(dm){ return dm<=10 ? "#63ccff" : "#ff9e4d"; }
 function _floatHM(f){ let h=Math.floor(f),m=Math.round((f-h)*60); if(m===60){h++;m=0;} return fmtHM(h,m); }
 function openRecord(){ $("recordScreen").classList.add("visible"); buildRecord(); }
 function closeRecord(){ $("recordScreen").classList.remove("visible"); }
-function buildRecord(){ try{buildRecSummary();}catch(_){} try{buildRecGraph();}catch(_){} try{buildRecCalendar();}catch(_){} try{buildRecWeekday();}catch(_){} try{_renderRecMoods();}catch(_){} }
+function buildRecord(){ try{buildRecSummary();}catch(_){} try{buildRecGraph();}catch(_){} try{buildRecAdvice();}catch(_){} try{buildRecCalendar();}catch(_){} try{buildRecWeekday();}catch(_){} try{buildRecSleep();}catch(_){} }
+var _recRangeDays=7;
+function _recWord(dm){
+  if(dm==null)return "";
+  if(dm<=-20)return "目標より かなり早起き！ その調子✨";
+  if(dm<=-5)return "目標より 早起きできてるね😊";
+  if(dm<=10)return "目標どおり ばっちりだよ👍";
+  if(dm<=30)return "ちょっと 寝坊ぎみかも🌙 あと少し はやくできると◎";
+  return "すこし 寝坊ぎみ。むりせず 少しずつ 早めていこう🌱";
+}
 function buildRecSummary(){
   const wl=getWakeLog();
-  const rec=Object.entries(wl).filter(([k,v])=>Number.isFinite(v)).sort((a,b)=>a[0]<b[0]?1:-1).slice(0,30);
+  const rec=Object.entries(wl).filter(([k,v])=>Number.isFinite(v)).sort((a,b)=>a[0]<b[0]?1:-1).slice(0,_recRangeDays);
   const target=profileWake();
-  const avgEl=$("recAvg"),diffEl=$("recDiff"),stEl=$("recStreak");
+  const avgEl=$("recAvg"),diffEl=$("recDiff"),stEl=$("recStreak"),wEl=$("recSumWord");
+  var dm=null;
   if(rec.length){
     const avg=rec.reduce((s,d)=>s+d[1],0)/rec.length;
     if(avgEl)avgEl.textContent=_floatHM(avg);
-    const dm=Math.round((avg-target)*60);
+    dm=Math.round((avg-target)*60);
     if(diffEl){diffEl.innerHTML=(dm>0?"+":dm<0?"-":"±")+Math.abs(dm)+'<span class="recUnit">分</span>';
       diffEl.style.color=dm>15?"#e88a3a":(dm<-5?"#3f9fc9":"#4d7790");}
   }else{ if(avgEl)avgEl.textContent="--:--"; if(diffEl)diffEl.textContent="--"; }
   if(stEl)stEl.innerHTML=calcStreak().current+'<span class="recUnit">日</span>';
+  if(wEl)wEl.textContent=rec.length?_recWord(dm):"記録が たまると ここに ひとこと でるよ";
+  try{var seg=document.getElementById("recRangeSeg");if(seg)seg.querySelectorAll(".recRangeBtn").forEach(function(b){b.classList.toggle("on",parseInt(b.getAttribute("data-rd"),10)===_recRangeDays);});}catch(_){}
+}
+/* ===== きろく：AIぶんせき / ルールまとめ ===== */
+function _recAdviceData(){
+  var wl=(typeof getWakeLog==="function")?getWakeLog():{}, sl=(typeof getSleepLog==="function")?getSleepLog():{}, mm=(typeof _moodMap==="function")?_moodMap():{};
+  var target=(typeof profileWake==="function")?profileWake():6;
+  var keys={};Object.keys(wl).forEach(function(k){keys[k]=1;});Object.keys(sl).forEach(function(k){keys[k]=1;});Object.keys(mm).forEach(function(k){keys[k]=1;});
+  var dates=Object.keys(keys).sort().slice(-14);
+  var wv=[],dv=[],mv=[];
+  dates.forEach(function(k){
+    if(Number.isFinite(wl[k]))wv.push(wl[k]);
+    if(Number.isFinite(sl[k])&&Number.isFinite(wl[k])){var dd=wl[k]-sl[k];if(dd<=0)dd+=24;if(dd<=16)dv.push(dd);}
+    var m=mm[k];if(m&&m.l&&_MOOD_VAL[m.l]!=null)mv.push(_MOOD_VAL[m.l]);
+  });
+  var avg=function(a){return a.length?a.reduce(function(x,y){return x+y;},0)/a.length:null;};
+  return {target:target, wake:avg(wv), wakeN:wv.length, dur:avg(dv), durN:dv.length, mood:avg(mv), moodN:mv.length, days:dates.length};
+}
+function _recAdviceRule(d){
+  var parts=[];
+  if(d.wake!=null){var dm=Math.round((d.wake-d.target)*60);
+    if(dm<=-5)parts.push("目標より はやく 起きられてるね");
+    else if(dm<=10)parts.push("起きる時間は 目標どおりで いいかんじ");
+    else parts.push("起きる時間が 目標より "+dm+"分 おそめ。あと少し はやくできると いいね");
+  }
+  if(d.dur!=null){var h=d.dur.toFixed(1);
+    if(d.dur>=7&&d.dur<=9)parts.push("ねむった時間は 約"+h+"時間で ちょうど いいよ");
+    else if(d.dur<6)parts.push("ねむった時間が 約"+h+"時間と 短め。はやめに ねる日を つくろう");
+    else if(d.dur<7)parts.push("ねむった時間は 約"+h+"時間。もう少し ねると 元気に なれそう");
+    else parts.push("ねむった時間は 約"+h+"時間と たっぷり。ねすぎには 気をつけてね");
+  }
+  if(d.mood!=null){
+    if(d.mood>=4)parts.push("気分は よい日が 多いね。その調子！");
+    else if(d.mood>=2.7)parts.push("気分は まあまあ。むりせず いこう");
+    else parts.push("気分が しずみ気味の日が 多いみたい。休む時間も 大切にね");
+  }
+  if(!parts.length)return "記録が たまると、ここで あなたの ちょうしを やさしく まとめるよ。まずは 起きた時間や 気分を つけてみてね。";
+  return parts.join("。")+"。";
+}
+function _recAiOn(){ try{ if(!_aiReady())return false; if(puter.auth&&typeof puter.auth.isSignedIn==="function")return puter.auth.isSignedIn()===true; return !!_aiCallName(); }catch(_){ return false; } }
+var _recAdviceBusy=false,_recAdviceDay="",_recAdviceTxt="";
+function buildRecAdvice(){
+  var box=$("recAdvice"); if(!box)return;
+  var d=_recAdviceData();
+  var today=(typeof jstKey==="function")?jstKey():String(new Date().toDateString());
+  if(!_recAiOn()){ box.innerHTML='<div class="raBody">'+escHtml(_recAdviceRule(d))+'</div>'; return; }
+  if(_recAdviceDay===today&&_recAdviceTxt){ box.innerHTML='<div class="raTag">AI</div><div class="raBody">'+escHtml(_recAdviceTxt)+'</div>'; return; }
+  box.innerHTML='<div class="raBody">'+escHtml(_recAdviceRule(d))+'</div>';
+  if(_recAdviceBusy)return;
+  if((d.wakeN+d.durN+d.moodN)<2)return;
+  _recAdviceBusy=true;
+  try{
+    var sysP="あなたは やさしい 生活リズムの みまもり役。ひらがな多め・あたたかい口調で、ぜったいに 責めず 前向きに。むずかしい言葉は つかわない。";
+    var userP="ご主人の 最近"+d.days+"日ぶんの データです。\n・平均起床 "+(d.wake!=null?_floatHM(d.wake):"記録なし")+"（目標 "+_floatHM(d.target)+"）\n・平均で ねむった時間 "+(d.dur!=null?d.dur.toFixed(1)+"時間":"記録なし")+"\n・気分の平均 "+(d.mood!=null?d.mood.toFixed(1)+"／5（5がいちばん良い）":"記録なし")+"\nこの3つを ふまえて、やさしく 分析した うえで、参考になる アドバイスを『〜すると いいかも』のように 2〜3文で。最後は はげます ひとこと。JSONで {\"reply\":\"アドバイス文\"} だけ 返して。";
+    puter.ai.chat([{role:"system",content:sysP},{role:"user",content:userP}], {model:(typeof _aiModel==="function"?_aiModel():"gpt-4o-mini"), max_tokens:320, temperature:0.8}).then(function(out){
+      var txt=""; try{txt=_puterText(out);}catch(_){}
+      var j=_aiJson(txt); if(j&&j.reply)txt=j.reply;
+      txt=String(txt||"").trim().replace(/^["「]+|["」]+$/g,"");
+      if(txt){_recAdviceDay=today;_recAdviceTxt=txt; var b2=$("recAdvice"); if(b2)b2.innerHTML='<div class="raTag">AI</div><div class="raBody">'+escHtml(txt)+'</div>';}
+    }).catch(function(){}).then(function(){_recAdviceBusy=false;});
+  }catch(_){_recAdviceBusy=false;}
+}
+/* ===== きろく：ねむった時間グラフ ===== */
+function buildRecSleep(){
+  var box=$("recSleep"); if(!box)return; var ev=$("recSleepEval");
+  var sl=(typeof getSleepLog==="function")?getSleepLog():{}, wl=(typeof getWakeLog==="function")?getWakeLog():{};
+  var rows=[];
+  Object.keys(sl).forEach(function(k){ var b=sl[k],w=wl[k]; if(!Number.isFinite(b)||!Number.isFinite(w))return; var dd=w-b; if(dd<=0)dd+=24; if(dd>16)return; rows.push([k,dd]); });
+  rows.sort(function(a,b){return a[0]<b[0]?-1:1;});
+  var data=rows.slice(-14);
+  if(data.length<2){ box.innerHTML='<div class="recEmpty">就寝と起床が そろった日が ふえると<br>ねむった時間の グラフが 出るよ</div>'; if(ev)ev.textContent=""; return; }
+  var vals=data.map(function(d){return d[1];});
+  var lo=Math.max(0,Math.min.apply(null,vals)-0.6), hi=Math.max.apply(null,vals)+0.6;
+  if(hi-lo<2){var mid=(hi+lo)/2;lo=Math.max(0,mid-1);hi=mid+1;}
+  var W=340,H=170,pB=22,pL=30,pR=10,n=data.length,pT=14,chartH=H-pT-pB,baseY=H-pB;
+  var X=function(i){return n<=1?(pL+(W-pL-pR)/2):(pL+i*(W-pL-pR)/(n-1));};
+  var Y=function(v){return baseY-Math.max(0,Math.min(1,(v-lo)/((hi-lo)||1)))*chartH;};
+  var s='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;display:block;">';
+  for(var h=Math.ceil(lo);h<=Math.floor(hi);h++){var gy=Y(h);s+='<line x1="'+pL+'" y1="'+gy.toFixed(1)+'" x2="'+(W-pR)+'" y2="'+gy.toFixed(1)+'" stroke="#eef4f0" stroke-width="1"/><text x="4" y="'+(gy+3).toFixed(1)+'" font-size="9" font-weight="800" fill="#a7ccb6">'+h+'h</text>';}
+  if(8>=lo&&7<=hi){var y8=Y(Math.min(hi,8)),y7=Y(Math.max(lo,7));s+='<rect x="'+pL+'" y="'+y8.toFixed(1)+'" width="'+(W-pR-pL)+'" height="'+Math.max(0,y7-y8).toFixed(1)+'" fill="#d9f0e0" opacity="0.55"/>';}
+  s+='<polyline points="'+data.map(function(d,i){return X(i).toFixed(1)+","+Y(d[1]).toFixed(1);}).join(" ")+'" fill="none" stroke="#5cb98a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>';
+  data.forEach(function(d,i){var c=(d[1]>=7&&d[1]<=9)?"#3fae74":(d[1]<6?"#e0a24b":"#7fb8e0");s+='<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(d[1]).toFixed(1)+'" r="3.4" fill="'+c+'" stroke="#fff" stroke-width="1"/>';});
+  data.forEach(function(d,i){if(n<=8||i%Math.ceil(n/7)===0){var p=d[0].split("-");s+='<text x="'+X(i).toFixed(1)+'" y="'+(H-6)+'" font-size="8" text-anchor="middle" font-weight="700" fill="#a9c4b4">'+(+p[1])+'/'+(+p[2])+'</text>';}});
+  s+='</svg>'; box.innerHTML=s;
+  var avg=vals.reduce(function(a,b){return a+b;},0)/vals.length, hh=Math.floor(avg),mm=Math.round((avg-hh)*60); if(mm===60){hh++;mm=0;}
+  var pre="へいきん "+hh+"時間"+(mm?mm+"分":"")+"。", word;
+  if(avg>=7&&avg<=9)word=pre+"ちょうど いい ねむりだよ😴✨";
+  else if(avg<6)word=pre+"ちょっと 短めかも。はやめに ねてみよう🌙";
+  else if(avg<7)word=pre+"もう少し ねると もっと 元気に なれそう";
+  else word=pre+"しっかり ねれてるね。ねすぎには 気をつけて";
+  if(ev)ev.textContent=word;
 }
 const _MOOD_VAL={"すっきり":5,"げんき":5,"しあわせ":5,"わくわく":5,"やるき":4,"おだやか":4,"ふつう":3,"ねむい":2,"ぼんやり":2,"さむい":2,"だるい":1,"どんより":1};
 var _recGraphModes=["wake","bed","mood"];   /* 複数えらべる（チェック式） */
@@ -7077,12 +7199,12 @@ function syncBigSoon(){try{if(_bigPushT)clearTimeout(_bigPushT);_bigPushT=setTim
 let _reloadPromptShown=false;
 var _rpSnooze=0;
 function _showReloadPrompt(){try{
-  if(Date.now()<_rpSnooze)return;                      /* 「あとで」から 1分は 出さない */
+  if(Date.now()<_rpSnooze)return;                      /* 「あとで」から 5分は 出さない */
   const el=$("reloadPrompt");if(!el||_reloadPromptShown)return;
   _reloadPromptShown=true;el.hidden=false;
   const rb=$("rpReload"),lb=$("rpLater");
   if(rb)rb.onclick=()=>{try{location.reload();}catch(_){}};
-  if(lb)lb.onclick=()=>{el.hidden=true;_reloadPromptShown=false;_rpSnooze=Date.now()+60000;};
+  if(lb)lb.onclick=()=>{el.hidden=true;_reloadPromptShown=false;_rpSnooze=Date.now()+300000;};
 }catch(_){}}
 function _canSyncReload(){try{const last=+(localStorage.getItem("radio_last_reload")||0);if(Date.now()-last<30000)return false;localStorage.setItem("radio_last_reload",String(Date.now()));return true;}catch(_){return true;}}
 /* 起動時：クラウドに新しい記録があれば（画像も）取り込んで一度だけ再読み込み */
@@ -15267,6 +15389,7 @@ try{$("fsSearchBtn").addEventListener("click",()=>{try{playClick();}catch(_){}tr
 try{$("fsSearchInput").addEventListener("keydown",(e)=>{if(e.key==="Enter"){e.preventDefault();try{_doFriendSearch();}catch(_){}}});}catch(_){}
 try{$("recCalModeBtn").addEventListener("click",()=>{try{playClick();}catch(_){}_recCalMode=(_recCalMode==="mood")?"wake":"mood";try{buildRecCalendar();}catch(_){}});}catch(_){}
 try{var _rgs=$("recGraphSeg");if(_rgs)_rgs.addEventListener("click",function(e){var b=e.target&&e.target.closest?e.target.closest(".recSegBtn"):null;if(!b)return;try{playClick();}catch(_){}var gm=b.getAttribute("data-gm")||"wake";var i=_recGraphModes.indexOf(gm);if(i>=0)_recGraphModes.splice(i,1);else _recGraphModes.push(gm);try{buildRecGraph();}catch(_){}});}catch(_){}
+try{var _rrs=$("recRangeSeg");if(_rrs)_rrs.addEventListener("click",function(e){var b=e.target&&e.target.closest?e.target.closest(".recRangeBtn"):null;if(!b)return;try{playClick();}catch(_){}_recRangeDays=parseInt(b.getAttribute("data-rd"),10)||7;try{buildRecSummary();}catch(_){}});}catch(_){}
 try{document.addEventListener("click",function(e){var t=e.target&&e.target.closest&&e.target.closest(".ssScoreCol");if(t){try{playClick();}catch(_){}try{_showSpeedTable();}catch(_){}}});}catch(_){}
 try{$("speedTableClose").addEventListener("click",()=>{try{playClick();}catch(_){}var el=$("speedTable");if(el)el.hidden=true;});}catch(_){}
 $("tabFriends").addEventListener("click",()=>{playClick();switchFriendTab("friends");});
@@ -19553,10 +19676,31 @@ async function _plantSummit(){
   }catch(e){toast("立てられなかったよ。もう一度おしてね");}
 }
 const MMOODS=[
-  {e:"☀️",l:"すっきり"},{e:"😴",l:"ねむい"},{e:"💪",l:"げんき"},{e:"🥰",l:"しあわせ"},
-  {e:"😌",l:"おだやか"},{e:"🔥",l:"やるき"},{e:"✨",l:"わくわく"},{e:"🌫️",l:"ぼんやり"},
-  {e:"🫠",l:"だるい"},{e:"🌧️",l:"どんより"},{e:"🥶",l:"さむい"},{e:"😊",l:"ふつう"}
+  {e:"☀️",l:"すっきり",v:5},{e:"🥰",l:"しあわせ",v:5},{e:"💪",l:"げんき",v:5},{e:"✨",l:"わくわく",v:5},
+  {e:"🌟",l:"さいこう",v:5},{e:"🎵",l:"ごきげん",v:5},{e:"😆",l:"うれしい",v:5},{e:"🎉",l:"たのしい",v:5},
+  {e:"🎶",l:"ルンルン",v:5},{e:"🌈",l:"はれやか",v:5},{e:"💕",l:"ときめき",v:5},{e:"😋",l:"まんぞく",v:5},
+  {e:"🥹",l:"かんどう",v:5},{e:"😤",l:"ほこらしい",v:5},{e:"🙌",l:"うきうき",v:5},{e:"💫",l:"きらきら",v:5},
+  {e:"🏆",l:"やりきった",v:5},{e:"⚡",l:"むてき",v:5},{e:"🔥",l:"やるき",v:4},{e:"😌",l:"おだやか",v:4},
+  {e:"🌱",l:"まえむき",v:4},{e:"🍵",l:"おちつく",v:4},{e:"🌿",l:"すこやか",v:4},{e:"☺️",l:"ほんわか",v:4},
+  {e:"🙆",l:"のびのび",v:4},{e:"👍",l:"いいかんじ",v:4},{e:"🛋️",l:"ゆったり",v:4},{e:"🕊️",l:"あんしん",v:4},
+  {e:"😉",l:"きらく",v:4},{e:"🌊",l:"さわやか",v:4},{e:"🧸",l:"ぬくぬく",v:4},{e:"🌼",l:"ほっと",v:4},
+  {e:"😎",l:"たのもしい",v:4},{e:"🙂",l:"わりといい",v:4},{e:"🍮",l:"やわらか",v:4},{e:"😃",l:"うれしめ",v:4},
+  {e:"😊",l:"ふつう",v:3},{e:"😐",l:"まあまあ",v:3},{e:"🔄",l:"いつもどおり",v:3},{e:"🤔",l:"なんとなく",v:3},
+  {e:"👌",l:"ぼちぼち",v:3},{e:"🍡",l:"まったり",v:3},{e:"🐢",l:"のんびり",v:3},{e:"🦥",l:"ゆるい",v:3},
+  {e:"🤷",l:"どちらでも",v:3},{e:"☮️",l:"へいわ",v:3},{e:"⚖️",l:"ほどほど",v:3},{e:"🌸",l:"なごやか",v:3},
+  {e:"🍃",l:"きばらず",v:3},{e:"📄",l:"とくになし",v:3},{e:"☁️",l:"ふわふわ",v:3},{e:"👀",l:"きになる",v:3},
+  {e:"😶",l:"そわそわ",v:3},{e:"⛅",l:"ひとやすみ",v:3},{e:"😴",l:"ねむい",v:2},{e:"🌫️",l:"ぼんやり",v:2},
+  {e:"🥶",l:"さむい",v:2},{e:"😪",l:"つかれ",v:2},{e:"😔",l:"ものうい",v:2},{e:"🥱",l:"ねぼけ",v:2},
+  {e:"😑",l:"ぼーっと",v:2},{e:"😕",l:"のらない",v:2},{e:"😖",l:"もやもや",v:2},{e:"🌥️",l:"さえない",v:2},
+  {e:"😓",l:"かったるい",v:2},{e:"💤",l:"うとうと",v:2},{e:"🪨",l:"おもだるい",v:2},{e:"🍂",l:"つかれぎみ",v:2},
+  {e:"🌘",l:"しずみぎみ",v:2},{e:"🥲",l:"なみだぐむ",v:2},{e:"💨",l:"ためいき",v:2},{e:"🫥",l:"うわのそら",v:2},
+  {e:"🌧️",l:"どんより",v:1},{e:"😣",l:"つらい",v:1},{e:"😩",l:"しんどい",v:1},{e:"🌀",l:"ゆううつ",v:1},
+  {e:"📉",l:"おちこみ",v:1},{e:"😢",l:"かなしい",v:1},{e:"😵",l:"もうむり",v:1},{e:"😰",l:"げっそり",v:1},
+  {e:"😫",l:"ぐったり",v:1},{e:"😭",l:"なきたい",v:1},{e:"🫨",l:"いっぱいいっぱい",v:1},{e:"⛈️",l:"ずーん",v:1},
+  {e:"🌑",l:"くらい",v:1},{e:"💢",l:"さいあく",v:1},{e:"🛑",l:"なにもしたくない",v:1},{e:"🍁",l:"こころぼそい",v:1},
+  {e:"😨",l:"ふあん",v:1},{e:"🫠",l:"だるい",v:1},
 ];
+try{MMOODS.forEach(function(m){if(m&&m.l&&m.v!=null)_MOOD_VAL[m.l]=m.v;});}catch(_){}
 const MMOOD_KEY="radio_moods";
 function _moodMap(){try{const v=JSON.parse(localStorage.getItem(MMOOD_KEY)||"{}");return(v&&typeof v==="object")?v:{};}catch(_){return{};}}
 function _saveMood(dk,m){try{const mm=_moodMap();mm[dk]={e:m.e,l:m.l};localStorage.setItem(MMOOD_KEY,JSON.stringify(mm));try{syncSoon();}catch(_){}}catch(_){}}
@@ -23873,12 +24017,12 @@ function _tvBind(){
   const svg=wrap.querySelector(".tvMapSvg");if(!svg)return;
   let drag=false,px=0,py=0,sx=0,sy=0,moved=false;
   svg.addEventListener("pointerdown",e=>{
-    drag=true;moved=false;px=e.clientX;py=e.clientY;sx=_tvView.cx;sy=_tvView.cy;
+    drag=true;_tvDragging=true;moved=false;px=e.clientX;py=e.clientY;sx=_tvView.cx;sy=_tvView.cy;
     try{svg.setPointerCapture(e.pointerId);}catch(_){}
   });
   svg.addEventListener("pointermove",e=>{
     if(!drag)return;
-    const r=svg.getBoundingClientRect(),k=_tvView.w/Math.max(1,r.width);
+    const r=(_tvRectCache||(_tvRectCache=svg.getBoundingClientRect())),k=_tvView.w/Math.max(1,r.width);
     if(Math.abs(e.clientX-px)+Math.abs(e.clientY-py)>4)moved=true;
     _tvView.cx=sx-(e.clientX-px)*k;_tvView.cy=sy-(e.clientY-py)*k;
     _tvView=_tvClamp(_tvView);
@@ -23887,14 +24031,14 @@ function _tvBind(){
     if(tvQuality()==="nice")_tvDrawSoon();   /* 見え方ゆうせんの時だけ */
   });
   const end=e=>{
-    if(!drag)return;drag=false;
+    if(!drag)return;drag=false;_tvDragging=false;
     try{svg.releasePointerCapture(e.pointerId);}catch(_){}
     _tvRectCache=null;
     if(moved)_tvDrawSoon();
     else _tvTapMap(e,svg);
   };
   svg.addEventListener("pointerup",end);
-  svg.addEventListener("pointercancel",()=>{drag=false;});
+  svg.addEventListener("pointercancel",()=>{drag=false;_tvDragging=false;});
   let pd=0,pw=0;
   svg.addEventListener("touchstart",e=>{if(e.touches.length===2){pd=_jrnTD(e);pw=_tvView.w;}},{passive:true});
   svg.addEventListener("touchmove",e=>{
@@ -24867,7 +25011,7 @@ function _tvPlaceOverlay(){
   const h=_tvHere();
   put($("tvMyCat"),h.lng,h.lat);
   try{_tvPlaceOthers();}catch(_){}
-  try{_tvOverlapCheck();}catch(_){}
+  if(!_tvDragging){try{_tvOverlapCheck();}catch(_){}}
   const o=getOrder();
   if(o){
     const p=_tvOrderPos(o);
@@ -27163,7 +27307,7 @@ function shpSkipGo(){
 /* =====================================================================
    地図を いっぱいに（正方形じゃなくてOK）／家／オープン・準備中
    ===================================================================== */
-var _tvBoxCache=null,_tvRectCache=null;
+var _tvBoxCache=null,_tvRectCache=null,_tvDragging=false;
 function _tvBox(){
   if(_tvBoxCache)return _tvBoxCache;
   const wrap=$("tvWrap");
@@ -30783,7 +30927,7 @@ function _gpStreetHTML(){
     <div class="ssBtnRow"><button id="ssParty" type="button" class="ssSideBtn">👥 誰かと</button><button id="ssNext" type="button">スキップ</button><button id="ssAlbum" type="button" class="ssSideBtn">📷 アルバム</button></div>
   </div>
 </div>
-<div id="reloadPrompt" hidden><span class="rpText">🔄 新しい記録が 届いたよ</span><button id="rpReload" type="button" class="rpBtn rpPrimary">読みこむ</button><button id="rpLater" type="button" class="rpBtn rpLater">あとで（1分後）</button></div>
+<div id="reloadPrompt" hidden><span class="rpText">🔄 新しい記録が 届いたよ</span><button id="rpReload" type="button" class="rpBtn rpPrimary">読みこむ</button><button id="rpLater" type="button" class="rpBtn rpLater">あとで（5分後）</button></div>
 <div id="jrnPhoto" hidden><div class="jpInner"></div></div>
 <div id="jrnAlbum" hidden><div class="jaHead"><button id="jaClose" type="button">‹ もどる</button><div class="jaTitle">📷 日本一周アルバム</div></div><div id="jrnAlbumBody"></div></div>
 <div id="jrnBig" hidden><div class="jbInner"></div></div>

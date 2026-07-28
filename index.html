@@ -8026,37 +8026,36 @@ async function _afterGoogleUser(user){
   _gPending={gid:gid,name:_gname(user)};
   _openMigrate(gid,_gname(user));
 }
+/* ★リダイレクト方式で ログインする（ポップアップの COOP問題を さける）。
+   別ページで Google に とんで、もどってきた時に radio_gredirect を見て 続きを やる。 */
+async function _gRedirect(auth,m,provider){
+  try{localStorage.setItem("radio_gredirect","1");}catch(_){}
+  try{localStorage.setItem("radio_glogin_pending","1");}catch(_){}
+  await m.signInWithRedirect(auth,provider);
+}
 async function googleLogin(){
   let A;try{A=await _getAuth();}catch(e){toast("Googleログインは使えないよ（設定が必要）");return;}
   const{auth,m}=A;const provider=new m.GoogleAuthProvider();
+  try{provider.setCustomParameters({prompt:"select_account"});}catch(_){}
+  toast("Googleに つなぐよ…");
   try{
-    let result;
-    try{
-      if(auth.currentUser&&auth.currentUser.isAnonymous&&m.linkWithPopup){
-        try{ result=await m.linkWithPopup(auth.currentUser,provider); }
-        catch(le){
-          var lc=le&&le.code||"";
-          if(lc==="auth/credential-already-in-use"||lc==="auth/email-already-in-use"||lc==="auth/provider-already-linked"){
-            result=await m.signInWithPopup(auth,provider);
-          }else throw le;
-        }
-      }else{
-        result=await m.signInWithPopup(auth,provider);
-      }
-    }catch(e){
-      const c=e&&e.code||"";
-      if(c==="auth/popup-closed-by-user"||c==="auth/cancelled-popup-request")return;
-      if(c==="auth/popup-blocked"||c==="auth/operation-not-supported-in-this-environment"){
+    /* ゲスト（匿名）を Google に つなぎたい時は まず リンクを ためす。
+       ただし リンクは ポップアップしか 無いので、ダメなら リダイレクトに 切りかえる。 */
+    if(auth.currentUser&&auth.currentUser.isAnonymous&&m.linkWithRedirect){
+      try{
         try{localStorage.setItem("radio_gredirect","1");}catch(_){}
-        await m.signInWithRedirect(auth,provider);return;
+        try{localStorage.setItem("radio_glogin_pending","1");}catch(_){}
+        await m.linkWithRedirect(auth.currentUser,provider);return;
+      }catch(le){
+        /* すでに あるアカウント等 → ふつうの リダイレクトログインへ */
+        await _gRedirect(auth,m,provider);return;
       }
-      throw e;
     }
-    try{_authUser=(result&&result.user)||auth.currentUser||_authUser;_ownerDone=false;}catch(_){}
-    try{setAcctMode("google");}catch(_){}
-    await _afterGoogleUser(result.user);
+    /* ふつうは リダイレクトで ログイン（いちばん 確実） */
+    await _gRedirect(auth,m,provider);
   }catch(e){
     console.warn("glogin",e);const c=e&&e.code||"";
+    try{localStorage.removeItem("radio_glogin_pending");}catch(_){}
     if(c==="auth/operation-not-allowed")toast("Firebaseで Googleサインインを有効にしてね");
     else if(c==="auth/unauthorized-domain")toast("このドメインを Firebaseの許可ドメインに追加してね");
     else toast("Googleログインに失敗したよ");
@@ -8070,13 +8069,31 @@ async function googleLogout(){
   toast("ログアウトしたよ（この端末の記録に もどるよ）");_renderGoogleUI();
   setTimeout(function(){try{location.reload();}catch(_){}},900);
 }
-/* リダイレクト方式で戻ってきた時だけauthを読んで処理（普段は読み込まない＝軽い） */
+/* ★リダイレクトから もどってきた時：Google の 結果を 受けとって ログインを 完了する。
+   radio_gredirect / radio_glogin_pending の どちらかが あれば 処理する。 */
 (function(){
   try{
     if(typeof _isCrawler!=="undefined"&&_isCrawler)return;
-    if(localStorage.getItem("radio_gredirect")!=="1")return;
-    localStorage.removeItem("radio_gredirect");
-    (async()=>{ try{ const{auth,m}=await _getAuth(); const res=await m.getRedirectResult(auth); if(res&&res.user){try{_authUser=res.user;_ownerDone=false;setAcctMode("google");}catch(_){} await _afterGoogleUser(res.user); try{await claimOwner();}catch(_){}} }catch(e){console.warn("gredirect",e);} })();
+    var pend=(localStorage.getItem("radio_gredirect")==="1")||(localStorage.getItem("radio_glogin_pending")==="1");
+    if(!pend)return;
+    try{localStorage.removeItem("radio_gredirect");}catch(_){}
+    (async()=>{
+      try{
+        const{auth,m}=await _getAuth();
+        var res=null;
+        try{res=await m.getRedirectResult(auth);}catch(re){console.warn("getRedirectResult",re);}
+        var user=(res&&res.user)||null;
+        /* getRedirectResult が 空でも、すでに サインイン済みなら それを つかう */
+        if(!user&&auth.currentUser&&!auth.currentUser.isAnonymous)user=auth.currentUser;
+        try{localStorage.removeItem("radio_glogin_pending");}catch(_){}
+        if(user&&!user.isAnonymous){
+          try{_authUser=user;_ownerDone=false;setAcctMode("google");}catch(_){}
+          await _afterGoogleUser(user);   /* この中で 記録の 読みこみ／移植の 案内／reload を やる */
+        }else{
+          /* 結果が とれなかった（キャンセル等）→ そのまま */
+        }
+      }catch(e){console.warn("gredirect",e);try{localStorage.removeItem("radio_glogin_pending");}catch(_){}}
+    })();
   }catch(_){}
 })();
 async function publishProfile(){
@@ -16264,9 +16281,10 @@ async function _acctChoose(mode){
   _acctHidePick();
   if(mode==="google"){
     setAcctMode("google");
-    /* googleLogin が 記録の 読みこみ／移植の 案内まで やってくれる（reload も 中で） */
+    /* リダイレクトで Google に とぶ（画面が 離れる）。もどってきた時に 続きが 走る。 */
     try{await googleLogin();}catch(_){}
-    try{doTitlePlay();}catch(_){}   /* ポップアップを 閉じた等で 進まなかった時のため */
+    /* ここには ふつう 来ない（ページが 移動するため）。来たら 失敗なので タイトルへ。 */
+    setTimeout(function(){try{doTitlePlay();}catch(_){}},1500);
   }else{
     setAcctMode("guest");           /* ゲスト＝この端末だけ。クラウドには 触らない */
     try{await ensureAuth();}catch(_){}

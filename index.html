@@ -4927,8 +4927,63 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
   font-size:15px;font-weight:900;color:#fff;cursor:pointer;
   background:linear-gradient(135deg,#8ad9a8,#5cbf88);box-shadow:0 8px 20px rgba(92,191,136,.4);}
 #tutEndBtn:active{transform:scale(.97);}
+/* ===== 世界樹（ホームの背景・丘のあいだ） ===== */
+#worldTree{position:absolute;left:50%;bottom:20%;transform:translateX(-50%);
+  border:none;background:none;padding:0;cursor:pointer;z-index:3;
+  display:flex;flex-direction:column;align-items:center;line-height:1;}
+#wtCrown{display:block;width:54px;height:44px;border-radius:50% 50% 44% 44%;
+  background:radial-gradient(circle at 38% 32%,#a8e0a8,#5da86a 68%,#3f8a52);
+  box-shadow:0 3px 10px rgba(50,110,70,.32),inset -5px -6px 12px rgba(30,80,50,.28);}
+#wtTrunk{display:block;width:9px;height:30px;border-radius:3px 3px 1px 1px;
+  background:linear-gradient(90deg,#9a6f4a,#7d5837 55%,#6a4a2d);margin-top:-3px;}
+#wtTag{margin-top:3px;display:flex;flex-direction:column;align-items:center;gap:1px;
+  background:rgba(255,255,255,.82);border-radius:9px;padding:2px 8px;
+  box-shadow:0 2px 7px rgba(60,100,130,.2);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);}
+#wtM{font-size:11px;font-weight:900;color:#3f7d55;font-family:"Yomogi","Kosugi Maru",sans-serif;}
+#wtN{font-size:8.5px;font-weight:800;color:#8aa5b5;font-style:normal;}
+#worldTree:active{transform:translateX(-50%) scale(.96);}
+@media (max-width:420px){#wtCrown{width:44px;height:36px;}#wtTrunk{height:24px;}}
+/* ===== 世界樹を 上へ 見にいく画面 ===== */
+#treeView{position:fixed;inset:0;z-index:3600;overflow:hidden;}
+#treeView[hidden]{display:none;}
+#tvSky{position:absolute;inset:0;transition:background .35s linear;}
+#tvStars{position:absolute;inset:0;opacity:0;transition:opacity .5s linear;pointer-events:none;
+  background-image:
+    radial-gradient(1.4px 1.4px at 12% 18%,#fff,transparent),radial-gradient(1.2px 1.2px at 78% 8%,#fff,transparent),
+    radial-gradient(1.6px 1.6px at 32% 62%,#fff,transparent),radial-gradient(1.1px 1.1px at 64% 41%,#fff,transparent),
+    radial-gradient(1.5px 1.5px at 88% 72%,#fff,transparent),radial-gradient(1.2px 1.2px at 22% 88%,#fff,transparent),
+    radial-gradient(1.3px 1.3px at 52% 26%,#fff,transparent),radial-gradient(1px 1px at 92% 34%,#fff,transparent),
+    radial-gradient(1.4px 1.4px at 8% 52%,#fff,transparent),radial-gradient(1.1px 1.1px at 44% 78%,#fff,transparent);
+  background-size:100% 100%;}
+#tvScroll{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
+#tvInner{position:relative;width:100%;}
+#tvTrunk{position:absolute;left:50%;transform:translateX(-50%);width:26px;bottom:0;
+  background:linear-gradient(90deg,rgba(154,111,74,.55),#7d5837 40%,#6a4a2d 62%,rgba(90,62,38,.55));
+  border-radius:6px 6px 0 0;box-shadow:0 0 26px rgba(0,0,0,.18);}
+#tvTop{position:absolute;left:50%;transform:translateX(-50%);width:150px;height:118px;
+  border-radius:50% 50% 42% 42%;
+  background:radial-gradient(circle at 38% 30%,#b6e8b2,#5da86a 62%,#3d8450);
+  box-shadow:0 8px 30px rgba(40,100,60,.4),inset -12px -14px 30px rgba(28,74,46,.3);}
+.tvMark{position:absolute;left:0;right:0;display:flex;align-items:center;gap:8px;padding:0 16px;pointer-events:none;}
+.tvMark:before{content:"";flex:1;height:1px;background:currentColor;opacity:.28;}
+.tvMark span{font-size:10.5px;font-weight:800;letter-spacing:.04em;opacity:.85;white-space:nowrap;}
+.tvMark:after{content:"";flex:1;height:1px;background:currentColor;opacity:.28;}
+#tvHud{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;gap:10px;
+  padding:calc(12px + env(safe-area-inset-top)) 14px 10px;pointer-events:none;}
+#tvHud button{pointer-events:auto;border:none;border-radius:999px;font-family:inherit;font-weight:900;cursor:pointer;
+  background:rgba(255,255,255,.9);color:#3d5b70;box-shadow:0 3px 12px rgba(0,0,0,.2);}
+#tvClose{font-size:15px;padding:8px 14px;}
+#tvUp{font-size:12px;padding:8px 14px;margin-left:auto;}
+#tvHudMid{flex:0 0 auto;text-align:center;background:rgba(255,255,255,.86);border-radius:14px;padding:5px 14px;
+  box-shadow:0 3px 12px rgba(0,0,0,.18);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);}
+#tvAlt{display:block;font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:17px;font-weight:900;color:#2f5f7d;line-height:1.15;}
+#tvZone{display:block;font-size:10px;font-weight:800;color:#7f9bad;font-style:normal;}
+#tvFoot{position:absolute;left:0;right:0;bottom:0;padding:10px 16px calc(14px + env(safe-area-inset-bottom));
+  text-align:center;pointer-events:none;}
+#tvTotal{display:inline-block;background:rgba(255,255,255,.86);border-radius:999px;padding:6px 16px;
+  font-size:11.5px;font-weight:800;color:#4a7089;box-shadow:0 3px 12px rgba(0,0,0,.16);}
 /* ===== ユメっ子ずかん ===== */
-#yumeBook{position:fixed;inset:0;z-index:2450;display:none;flex-direction:column;
+#yumeBook{position:fixed;inset:0;z-index:3460;display:none;flex-direction:column;
   background:linear-gradient(180deg,#eef7fd 0%,#f7fbff 60%,#fff 100%);}
 #yumeBook.show{display:flex;}
 #ybTop{display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top)) 14px 8px;flex:0 0 auto;}
@@ -5380,6 +5435,10 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
     <div class="cloud cloud2"></div>
     <div class="cloud cloud3"></div>
     <div class="hill hillBack"></div>
+    <button id="worldTree" type="button" aria-label="世界樹を見る">
+      <span id="wtCrown"></span><span id="wtTrunk"></span>
+      <span id="wtTag"><b id="wtM">0m</b><i id="wtN">みんなで 0回</i></span>
+    </button>
     <div id="hillCats"></div>
     <div class="hill hillFront"></div>
   </div>
@@ -6313,6 +6372,8 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 <audio id="clickSound" preload="none" playsinline></audio>
 
 <script src="https://js.puter.com/v2/"></script>
+<!-- ★ユメっ子・敵のデータ（この小さいファイルを 差しかえるだけで 中身が かわる） -->
+<script src="yume-data.js" onerror="window.__yumeDataMissing=1"></script>
 <script type="module">
 /* ===== エラー可視化 =====
    スマホだとコンソールが見れないので、何かエラーで止まったら画面下に出す。
@@ -7273,18 +7334,8 @@ function _buildWakeGraph(box){
   }
   s+='<line x1="'+pL+'" y1="'+Y(target).toFixed(1)+'" x2="'+(W-pR)+'" y2="'+Y(target).toFixed(1)+'" stroke="#ffb37a" stroke-width="2" stroke-dasharray="4 5"/>';
   s+='<text x="'+(W-pR)+'" y="'+(Y(target)-4).toFixed(1)+'" text-anchor="end" font-size="9" font-weight="800" fill="#e8a25a">目標 '+_floatHM(target)+'</text>';
-  /* ★気分の折れ線（ピンク）を 起床グラフに かさねる（気分1..5 を 専用スケールで） */
-  try{
-    const mm=(typeof _moodMap==="function")?_moodMap():{};
-    const md=data.map(d=>{const m=mm[d[0]];return (m&&m.l&&(_MOOD_VAL[m.l]!=null))?_MOOD_VAL[m.l]:null;});
-    if(md.some(v=>v!=null)){
-      const MY=v=>pT+(5.6-v)/(5.6-0.4)*(H-pT-pB);
-      const pts=[];md.forEach((v,i)=>{if(v!=null)pts.push(X(i).toFixed(1)+","+MY(v).toFixed(1));});
-      if(pts.length>=2)s+='<polyline points="'+pts.join(" ")+'" fill="none" stroke="#f5a8c8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>';
-      md.forEach((v,i)=>{if(v!=null)s+='<circle cx="'+X(i).toFixed(1)+'" cy="'+MY(v).toFixed(1)+'" r="2.8" fill="#f5a8c8"/>';});
-      s+='<text x="'+(pL+2)+'" y="12" font-size="8.5" font-weight="800" fill="#e58bb0">\u2014 きぶん</text>';
-    }
-  }catch(_){}
+  /* ★「起床だけ」を えらんだ時は 起床だけを 出す（気分の線は かさねない）。
+     気分を 見たい時は チェックで 気分を えらぶと 出るよ。 */
   s+='<polyline points="'+data.map((d,i)=>X(i).toFixed(1)+","+Y(d[1]).toFixed(1)).join(" ")+'" fill="none" stroke="#7fd0f0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>';
   data.forEach((d,i)=>{ s+='<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(d[1]).toFixed(1)+'" r="3.6" fill="'+_recDot(Math.round((d[1]-target)*60))+'"/>'; });
   s+='</svg>';
@@ -10925,6 +10976,7 @@ async function autoStampFlow(){
   if(!src){ openCardMenu(); return; }   /* 念のため手動へフォールバック */
   _lastStampSrc=src;
   try{markTodayDone();}catch(_){}
+  try{_wtAdd();}catch(_){}   /* ★世界樹を 1回ぶん のばす */
   const p=jstKey().split("-"),dateLabel=(+p[1])+"/"+(+p[2]);
   const r=autoAddStamp(src,dateLabel);   /* データに記録（何枚目・どのマス・何日・スタンプ） */
   if(r.added){try{syncStampCardsFB();}catch(_){}try{syncClubroomPresence();}catch(_){}}   /* 保険：Firebaseにも保存＋部室に今日いる印 */
@@ -11321,6 +11373,7 @@ function startRally(skipRoulette){
 function doPostOnly(){
   if(!todayStamp())assignTodayStamp(pickStampIdx());
   try{markTodayDone();}catch(_){}
+  try{_wtAdd();}catch(_){}
   try{refreshHome();}catch(_){}
   if(postedToday()){ toast("きょうは 投稿ずみだよ"); return; }
   showPostConfirm(false);
@@ -27381,6 +27434,75 @@ function _yumeRoll(){
     shiny:shiny,hue:shiny?Math.floor(Math.random()*360):0,at:Date.now()};   /* 色違いの色は 人によって ちがう */
 }
 /* ============================================================
+   ★ユメっ子・敵の データを 外から 差しかえる しくみ
+   ・yume-data.js（小さいファイル）があれば それを つかう
+   ・Firebase に 新しいのが あれば そちらを つかう（編集ツールから 反映）
+   ・どちらも 無ければ 下の はじめの内容の まま
+   ＝ index.html を もう 編集しなくて いい
+   ============================================================ */
+var GD_CACHE="radio_gamedata";
+function _gdApply(d,why){
+  var ch=false;
+  try{
+    if(d&&Array.isArray(d.yume)&&d.yume.length){
+      YUME_MASTER.length=0;
+      d.yume.forEach(function(x){
+        if(!x||!x.img||!x.name)return;
+        var y={img:String(x.img),name:String(x.name),star:Math.max(1,Math.min(3,parseInt(x.star,10)||1))};
+        if(x.sk!=null&&x.sk!=="")y.sk=parseInt(x.sk,10)||0;
+        YUME_MASTER.push(y);
+      });
+      ch=true;
+      /* 画像の あるなし調べを やり直す */
+      try{_yumeImgOK=null;_yumeImgProbe=null;}catch(_){}
+    }
+    if(d&&Array.isArray(d.adv)&&d.adv.length){
+      ADV_CHAPTERS.length=0;
+      d.adv.forEach(function(x,i){
+        if(!x||!x.name)return;
+        ADV_CHAPTERS.push({
+          teki:String(x.teki||("teki"+(i+1)+".png")),
+          name:String(x.name),
+          area:String(x.area||""),
+          lv:String(x.lv||""),
+          diff:Math.max(1,parseInt(x.diff,10)||(i+1))
+        });
+      });
+      ch=true;
+    }
+  }catch(_){}
+  if(ch){
+    try{if(typeof _advRenderSetup==="function"&&document.getElementById("advScreen"))_advRenderSetup();}catch(_){}
+    try{if(typeof _ybRender==="function")_ybRender();}catch(_){}
+  }
+  return ch;
+}
+/* 1) すぐ つかえる もの（ファイル → まえに もらった内容）
+      ※じっさいに あてるのは ADV_CHAPTERS を つくった あと（下の _gdBoot） */
+function _gdBoot(){
+  try{
+    if(window.YUME_DATA){_gdApply(window.YUME_DATA,"file");return;}
+    var c=localStorage.getItem(GD_CACHE);if(c)_gdApply(JSON.parse(c),"cache");
+  }catch(_){}
+}
+/* 2) Firebase に 新しいのが あれば 差しかえる（編集ツールから 反映したもの） */
+async function _gdFetch(){
+  try{
+    var db=await getDB();if(!db)return;
+    var{ref,get}=await import(FB_DB);
+    var snap=await get(ref(db,"gamedata"));
+    if(!snap||!snap.exists())return;
+    var d=snap.val();if(!d)return;
+    var localAt=0;
+    try{localAt=(JSON.parse(localStorage.getItem(GD_CACHE)||"{}").at)|0;}catch(_){}
+    if((d.at|0)<localAt)return;                 /* 古いなら 何もしない */
+    if(_gdApply(d,"fb")){
+      try{localStorage.setItem(GD_CACHE,JSON.stringify(d));}catch(_){}
+    }
+  }catch(_){}
+}
+try{setTimeout(function(){try{_gdFetch();}catch(_){}},2600);}catch(_){}
+/* ============================================================
    ★ユメっ子の とくべつな技（20しゅるい）
    つかいかた：YUME_MASTER の その子に  sk:5  のように 番号を 書くだけ。
    （番号を 変えれば その子の 技が かわる。書かないと 名前から 自動で きまる）
@@ -27626,6 +27748,9 @@ var ADV_CHAPTERS=[
   {teki:"teki11.png", name:"ソレイユ",          area:"夜明けの神殿", lv:"40〜43", diff:11},
   {teki:"teki12.png", name:"ユメノハナ",        area:"ユメの花園",   lv:"44〜48", diff:12}
 ];
+/* ★ここで 外のデータ（yume-data.js / まえの内容）を あてる */
+try{_gdBoot();}catch(_){}
+
 /* ============================================================ */
 
 /* --- 記憶（この子と 何回 戦ったか）→ 100回で 親友（攻撃+5%） --- */
@@ -27667,7 +27792,11 @@ function _advUnit(y){
 }
 /* 敵：1000ものさしに あわせて 作りなおし＋ぜんたいに つよく（およそ2ばい） */
 function _advEnemy(ch){
-  var d=ch.diff||1, last=(d>=ADV_CHAPTERS.length);
+  var d=ch.diff||1;
+  /* ★いちばん さいごの ステージ＝最終ボス（むずかしさの 数字では 見ない。
+     データを 差しかえても ちゃんと はたらくように） */
+  var _lc=ADV_CHAPTERS[ADV_CHAPTERS.length-1];
+  var last=!!(_lc&&ch&&ch.name===_lc.name&&(ch.diff|0)===(_lc.diff|0));
   var maxhp=Math.round(last?3800:(150+d*300));
   var kinds=["dodge","heal","sleep","power"];
   return {name:ch.name, teki:ch.teki, atk:(last?340:(34+d*42)), spd:60+d*26, hp:maxhp, maxhp:maxhp,
@@ -28385,6 +28514,152 @@ try{
     try{showSelect();updateTop();}catch(_){}
   });
 }catch(_){}
+/* ============================================================
+   ★世界樹（みんなで そだてる 木）
+   ・だれかが ラジオ体操を すると 1回ぶん のびる（1回＝100m）
+   ・のびた 高さは Firebaseで みんなと 共有
+   ・背景を 上に スクロール（マウスの ころころも）すると
+     どこまで のびたか 見にいける。空は 高さで かわって いつまでも つづく。
+   ============================================================ */
+var WT_M_PER=100;                      /* 1回で のびる 高さ(m) */
+var WT_CACHE_KEY="radio_wt_cache";     /* さいごに 見た 合計（すぐ 出すため） */
+var WT_DONE_KEY="radio_wt_done";       /* きょう ぶんを 足したか */
+var _wtCount=0;
+function _wtFmt(n){try{return Number(n).toLocaleString("ja-JP");}catch(_){return String(n);}}
+function _wtMeters(){return _wtCount*WT_M_PER;}
+/* 高さから 空の いろ と 名まえ（宇宙の さきまで ずっと つづく） */
+function _wtZone(m){
+  if(m<1000)   return {n:"じめん ちかく", a:"#8fd3f0", b:"#d9f0fb", star:0};
+  if(m<3000)   return {n:"雲の あたり",   a:"#79c6ec", b:"#cfe9f7", star:0};
+  if(m<8000)   return {n:"高い 雲の 上",  a:"#59aee2", b:"#a9d8f0", star:0};
+  if(m<20000)  return {n:"成層圏",        a:"#2f7fc4", b:"#79b8e2", star:.12};
+  if(m<50000)  return {n:"高い 成層圏",   a:"#1b4f90", b:"#3f86c4", star:.35};
+  if(m<80000)  return {n:"中間圏",        a:"#0d2a5c", b:"#1f4f8f", star:.6};
+  if(m<100000) return {n:"熱圏の 入口",   a:"#061634", b:"#0f2f60", star:.8};
+  if(m<400000) return {n:"宇宙",          a:"#02060f", b:"#08142c", star:1};
+  if(m<1000000)return {n:"ふかい 宇宙",   a:"#01030a", b:"#040a18", star:1};
+  return {n:"星の うみ", a:"#000004", b:"#02040c", star:1};
+}
+function _wtApplyScene(){
+  try{
+    var m=_wtMeters();
+    var el=$("wtM");if(el)el.textContent=_wtFmt(m)+"m";
+    var el2=$("wtN");if(el2)el2.textContent="みんなで "+_wtFmt(_wtCount)+"回";
+    /* 背景の 木は のびるほど すこしだけ 大きく（見た目の うるささを おさえる） */
+    var cr=$("wtCrown"),tr=$("wtTrunk");
+    var g=Math.min(1,Math.log10(Math.max(1,m))/6);      /* 0〜1 */
+    if(cr){var w=44+g*26;cr.style.width=w.toFixed(0)+"px";cr.style.height=(w*0.8).toFixed(0)+"px";}
+    if(tr)tr.style.height=(24+g*30).toFixed(0)+"px";
+  }catch(_){}
+}
+function _wtLoadCache(){
+  try{var v=parseInt(localStorage.getItem(WT_CACHE_KEY)||"0",10);if(Number.isFinite(v)&&v>0)_wtCount=v;}catch(_){}
+  _wtApplyScene();
+}
+async function _wtFetch(){
+  try{
+    var db=await getDB();if(!db)return;
+    var{ref,get}=await import(FB_DB);
+    var snap=await get(ref(db,"worldtree/n"));
+    var v=snap&&snap.exists()?parseInt(snap.val(),10):0;
+    if(Number.isFinite(v)&&v>=0){_wtCount=v;try{localStorage.setItem(WT_CACHE_KEY,String(v));}catch(_){}}
+    _wtApplyScene();
+  }catch(_){}
+}
+/* ラジオ体操が おわったら 1回ぶん のばす（1日1回・チュートリアル中は 足さない） */
+async function _wtAdd(){
+  try{
+    if(tutOn())return;
+    var today=jstKey();
+    if(localStorage.getItem(WT_DONE_KEY)===today)return;
+    localStorage.setItem(WT_DONE_KEY,today);
+    _wtCount++;_wtApplyScene();
+    try{localStorage.setItem(WT_CACHE_KEY,String(_wtCount));}catch(_){}
+    var db=await getDB();if(!db)return;
+    var{ref,runTransaction}=await import(FB_DB);
+    await runTransaction(ref(db,"worldtree/n"),function(cur){return (parseInt(cur,10)||0)+1;});
+    _wtFetch();
+  }catch(_){}
+}
+/* ---- 上へ 見にいく画面 ---- */
+var WT_PX_PER_M=0.22;        /* 1m を 何px で えがくか */
+var _wtViewOpen=false;
+function _wtOpen(){
+  var v=$("treeView");if(!v)return;
+  _wtViewOpen=true;v.hidden=false;
+  var m=_wtMeters();
+  var H=Math.max(window.innerHeight*2, m*WT_PX_PER_M+window.innerHeight*1.6);
+  var inner=$("tvInner");if(inner)inner.style.height=H+"px";
+  var trunk=$("tvTrunk");if(trunk)trunk.style.height=Math.max(0,m*WT_PX_PER_M)+"px";
+  var top=$("tvTop");
+  if(top)top.style.bottom=(m*WT_PX_PER_M-20)+"px";
+  /* 高さの めもり */
+  try{
+    var marks=$("tvMarks");
+    if(marks){
+      /* めもりが 8〜12本くらいに なる きりの いい きざみ（1・2・5×10^n） */
+      var raw=Math.max(100,m/10), p10=Math.pow(10,Math.floor(Math.log10(raw))), r=raw/p10;
+      var step=(r<=1?1:r<=2?2:r<=5?5:10)*p10;
+      var h="";
+      for(var q=step;q<=m;q+=step){
+        h+='<div class="tvMark" style="bottom:'+(q*WT_PX_PER_M)+'px"><span>'+_wtFmt(q)+'m</span></div>';
+      }
+      marks.innerHTML=h;
+    }
+  }catch(_){}
+  var tt=$("tvTotal");
+  if(tt)tt.textContent="みんなで "+_wtFmt(_wtCount)+"回 ／ "+_wtFmt(m)+"m のびたよ";
+  var sc=$("tvScroll");
+  if(sc){sc.scrollTop=sc.scrollHeight;_wtPaint();}
+  try{_wtFetch();}catch(_){}
+}
+function _wtClose(){_wtViewOpen=false;var v=$("treeView");if(v)v.hidden=true;}
+function _wtPaint(){
+  try{
+    var sc=$("tvScroll");if(!sc)return;
+    var fromBottom=(sc.scrollHeight-sc.scrollTop-sc.clientHeight);
+    var alt=Math.max(0,fromBottom/WT_PX_PER_M);
+    var z=_wtZone(alt);
+    var sky=$("tvSky");
+    if(sky)sky.style.background="linear-gradient(180deg,"+z.a+" 0%,"+z.b+" 100%)";
+    var st=$("tvStars");if(st)st.style.opacity=String(z.star);
+    var a=$("tvAlt");if(a)a.textContent=_wtFmt(Math.round(alt))+"m";
+    var zn=$("tvZone");if(zn)zn.textContent=z.n;
+    var mk=$("tvMarks");if(mk)mk.style.color=(z.star>.5)?"#dfe8f5":"#3f6b86";
+  }catch(_){}
+}
+try{
+  var _sc=document.getElementById("tvScroll");
+  if(_sc)_sc.addEventListener("scroll",function(){if(_wtViewOpen)_wtPaint();},{passive:true});
+  var _wc=document.getElementById("tvClose");
+  if(_wc)_wc.addEventListener("click",function(){try{playClick();}catch(_){}_wtClose();});
+  var _wu=document.getElementById("tvUp");
+  if(_wu)_wu.addEventListener("click",function(){
+    try{playClick();}catch(_){}
+    var sc=$("tvScroll");if(!sc)return;
+    var m=_wtMeters();
+    sc.scrollTo({top:Math.max(0,sc.scrollHeight-sc.clientHeight-(m*WT_PX_PER_M)+sc.clientHeight*0.55),behavior:"smooth"});
+  });
+  var _wt=document.getElementById("worldTree");
+  if(_wt)_wt.addEventListener("click",function(){try{playClick();}catch(_){}_wtOpen();});
+  /* 背景で 上に スクロール／ころころを 上に → 見にいく */
+  var _sd=document.getElementById("skyDecor");
+  if(_sd){
+    _sd.addEventListener("wheel",function(e){
+      if(_wtViewOpen)return;
+      if(e.deltaY<-6){e.preventDefault();_wtOpen();}
+    },{passive:false});
+    var _ty=null;
+    _sd.addEventListener("touchstart",function(e){_ty=(e.touches&&e.touches[0])?e.touches[0].clientY:null;},{passive:true});
+    _sd.addEventListener("touchmove",function(e){
+      if(_wtViewOpen||_ty==null)return;
+      var y=(e.touches&&e.touches[0])?e.touches[0].clientY:null;if(y==null)return;
+      if(y-_ty>52){_ty=null;_wtOpen();}     /* 下に ひっぱる＝上を のぞく */
+    },{passive:true});
+    _sd.addEventListener("touchend",function(){_ty=null;},{passive:true});
+  }
+}catch(_){}
+try{_wtLoadCache();setTimeout(function(){try{_wtFetch();}catch(_){}},2200);}catch(_){}
 /* ===== ユメっ子ずかん（もってない子は シルエット） ===== */
 function _ybBest(name){
   /* 同じ名前を 何人か もっている時は いちばん 育っている子を 見せる */
@@ -32827,6 +33102,23 @@ function _gpStreetHTML(){
     </div>
     <button id="tutEndBtn" type="button">はじめる！</button>
   </div>
+</div>
+<div id="treeView" hidden>
+  <div id="tvSky"></div>
+  <div id="tvStars"></div>
+  <div id="tvScroll">
+    <div id="tvInner">
+      <div id="tvTrunk"></div>
+      <div id="tvMarks"></div>
+      <div id="tvTop"></div>
+    </div>
+  </div>
+  <div id="tvHud">
+    <button id="tvClose" type="button">✕</button>
+    <div id="tvHudMid"><b id="tvAlt">0m</b><i id="tvZone">じめん</i></div>
+    <button id="tvUp" type="button" aria-label="てっぺんへ">↑ てっぺん</button>
+  </div>
+  <div id="tvFoot"><span id="tvTotal"></span></div>
 </div>
 <div id="yumeBook">
   <div id="ybTop"><button id="ybClose" type="button">✕</button><span id="ybTtl">📖 ユメっ子ずかん</span></div>

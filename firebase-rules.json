@@ -1,0 +1,121 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "owners": {
+      ".read": "auth != null",
+      "$uid": {
+        ".write": "auth != null && (!data.exists() || data.hasChild(auth.uid))"
+      }
+    },
+
+    "sync": {
+      "$uid": {
+        ".read":  "auth != null && root.child('owners').child($uid).child(auth.uid).exists()",
+        ".write": "auth != null && root.child('owners').child($uid).child(auth.uid).exists()"
+      }
+    },
+    "syncbig": {
+      "$uid": {
+        ".read":  "auth != null && root.child('owners').child($uid).child(auth.uid).exists()",
+        ".write": "auth != null && root.child('owners').child($uid).child(auth.uid).exists()"
+      }
+    },
+
+    "profiles": {
+      ".read": "auth != null",
+      "$uid": { ".write": "auth != null && root.child('owners').child($uid).child(auth.uid).exists()" }
+    },
+    "members": {
+      ".read": "auth != null",
+      "$uid": { ".write": "auth != null && root.child('owners').child($uid).child(auth.uid).exists()" }
+    },
+    "stampcards": {
+      ".read": "auth != null",
+      "$uid": { ".write": "auth != null && root.child('owners').child($uid).child(auth.uid).exists()" }
+    },
+    "clubroom": {
+      ".read": "auth != null",
+      "$uid": { ".write": "auth != null && root.child('owners').child($uid).child(auth.uid).exists()" }
+    },
+    "zz": {
+      ".read": "auth != null",
+      "$uid": { ".write": "auth != null && root.child('owners').child($uid).child(auth.uid).exists()" }
+    },
+    "tstate": {
+      ".read": "auth != null",
+      "$uid": { ".write": "auth != null && root.child('owners').child($uid).child(auth.uid).exists()" }
+    },
+    "outings": {
+      ".read": "auth != null",
+      "$uid": { ".write": "auth != null && root.child('owners').child($uid).child(auth.uid).exists()" }
+    },
+    "tshare": {
+      ".read": "auth != null",
+      "$uid": { ".write": "auth != null && root.child('owners').child($uid).child(auth.uid).exists()" }
+    },
+
+    "likes": {
+      ".read": "auth != null",
+      "$pid": {
+        "$uid": { ".write": "auth != null && root.child('owners').child($uid).child(auth.uid).exists()" }
+      }
+    },
+    "mtsummits": {
+      ".read": "auth != null",
+      "$key": {
+        "$uid": { ".write": "auth != null && root.child('owners').child($uid).child(auth.uid).exists()" }
+      }
+    },
+    "mtattempt": {
+      ".read": "auth != null",
+      "$key": {
+        "$uid": { ".write": "auth != null && root.child('owners').child($uid).child(auth.uid).exists()" }
+      }
+    },
+    "friends": {
+      ".read": "auth != null",
+      "$a": {
+        "$b": {
+          ".write": "auth != null && (root.child('owners').child($a).child(auth.uid).exists() || root.child('owners').child($b).child(auth.uid).exists())"
+        }
+      }
+    },
+    "requests": {
+      ".read": "auth != null",
+      "$target": {
+        "$from": {
+          ".write": "auth != null && (root.child('owners').child($target).child(auth.uid).exists() || root.child('owners').child($from).child(auth.uid).exists())"
+        }
+      }
+    },
+
+    "posts":    { ".read": "auth != null", ".write": "auth != null" },
+    "art":      { ".read": "auth != null", ".write": "auth != null" },
+    "shops":    { ".read": "auth != null", ".write": "auth != null" },
+    "sales":    { ".read": "auth != null", ".write": "auth != null" },
+    "shopcnt":  { ".read": "auth != null", ".write": "auth != null" },
+    "deco":     { ".read": "auth != null", ".write": "auth != null" },
+    "pstat":    { ".read": "auth != null", ".write": "auth != null" },
+    "jshare":   { ".read": "auth != null", ".write": "auth != null" },
+    "journey":  { ".read": "auth != null", ".write": "auth != null" },
+    "checkins": { ".read": "auth != null", ".write": "auth != null" },
+    "summit":   { ".read": "auth != null", ".write": "auth != null" },
+    "parties":  { ".read": "auth != null", ".write": "auth != null" },
+    "uparty":   { ".read": "auth != null", ".write": "auth != null" },
+    "pinvites": { ".read": "auth != null", ".write": "auth != null" },
+    "papplies": { ".read": "auth != null", ".write": "auth != null" },
+    "papproved":{ ".read": "auth != null", ".write": "auth != null" },
+    "notif":    { ".read": "auth != null", ".write": "auth != null" },
+    "glinks":   { ".read": "auth != null", ".write": "auth != null" },
+    "ids":      { ".read": "auth != null", ".write": "auth != null" },
+    "worldtree":{ ".read": "auth != null", ".write": "auth != null" },
+
+    "admins": { ".read": "auth != null", ".write": false },
+    "gamedata": {
+      ".read": "auth != null",
+      ".write": "auth != null && (!root.child('admins').exists() || root.child('admins').child(auth.uid).exists())"
+    }
+  }
+}

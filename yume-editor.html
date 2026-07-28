@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ユメっ子 ＆ 敵 データ編集</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=Yomogi&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#fbf7f0; --card:#ffffff; --ink:#33445c; --sub:#7d92a8;
+  --dream:#8fd3f0; --dream-d:#4ea8d8; --gold:#ffc44d; --gold-d:#e0a020;
+  --plum:#7b6bb0; --plum-l:#efeafb; --mist:#e8eff5; --line:#dfe8f0;
+  --danger:#d9736f; --ok:#5cbf88;
+  --sh:0 4px 14px rgba(90,130,165,.14);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:"Kosugi Maru",system-ui,sans-serif;
+  background:
+    radial-gradient(1100px 380px at 50% -140px,#fffdf8 0%,transparent 70%),
+    linear-gradient(180deg,#f6f1e8 0%,var(--paper) 40%);
+  color:var(--ink); min-height:100vh;
+  padding:0 0 60px;
+}
+/* ---------- 見出し ---------- */
+header{
+  padding:calc(20px + env(safe-area-inset-top)) 18px 14px;
+  max-width:1180px;margin:0 auto;
+}
+h1{
+  font-family:"Yomogi",cursive; font-size:26px; margin:0 0 4px; letter-spacing:.02em;
+}
+h1 .em{color:var(--dream-d);}
+.lede{font-size:13px;color:var(--sub);line-height:1.7;margin:0;}
+/* ---------- タブ ---------- */
+.tabs{display:flex;gap:8px;max-width:1180px;margin:16px auto 0;padding:0 18px;}
+.tab{
+  flex:1;border:1.5px solid var(--line);background:#fff;color:var(--sub);
+  font-family:inherit;font-size:14px;font-weight:700;border-radius:14px 14px 0 0;
+  padding:12px 10px;cursor:pointer;transition:.15s;
+}
+.tab[aria-selected="true"]{background:var(--dream);border-color:var(--dream-d);color:#0e3d55;box-shadow:var(--sh);}
+.tab.enemy[aria-selected="true"]{background:var(--plum);border-color:var(--plum);color:#fff;}
+/* ---------- レイアウト ---------- */
+main{max-width:1180px;margin:0 auto;padding:0 18px;}
+.panel{background:var(--card);border:1.5px solid var(--line);border-top:none;border-radius:0 0 18px 18px;box-shadow:var(--sh);padding:16px;}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px;}
+.count{font-size:12px;color:var(--sub);margin-right:auto;}
+.count b{font-size:17px;color:var(--ink);}
+button{font-family:inherit;cursor:pointer;}
+.btn{border:1.5px solid var(--line);background:#fff;color:var(--ink);font-size:13px;font-weight:700;border-radius:999px;padding:9px 16px;transition:.14s;}
+.btn:hover{border-color:var(--dream-d);color:var(--dream-d);}
+.btn.pri{border:none;background:linear-gradient(135deg,var(--dream),var(--dream-d));color:#fff;box-shadow:0 4px 12px rgba(78,168,216,.34);}
+.btn.pri:hover{filter:brightness(1.05);color:#fff;}
+.btn.gold{border:none;background:linear-gradient(135deg,#ffe08a,var(--gold));color:#7a5210;box-shadow:0 4px 12px rgba(255,196,77,.36);}
+.btn.warn{border-color:#f0cfcd;color:var(--danger);}
+.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--gold);outline-offset:2px;}
+/* ---------- 一覧 ---------- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:12px;align-items:start;}
+.row{
+  border:1.5px solid var(--line);border-radius:16px;padding:12px;background:#fff;
+  display:grid;grid-template-columns:60px 1fr;gap:12px;align-items:start;transition:.15s;
+}
+.row:hover{border-color:var(--dream);}
+.row.isEnemy:hover{border-color:var(--plum);}
+.thumb{
+  width:60px;height:60px;border-radius:12px;background:var(--mist);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;
+}
+.thumb img{width:100%;height:100%;object-fit:contain;}
+.thumb .ph{font-size:11px;color:#a8bccb;text-align:center;line-height:1.3;padding:2px;}
+.fields{display:grid;gap:7px;min-width:0;}
+label{display:grid;gap:3px;font-size:10.5px;color:var(--sub);font-weight:700;}
+input,select{
+  font-family:inherit;font-size:13px;color:var(--ink);background:#fdfefe;
+  border:1.5px solid var(--line);border-radius:10px;padding:7px 9px;width:100%;
+}
+input:hover,select:hover{border-color:#c9dbe8;}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.rowFoot{grid-column:1/-1;display:flex;gap:6px;align-items:center;padding-top:2px;border-top:1px dashed var(--line);margin-top:2px;}
+.mini{border:1.5px solid var(--line);background:#fff;color:var(--sub);font-size:12px;font-weight:700;border-radius:8px;padding:4px 9px;line-height:1.2;}
+.mini:hover{border-color:var(--dream-d);color:var(--dream-d);}
+.mini.del:hover{border-color:var(--danger);color:var(--danger);}
+.spacer{margin-left:auto;}
+/* ---------- 強さの読み取り（この画面の主役） ---------- */
+.gauge{grid-column:1/-1;background:linear-gradient(180deg,#fbfdff,#f4f9fc);border:1px solid var(--line);border-radius:12px;padding:9px 11px;}
+.gaugeTtl{font-size:10px;font-weight:700;color:var(--sub);letter-spacing:.06em;margin-bottom:6px;}
+.gRow{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.gRow:last-child{margin-bottom:0;}
+.gLbl{font-size:10.5px;font-weight:700;color:var(--sub);width:66px;flex:0 0 auto;text-align:right;}
+.gBar{flex:1;height:7px;border-radius:99px;background:var(--mist);overflow:hidden;}
+.gFill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--dream),var(--dream-d));transition:width .35s ease;}
+.gFill.hp{background:linear-gradient(90deg,#a8e6c0,#5cbf88);}
+.gFill.atk{background:linear-gradient(90deg,#ffd08a,#f0913f);}
+.gVal{font-size:10.5px;font-weight:700;color:var(--ink);width:56px;flex:0 0 auto;}
+.stars{font-size:13px;letter-spacing:2px;color:var(--gold-d);}
+.tagRate{font-size:10px;color:var(--sub);}
+/* ---------- 書き出し ---------- */
+.out{margin-top:16px;}
+.out h2{font-family:"Yomogi",cursive;font-size:17px;margin:0 0 6px;}
+.hint{font-size:12px;color:var(--sub);line-height:1.75;margin:0 0 10px;}
+.hint code{background:var(--mist);border-radius:5px;padding:1px 6px;font-size:11.5px;}
+textarea{
+  width:100%;min-height:190px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:12px;line-height:1.65;color:#3c5064;background:#fbfdfe;
+  border:1.5px solid var(--line);border-radius:14px;padding:12px;resize:vertical;
+}
+.toast{
+  position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);
+  background:var(--ink);color:#fff;font-size:13px;font-weight:700;padding:11px 20px;border-radius:999px;
+  box-shadow:0 8px 24px rgba(20,40,60,.3);opacity:0;pointer-events:none;transition:.28s;z-index:50;
+}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+.note{background:var(--plum-l);border-left:3px solid var(--plum);border-radius:0 10px 10px 0;padding:10px 13px;font-size:12px;color:#5b4f83;line-height:1.7;margin:12px 0 0;}
+@media (max-width:560px){
+  h1{font-size:22px;}
+  .grid{grid-template-columns:1fr;}
+  main,header,.tabs{padding-left:12px;padding-right:12px;}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+/* ---------- 反映バー ---------- */
+#pubBar{position:sticky;top:0;z-index:20;background:rgba(255,253,248,.94);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1.5px solid var(--line);}
+.pbIn{max-width:1180px;margin:0 auto;padding:10px 18px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+#pbState{font-size:12px;font-weight:700;color:var(--sub);border:1.5px solid var(--line);
+  border-radius:999px;padding:6px 13px;background:#fff;}
+#pbState.ok{color:#2f7d55;border-color:#bfe6cf;background:#f0fbf5;}
+#pbState.busy{color:var(--gold-d);border-color:#f5dfae;background:#fffaef;}
+.pbNote{max-width:1180px;margin:0 auto;padding:0 18px 10px;font-size:11.5px;color:var(--sub);line-height:1.6;}
+button[disabled]{opacity:.45;cursor:not-allowed;}
+#uidBox{font-family:ui-monospace,Menlo,monospace;font-size:11px;background:var(--mist);
+  border-radius:6px;padding:2px 7px;user-select:all;}
+@media (max-width:560px){.pbIn{padding:10px 12px;}.pbNote{padding:0 12px 10px;}}
+</style>
+</head>
+<body>
+
+<div id="pubBar">
+  <div class="pbIn">
+    <span id="pbState">未接続</span>
+    <button class="btn" id="pbLogin">Googleでログイン</button>
+    <button class="btn pri" id="pbPublish" disabled>みんなに反映する</button>
+    <button class="btn" id="pbPull" disabled>いまの内容を読みこむ</button>
+    <button class="btn" id="pbFile">yume-data.js を保存</button>
+  </div>
+  <div class="pbNote" id="pbNote">「みんなに反映する」を押すと、ゲームがすぐ新しい内容になるよ（index.html は触らなくていい）。</div>
+</div>
+<header>
+  <h1>ユメっ子 と <span class="em">敵</span> の データ編集</h1>
+  <p class="lede">ここで作った内容を書き出して、<code style="background:#e8eff5;border-radius:5px;padding:1px 6px;">radio.html</code> に貼りつけて使うよ。<br>入力はこの端末に自動で残るから、途中でとじても大丈夫。</p>
+</header>
+
+<div class="tabs" role="tablist">
+  <button class="tab" id="tabY" role="tab" aria-selected="true">ユメっ子</button>
+  <button class="tab enemy" id="tabE" role="tab" aria-selected="false">敵（ステージ）</button>
+</div>
+
+<main>
+  <section class="panel" id="panelY">
+    <div class="bar">
+      <span class="count">ユメっ子 <b id="cntY">0</b> 体</span>
+      <button class="btn pri" id="addY">＋ 追加</button>
+      <button class="btn" id="resetY">最初の内容に戻す</button>
+    </div>
+    <div class="grid" id="listY"></div>
+
+    <div class="out">
+      <h2>書き出し（ユメっ子）</h2>
+      <p class="hint">radio.html の <code>var YUME_MASTER=[</code> から <code>];</code> までを、下の内容にまるごと差し替えてね。</p>
+      <div class="bar">
+        <button class="btn gold" id="copyY">コピーする</button>
+        <button class="btn" id="dlY">ファイルで保存</button>
+        <label class="spacer" style="display:inline-block;">
+          <span class="btn" id="upYBtn" style="display:inline-block;">読みこむ</span>
+          <input type="file" id="upY" accept=".json,.txt" hidden>
+        </label>
+      </div>
+      <textarea id="outY" readonly spellcheck="false"></textarea>
+    </div>
+  </section>
+
+  <section class="panel" id="panelE" hidden>
+    <div class="bar">
+      <span class="count">ステージ <b id="cntE">0</b> 個</span>
+      <button class="btn pri" id="addE">＋ 追加</button>
+      <button class="btn" id="resetE">最初の内容に戻す</button>
+    </div>
+    <div class="grid" id="listE"></div>
+
+    <p class="note">
+      いちばん最後のステージは<b>自動で「最終ボス」</b>になるよ（2形態・HPが復活する）。<br>
+      むずかしさ <b>1〜12</b> で強さが決まる。数字を変えると下のゲージがすぐ動くから、目安にしてね。
+    </p>
+
+    <div class="out">
+      <h2>書き出し（敵・ステージ）</h2>
+      <p class="hint">radio.html の <code>var ADV_CHAPTERS=[</code> から <code>];</code> までを差し替えてね。</p>
+      <div class="bar">
+        <button class="btn gold" id="copyE">コピーする</button>
+        <button class="btn" id="dlE">ファイルで保存</button>
+        <label class="spacer" style="display:inline-block;">
+          <span class="btn" id="upEBtn" style="display:inline-block;">読みこむ</span>
+          <input type="file" id="upE" accept=".json,.txt" hidden>
+        </label>
+      </div>
+      <textarea id="outE" readonly spellcheck="false"></textarea>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+
+/* 技の名前（radio.html の YUME_SKILLS と同じ順番） */
+const SKILLS=["ゆめのしずく","きらめきスラッシュ","おひさまバースト","もふもふガード","おやつパワー",
+"つきのこもりうた","かぜのステップ","いたずらウィンク","にじいろビーム","ほしふりそそぐ",
+"ゆめすいとり","こおりのつぶて","はなびらまい","ぬくもりのうた","かみなりダッシュ",
+"やみのとばり","ふわふわクッション","しんゆうのちから","よあけのひかり","ユメのはねおと"];
+
+const DEF_Y=[
+ {img:"yume1.png",name:"しろもこ",star:1},{img:"yume2.png",name:"ねむりん",star:1},
+ {img:"yume3.png",name:"はっぱねこ",star:1},{img:"yume4.png",name:"つゆぴよ",star:1},
+ {img:"yume5.png",name:"きのころ",star:1},{img:"yume6.png",name:"モフリン",star:1},
+ {img:"yume7.png",name:"モコリス",star:2},{img:"yume8.png",name:"リーフィ",star:2},
+ {img:"yume9.png",name:"ポヨン",star:2},{img:"yume10.png",name:"キラリン",star:2},
+ {img:"yume11.png",name:"ほしねこ",star:3},{img:"yume12.png",name:"ゆめしっぽ",star:3}
+];
+const DEF_E=[
+ {teki:"teki1.png",name:"ルミア",area:"朝露の庭園",lv:"1〜3",diff:1},
+ {teki:"teki2.png",name:"シルヴァ",area:"木漏れ日の森",lv:"4〜7",diff:2},
+ {teki:"teki3.png",name:"フローラ",area:"花時計の丘",lv:"8〜11",diff:3},
+ {teki:"teki4.png",name:"星渡りクジラ",area:"星くず湖",lv:"12〜15",diff:4},
+ {teki:"teki5.png",name:"レインボーフェザー",area:"虹の渓谷",lv:"16〜19",diff:5},
+ {teki:"teki6.png",name:"クラウドシープ",area:"雲の庭園",lv:"20〜23",diff:6},
+ {teki:"teki7.png",name:"司書ルーナ",area:"月の図書館",lv:"24〜27",diff:7},
+ {teki:"teki8.png",name:"ステラバレリーナ",area:"星の劇場",lv:"28〜31",diff:8},
+ {teki:"teki9.png",name:"オーロラフォックス",area:"オーロラ平原",lv:"32〜35",diff:9},
+ {teki:"teki10.png",name:"夢守りアルム",area:"夢見の塔",lv:"36〜39",diff:10},
+ {teki:"teki11.png",name:"ソレイユ",area:"夜明けの神殿",lv:"40〜43",diff:11},
+ {teki:"teki12.png",name:"ユメノハナ",area:"ユメの花園",lv:"44〜48",diff:12}
+];
+
+const K_Y="yume_editor_y", K_E="yume_editor_e";
+let Y=[],E=[];
+
+function load(){
+  try{Y=JSON.parse(localStorage.getItem(K_Y))||null;}catch(_){Y=null;}
+  try{E=JSON.parse(localStorage.getItem(K_E))||null;}catch(_){E=null;}
+  if(!Array.isArray(Y)||!Y.length)Y=JSON.parse(JSON.stringify(DEF_Y));
+  if(!Array.isArray(E)||!E.length)E=JSON.parse(JSON.stringify(DEF_E));
+}
+function store(){
+  try{localStorage.setItem(K_Y,JSON.stringify(Y));localStorage.setItem(K_E,JSON.stringify(E));}catch(_){}
+}
+function esc(t){return String(t==null?"":t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function jsStr(t){return '"'+String(t==null?"":t).replace(/\\/g,"\\\\").replace(/"/g,'\\"')+'"';}
+
+let toastT=null;
+function toast(msg){
+  const t=$("toast");t.textContent=msg;t.classList.add("on");
+  clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("on"),1900);
+}
+
+/* ===== 星ごとの のびしろ（radio.html と同じ計算） ===== */
+function capRange(star){const fl=star>=3?500:star>=2?200:0;return [fl,1000];}
+const STAR_RATE={1:"70%",2:"25%",3:"5%"};
+
+/* ===== 敵の強さ（radio.html と同じ計算） ===== */
+function enemyPower(diff,isLast){
+  const d=Math.max(1,Math.min(99,diff|0));
+  return isLast?{hp:3800,atk:340}:{hp:Math.round(150+d*300),atk:34+d*42};
+}
+
+/* ---------- ユメっ子の一覧 ---------- */
+function renderY(){
+  const g=$("listY");
+  g.innerHTML=Y.map((y,i)=>{
+    const [lo,hi]=capRange(y.star||1);
+    const skIdx=(y.sk==null?"":y.sk);
+    return `<div class="row" data-i="${i}">
+      <div class="thumb">${y.img?`<img src="${esc(y.img)}" alt="" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'ph',textContent:'画像なし'}))">`:`<span class="ph">画像なし</span>`}</div>
+      <div class="fields">
+        <label>なまえ<input type="text" data-k="name" value="${esc(y.name)}" placeholder="しろもこ"></label>
+        <div class="two">
+          <label>画像ファイル<input type="text" data-k="img" value="${esc(y.img)}" placeholder="yume1.png"></label>
+          <label>レア度<select data-k="star">
+            ${[1,2,3].map(n=>`<option value="${n}"${(y.star|0)===n?" selected":""}>★${n}（出やすさ ${STAR_RATE[n]}）</option>`).join("")}
+          </select></label>
+        </div>
+        <label>とくいわざ<select data-k="sk">
+          <option value=""${skIdx===""?" selected":""}>じどう（なまえで決まる）</option>
+          ${SKILLS.map((n,k)=>`<option value="${k}"${String(skIdx)===String(k)?" selected":""}>${k}：${n}</option>`).join("")}
+        </select></label>
+      </div>
+      <div class="gauge">
+        <div class="gaugeTtl">この子が もらえる のびしろ</div>
+        <div class="gRow"><span class="gLbl">さいてい</span><span class="gBar"><span class="gFill" style="width:${lo/10}%"></span></span><span class="gVal">${lo}</span></div>
+        <div class="gRow"><span class="gLbl">さいこう</span><span class="gBar"><span class="gFill" style="width:${hi/10}%"></span></span><span class="gVal">${hi}</span></div>
+      </div>
+      <div class="rowFoot">
+        <span class="stars">${"★".repeat(y.star|0)+"☆".repeat(3-(y.star|0))}</span>
+        <button class="mini" data-act="up">↑</button>
+        <button class="mini" data-act="down">↓</button>
+        <button class="mini del spacer" data-act="del">けす</button>
+      </div>
+    </div>`;
+  }).join("");
+  $("cntY").textContent=Y.length;
+  $("outY").value=buildY();
+}
+function buildY(){
+  const body=Y.map(y=>{
+    let t=`  {img:${jsStr(y.img)}, name:${jsStr(y.name)}, star:${y.star|0}`;
+    if(y.sk!=null&&y.sk!=="")t+=`, sk:${y.sk|0}`;
+    return t+"}";
+  }).join(",\n");
+  return "var YUME_MASTER=[\n"+body+"\n];";
+}
+
+/* ---------- 敵の一覧 ---------- */
+function renderE(){
+  const g=$("listE");
+  g.innerHTML=E.map((e,i)=>{
+    const isLast=(i===E.length-1);
+    const p=enemyPower(e.diff,isLast);
+    return `<div class="row isEnemy" data-i="${i}">
+      <div class="thumb">${e.teki?`<img src="${esc(e.teki)}" alt="" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'ph',textContent:'画像なし'}))">`:`<span class="ph">画像なし</span>`}</div>
+      <div class="fields">
+        <label>敵のなまえ<input type="text" data-k="name" value="${esc(e.name)}" placeholder="ルミア"></label>
+        <div class="two">
+          <label>画像ファイル<input type="text" data-k="teki" value="${esc(e.teki)}" placeholder="teki1.png"></label>
+          <label>むずかしさ<input type="number" data-k="diff" min="1" max="20" value="${e.diff|0}"></label>
+        </div>
+        <div class="two">
+          <label>すいしょうレベル<input type="text" data-k="lv" value="${esc(e.lv)}" placeholder="1〜3"></label>
+          <label>場所（今は非表示）<input type="text" data-k="area" value="${esc(e.area)}" placeholder="朝露の庭園"></label>
+        </div>
+      </div>
+      <div class="gauge">
+        <div class="gaugeTtl">この敵の つよさ${isLast?"（最終ボス・2形態）":""}</div>
+        <div class="gRow"><span class="gLbl">たいりょく</span><span class="gBar"><span class="gFill hp" style="width:${Math.min(100,p.hp/48)}%"></span></span><span class="gVal">${p.hp}</span></div>
+        <div class="gRow"><span class="gLbl">こうげき</span><span class="gBar"><span class="gFill atk" style="width:${Math.min(100,p.atk/6)}%"></span></span><span class="gVal">${p.atk}</span></div>
+      </div>
+      <div class="rowFoot">
+        <span class="tagRate">${isLast?"👑 最終ボス":"ステージ "+(i+1)}</span>
+        <button class="mini" data-act="up">↑</button>
+        <button class="mini" data-act="down">↓</button>
+        <button class="mini del spacer" data-act="del">けす</button>
+      </div>
+    </div>`;
+  }).join("");
+  $("cntE").textContent=E.length;
+  $("outE").value=buildE();
+}
+function buildE(){
+  const body=E.map(e=>
+    `  {teki:${jsStr(e.teki)}, name:${jsStr(e.name)}, area:${jsStr(e.area)}, lv:${jsStr(e.lv)}, diff:${e.diff|0}}`
+  ).join(",\n");
+  return "var ADV_CHAPTERS=[\n"+body+"\n];";
+}
+
+/* ---------- 入力の反映 ---------- */
+function wire(listId,arr,render){
+  const g=$(listId);
+  g.addEventListener("input",ev=>{
+    const f=ev.target.closest("[data-k]");if(!f)return;
+    const row=ev.target.closest(".row");if(!row)return;
+    const i=+row.dataset.i, k=f.dataset.k;
+    let v=f.value;
+    if(k==="star"||k==="diff")v=parseInt(v,10)||1;
+    if(k==="sk")v=(v===""?null:parseInt(v,10));
+    arr[i][k]=v;
+    store();
+    /* 画像・数値は 見た目に すぐ ひびくので 描きなおす */
+    if(k==="img"||k==="teki"||k==="star"||k==="diff"||k==="sk")render();
+    else{ (listId==="listY"?$("outY"):$("outE")).value=(listId==="listY"?buildY():buildE()); }
+  });
+  g.addEventListener("click",ev=>{
+    const b=ev.target.closest("[data-act]");if(!b)return;
+    const row=ev.target.closest(".row");if(!row)return;
+    const i=+row.dataset.i, a=b.dataset.act;
+    if(a==="del"){ arr.splice(i,1); }
+    else if(a==="up"&&i>0){ const t=arr[i];arr[i]=arr[i-1];arr[i-1]=t; }
+    else if(a==="down"&&i<arr.length-1){ const t=arr[i];arr[i]=arr[i+1];arr[i+1]=t; }
+    store();render();
+  });
+}
+
+/* ---------- ボタン ---------- */
+function copyText(txt,label){
+  const done=()=>toast(label+"をコピーしたよ");
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(done).catch(()=>fallback());
+  }else fallback();
+  function fallback(){
+    const ta=document.createElement("textarea");ta.value=txt;ta.style.position="fixed";ta.style.opacity="0";
+    document.body.appendChild(ta);ta.select();
+    try{document.execCommand("copy");done();}catch(_){toast("コピーできなかったよ。長押しで選んでね");}
+    ta.remove();
+  }
+}
+function download(name,txt){
+  const blob=new Blob([txt],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},400);
+  toast(name+" を保存したよ");
+}
+function readFile(input,onload){
+  input.addEventListener("change",()=>{
+    const f=input.files&&input.files[0];if(!f)return;
+    const r=new FileReader();
+    r.onload=()=>{
+      try{
+        const v=JSON.parse(r.result);
+        if(!Array.isArray(v))throw new Error("配列じゃないよ");
+        onload(v);toast("読みこんだよ");
+      }catch(err){toast("読みこめなかったよ（JSONを確認してね）");}
+      input.value="";
+    };
+    r.readAsText(f);
+  });
+}
+
+$("tabY").addEventListener("click",()=>switchTab("y"));
+$("tabE").addEventListener("click",()=>switchTab("e"));
+function switchTab(which){
+  const y=(which==="y");
+  $("tabY").setAttribute("aria-selected",y?"true":"false");
+  $("tabE").setAttribute("aria-selected",y?"false":"true");
+  $("panelY").hidden=!y;$("panelE").hidden=y;
+}
+
+$("addY").addEventListener("click",()=>{
+  Y.push({img:"yume"+(Y.length+1)+".png",name:"あたらしい子",star:1});
+  store();renderY();toast("ユメっ子を追加したよ");
+});
+$("addE").addEventListener("click",()=>{
+  const n=E.length+1;
+  E.push({teki:"teki"+n+".png",name:"あたらしい敵",area:"",lv:"",diff:Math.min(20,n)});
+  store();renderE();toast("ステージを追加したよ");
+});
+$("resetY").addEventListener("click",()=>{
+  if(!confirm("ユメっ子の内容を最初に戻すよ。いい？"))return;
+  Y=JSON.parse(JSON.stringify(DEF_Y));store();renderY();toast("最初の内容に戻したよ");
+});
+$("resetE").addEventListener("click",()=>{
+  if(!confirm("ステージの内容を最初に戻すよ。いい？"))return;
+  E=JSON.parse(JSON.stringify(DEF_E));store();renderE();toast("最初の内容に戻したよ");
+});
+$("copyY").addEventListener("click",()=>copyText(buildY(),"ユメっ子のコード"));
+$("copyE").addEventListener("click",()=>copyText(buildE(),"敵のコード"));
+$("dlY").addEventListener("click",()=>download("yume-master.json",JSON.stringify(Y,null,2)));
+$("dlE").addEventListener("click",()=>download("adv-chapters.json",JSON.stringify(E,null,2)));
+$("upYBtn").addEventListener("click",()=>$("upY").click());
+$("upEBtn").addEventListener("click",()=>$("upE").click());
+readFile($("upY"),v=>{Y=v;store();renderY();});
+readFile($("upE"),v=>{E=v;store();renderE();});
+
+/* ===== Firebase に 反映する（index.html を さわらずに 中身を かえる） ===== */
+const FB_CFG={
+  apiKey:"AIzaSyBqO6TdFcCT_2p0iVBZpqxjP6VkKfWLQxM",
+  authDomain:"card-zz.firebaseapp.com",
+  projectId:"card-zz",
+  databaseURL:"https://card-zz-default-rtdb.asia-southeast1.firebasedatabase.app",
+  storageBucket:"card-zz.firebasestorage.app",
+  messagingSenderId:"844080901066",
+  appId:"1:844080901066:web:d66ccd77a1fc581c637d33"
+};
+let FB=null;
+function setState(txt,cls){const e=$("pbState");e.textContent=txt;e.className=cls||"";}
+async function fbInit(){
+  if(FB)return FB;
+  setState("つないでいます…","busy");
+  const[{initializeApp},{getDatabase,ref,get,set},auth]=await Promise.all([
+    import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js"),
+    import("https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js"),
+    import("https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js")
+  ]);
+  const app=initializeApp(FB_CFG);
+  FB={app,db:getDatabase(app),ref,get,set,auth};
+  return FB;
+}
+async function fbUser(){
+  const f=await fbInit();
+  const a=f.auth.getAuth(f.app);
+  if(a.currentUser)return a.currentUser;
+  const u=await new Promise(res=>{
+    let done=false;const off=f.auth.onAuthStateChanged(a,x=>{if(done)return;done=true;off();res(x);});
+    setTimeout(()=>{if(done)return;done=true;try{off();}catch(_){}res(a.currentUser||null);},4000);
+  });
+  return u;
+}
+async function login(){
+  try{
+    const f=await fbInit();
+    const a=f.auth.getAuth(f.app);
+    const p=new f.auth.GoogleAuthProvider();
+    let u=await fbUser();
+    if(!u){const r=await f.auth.signInWithPopup(a,p);u=r.user;}
+    onLogin(u);
+  }catch(e){
+    setState("ログインできなかったよ","");
+    toast("ログインできなかったよ（ポップアップの許可を確認してね）");
+  }
+}
+function onLogin(u){
+  if(!u){setState("未接続","");return;}
+  setState("ログイン中","ok");
+  $("pbPublish").disabled=false;$("pbPull").disabled=false;
+  $("pbNote").innerHTML='ログイン中だよ。あなたのID <span id="uidBox">'+esc(u.uid)+'</span> ／ '+
+    '「みんなに反映する」を押すと、ゲームがすぐ新しい内容になるよ（index.html は触らなくていい）。';
+}
+async function publish(){
+  try{
+    setState("反映しています…","busy");
+    const f=await fbInit();const u=await fbUser();
+    if(!u){setState("未接続","");toast("さきにログインしてね");return;}
+    const payload={at:Date.now(),yume:Y,adv:E};
+    await f.set(f.ref(f.db,"gamedata"),payload);
+    setState("反映できたよ","ok");
+    toast("みんなに反映したよ！");
+  }catch(e){
+    setState("反映できなかったよ","");
+    toast("反映できなかったよ（ルールに gamedata を追加してね）");
+  }
+}
+async function pull(){
+  try{
+    setState("読みこんでいます…","busy");
+    const f=await fbInit();
+    const snap=await f.get(f.ref(f.db,"gamedata"));
+    if(!snap.exists()){setState("ログイン中","ok");toast("まだ 反映された内容は ないよ");return;}
+    const d=snap.val();
+    if(Array.isArray(d.yume)&&d.yume.length)Y=d.yume;
+    if(Array.isArray(d.adv)&&d.adv.length)E=d.adv;
+    store();renderY();renderE();
+    setState("ログイン中","ok");toast("いまの内容を読みこんだよ");
+  }catch(e){setState("ログイン中","ok");toast("読みこめなかったよ");}
+}
+function saveDataFile(){
+  const body={at:Date.now(),yume:Y,adv:E};
+  const txt="/* ズズラジオ体操部 — ユメっ子と敵のデータ\n"+
+    "   このファイルを 差しかえるだけで ゲームの中身が かわります。\n"+
+    "   編集ツール（yume-editor.html）で作ったものです。 */\n"+
+    "window.YUME_DATA = "+JSON.stringify(body,null,2)+";\n";
+  const blob=new Blob([txt],{type:"text/javascript"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="yume-data.js";
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},400);
+  toast("yume-data.js を保存したよ");
+}
+$("pbLogin").addEventListener("click",login);
+$("pbPublish").addEventListener("click",publish);
+$("pbPull").addEventListener("click",pull);
+$("pbFile").addEventListener("click",saveDataFile);
+/* すでに ログインしていれば すぐ つかえるように */
+(async()=>{try{const u=await fbUser();if(u)onLogin(u);}catch(_){}})();
+
+load();
+wire("listY",Y,renderY);
+wire("listE",E,renderE);
+renderY();renderE();
+</script>
+</body>
+</html>

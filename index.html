@@ -1441,6 +1441,16 @@ body.exercising #randomModeBtn{animation:none !important;}
   background:linear-gradient(135deg,#7fd8b0,#5ec79a);color:#fff;box-shadow:0 10px 26px rgba(94,199,154,.45);letter-spacing:1px;}
 #titlePlay:active{transform:scale(.95);}
 #titlePlay[hidden]{display:none;}
+#acctPick{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:14px;width:min(320px,86vw);background:rgba(255,255,255,.94);border-radius:22px;padding:18px 16px 16px;box-shadow:0 10px 30px rgba(90,130,160,.28);}
+#acctPick[hidden]{display:none;}
+#acctPickTtl{font-size:17px;font-weight:900;color:#3a6377;}
+#acctPickNote{font-size:12px;font-weight:700;color:#7fa0b3;text-align:center;line-height:1.6;margin-bottom:8px;}
+.acctBtn{width:100%;border-radius:999px;padding:13px 14px;font-family:inherit;font-size:14.5px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;transition:transform .15s;}
+.acctBtn:active{transform:scale(.97);}
+.acctBtn.main{border:none;color:#fff;background:linear-gradient(135deg,#7fc9e8,#4ea8d8);box-shadow:0 6px 16px rgba(78,168,216,.4);}
+.acctBtn.sub{border:1.5px solid #d6e7f0;background:#fff;color:#6d93a8;margin-top:6px;}
+.acctBtn .gIco{width:19px;height:19px;background:#fff;border-radius:50%;padding:2px;flex:0 0 auto;}
+.acctSub{font-size:10.5px;font-weight:700;color:#a7bece;text-align:center;}
 #autoPlayBar{position:relative;width:min(220px,68vw);height:42px;margin-top:12px;border-radius:999px;
   overflow:hidden;background:rgba(143,220,255,.22);box-shadow:inset 0 1px 4px rgba(80,150,190,.18);cursor:pointer;}
 #autoPlayBar[hidden]{display:none;}
@@ -4874,6 +4884,126 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 #advBattle{position:fixed;inset:0;z-index:3500;display:none;flex-direction:column;background:radial-gradient(circle at 50% 30%,#2c3e58,#141d2e);font-family:"Yomogi","Kosugi Maru",sans-serif;}
 #advBattle.show{display:flex;}
 #abTopWrap{padding:calc(16px + env(safe-area-inset-top)) 16px 8px;}
+/* ===== ユメっ子ずかん ===== */
+#yumeBook{position:fixed;inset:0;z-index:2450;display:none;flex-direction:column;
+  background:linear-gradient(180deg,#eef7fd 0%,#f7fbff 60%,#fff 100%);}
+#yumeBook.show{display:flex;}
+#ybTop{display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top)) 14px 8px;flex:0 0 auto;}
+#ybClose{border:none;background:rgba(120,150,180,.16);color:#5c7d9a;font-size:15px;font-weight:800;border-radius:999px;padding:7px 13px;cursor:pointer;}
+#ybTtl{font-size:17px;font-weight:900;color:#37567d;}
+#ybCount{padding:0 16px 8px;font-size:12.5px;font-weight:800;color:#7a97ad;flex:0 0 auto;}
+#ybCount b{font-size:16px;color:#e08a3a;}
+#ybGrid{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px;padding:4px 14px calc(22px + env(safe-area-inset-bottom));}
+.ybCard{background:#fff;border:2px solid #e6f1f8;border-radius:16px;padding:9px 5px 8px;text-align:center;
+  display:flex;flex-direction:column;align-items:center;gap:3px;box-shadow:0 3px 10px rgba(120,160,190,.12);}
+.ybPic{width:56px;height:56px;position:relative;overflow:hidden;}
+.ybNm{font-size:11px;font-weight:900;color:#3a5567;line-height:1.15;word-break:break-all;}
+.ybLv{font-size:9.5px;font-weight:900;color:#c98131;}
+.ybLv span{color:#a8bcc9;font-weight:800;}
+.ybLv.locked{color:#b9c8d4;font-weight:800;}
+.ybNums{display:flex;gap:2px;justify-content:center;}
+.ybNums span{font-size:8px;font-weight:800;color:#9fb3c2;background:#f2f7fa;border-radius:4px;padding:0 3px;line-height:1.5;}
+/* もってない子＝シルエット */
+.ybCard.locked{background:#f6f9fb;border-color:#e9eff4;}
+.ybCard.locked .ybPic{filter:brightness(0) saturate(0) opacity(.28);}
+.ybCard.locked .ybNm{color:#b9c8d4;}
+.ybQ{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:24px;font-weight:900;color:rgba(255,255,255,.9);text-shadow:0 1px 5px rgba(0,0,0,.3);pointer-events:none;}
+.ybCard.locked .ybQ{filter:none;}
+/* あたらしく そろった しゅんかん */
+.ybCard.justgot .ybPic{filter:brightness(0) saturate(0) opacity(.28);}
+.ybCard.reveal .ybPic{animation:ybFill 1.6s cubic-bezier(.2,.9,.3,1) forwards;}
+.ybCard.reveal .ybQ{animation:ybQOut .5s ease forwards;}
+.ybCard.reveal{animation:ybPop 1.6s cubic-bezier(.2,.9,.3,1);}
+@keyframes ybFill{0%{filter:brightness(0) saturate(0) opacity(.28);transform:scale(1);}
+  22%{filter:brightness(3) saturate(0) opacity(.95);transform:scale(1.22);}
+  44%{filter:brightness(1.7) saturate(1) opacity(1);transform:scale(1.1);}
+  70%{filter:none;transform:scale(1.03);}100%{filter:none;transform:scale(1);}}
+@keyframes ybQOut{to{opacity:0;transform:scale(1.7);}}
+@keyframes ybPop{0%{box-shadow:0 3px 10px rgba(120,160,190,.12);border-color:#e6f1f8;}
+  30%{box-shadow:0 0 0 7px rgba(255,212,94,.5),0 0 26px rgba(255,212,94,.85);border-color:#ffd45e;}
+  100%{box-shadow:0 3px 10px rgba(120,160,190,.12);border-color:#e6f1f8;}}
+#advBookBtn{border:none;background:linear-gradient(135deg,#ffe6a8,#ffcf6a);color:#8a5a12;
+  font-size:12.5px;font-weight:900;border-radius:999px;padding:7px 14px;cursor:pointer;margin-left:auto;
+  box-shadow:0 3px 10px rgba(255,196,77,.35);}
+#advBookBtn:active{transform:scale(.96);}
+/* ===== 図鑑：もってない子は シルエット ===== */
+.advDexCard.locked .advDexPic{filter:brightness(0) saturate(0) opacity(.30);}
+.advDexCard.locked .advDexNm{color:#b9c8d4;}
+.advDexPic{position:relative;}
+.dexQ{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:22px;font-weight:900;color:rgba(255,255,255,.85);text-shadow:0 1px 4px rgba(0,0,0,.35);pointer-events:none;}
+.advDexCard.locked .dexQ{filter:none;}
+.advDexGo.have{color:#4fa87a;background:#eaf8f0;}
+/* あたらしく そろった しゅんかん：シルエットが 色づく */
+.advDexCard.justgot .advDexPic{filter:brightness(0) saturate(0) opacity(.30);}
+.advDexCard.justgot .dexQ{opacity:1;}
+.advDexCard.reveal .advDexPic{animation:dexFill 1.5s cubic-bezier(.2,.9,.3,1) forwards;}
+.advDexCard.reveal .dexQ{animation:dexQOut .5s ease forwards;}
+.advDexCard.reveal{animation:dexCardPop 1.5s cubic-bezier(.2,.9,.3,1);}
+@keyframes dexFill{
+  0%{filter:brightness(0) saturate(0) opacity(.30);transform:scale(1);}
+  25%{filter:brightness(3) saturate(0) opacity(.9);transform:scale(1.18);}
+  45%{filter:brightness(1.6) saturate(1) opacity(1);transform:scale(1.08);}
+  70%{filter:none;transform:scale(1.02);}
+  100%{filter:none;transform:scale(1);}}
+@keyframes dexQOut{to{opacity:0;transform:scale(1.6);}}
+@keyframes dexCardPop{
+  0%{box-shadow:0 0 0 0 rgba(255,212,94,0);}
+  28%{box-shadow:0 0 0 8px rgba(255,212,94,.55),0 0 26px rgba(255,212,94,.8);}
+  100%{box-shadow:0 0 0 0 rgba(255,212,94,0);}}
+/* ===== ダメージの 数字 ===== */
+.abPop{position:absolute;top:8%;transform:translateX(-50%);font-family:"Yomogi","Kosugi Maru",sans-serif;
+  font-size:20px;font-weight:900;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.75),0 0 12px rgba(0,0,0,.5);
+  pointer-events:none;z-index:8;white-space:nowrap;animation:abPopUp 1.05s cubic-bezier(.2,.9,.3,1) forwards;}
+.abPop.crit{font-size:27px;color:#ffe07a;text-shadow:0 2px 8px rgba(0,0,0,.8),0 0 18px rgba(255,196,77,.9);}
+.abPop.heal{color:#8ff0b8;}
+.abPop.miss{font-size:15px;color:#cfe0ee;}
+.abPop.state{font-size:14px;color:#ffd9f0;}
+@keyframes abPopUp{0%{opacity:0;transform:translateX(-50%) translateY(10px) scale(.5);}
+  22%{opacity:1;transform:translateX(-50%) translateY(-16px) scale(1.18);}
+  40%{transform:translateX(-50%) translateY(-22px) scale(1);}
+  100%{opacity:0;transform:translateX(-50%) translateY(-52px) scale(.95);}}
+/* ===== 技の バナー ===== */
+#abSkillBanner{position:absolute;left:0;right:0;top:34%;text-align:center;pointer-events:none;z-index:9;opacity:0;}
+#abSkillBanner.go{animation:abSkIn 1.4s ease forwards;}
+#abSkillBanner .abSkE{font-size:30px;display:block;line-height:1;filter:drop-shadow(0 2px 8px rgba(0,0,0,.5));}
+#abSkillBanner .abSkN{display:inline-block;margin-top:5px;font-size:18px;font-weight:900;color:#fff;
+  padding:5px 20px;border-radius:999px;background:linear-gradient(135deg,var(--skc,#ffd45e),rgba(0,0,0,.35));
+  text-shadow:0 2px 6px rgba(0,0,0,.6);box-shadow:0 6px 20px rgba(0,0,0,.35);}
+@keyframes abSkIn{0%{opacity:0;transform:scale(.5) rotate(-6deg);}
+  16%{opacity:1;transform:scale(1.14) rotate(2deg);}28%{transform:scale(1);}
+  72%{opacity:1;transform:scale(1);}100%{opacity:0;transform:scale(1.05) translateY(-16px);}}
+/* しんか（2形態） */
+@keyframes abEvo{0%,100%{filter:none;transform:scale(1);}
+  30%{filter:brightness(3) drop-shadow(0 0 26px #ffd45e);transform:scale(1.22);}
+  60%{filter:brightness(1.4) drop-shadow(0 0 16px #ff9a5e);transform:scale(1.08);}}
+#abEnemy.evolve{animation:abEvo 1.4s ease;}
+/* 結果画面 */
+#abLvUp{background:rgba(255,255,255,.1);border-radius:14px;padding:9px 16px;max-width:270px;}
+#abLvUp[hidden]{display:none;}
+.abLvTtl{font-size:12px;font-weight:900;color:#ffd98a;margin-bottom:4px;text-align:center;}
+.abLvRow{font-size:12.5px;font-weight:800;color:#e8f0f8;line-height:1.6;text-align:center;}
+#abResBtns{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;}
+#abRetry{border:none;border-radius:999px;padding:12px 26px;font-family:inherit;font-size:14px;font-weight:900;
+  cursor:pointer;color:#7a4a10;background:linear-gradient(135deg,#ffe08a,#ffc44d);box-shadow:0 6px 16px rgba(255,196,77,.4);}
+#abRetry[hidden]{display:none;}
+#abRetry:active{transform:scale(.96);}
+/* ★のびしろの バー（出会った時） */
+.ygCapRow{display:flex;align-items:center;gap:7px;margin-top:5px;}
+.ygCapLbl{font-size:10px;font-weight:800;color:#8fa6b8;width:52px;flex:0 0 auto;text-align:right;}
+.ygCapBar{flex:1;height:8px;border-radius:99px;background:#e8eff4;overflow:hidden;}
+.ygCapFill{height:100%;border-radius:99px;background:linear-gradient(90deg,#8fd3f0,#5fb0e0);transition:width .8s cubic-bezier(.2,.9,.3,1);width:0;}
+.ygCapFill.hi{background:linear-gradient(90deg,#ffd98a,#ffb03a);}
+.ygCapFill.mid{background:linear-gradient(90deg,#a8e6c0,#6cc99a);}
+.ygCapV{font-size:10px;font-weight:900;color:#5a7d94;width:34px;flex:0 0 auto;}
+.ygMaxLv{margin-top:7px;font-size:11px;font-weight:900;color:#7a92a8;text-align:center;}
+.ygMaxLv b{color:#e08a3a;font-size:13px;}
+/* 選ぶカードの 3つの数値 */
+.advCardNums{display:flex;gap:3px;justify-content:center;margin-top:2px;}
+.advCardNums span{font-size:8px;font-weight:800;color:#9fb3c2;background:#f2f7fa;border-radius:4px;padding:0 3px;line-height:1.5;}
+.advCardLv{font-size:8.5px;font-weight:900;color:#c98131;}
 /* ===== たたかいの ステージ（ゲームみたいに 向かい合う） ===== */
 #abStage{position:relative;padding:calc(12px + env(safe-area-inset-top)) 14px 4px;flex:0 0 auto;}
 #abField{position:relative;border-radius:20px;padding:12px 12px 14px;overflow:hidden;
@@ -5724,6 +5854,14 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
     <div id="titleName">ズズ<br>ラジオ体操部</div>
     <div id="titleThumb"></div>
     <button id="titlePlay" type="button">▶ プレイ</button>
+    <div id="acctPick" hidden>
+      <div id="acctPickTtl">はじめまして！</div>
+      <div id="acctPickNote">記録を どこに 保存する？<br>あとから 設定で かえられるよ</div>
+      <button id="acctGoogle" type="button" class="acctBtn main"><svg class="gIco" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.9 0 6.6 1.7 8.1 3.1l6-5.8C34.6 3.2 29.8 1 24 1 14.6 1 6.5 6.4 2.7 14.3l7 5.4C11.5 13.6 17.2 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-2.8-.4-4H24v7.6h12.7c-.3 2.1-1.6 5.2-4.7 7.3l7.2 5.6c4.3-4 6.3-9.9 6.3-16.5z"/><path fill="#FBBC05" d="M9.7 19.7C9.2 21.1 9 22.5 9 24s.2 2.9.7 4.3l-7 5.4C1.3 30.6 0 27.5 0 24s1.3-6.6 2.7-9.7l7 5.4z"/><path fill="#34A853" d="M24 47c6.5 0 11.9-2.1 15.9-5.8l-7.2-5.6c-2 1.4-4.6 2.3-8.7 2.3-6.8 0-12.5-4.1-14.3-9.9l-7 5.4C6.5 41.6 14.6 47 24 47z"/></svg>Googleで ログイン</button>
+      <div class="acctSub">どの端末でも おなじ記録に なるよ</div>
+      <button id="acctGuest" type="button" class="acctBtn sub">ゲストで あそぶ</button>
+      <div class="acctSub">この端末だけ。あとで ログインできるよ</div>
+    </div>
     <div id="autoPlayBar" hidden><div id="autoPlayFill"></div><span id="autoPlayText">ロード中…</span></div>
   </div>
 </div>
@@ -7234,10 +7372,31 @@ function getUid(){
   return u;
 }
 /* ===== 連動（PC⇄スマホ）：ローカル記録をクラウドに自動同期。復元IDでuidを揃えた端末どうしが同じ状態になる ===== */
-const SYNC_EXCLUDE=["radio_uid","radio_art","radio_orders","radio_deco","radio_deco_p","radio_topbar_off","radio_topbar_decided","radio_tv_hidep","radio_tv_noshare","radio_tv_hidehome","radio_tv_quality","radio_stamp_cards","radio_auto_card","radio_unlock_all","radio_sync_meta","radio_syncbig_meta","radio_glogin","radio_gredirect","radio_ai_key","radio_ai_model","radio_ai_mem","radio_ai_goal","radio_ai_greeted","radio_ai_catname","radio_ai_letters","radio_ai_letseen","radio_ai_today","radio_ai_profile","radio_ai_asked","radio_ai_talk","radio_ai_activated","radio_ai_friend","radio_ai_voice","radio_ai_call","radio_ai_callasked","radio_ai_lastday","radio_cafe","radio_cafe_menu","radio_shop_pick","radio_gp_day","radio_ai_goalday","radio_ai_norma","radio_ai_norma_done"];
+/* ★同期しないのは「この端末だけのもの」と「AIの会話」だけ。
+   それ以外は ぜんぶ Firebaseに 保存する（別の端末でも おなじになる）。 */
+const SYNC_EXCLUDE=[
+  /* 身分・しくみ（同期すると こわれる） */
+  "radio_uid","radio_acct_mode","radio_sync_meta","radio_syncbig_meta","radio_glogin","radio_gredirect","radio_unlock_all","radio_last_reload",
+  /* 大きい画像は syncbig で 別に 送る */
+  "radio_stamp_cards","radio_auto_card","radio_art",
+  /* AIの 会話まわり（本人の たのみで 同期しない） */
+  "radio_ai_key","radio_ai_model","radio_ai_mem","radio_ai_greeted","radio_ai_letters","radio_ai_letseen",
+  "radio_ai_today","radio_ai_profile","radio_ai_asked","radio_ai_talk","radio_ai_activated","radio_ai_friend",
+  "radio_ai_voice","radio_ai_call","radio_ai_callasked","radio_ai_lastday"
+];
 const SYNC_META_KEY="radio_sync_meta";
 function _syncCollect(){const o={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(!k||k.indexOf("radio_")!==0)continue;if(SYNC_EXCLUDE.indexOf(k)>=0)continue;const v=localStorage.getItem(k);if(v!=null&&v.length<200000)o[k]=v;}return o;}
 function _syncHash(str){let h=0;for(let i=0;i<str.length;i++){h=(h*31+str.charCodeAt(i))>>>0;}return h.toString(36);}
+var _permWarned=false;
+function _permHint(e){
+  try{
+    var msg=String((e&&(e.message||e.code))||e||"");
+    if(!/permission|PERMISSION_DENIED/i.test(msg))return;
+    if(_permWarned)return;_permWarned=true;
+    if(acctMode()==="google")toast("保存できないよ。設定から ログインし直してね");
+    else toast("この記録は 保存できないよ。設定から Googleでログインしてね");
+  }catch(_){}
+}
 async function cloudSyncPush(force){
   try{
     const db=await getDB();if(!db)return false;
@@ -7263,7 +7422,7 @@ async function cloudSyncPush(force){
     if(!force&&meta.h===h)return false;   /* 変化なし */
     const{ref,set}=await import(FB_DB);
     const t=Date.now();
-    await set(ref(db,"sync/"+getUid()),{t,h,data:js});
+    try{await set(ref(db,"sync/"+getUid()),{t,h,data:js});}catch(e){_permHint(e);throw e;}
     localStorage.setItem(SYNC_META_KEY,JSON.stringify({t,h}));
     return true;
   }catch(_){return false;}
@@ -7306,7 +7465,7 @@ async function cloudSyncPull(){
   }catch(_){return false;}
 }
 /* ===== カード画像履歴も同期（大きいので別ノード・変化時だけ送受信） ===== */
-const BIG_KEYS=["radio_stamp_cards","radio_auto_card","radio_art"];
+const BIG_KEYS=["radio_stamp_cards","radio_auto_card","radio_art","radio_deco","radio_deco_p"];
 const BIG_META_KEY="radio_syncbig_meta";
 function _bigCollect(){const o={};BIG_KEYS.forEach(k=>{const v=localStorage.getItem(k);if(v!=null&&v.length<4500000)o[k]=v;});return o;}
 async function cloudBigPush(force){
@@ -7359,9 +7518,12 @@ function _showReloadPrompt(){try{
 function _canSyncReload(){try{const last=+(localStorage.getItem("radio_last_reload")||0);if(Date.now()-last<30000)return false;localStorage.setItem("radio_last_reload",String(Date.now()));return true;}catch(_){return true;}}
 /* 起動時：クラウドに新しい記録があれば（画像も）取り込んで一度だけ再読み込み */
 (async()=>{try{
+  await ensureAuth();          /* ★さきに サインイン（ゲスト＝匿名／ログイン＝Google） */
+  try{await claimOwner();}catch(_){}
   const a=await cloudSyncPull();
   const b=await cloudBigPull();
   if(a||b)_showReloadPrompt();
+  try{await cloudSyncPush(false);await cloudBigPush(false);}catch(_){}   /* 初回：この端末のぶんを 保存 */
 }catch(_){}})();
 /* 変化があったら素早くアップロード（デバウンス）＝相手にすぐ反映 */
 let _syncPushT=null;
@@ -7416,17 +7578,84 @@ try{document.addEventListener("visibilitychange",async()=>{
 try{setTimeout(()=>{try{_checkPartyInviteBadge();}catch(_){}},2800);}catch(_){}
 function escHtml(s){return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 let _db=null,_dbTried=false;
+/* =========================================================
+   ★ログイン（Firebase Auth）を かならず とおす
+   ・ゲスト   … 匿名サインイン（この端末だけ）
+   ・ログイン … Googleサインイン（どの端末でも おなじ記録）
+   これが ある から、Firebaseの ルールを
+   「サインインした人だけ」に しめても うごく。
+   ========================================================= */
+var ACCT_KEY="radio_acct_mode";                 /* "guest" / "google" */
+var _authUser=null,_authPromise=null,_authFailed=false;
+function acctMode(){try{return localStorage.getItem(ACCT_KEY)||"";}catch(_){return"";}}
+function setAcctMode(v){try{localStorage.setItem(ACCT_KEY,v);}catch(_){}}
+function authUid(){return _authUser?_authUser.uid:"";}
+function _authWait(auth,m,ms){
+  return new Promise(function(res){
+    var done=false,off=null;
+    function fin(u){if(done)return;done=true;try{if(off)off();}catch(_){}res(u||null);}
+    try{off=m.onAuthStateChanged(auth,function(u){fin(u);});}catch(_){fin(auth&&auth.currentUser);}
+    setTimeout(function(){fin(auth&&auth.currentUser);},ms||4500);
+  });
+}
+async function ensureAuth(){
+  if(_authUser)return _authUser;
+  if(_authFailed)return null;
+  if(_authPromise)return _authPromise;
+  _authPromise=(async function(){
+    try{
+      var A=await _getAuth();var auth=A.auth,m=A.m;
+      if(auth.currentUser){_authUser=auth.currentUser;return _authUser;}
+      var u=await _authWait(auth,m,4500);
+      if(u){_authUser=u;return u;}
+      /* まだ だれでもない → ゲスト（匿名）で サインイン */
+      var cred=await m.signInAnonymously(auth);
+      _authUser=cred&&cred.user||auth.currentUser||null;
+      if(_authUser&&!acctMode())setAcctMode("guest");
+      return _authUser;
+    }catch(e){
+      console.warn("auth failed",e&&e.code||e);
+      _authFailed=true;      /* 匿名ログインが OFF の間は 今までどおり うごく */
+      return null;
+    }finally{_authPromise=null;}
+  })();
+  return _authPromise;
+}
 async function getDB(){
   if(_isCrawler)return null;   /* クローラーにはFirebase接続を張らない（Search Consoleの.lpエラー対策） */
+  try{await ensureAuth();}catch(_){}   /* ★かならず サインインしてから つなぐ */
   if(_db)return _db;
-  /* ★修正：以前は一度失敗すると _dbTried で以後ずっとnullを返し、
-     そのセッション中いいね書き込みも通知購読も死んでいた。毎回張り直せるようにする。 */
   try{
     const{initializeApp,getApps}=await import(FB_APP);
     const app=getApps().length?getApps()[0]:initializeApp(firebaseConfig);
     const{getDatabase}=await import(FB_DB);
     _db=getDatabase(app);return _db;
   }catch(e){console.warn("db init failed",e);return null;}
+}
+/* この記録（uid）は じぶんの ものだよ、と しるしを つける。
+   owners/<uid>/<authUid> があると ルールで まもれる。 */
+var _ownerDone=false;
+async function claimOwner(){
+  if(_ownerDone)return true;
+  try{
+    var au=authUid();if(!au)return false;
+    if(_isCrawler)return false;
+    const{initializeApp,getApps}=await import(FB_APP);
+    const app=getApps().length?getApps()[0]:initializeApp(firebaseConfig);
+    const{getDatabase}=await import(FB_DB);
+    var db=_db||getDatabase(app);
+    const{ref,get,set}=await import(FB_DB);
+    var uid=getUid();
+    var snap=await get(ref(db,"owners/"+uid));
+    if(!snap.exists()||!snap.val()){
+      await set(ref(db,"owners/"+uid),{[au]:Date.now()});   /* はじめての しるし */
+      _ownerDone=true;return true;
+    }
+    var v=snap.val();
+    if(v[au]){_ownerDone=true;return true;}                  /* すでに じぶんの もの */
+    await set(ref(db,"owners/"+uid+"/"+au),Date.now());      /* 端末を ついか */
+    _ownerDone=true;return true;
+  }catch(e){return false;}
 }
 /* ===== Googleログイン：既存のクラウド同期(uid)を「Googleアカウント」で束ねる簡単引き継ぎ =====
    仕組み：glinks/<googleUID> = {uid} を保存。別端末で同じGoogleにログイン→その uid に切替→cloudSyncPullで記録が揃う。
@@ -7528,7 +7757,20 @@ async function googleLogin(){
   const{auth,m}=A;const provider=new m.GoogleAuthProvider();
   try{
     let result;
-    try{ result=await m.signInWithPopup(auth,provider); }
+    try{
+      /* ★いま ゲスト(匿名)なら「リンク」して 認証IDを そのまま 引きつぐ */
+      if(auth.currentUser&&auth.currentUser.isAnonymous&&m.linkWithPopup){
+        try{ result=await m.linkWithPopup(auth.currentUser,provider); }
+        catch(le){
+          var lc=le&&le.code||"";
+          if(lc==="auth/credential-already-in-use"||lc==="auth/email-already-in-use"||lc==="auth/provider-already-linked"){
+            result=await m.signInWithPopup(auth,provider);   /* すでに ある アカウント → そっちに 入る */
+          }else throw le;
+        }
+      }else{
+        result=await m.signInWithPopup(auth,provider);
+      }
+    }
     catch(e){
       const c=e&&e.code||"";
       if(c==="auth/popup-closed-by-user"||c==="auth/cancelled-popup-request")return;   /* ユーザーが閉じた */
@@ -7538,7 +7780,10 @@ async function googleLogin(){
       }
       throw e;
     }
+    try{_authUser=(result&&result.user)||auth.currentUser||_authUser;_ownerDone=false;}catch(_){}
+    try{setAcctMode("google");}catch(_){}
     await _afterGoogleUser(result.user);
+    try{await claimOwner();}catch(_){}
   }catch(e){
     console.warn("glogin",e);const c=e&&e.code||"";
     if(c==="auth/operation-not-allowed")toast("Firebaseで Googleサインインを有効にしてね");
@@ -7548,6 +7793,7 @@ async function googleLogin(){
 }
 async function googleLogout(){
   try{const{auth,m}=await _getAuth();await m.signOut(auth);}catch(_){}
+  try{_authUser=null;_authPromise=null;_authFailed=false;_ownerDone=false;setAcctMode("guest");}catch(_){}
   _clearGInfo();toast("ログアウトしたよ（記録はこの端末に残るよ）");_renderGoogleUI();
 }
 /* リダイレクト方式で戻ってきた時だけauthを読んで処理（普段は読み込まない＝軽い） */
@@ -7556,7 +7802,7 @@ async function googleLogout(){
     if(typeof _isCrawler!=="undefined"&&_isCrawler)return;
     if(localStorage.getItem("radio_gredirect")!=="1")return;
     localStorage.removeItem("radio_gredirect");
-    (async()=>{ try{ const{auth,m}=await _getAuth(); const res=await m.getRedirectResult(auth); if(res&&res.user)await _afterGoogleUser(res.user); }catch(e){console.warn("gredirect",e);} })();
+    (async()=>{ try{ const{auth,m}=await _getAuth(); const res=await m.getRedirectResult(auth); if(res&&res.user){try{_authUser=res.user;_ownerDone=false;setAcctMode("google");}catch(_){} await _afterGoogleUser(res.user); try{await claimOwner();}catch(_){}} }catch(e){console.warn("gredirect",e);} })();
   }catch(_){}
 })();
 async function publishProfile(){
@@ -15701,6 +15947,34 @@ function cancelAutoPlay(){
   $("autoPlayBar").hidden=true;$("titlePlay").hidden=false;
 }
 $("titlePlay").addEventListener("click",()=>{playClick();doTitlePlay();});
+/* ===== はじめて ひらいた時：ログイン か ゲストか えらぶ ===== */
+function _acctNeedPick(){try{return !acctMode();}catch(_){return false;}}
+function _acctShowPick(){
+  try{
+    var box=$("acctPick"),pb=$("titlePlay");if(!box)return;
+    box.hidden=false; if(pb)pb.hidden=true;
+    try{cancelAutoPlay();}catch(_){}
+  }catch(_){}
+}
+function _acctHidePick(){try{var box=$("acctPick");if(box)box.hidden=true;var pb=$("titlePlay");if(pb)pb.hidden=false;}catch(_){}}
+async function _acctChoose(mode){
+  try{playClick();}catch(_){}
+  if(mode==="google"){
+    try{
+      await googleLogin();                    /* Googleで サインイン（リダイレクトの場合は もどってくる） */
+      if(authUid()||_gInfo()){setAcctMode("google");}
+      else{setAcctMode("guest");}             /* しっぱい時は ゲストで つづける */
+    }catch(_){setAcctMode("guest");}
+  }else{
+    setAcctMode("guest");
+    try{await ensureAuth();}catch(_){}
+  }
+  try{await claimOwner();}catch(_){}
+  _acctHidePick();
+  try{doTitlePlay();}catch(_){}
+}
+try{var _ag=$("acctGoogle");if(_ag)_ag.addEventListener("click",function(){_acctChoose("google");});}catch(_){}
+try{var _aq=$("acctGuest");if(_aq)_aq.addEventListener("click",function(){_acctChoose("guest");});}catch(_){}
 $("autoPlayBar").addEventListener("click",()=>{playClick();cancelAutoPlay();});   /* バーを押すと自動を中止してプレイボタンに */
 function buildTitleArt(body,ear,cos,msg,pose){
   const cat=`<g transform="translate(160,134)">${catFigureHTML(body,ear,pose||"sit",[0,0],"normal",cos).replace(/^<svg[^>]*>/,"").replace(/<\/svg>$/,"")}</g>`;
@@ -15758,7 +16032,9 @@ function profileBoot(){
   try{ensureDevHomeBtn();}catch(_){}   /* 【テスト用・あとで消す】 */
   $("titleScreen").classList.add("visible");   /* タイトルは毎回最初に表示 */
   if(getProfile()){ setTimeout(()=>{ try{ if($("titleScreen").classList.contains("visible")) doTitlePlay(); }catch(_){} try{_removeBootCover();}catch(_){} }, 380); }   /* 2回目以降：カバーの下で タイトル→きろく まで進めてから外す */
-  else{$("titlePlay").hidden=false;$("autoPlayBar").hidden=true;try{_removeBootCover();}catch(_){}}   /* 初回：タイトルを見せる */
+  else{$("titlePlay").hidden=false;$("autoPlayBar").hidden=true;try{_removeBootCover();}catch(_){}
+    try{if(_acctNeedPick())_acctShowPick();}catch(_){}   /* ★はじめての人：ログイン/ゲストを えらぶ */
+  }   /* 初回：タイトルを見せる */
   try{setTimeout(_removeBootCover,3500);}catch(_){}   /* 保険：必ず外す */
 }
 
@@ -26966,7 +27242,10 @@ function _yumeMasterValid(){
 }
 function _yumeDex(){try{var a=JSON.parse(localStorage.getItem(YUME_KEY)||"[]");return Array.isArray(a)?a:[];}catch(_){return [];}}
 function _yumeSaveDex(a){try{localStorage.setItem(YUME_KEY,JSON.stringify(a));}catch(_){}}
-function _yumeAdd(y){var a=_yumeDex();a.push(y);_yumeSaveDex(a);return a.length;}
+function _yumeAdd(y){var a=_yumeDex();
+  try{var had=false;for(var i=0;i<a.length;i++)if(a[i]&&a[i].name===y.name){had=true;break;}
+    if(!had&&typeof _yumeNewName!=="undefined")_yumeNewName=y.name;}catch(_){}
+  a.push(y);_yumeSaveDex(a);return a.length;}
 
 function _yumeRollStar(){var r=Math.random()*100;return (r<5)?3:(r<30)?2:1;}   /* ★3=5% ★2=25% ★1=70% */
 function _yumePick(star){
@@ -26976,16 +27255,89 @@ function _yumePick(star){
   if(!pool.length)pool=_M.slice();
   return pool[Math.floor(Math.random()*pool.length)]||{img:"yume1.png",name:"ユメっ子",star:star};
 }
-/* ステータス幅は レア度で 変わる（★1:0〜100 ★2:20〜100 ★3:50〜100）。内部は 細かい値で もつ */
-function _yumeStat(star){var fl=(star>=3)?50:(star>=2)?20:0;return Math.round((fl+Math.random()*(100-fl))*100)/100;}
+/* ★のびしろ（＝そのステータスが のびる 最大レベル）。0〜1000。
+   ★1:0〜1000 / ★2:200〜1000 / ★3:500〜1000 と、星が 高いほど 良い数値が 出やすい。
+   じっさいの つよさ ＝ min(いまのレベル, のびしろ)。だから 高い子ほど ずっと のびる。 */
+var YUME_LV_MAX=1000;
+function _yumeStat(star){var fl=(star>=3)?500:(star>=2)?200:0;return Math.round(fl+Math.random()*(YUME_LV_MAX-fl));}
+/* いまのレベル（もってない子は 1） */
+function _yumeLv(y){var v=(y&&y.lv)|0;return v>0?v:1;}
+/* じっさいの つよさ ＝ レベルと のびしろの 小さいほう */
+function _yumeEff(y,key){var cap=(y&&y[key])||0;return Math.max(1,Math.min(_yumeLv(y),cap));}
+/* この子が 行ける 最大レベル ＝ のびしろの いちばん 大きいところ */
+function _yumeMaxLv(y){return Math.max(y&&y.hp||0,y&&y.atk||0,y&&y.spd||0)|0;}
+/* 1試合で あがるレベル（勝ち＝満額 / 負け＝4わり）。約20勝で カンスト＝3週間くらい */
+function _yumeGainLv(diff,win){
+  var g=Math.round(34+(diff||1)*2.2+Math.random()*18);
+  return win?g:Math.max(4,Math.round(g*0.4));
+}
+/* ★これまでの子（0〜100の古い数値）を 1000のものさしに あわせる（1回だけ） */
+var YUME_MIGRATE_KEY="radio_yume_mig1000";
+function _yumeMigrate(){
+  try{
+    if(localStorage.getItem(YUME_MIGRATE_KEY)==="1")return;
+    var d=_yumeDex(),ch=false;
+    d.forEach(function(y){
+      if(y&&y.lv==null){
+        y.hp=Math.round(Math.min(YUME_LV_MAX,(y.hp||0)*10));
+        y.atk=Math.round(Math.min(YUME_LV_MAX,(y.atk||0)*10));
+        y.spd=Math.round(Math.min(YUME_LV_MAX,(y.spd||0)*10));
+        y.lv=300;   /* これまでの子は すこし 育った じょうたいから */
+        ch=true;
+      }
+    });
+    if(ch)localStorage.setItem(YUME_KEY,JSON.stringify(d));
+    localStorage.setItem(YUME_MIGRATE_KEY,"1");
+  }catch(_){}
+}
 function _yumeRoll(){
   var star=_yumeRollStar(), base=_yumePick(star);
   var shiny=(Math.floor(Math.random()*150)===0);   /* 色違い 1/150 */
   return {id:"y"+Date.now()+"_"+Math.floor(Math.random()*1000),img:base.img,name:base.name,star:star,
-    hp:_yumeStat(star),atk:_yumeStat(star),spd:_yumeStat(star),
+    hp:_yumeStat(star),atk:_yumeStat(star),spd:_yumeStat(star),lv:(100+star*30),sk:(base.sk!=null?base.sk:null),
     shiny:shiny,hue:shiny?Math.floor(Math.random()*360):0,at:Date.now()};   /* 色違いの色は 人によって ちがう */
 }
-function _yumeGrade(v){return v>=90?"S":v>=75?"A":v>=60?"B":v>=40?"C":"D";}   /* 能力は 直接見せず 記号で */
+/* ============================================================
+   ★ユメっ子の とくべつな技（20しゅるい）
+   つかいかた：YUME_MASTER の その子に  sk:5  のように 番号を 書くだけ。
+   （番号を 変えれば その子の 技が かわる。書かないと 名前から 自動で きまる）
+   p = 出る かくりつ / kind = はたらき
+   ============================================================ */
+var YUME_SKILLS=[
+  {n:"ゆめのしずく",   e:"\ud83d\udca7", p:0.16, kind:"dmg",    pow:1.9, col:"#5fb8e8", txt:"つめたい しずくが はじけた！"},
+  {n:"きらめきスラッシュ",e:"\u2728", p:0.15, kind:"crit",   pow:1.7, col:"#ffd45e", txt:"かならず 会心！"},
+  {n:"おひさまバースト", e:"\u2600\ufe0f", p:0.13, kind:"dmg", pow:2.3, col:"#ffb03a", txt:"まぶしい 光が つつんだ！"},
+  {n:"もふもふガード",  e:"\ud83e\uddf8", p:0.18, kind:"guard", pow:0.5, col:"#c8a9e8", txt:"もふもふで うけとめた！"},
+  {n:"おやつパワー",    e:"\ud83c\udf6a", p:0.17, kind:"heal",  pow:0.28, col:"#7fd0a0", txt:"げんきが もどった！"},
+  {n:"つきのこもりうた",e:"\ud83c\udf19", p:0.12, kind:"sleep", pow:2,   col:"#8f9fe0", txt:"てきは ねむってしまった！"},
+  {n:"かぜのステップ",  e:"\ud83c\udf43", p:0.16, kind:"spd",   pow:1.5, col:"#8fd8b0", txt:"すばやさが あがった！"},
+  {n:"いたずらウィンク",e:"\ud83d\ude09", p:0.15, kind:"confuse",pow:2,  col:"#f5a0c8", txt:"てきは こんらん した！"},
+  {n:"にじいろビーム",  e:"\ud83c\udf08", p:0.11, kind:"dmg",   pow:2.6, col:"#e88fd0", txt:"にじが つらぬいた！"},
+  {n:"ほしふりそそぐ",  e:"\ud83c\udf1f", p:0.10, kind:"multi", pow:0.8, col:"#ffd980", txt:"ほしが なんども ふった！"},
+  {n:"ゆめすいとり",    e:"\ud83d\udd2e", p:0.13, kind:"drain", pow:1.5, col:"#a88fe0", txt:"ちからを すいとった！"},
+  {n:"こおりのつぶて",  e:"\u2744\ufe0f", p:0.15, kind:"dmg",   pow:2.0, col:"#8fd4f0", txt:"こおりが つきささった！"},
+  {n:"はなびらまい",    e:"\ud83c\udf38", p:0.14, kind:"multi", pow:0.7, col:"#f7b0cd", txt:"はなびらが まいちった！"},
+  {n:"ぬくもりのうた",  e:"\ud83c\udfb5", p:0.14, kind:"healall",pow:0.18,col:"#9fd8c0", txt:"みんなの きずが いえた！"},
+  {n:"かみなりダッシュ",e:"\u26a1", p:0.12, kind:"dmg",   pow:2.4, col:"#ffd23a", txt:"いなずまが はしった！"},
+  {n:"やみのとばり",    e:"\ud83c\udf11", p:0.11, kind:"dark",  pow:2.1, col:"#7a7fb0", txt:"くらやみが のみこんだ！"},
+  {n:"ふわふわクッション",e:"\u2601\ufe0f", p:0.17, kind:"guard",pow:0.45,col:"#bcd8f0", txt:"ふわりと うけながした！"},
+  {n:"しんゆうのちから",e:"\ud83d\udc9d", p:0.12, kind:"crit",  pow:2.2, col:"#ff9fc0", txt:"きずなが ちからに なった！"},
+  {n:"よあけのひかり",  e:"\ud83c\udf05", p:0.09, kind:"dmg",   pow:3.0, col:"#ffab6a", txt:"よあけが てきを つらぬいた！"},
+  {n:"ユメのはねおと",  e:"\ud83e\udeb6", p:0.13, kind:"drain", pow:1.8, col:"#c8b0f0", txt:"はねおとが ちからを うばった！"}
+];
+/* この子の 技（sk が 無ければ 名前から 自動で わりあて） */
+function _yumeSkill(y){
+  try{
+    var i=(y&&y.sk!=null)?(y.sk|0):null;
+    if(i==null){
+      var nm=String((y&&y.name)||"");var h=0;
+      for(var k=0;k<nm.length;k++)h=(h*31+nm.charCodeAt(k))>>>0;
+      i=h%YUME_SKILLS.length;
+    }
+    return YUME_SKILLS[((i%YUME_SKILLS.length)+YUME_SKILLS.length)%YUME_SKILLS.length];
+  }catch(_){return YUME_SKILLS[0];}
+}
+function _yumeGrade(v){return v>=900?"S":v>=750?"A":v>=600?"B":v>=400?"C":"D";}   /* のびしろの 評価 */
 function _yumeStarStr(star){var s="";for(var i=0;i<3;i++)s+=(i<star)?"\u2605":"\u2606";return s;}
 
 /* --- 演出 --- */
@@ -27110,10 +27462,25 @@ function _ygRenderReveal(y){
       })(0);
     }
     var nm=$("ygName");if(nm)nm.innerHTML=escHtml(y.name)+(y.shiny?'<span class="ygShiny">\u2728色違い</span>':"");
-    var stt=$("ygStats");if(stt)stt.innerHTML=
-      '<span class="ygStat"><i>たいりょく</i><b>'+_yumeGrade(y.hp)+'</b><u class="ygNum">'+Math.round(y.hp||0)+'/100</u></span>'+
-      '<span class="ygStat"><i>ちから</i><b>'+_yumeGrade(y.atk)+'</b><u class="ygNum">'+Math.round(y.atk||0)+'/100</u></span>'+
-      '<span class="ygStat"><i>すばやさ</i><b>'+_yumeGrade(y.spd)+'</b><u class="ygNum">'+Math.round(y.spd||0)+'/100</u></span>';
+    /* ★のびしろ（＝どこまで つよく なれるか）を バーで わかりやすく */
+    var stt=$("ygStats");
+    if(stt){
+      var rows=[["たいりょく",y.hp],["ちから",y.atk],["すばやさ",y.spd]];
+      var h="";
+      rows.forEach(function(r,i){
+        var v=Math.round(r[1]||0),pc=Math.max(0,Math.min(100,v/YUME_LV_MAX*100));
+        var cls=(v>=750)?"hi":(v>=450)?"mid":"";
+        h+='<div class="ygCapRow"><span class="ygCapLbl">'+r[0]+'</span>'+
+           '<span class="ygCapBar"><span class="ygCapFill '+cls+'" data-w="'+pc.toFixed(1)+'"></span></span>'+
+           '<span class="ygCapV">'+_yumeGrade(v)+'</span></div>';
+      });
+      h+='<div class="ygMaxLv">この子は <b>Lv'+_yumeMaxLv(y)+'</b> まで そだつよ（いまは Lv'+_yumeLv(y)+'）</div>';
+      var sk=_yumeSkill(y);
+      if(sk)h+='<div class="ygMaxLv">とくいわざ： '+sk.e+' <b>'+escHtml(sk.n)+'</b></div>';
+      stt.innerHTML=h;
+      /* バーが すーっと のびる */
+      setTimeout(function(){try{stt.querySelectorAll(".ygCapFill").forEach(function(f){f.style.width=f.getAttribute("data-w")+"%";});}catch(_){}},260);
+    }
   }catch(_){}
   try{var inf=$("ygInfo");if(inf){void inf.offsetWidth;inf.classList.add("show");}}catch(_){}
 }
@@ -27209,52 +27576,136 @@ function _yumeMiniInner(y){return '<div class="advPicInner"'+(y.shiny?' style="f
 /* --- 戦うための ユニット化 --- */
 function _advUnit(y){
   var friend=_yumeIsFriend(y.id);
-  var atk=(y.atk||10)*(friend?1.05:1);
-  var maxhp=Math.round(50 + (y.hp||10)*1.7);
-  return {y:y, name:y.name, pers:_yumePers(y), atk:atk, spd:(y.spd||10), hp:maxhp, maxhp:maxhp, friend:friend};
+  var eA=_yumeEff(y,"atk"),eH=_yumeEff(y,"hp"),eS=_yumeEff(y,"spd");
+  var atk=(12+eA*0.30)*(friend?1.05:1);
+  var maxhp=Math.round(260 + eH*2.2);
+  return {y:y, name:y.name, pers:_yumePers(y), skill:_yumeSkill(y), lv:_yumeLv(y),
+          atk:atk, spd:eS, hp:maxhp, maxhp:maxhp, friend:friend, guard:0, spdUp:0, sleep:0};
 }
+/* 敵：1000ものさしに あわせて 作りなおし＋ぜんたいに つよく（およそ2ばい） */
 function _advEnemy(ch){
-  var d=ch.diff||1;
-  var maxhp=Math.round(130 + d*55);
-  return {name:ch.name, teki:ch.teki, atk:14+d*4, spd:14+d*2.5, hp:maxhp, maxhp:maxhp, confused:0};
+  var d=ch.diff||1, last=(d>=ADV_CHAPTERS.length);
+  var maxhp=Math.round(last?3800:(150+d*300));
+  var kinds=["dodge","heal","sleep","power"];
+  return {name:ch.name, teki:ch.teki, atk:(last?340:(34+d*42)), spd:60+d*26, hp:maxhp, maxhp:maxhp,
+          confused:0, sleep:0, kind:kinds[(d-1)%4], diff:d,
+          phase2:last?1:0, evolved:false};   /* 最後の ボスは 2形態 */
 }
 
 /* --- ダメージ／かわす --- */
 function _advDmg(atk,critRate){var base=atk*(0.85+Math.random()*0.4);var crit=Math.random()<(critRate||0.14);if(crit)base*=1.6;return {v:Math.max(1,Math.round(base)),crit:crit};}
-function _advDodge(spd){return Math.random() < Math.min(0.34,(spd||0)/320);}
+function _advDodge(spd){return Math.random() < Math.min(0.34,(spd||0)/3200);}
 
 /* --- 1手ずつ すすむ（UIも テストも これを 回す） --- */
 function _advInit(team,enemy){return {team:team,enemy:enemy,phase:"team",tIdx:0,ticks:0,over:false,win:false};}
+/* 演出の ため：この手番で 何が おきたかを st.fx に つめる（UIが 読む） */
+function _advFx(st,o){try{(st.fx=st.fx||[]).push(o);}catch(_){}}
 function _advTeamAct(st,u){
   var e=st.enemy, out=[];
-  if(u.pers==="いたずら" && Math.random()<0.32){ e.confused=2; out.push(u.name+" の いたずら！ てきを こんらん させた！"); return out; }
+  st.fx=[];
+  if(u.sleep>0){ u.sleep--; out.push(u.name+" は ねむっている…"); _advFx(st,{t:"sleep",who:"team",u:u}); return out; }
+  if(u.pers==="いたずら" && Math.random()<0.32){ e.confused=2; out.push(u.name+" の いたずら！ てきを こんらん させた！"); _advFx(st,{t:"state",who:"enemy",label:"こんらん"}); return out; }
+  /* ★とくべつな技（まれに 出る） */
+  var sk=u.skill;
+  if(sk && Math.random()<sk.p){
+    var res=_advSkill(st,u,sk);
+    return res;
+  }
   var special=(u.pers==="しんちょう" && (u.hp/u.maxhp)<0.5);   /* 慎重＝HPが減るまで 必殺を つかわない */
-  if(_advDodge(e.spd)){ out.push(u.name+" の こうげき！ でも てきに かわされた！"); return out; }
+  if(_advDodge(e.spd)){ out.push(u.name+" の こうげき！ でも てきに かわされた！"); _advFx(st,{t:"miss",who:"enemy"}); return out; }
   var critR=(u.pers==="やんちゃ")?0.22:0.14;                   /* やんちゃ＝こうげき一辺倒・当たれば痛い */
   var d=_advDmg(u.atk*(special?1.7:1),critR);
   e.hp=Math.max(0,e.hp-d.v);
   out.push((special?(u.name+" の ひっさつ！"):(u.name+" の こうげき！"))+(d.crit?" クリティカル！":"")+" "+d.v+"ダメージ！");
-  if(e.hp<=0){ st.win=true; st.over=true; out.push("てきを たおした！"); }
+  _advFx(st,{t:"dmg",who:"enemy",v:d.v,crit:d.crit,by:u});
+  _advBossCheck(st,out);
   return out;
+}
+/* ★技の しょり */
+function _advSkill(st,u,sk){
+  var e=st.enemy,out=[];
+  out.push("\u2728 "+u.name+" の "+sk.n+"！ "+sk.txt);
+  _advFx(st,{t:"skill",who:"team",u:u,sk:sk});
+  var k=sk.kind;
+  if(k==="heal"){
+    var h=Math.round(u.maxhp*sk.pow);u.hp=Math.min(u.maxhp,u.hp+h);
+    out.push(u.name+" は "+h+" かいふく した！");_advFx(st,{t:"heal",who:"team",u:u,v:h});return out;
+  }
+  if(k==="healall"){
+    st.team.forEach(function(t){if(t.hp>0){var hh=Math.round(t.maxhp*sk.pow);t.hp=Math.min(t.maxhp,t.hp+hh);_advFx(st,{t:"heal",who:"team",u:t,v:hh});}});
+    out.push("みんなの きずが いえた！");return out;
+  }
+  if(k==="guard"){ u.guard=2; out.push(u.name+" は ぼうぎょの かまえ！"); _advFx(st,{t:"state",who:"team",u:u,label:"ガード"}); return out; }
+  if(k==="spd"){ u.spdUp=3;u.spd=Math.min(1000,u.spd*sk.pow); out.push(u.name+" の すばやさが あがった！"); _advFx(st,{t:"state",who:"team",u:u,label:"スピード↑"}); return out; }
+  if(k==="sleep"){ e.sleep=sk.pow; out.push("てきは ねむってしまった！"); _advFx(st,{t:"state",who:"enemy",label:"ねむり"}); return out; }
+  if(k==="confuse"){ e.confused=sk.pow; out.push("てきは こんらん した！"); _advFx(st,{t:"state",who:"enemy",label:"こんらん"}); return out; }
+  if(k==="multi"){
+    var n=2+Math.floor(Math.random()*3),tot=0;
+    for(var i=0;i<n;i++){var dd=_advDmg(u.atk*sk.pow,0.1);e.hp=Math.max(0,e.hp-dd.v);tot+=dd.v;_advFx(st,{t:"dmg",who:"enemy",v:dd.v,crit:false,by:u,multi:true});}
+    out.push(n+"かい ヒット！ ぜんぶで "+tot+"ダメージ！");
+    _advBossCheck(st,out);return out;
+  }
+  if(k==="drain"){
+    var d2=_advDmg(u.atk*sk.pow,0.12);e.hp=Math.max(0,e.hp-d2.v);
+    var hp2=Math.round(d2.v*0.5);u.hp=Math.min(u.maxhp,u.hp+hp2);
+    out.push(d2.v+"ダメージ！ "+u.name+" は "+hp2+" すいとった！");
+    _advFx(st,{t:"dmg",who:"enemy",v:d2.v,crit:false,by:u});_advFx(st,{t:"heal",who:"team",u:u,v:hp2});
+    _advBossCheck(st,out);return out;
+  }
+  var crit=(k==="crit");
+  var d3=_advDmg(u.atk*sk.pow,crit?1:0.2);
+  e.hp=Math.max(0,e.hp-d3.v);
+  out.push(d3.v+"ダメージ！"+(d3.crit?" クリティカル！":""));
+  _advFx(st,{t:"dmg",who:"enemy",v:d3.v,crit:true,by:u,skill:true});
+  _advBossCheck(st,out);
+  return out;
+}
+/* ★最後のボスは HPが 0に なると もう1度 よみがえる（2形態） */
+function _advBossCheck(st,out){
+  var e=st.enemy;
+  if(e.hp>0)return;
+  if(e.phase2&&!e.evolved){
+    e.evolved=true;e.hp=Math.round(e.maxhp*0.5);e.atk=Math.round(e.atk*1.12);e.spd=Math.round(e.spd*1.08);
+    out.push("\u2757 "+e.name+" は すがたを かえた！ ちからが あふれだす！");
+    _advFx(st,{t:"evolve",who:"enemy"});
+    return;
+  }
+  st.win=true;st.over=true;out.push("てきを たおした！");
 }
 function _advEnemyAct(st){
   var e=st.enemy, out=[];
+  st.fx=[];
+  if(e.sleep>0){ e.sleep--; out.push("てきは ぐっすり ねむっている…"); _advFx(st,{t:"sleep",who:"enemy"}); return out; }
   if(e.confused>0){ e.confused--; out.push("てきは こんらん している…"); return out; }
   var alive=st.team.filter(function(t){return t.hp>0;});
   if(!alive.length){ st.over=true; st.win=false; return out; }
+  /* ★敵ごとの とくちょう：回復する／かわす／ねむらせる／強打 */
+  if(e.kind==="heal" && e.hp<e.maxhp*0.55 && Math.random()<0.22){
+    var h=Math.round(e.maxhp*0.16);e.hp=Math.min(e.maxhp,e.hp+h);
+    out.push("\ud83d\udc9a てきは きずを いやした！ "+h+" かいふく！");
+    _advFx(st,{t:"heal",who:"enemy",v:h});return out;
+  }
+  if(e.kind==="sleep" && Math.random()<0.16){
+    var t2=alive[Math.floor(Math.random()*alive.length)];t2.sleep=2;
+    out.push("\ud83d\udca4 てきの こもりうた！ "+t2.name+" は ねむってしまった！");
+    _advFx(st,{t:"state",who:"team",u:t2,label:"ねむり"});return out;
+  }
   var target=alive[Math.floor(Math.random()*alive.length)];
-  if(_advDodge(target.spd)){ out.push("てきの こうげき！ "+target.name+" は ひらりと かわした！"); return out; }
-  var d=_advDmg(e.atk,0.12);
+  if(_advDodge(target.spd)){ out.push("てきの こうげき！ "+target.name+" は ひらりと かわした！"); _advFx(st,{t:"miss",who:"team",u:target}); return out; }
+  var big=(e.kind==="power"&&Math.random()<0.2);
+  var d=_advDmg(e.atk*(big?1.8:1),0.12);
+  if(target.guard>0){target.guard--;d.v=Math.round(d.v*0.45);}
   target.hp=Math.max(0,target.hp-d.v);
-  out.push("てきの こうげき！"+(d.crit?" クリティカル！":"")+" "+target.name+"に "+d.v+"ダメージ！");
-  if(target.hp<=0)out.push(target.name+" は たおれてしまった…");
+  out.push((big?"\u2694\ufe0f てきの つよい いちげき！":"てきの こうげき！")+(d.crit?" クリティカル！":"")+" "+target.name+"に "+d.v+"ダメージ！");
+  _advFx(st,{t:"dmg",who:"team",u:target,v:d.v,crit:d.crit||big});
+  if(target.hp<=0){out.push(target.name+" は たおれてしまった…");_advFx(st,{t:"down",who:"team",u:target});}
   if(st.team.every(function(t){return t.hp<=0;})){ st.over=true; st.win=false; out.push("ぜんめつ してしまった…"); }
   return out;
 }
 function _advStep(st){
   if(st.over)return null;
   st.ticks++;
-  if(st.ticks>46){   /* 時間切れ→HP割合で 判定 */
+  if(st.ticks>90){   /* 時間切れ→HP割合で 判定 */
     var myHp=st.team.reduce(function(a,t){return a+Math.max(0,t.hp);},0), myMax=st.team.reduce(function(a,t){return a+t.maxhp;},0);
     st.win=((st.enemy.hp/st.enemy.maxhp) < (myHp/Math.max(1,myMax))); st.over=true;
     return [st.win?"じかんぎれ！ ゆうせいがち！":"じかんぎれ… おしかった！"];
@@ -27281,6 +27732,7 @@ function _advBtnHTML(){
 var _advSel=[];
 function openAdventure(){
   var sc=$("advScreen");if(!sc)return;
+  try{_yumeMigrate();}catch(_){}
   _advRenderSetup();
   sc.classList.add("show");
 }
@@ -27291,7 +27743,7 @@ function _advRenderSetup(){
   var _ci=_advChapter(), _cn=ADV_CHAPTERS.length;
   try{var op=$("advOpp");if(op)op.innerHTML=
     '<div class="advOppTeki">'+_advTekiInner(ch)+'</div>'+
-    '<div class="advOppMeta"><div class="advArea">\ud83d\udccd '+escHtml(ch.area)+'</div>'+
+    '<div class="advOppMeta">'+
     '<div class="advBoss">'+escHtml(ch.name)+'</div>'+
     '<div class="advLv">すいしょうレベル '+escHtml(ch.lv)+'</div>'+
     _advDiffStars(ch.diff)+'</div>';
@@ -27314,7 +27766,7 @@ function _advRenderSetup(){
   try{
     var pt=$("advProgTxt");if(pt)pt.textContent="\ud83c\udff3\ufe0f すすみ "+Math.round((_ci)/Math.max(1,_cn-1)*100)+"%";
     var nx=$("advNextTxt");
-    if(nx){var nc=ADV_CHAPTERS[_ci+1];nx.textContent=nc?("つぎは "+nc.area):"\u2728 さいごの ステージ！";}
+    if(nx){var nc=ADV_CHAPTERS[_ci+1];nx.textContent=nc?("つぎは "+nc.name):"\u2728 さいごの ステージ！";}
   }catch(_){}
   try{
     var dex=_yumeDex(), g=$("advTeam");
@@ -27327,6 +27779,8 @@ function _advRenderSetup(){
           '<div class="advCardPic">'+_yumeMiniInner(y)+'</div>'+
           '<div class="advCardName">'+escHtml(y.name)+(y.shiny?' <span class="advMini">\u2728</span>':"")+'</div>'+
           '<div class="advCardStars r'+y.star+'">'+_yumeStarStr(y.star)+'</div>'+
+          '<div class="advCardNums"><span>'+_yumeEff(y,"hp")+'</span><span>'+_yumeEff(y,"atk")+'</span><span>'+_yumeEff(y,"spd")+'</span></div>'+
+          '<div class="advCardLv">Lv'+_yumeLv(y)+' / '+_yumeMaxLv(y)+'</div>'+
           '<div class="advCardBadges">'+_advPersLabel(_yumePers(y))+(friend?'<span class="advFriend">親友</span>':"")+'</div>'+
           '</button>';
       }).join("");
@@ -27386,21 +27840,62 @@ function _advPushLog(lines){
   }catch(_){}
 }
 function _advStartBattle(){
-  if(_advDoneToday())return;
+  if(_advDoneToday())return;   /* きょう もう 勝っている */
   var dex=_yumeDex();
   var team=_advSel.map(function(id){for(var i=0;i<dex.length;i++)if(dex[i].id===id)return dex[i];return null;}).filter(Boolean).map(_advUnit);
   if(!team.length)return;
-  try{localStorage.setItem(ADV_DAY_KEY,jstKey());}catch(_){}
-  _advCh=ADV_CHAPTERS[_advChapter()];
+  _advCh=ADV_CHAPTERS[_advChapter()];   /* ★日づけの ロックは 勝った時だけ（負けたら 何回でも） */
   _advTeamUnits=team;
   _advState=_advInit(team,_advEnemy(_advCh));
   _advBuildBattleUI();
   var bt=$("advBattle");if(bt)bt.classList.add("show");
   try{playPop();}catch(_){}
   clearInterval(_advBattleTimer);
-  _advBattleTimer=setInterval(_advTick,640);
+  _advSetSpeed(false);
 }
 /* たたかいの うごき：こうげきした ほうが とびだし、くらった ほうが ゆれる */
+/* ===== たたかいの 音 ===== */
+function _abTone(f1,f2,dur,type,vol,delay){
+  try{var ctx=ensureCtx();if(!ctx)return;var t0=ctx.currentTime+(delay||0);
+    var o=ctx.createOscillator(),g=ctx.createGain();
+    o.type=type||"triangle";o.frequency.setValueAtTime(f1,t0);
+    if(f2)o.frequency.exponentialRampToValueAtTime(Math.max(20,f2),t0+dur);
+    g.gain.setValueAtTime(0.0001,t0);
+    g.gain.exponentialRampToValueAtTime(vol||0.15,t0+0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
+    o.connect(g);g.connect(sfxOut(ctx));o.start(t0);o.stop(t0+dur+0.03);
+  }catch(_){}
+}
+function _abNoise(dur,vol,delay){
+  try{var ctx=ensureCtx();if(!ctx)return;var t0=ctx.currentTime+(delay||0);
+    var n=Math.floor(ctx.sampleRate*dur),b=ctx.createBuffer(1,n,ctx.sampleRate),d=b.getChannelData(0);
+    for(var i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/n,2.2);
+    var src=ctx.createBufferSource();src.buffer=b;
+    var g=ctx.createGain();g.gain.value=vol||0.13;
+    var f=ctx.createBiquadFilter();f.type="lowpass";f.frequency.value=1800;
+    src.connect(f);f.connect(g);g.connect(sfxOut(ctx));src.start(t0);
+  }catch(_){}
+}
+function sndHit(){_abTone(420,150,0.14,"square",0.12);_abNoise(0.10,0.10);}
+function sndCrit(){_abTone(880,220,0.22,"sawtooth",0.16);_abNoise(0.16,0.16);_abTone(1320,660,0.20,"triangle",0.10,0.05);}
+function sndHeal(){[659.3,880,1046.5].forEach(function(f,i){_abTone(f,f*1.5,0.26,"sine",0.11,i*0.07);});}
+function sndMiss(){_abTone(300,900,0.13,"sine",0.07);}
+function sndSleep(){[523,440,349,262].forEach(function(f,i){_abTone(f,f*0.9,0.30,"sine",0.09,i*0.11);});}
+function sndDown(){_abTone(300,80,0.45,"triangle",0.14);}
+function sndEvolve(){_abTone(160,640,0.7,"sawtooth",0.16);[523,659,784,1046].forEach(function(f,i){_abTone(f,f,0.35,"triangle",0.13,0.5+i*0.07);});}
+function sndSkill(kind){
+  if(kind==="heal"||kind==="healall"){sndHeal();return;}
+  if(kind==="sleep"){sndSleep();return;}
+  if(kind==="guard"){_abTone(220,440,0.24,"square",0.12);return;}
+  if(kind==="spd"){[660,880,1180].forEach(function(f,i){_abTone(f,f*1.2,0.12,"square",0.10,i*0.05);});return;}
+  if(kind==="confuse"){[700,500,760,520].forEach(function(f,i){_abTone(f,f*0.8,0.14,"sine",0.10,i*0.06);});return;}
+  if(kind==="multi"){for(var i=0;i<4;i++){_abTone(760+i*90,300,0.10,"square",0.10,i*0.075);}return;}
+  if(kind==="drain"){_abTone(300,760,0.32,"sine",0.13);_abTone(880,440,0.26,"triangle",0.09,0.16);return;}
+  /* dmg / crit / dark */
+  _abTone(180,90,0.16,"sawtooth",0.14);
+  [784,988,1318].forEach(function(f,i){_abTone(f,f*1.3,0.28,"triangle",0.13,0.05+i*0.06);});
+  _abNoise(0.18,0.14);
+}
 function _advAnim(who,idx,kind){
   try{
     var el=null;
@@ -27415,23 +27910,99 @@ function _advAnim(who,idx,kind){
 function _advFlash(kind){
   try{var f=$("abFlash");if(!f)return;f.className="";void f.offsetWidth;f.className=(kind||"hit")+" go";}catch(_){}
 }
+/* ★ダメージなどの 数字を ぽんっと 出す */
+/* ふだんは ゆっくり、画面を さわっている あいだは 速く */
+var ADV_SLOW=980, ADV_FAST=380, _advFast=false;
+function _advSetSpeed(fast){
+  _advFast=!!fast;
+  try{clearInterval(_advBattleTimer);}catch(_){}
+  if(!_advState||_advState.over)return;
+  _advBattleTimer=setInterval(_advTick,_advFast?ADV_FAST:ADV_SLOW);
+  try{var bt=$("advBattle");if(bt)bt.classList.toggle("fast",_advFast);}catch(_){}
+}
+try{
+  var _bt=document.getElementById("advBattle");
+  if(_bt){
+    var on=function(e){if(e&&e.target&&e.target.closest&&e.target.closest("#abResult"))return;_advSetSpeed(true);};
+    var off=function(){_advSetSpeed(false);};
+    _bt.addEventListener("pointerdown",on,{passive:true});
+    _bt.addEventListener("pointerup",off,{passive:true});
+    _bt.addEventListener("pointercancel",off,{passive:true});
+    _bt.addEventListener("pointerleave",off,{passive:true});
+  }
+}catch(_){}
+function _advPop(who,u,text,cls){
+  try{
+    var host=null;
+    if(who==="enemy")host=$("abEnemy");
+    else{
+      var idx=_advTeamUnits.indexOf(u);
+      if(idx<0)for(var i=0;i<_advTeamUnits.length;i++)if(_advTeamUnits[i]===u){idx=i;break;}
+      host=document.querySelector('.abUnit[data-i="'+idx+'"]');
+    }
+    if(!host)return;
+    var el=document.createElement("span");
+    el.className="abPop "+(cls||"");
+    el.textContent=text;
+    el.style.left=(38+Math.random()*24)+"%";
+    host.appendChild(el);
+    setTimeout(function(){try{el.remove();}catch(_){}} ,1100);
+  }catch(_){}
+}
+/* ★技の 名まえを 大きく 見せる */
+function _advSkillBanner(u,sk){
+  try{
+    var b=$("abSkillBanner");if(!b)return;
+    b.innerHTML='<span class="abSkE">'+sk.e+'</span><span class="abSkN">'+escHtml(sk.n)+'</span>';
+    b.style.setProperty("--skc",sk.col||"#ffd45e");
+    b.classList.remove("go");void b.offsetWidth;b.classList.add("go");
+    setTimeout(function(){try{b.classList.remove("go");}catch(_){}},1400);
+  }catch(_){}
+}
 function _advTick(){
   var st=_advState;if(!st){clearInterval(_advBattleTimer);return;}
-  var before={e:st.enemy.hp,t:_advTeamUnits.map(function(u){return u.hp;})};
-  var actor=(st.phase==="team")?st.tIdx:-1;
+  var actor=(st.phase==="team")?(st.tIdx):-1;
   var lines=_advStep(st);
   if(lines&&lines.length)_advPushLog(lines);
-  /* だれが ダメージを うけたか を みて 動かす */
+  /* ★この手番で おきたことを 演出に する */
   try{
-    var txt=(lines||[]).join(" ");
-    var crit=/クリティカル/.test(txt);
-    if(st.enemy.hp<before.e){ _advAnim("team",actor,"atk"); _advAnim("enemy",0,crit?"crit":"hit"); _advFlash(crit?"crit":"hit"); }
-    else _advTeamUnits.forEach(function(u,i){
-      if(u.hp<before.t[i]){ _advAnim("enemy",0,"atk"); _advAnim("team",i,crit?"crit":"hit"); _advFlash(crit?"crit":"hit"); }
+    (st.fx||[]).forEach(function(f){
+      if(f.t==="skill"){
+        _advSkillBanner(f.u,f.sk);sndSkill(f.sk.kind);
+        var ai=_advTeamUnits.indexOf(f.u);_advAnim("team",ai,"atk");
+      }else if(f.t==="dmg"){
+        if(f.who==="enemy"){
+          if(!f.skill&&!f.multi){var ai2=_advTeamUnits.indexOf(f.by);_advAnim("team",ai2,"atk");}
+          _advAnim("enemy",0,f.crit?"crit":"hit");
+          _advPop("enemy",null,"-"+f.v,f.crit?"crit":"");
+        }else{
+          _advAnim("enemy",0,"atk");
+          var ti=_advTeamUnits.indexOf(f.u);_advAnim("team",ti,f.crit?"crit":"hit");
+          _advPop("team",f.u,"-"+f.v,f.crit?"crit":"");
+        }
+        _advFlash(f.crit?"crit":"hit");
+        if(f.crit)sndCrit();else sndHit();
+      }else if(f.t==="heal"){
+        _advPop(f.who,f.u,"+"+f.v,"heal");sndHeal();
+      }else if(f.t==="miss"){
+        _advPop(f.who,f.u,"MISS","miss");sndMiss();
+      }else if(f.t==="state"){
+        _advPop(f.who,f.u,f.label,"state");
+      }else if(f.t==="sleep"){
+        _advPop(f.who,f.u,"Zzz","state");
+      }else if(f.t==="down"){
+        sndDown();
+        var di=_advTeamUnits.indexOf(f.u);
+        var de=document.querySelector('.abUnit[data-i="'+di+'"]');if(de)de.classList.add("down");
+      }else if(f.t==="evolve"){
+        sndEvolve();_advFlash("crit");
+        var ee=$("abEnemy");if(ee){ee.classList.add("evolve");setTimeout(function(){try{ee.classList.remove("evolve");}catch(_){}},1400);}
+        _advPop("enemy",null,"しんか！","state");
+      }
     });
   }catch(_){}
   _advPaintHP();
-  if(st.over){ clearInterval(_advBattleTimer); setTimeout(_advFinish,760); }
+  if(st.over){ clearInterval(_advBattleTimer); setTimeout(_advFinish,900); }
 }
 function _advFinish(){
   var st=_advState;if(!st)return;
@@ -27442,24 +28013,71 @@ function _advFinish(){
     var before=_yumeMemCount(u.y.id), after=_yumeMemInc(u.y.id);
     if(before<100&&after>=100){try{toast(u.name+" と 親友に なった！ ちからが あがるよ");}catch(_){}}
   });}catch(_){}
+  /* ★戦うたびに レベルが あがる（勝ち＝満額／負け＝4わり）。約20勝で のびしろの てっぺんへ */
+  var lvTxt=[];
+  try{
+    var dex=_yumeDex(),diff=(_advCh&&_advCh.diff)||1,ch2=false;
+    _advTeamUnits.forEach(function(u){
+      for(var i=0;i<dex.length;i++){
+        if(dex[i].id!==u.y.id)continue;
+        var y=dex[i],mx=_yumeMaxLv(y),before=_yumeLv(y);
+        if(before>=mx)break;
+        var g=_yumeGainLv(diff,win);
+        y.lv=Math.min(mx,before+g);
+        if(y.lv!==before){ch2=true;lvTxt.push(y.name+" Lv"+before+"→"+y.lv);}
+        break;
+      }
+    });
+    if(ch2)localStorage.setItem(YUME_KEY,JSON.stringify(dex));
+  }catch(_){}
   if(win){
     var cur=_advChapter();
     if(cur<ADV_CHAPTERS.length-1){try{localStorage.setItem(ADV_PROG_KEY,String(cur+1));}catch(_){}advanced=true;}
+    try{localStorage.setItem(ADV_DAY_KEY,jstKey());}catch(_){}   /* ★勝った時だけ その日は おしまい */
   }
-  _advShowResult(win,advanced,false);
+  _advShowResult(win,advanced,false,lvTxt);
 }
-function _advShowResult(win,advanced,dev){
+function _advShowResult(win,advanced,dev,lvTxt){
   try{
     var rs=$("abResult"),big=$("abResultBig"),sub=$("abResultSub");
     if(big){big.textContent=win?"クリア！":"まけちゃった…";big.className=win?"win":"lose";}
     if(sub){
       if(dev)sub.textContent=win?"（おためし）クリア！":"（おためし）まけちゃった…";
       else if(win)sub.textContent=advanced?("つぎの ステージが ひらいたよ！"):("いちばん おくまで クリア！ すごい！");
-      else sub.textContent="また あした ちょうせん しよう";
+      else sub.textContent="つよく なったよ！ もう一度 ちょうせん できる";
     }
+    /* ★あがった レベルを 見せる */
+    try{
+      var lb=$("abLvUp");
+      if(lb){
+        if(lvTxt&&lvTxt.length){lb.innerHTML='<div class="abLvTtl">\u2b06\ufe0f レベルアップ</div>'+lvTxt.map(function(t){return '<div class="abLvRow">'+escHtml(t)+'</div>';}).join("");lb.hidden=false;}
+        else lb.hidden=true;
+      }
+    }catch(_){}
+    /* ★負けたら「もう一度」ボタン */
+    try{
+      var rb=$("abRetry");
+      if(rb)rb.hidden=(win||dev);
+    }catch(_){}
     if(rs)rs.hidden=false;
   }catch(_){}
 }
+/* ★もう一度 たたかう（勝つまで 何回でも） */
+function _advRetryBattle(){
+  try{playClick();}catch(_){}
+  try{var rs=$("abResult");if(rs)rs.hidden=true;}catch(_){}
+  try{var lg=$("abLog");if(lg)lg.innerHTML="";}catch(_){}
+  try{
+    var dex=_yumeDex();
+    var team=_advSel.map(function(id){for(var i=0;i<dex.length;i++)if(dex[i].id===id)return dex[i];return null;}).filter(Boolean).map(_advUnit);
+    if(!team.length){_advCloseBattle();return;}
+    _advTeamUnits=team;
+    _advState=_advInit(team,_advEnemy(_advCh));
+    _advBuildBattleUI();
+    _advSetSpeed(false);
+  }catch(_){_advCloseBattle();}
+}
+try{var _rb=document.getElementById("abRetry");if(_rb)_rb.addEventListener("click",_advRetryBattle);}catch(_){}
 function _advCloseBattle(){
   var bt=$("advBattle");if(bt)bt.classList.remove("show");
   clearInterval(_advBattleTimer);_advState=null;
@@ -27488,6 +28106,7 @@ function _advDexRender(){
       '</button>';
     }).join("");
   }else{
+    /* ここは 開発用の「ぜんぶ見る」＝ぜんぶ そのまま 見せる（シルエットには しない） */
     if(hint)hint.textContent="タップで おためしで もらえる（コレクションに 入るよ）";
     g.className="advDexGrid yume";
     if(!_yumeImgOK){try{_yumeProbeImgs().then(function(){if(_advDexTab==="yume"){try{_advDexRender();}catch(_){}}});}catch(_){}}
@@ -27497,11 +28116,72 @@ function _advDexRender(){
         '<div class="advDexPic">'+_yumeMiniInner(fake)+'</div>'+
         '<div class="advDexNm">'+escHtml(y.name)+'</div>'+
         '<div class="advCardStars r'+y.star+'">'+_yumeStarStr(y.star)+'</div>'+
-        '<div class="advDexGo add">\uff0b もらう</div>'+
+        '<div class="advDexGo add">＋ もらう</div>'+
       '</button>';
     }).join("");
   }
 }
+/* ===== ユメっ子ずかん（もってない子は シルエット） ===== */
+function _ybBest(name){
+  /* 同じ名前を 何人か もっている時は いちばん 育っている子を 見せる */
+  var best=null;
+  try{_yumeDex().forEach(function(y){
+    if(!y||y.name!==name)return;
+    if(!best||_yumeLv(y)>_yumeLv(best))best=y;
+  });}catch(_){}
+  return best;
+}
+function _ybRender(){
+  var g=$("ybGrid");if(!g)return;
+  var M=_yumeMasterValid();
+  if(!_yumeImgOK){try{_yumeProbeImgs().then(function(){try{_ybRender();}catch(_){}});}catch(_){}}
+  var got=0;
+  var html=M.map(function(m,i){
+    var y=_ybBest(m.name), have=!!y;
+    if(have)got++;
+    var fake=have?y:{id:"m"+i,img:m.img,name:m.name,star:m.star,shiny:false,hue:0};
+    var justNew=(_yumeNewName&&_yumeNewName===m.name);
+    var info="";
+    if(have){
+      info='<div class="ybLv">Lv'+_yumeLv(y)+' <span>/ '+_yumeMaxLv(y)+'</span></div>'+
+           '<div class="ybNums"><span>'+_yumeEff(y,"hp")+'</span><span>'+_yumeEff(y,"atk")+'</span><span>'+_yumeEff(y,"spd")+'</span></div>';
+    }else{
+      info='<div class="ybLv locked">まだ 会ってないよ</div>';
+    }
+    return '<div class="ybCard'+(have?"":" locked")+(justNew?" justgot":"")+'" data-nm="'+escHtml(m.name)+'">'+
+      '<div class="ybPic">'+_yumeMiniInner(fake)+(have?"":'<span class="ybQ">？</span>')+'</div>'+
+      '<div class="ybNm">'+(have?escHtml(m.name):"？？？")+'</div>'+
+      '<div class="advCardStars r'+m.star+'">'+_yumeStarStr(m.star)+'</div>'+
+      info+
+    '</div>';
+  }).join("");
+  g.innerHTML=html;
+  var c=$("ybCount");
+  if(c)c.innerHTML='あつめた ユメっ子 <b>'+got+'</b> / '+M.length;
+  /* あたらしく そろった子は シルエットが 色づく */
+  if(_yumeNewName){
+    _yumeNewName=null;
+    setTimeout(function(){try{
+      var card=g.querySelector(".ybCard.justgot");
+      if(card){
+        card.scrollIntoView({block:"center",behavior:"smooth"});
+        card.classList.add("reveal");
+        try{_ygStarSound(1);}catch(_){}
+        setTimeout(function(){try{card.classList.remove("justgot","reveal");}catch(_){}},1800);
+      }
+    }catch(_){}},260);
+  }
+}
+function _ybOpen(){ try{_yumeMigrate();}catch(_){} _ybRender(); var b=$("yumeBook"); if(b)b.classList.add("show"); }
+function _ybClose(){ var b=$("yumeBook"); if(b)b.classList.remove("show"); }
+try{var _bb=document.getElementById("advBookBtn");if(_bb)_bb.addEventListener("click",function(){try{playClick();}catch(_){}_ybOpen();});}catch(_){}
+try{var _bc=document.getElementById("ybClose");if(_bc)_bc.addEventListener("click",function(){try{playClick();}catch(_){}_ybClose();});}catch(_){}
+/* もっている子の 名前（図鑑の うめ具合） */
+function _yumeOwnedNames(){
+  var o={};try{_yumeDex().forEach(function(y){if(y&&y.name)o[y.name]=1;});}catch(_){}
+  return o;
+}
+var _yumeNewName=null;   /* 直前に あたらしく 入った子 */
 function _advDexGetYume(i){
   var m=_yumeMasterValid()[i]; if(!m)return;
   var star=m.star||1;
@@ -31831,7 +32511,7 @@ function _gpStreetHTML(){
 </div>
 <div id="zzTag" hidden><span class="zzTagIco">🪙</span>＋<b id="zzTagAmt">0</b> zz 獲得</div>
 <div id="advScreen">
-  <div id="advTop"><button id="advClose" type="button">✕</button><span id="advTtl">⚔️ 冒険</span><button id="advDexBtn" type="button" hidden>🗺️ ぜんぶ見る</button></div>
+  <div id="advTop"><button id="advClose" type="button">✕</button><span id="advTtl">⚔️ 冒険</span><button id="advBookBtn" type="button">📖 ずかん</button><button id="advDexBtn" type="button" hidden>🗺️ ぜんぶ見る</button></div>
   <div id="advScroll">
     <div id="advOppCard"><div id="advQuestHead"><span id="advQuestTag">⚔️ クエスト</span><span id="advQuestNo"></span></div><div id="advOpp"></div><div id="advPathWrap"><div id="advPathLine"></div><div id="advPath"></div></div><div id="advNextRow"><span id="advProgTxt"></span><span id="advNextTxt"></span></div></div>
     <div id="advTeamLabel">この子たちで いく（1〜3体 えらぶ）</div>
@@ -31853,14 +32533,20 @@ function _gpStreetHTML(){
       <div id="abTeam"></div>
     </div>
   </div>
+  <div id="abSkillBanner"></div>
   <div id="abLog"></div>
-  <div id="abResult" hidden><div id="abResultBig"></div><div id="abResultSub"></div><button id="abClose" type="button">とじる</button></div>
+  <div id="abResult" hidden><div id="abResultBig"></div><div id="abResultSub"></div><div id="abLvUp" hidden></div><div id="abResBtns"><button id="abRetry" type="button" hidden>↺ もう一度</button><button id="abClose" type="button">とじる</button></div></div>
 </div>
 <div id="advDex">
   <div id="advDexTop"><button id="advDexClose" type="button">✕</button><span id="advDexTtl">🗺️ ぜんぶ見る（おためし）</span></div>
   <div id="advDexTabs"><button id="advDexTabStage" class="advDexTab on" type="button">ステージ</button><button id="advDexTabYume" class="advDexTab" type="button">ユメっ子</button></div>
   <div id="advDexHint"></div>
   <div id="advDexGrid" class="advDexGrid stage"></div>
+</div>
+<div id="yumeBook">
+  <div id="ybTop"><button id="ybClose" type="button">✕</button><span id="ybTtl">📖 ユメっ子ずかん</span></div>
+  <div id="ybCount"></div>
+  <div id="ybGrid"></div>
 </div>
 <div id="yumeGacha" hidden>
   <div id="ygSky"></div>

@@ -4818,7 +4818,8 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 <style id="advCss">
 #advScreen{position:fixed;inset:0;z-index:3300;display:none;flex-direction:column;background:linear-gradient(180deg,#eaf6ff,#dff0fb);font-family:"Yomogi","Kosugi Maru",sans-serif;}
 #advScreen.show{display:flex;}
-#advTop{display:flex;align-items:center;gap:10px;padding:calc(11px + env(safe-area-inset-top)) 16px 8px;}
+#advTop{display:flex;align-items:center;gap:10px;padding:calc(11px + env(safe-area-inset-top)) 16px 8px;flex-wrap:nowrap;}
+#advTtl{flex:0 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 #advClose{border:none;background:rgba(143,190,220,.18);color:#5c93ad;font-size:15px;font-weight:800;border-radius:999px;padding:7px 13px;cursor:pointer;}
 #advTtl{font-size:19px;font-weight:900;color:#33607d;}
 #advScroll{flex:1;overflow-y:auto;padding:6px 16px 12px;}
@@ -4854,7 +4855,9 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 .advLv{font-size:12px;color:#a9c0d8;font-weight:700;margin-bottom:3px;}
 .advDiffStars{font-size:15px;color:#ffcf4a;letter-spacing:2px;}
 #advTeamLabel{font-size:13px;font-weight:800;color:#4a7089;margin:2px 2px 7px;}
-#advTeam{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;}
+#advTeam{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;justify-content:center;}
+#advTeam .advCard{max-width:120px;width:100%;justify-self:center;}
+@media (min-width:700px){#advTeam{grid-template-columns:repeat(6,1fr);gap:10px;}}
 @media (max-width:380px){#advTeam{grid-template-columns:repeat(3,1fr);}}
 .advEmpty{grid-column:1/-1;text-align:center;color:#8aa6ba;font-weight:700;padding:34px 10px;line-height:1.7;background:rgba(255,255,255,.6);border-radius:18px;}
 .advCard{position:relative;border:2px solid rgba(255,255,255,.9);background:#fff;border-radius:14px;padding:6px 3px 5px;cursor:pointer;box-shadow:0 4px 12px rgba(120,160,190,.18);transition:transform .12s,border-color .15s;display:flex;flex-direction:column;align-items:center;gap:3px;}
@@ -4884,6 +4887,46 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 #advBattle{position:fixed;inset:0;z-index:3500;display:none;flex-direction:column;background:radial-gradient(circle at 50% 30%,#2c3e58,#141d2e);font-family:"Yomogi","Kosugi Maru",sans-serif;}
 #advBattle.show{display:flex;}
 #abTopWrap{padding:calc(16px + env(safe-area-inset-top)) 16px 8px;}
+/* ===== はじめての チュートリアル ===== */
+#tutOv{position:fixed;inset:0;z-index:3200;pointer-events:none;}
+#tutOv[hidden]{display:none;}
+.tutBlk{position:fixed;background:rgba(18,38,58,.62);pointer-events:auto;backdrop-filter:blur(1.5px);-webkit-backdrop-filter:blur(1.5px);}
+#tutRing{position:fixed;border-radius:20px;pointer-events:none;box-sizing:border-box;
+  border:3px solid #ffd45e;box-shadow:0 0 0 4px rgba(255,212,94,.28),0 0 26px rgba(255,212,94,.65);
+  animation:tutPulse 1.6s ease-in-out infinite;}
+@keyframes tutPulse{0%,100%{box-shadow:0 0 0 4px rgba(255,212,94,.28),0 0 26px rgba(255,212,94,.6);}
+  50%{box-shadow:0 0 0 9px rgba(255,212,94,.12),0 0 34px rgba(255,212,94,.9);}}
+#tutBubble{position:fixed;left:50%;transform:translateX(-50%);width:min(330px,88vw);
+  background:#fff;border-radius:20px;padding:15px 17px 14px;pointer-events:auto;
+  box-shadow:0 12px 34px rgba(10,30,50,.34);text-align:center;}
+#tutStepNo{display:inline-block;font-size:11px;font-weight:900;color:#7a4a10;letter-spacing:1px;
+  background:linear-gradient(135deg,#ffe08a,#ffc44d);border-radius:999px;padding:3px 14px;margin-bottom:8px;}
+#tutMsg{font-size:14px;font-weight:800;color:#3f5f74;line-height:1.75;}
+#tutMsg b{color:#e0863a;}
+.tutSm{font-size:11.5px;color:#9db4c4;font-weight:700;}
+#tutOk{margin-top:12px;border:none;border-radius:999px;padding:11px 30px;font-family:inherit;
+  font-size:14px;font-weight:900;color:#fff;cursor:pointer;
+  background:linear-gradient(135deg,#7fc9e8,#4ea8d8);box-shadow:0 6px 16px rgba(78,168,216,.4);}
+#tutOk[hidden]{display:none;}
+#tutOk:active{transform:scale(.96);}
+/* おしまいの しょうかいカード */
+#tutEnd{position:fixed;inset:0;z-index:3300;display:flex;align-items:center;justify-content:center;
+  background:rgba(18,38,58,.55);padding:18px;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);}
+#tutEnd[hidden]{display:none;}
+#tutEndBox{width:min(360px,92vw);background:#fff;border-radius:24px;padding:22px 18px 18px;
+  box-shadow:0 18px 46px rgba(10,30,50,.4);text-align:center;animation:tutEndIn .5s cubic-bezier(.2,1.1,.4,1);}
+@keyframes tutEndIn{0%{opacity:0;transform:scale(.86) translateY(14px);}100%{opacity:1;transform:none;}}
+#tutEndTtl{font-size:18px;font-weight:900;color:#3a6377;}
+#tutEndSub{font-size:12px;font-weight:700;color:#8ba7b9;margin:5px 0 14px;}
+.tutEndCard{display:flex;align-items:flex-start;gap:11px;text-align:left;background:#f5fbff;
+  border:1.5px solid #e2f0f8;border-radius:16px;padding:12px 13px;margin-bottom:10px;}
+.tecIco{font-size:26px;flex:0 0 auto;line-height:1.1;}
+.tecTxt{font-size:12.5px;font-weight:700;color:#5b7c8f;line-height:1.65;}
+.tecTxt b{font-size:14px;color:#3a6377;}
+#tutEndBtn{width:100%;margin-top:4px;border:none;border-radius:999px;padding:13px;font-family:inherit;
+  font-size:15px;font-weight:900;color:#fff;cursor:pointer;
+  background:linear-gradient(135deg,#8ad9a8,#5cbf88);box-shadow:0 8px 20px rgba(92,191,136,.4);}
+#tutEndBtn:active{transform:scale(.97);}
 /* ===== ユメっ子ずかん ===== */
 #yumeBook{position:fixed;inset:0;z-index:2450;display:none;flex-direction:column;
   background:linear-gradient(180deg,#eef7fd 0%,#f7fbff 60%,#fff 100%);}
@@ -4894,7 +4937,20 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 #ybCount{padding:0 16px 8px;font-size:12.5px;font-weight:800;color:#7a97ad;flex:0 0 auto;}
 #ybCount b{font-size:16px;color:#e08a3a;}
 #ybGrid{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px;padding:4px 14px calc(22px + env(safe-area-inset-bottom));}
+  grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:12px;align-content:start;justify-content:center;
+  width:100%;max-width:980px;margin:0 auto;box-sizing:border-box;
+  padding:4px 16px calc(22px + env(safe-area-inset-bottom));}
+.ybCard{max-width:150px;width:100%;justify-self:center;}
+@media (min-width:700px){
+  #ybTop,#ybCount{width:100%;max-width:980px;margin-left:auto;margin-right:auto;box-sizing:border-box;}
+  #ybGrid{grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:16px;padding-left:24px;padding-right:24px;}
+  .ybPic{width:72px;height:72px;}
+  .ybNm{font-size:12.5px;}
+  .ybLv{font-size:11px;}
+  .ybNums span{font-size:9.5px;}
+  #ybTtl{font-size:20px;}
+  #ybCount{font-size:14px;}
+}
 .ybCard{background:#fff;border:2px solid #e6f1f8;border-radius:16px;padding:9px 5px 8px;text-align:center;
   display:flex;flex-direction:column;align-items:center;gap:3px;box-shadow:0 3px 10px rgba(120,160,190,.12);}
 .ybPic{width:56px;height:56px;position:relative;overflow:hidden;}
@@ -4926,7 +4982,7 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
   100%{box-shadow:0 3px 10px rgba(120,160,190,.12);border-color:#e6f1f8;}}
 #advBookBtn{border:none;background:linear-gradient(135deg,#ffe6a8,#ffcf6a);color:#8a5a12;
   font-size:12.5px;font-weight:900;border-radius:999px;padding:7px 14px;cursor:pointer;margin-left:auto;
-  box-shadow:0 3px 10px rgba(255,196,77,.35);}
+  flex:0 0 auto;white-space:nowrap;box-shadow:0 3px 10px rgba(255,196,77,.35);}
 #advBookBtn:active{transform:scale(.96);}
 /* ===== 図鑑：もってない子は シルエット ===== */
 .advDexCard.locked .advDexPic{filter:brightness(0) saturate(0) opacity(.30);}
@@ -6290,17 +6346,17 @@ const firebaseConfig={
   databaseURL:"https://card-zz-default-rtdb.asia-southeast1.firebasedatabase.app",
   storageBucket:"card-zz.firebasestorage.app",
   messagingSenderId:"844080901066",
-  appId:"1:844080901066:web:d66ccd77a1fc581c637d33",
-  measurementId:"G-VKWXVHWCGB"
+  appId:"1:844080901066:web:d66ccd77a1fc581c637d33"
+  /* measurementId は わざと 書かない（Analyticsを つかわない ため） */
 };
 const _isCrawler=/bot|crawl|spider|slurp|bingpreview|googlebot|google-inspectiontool|mediapartners|lighthouse|headlesschrome/i.test(navigator.userAgent||"");
 if(!_isCrawler){
   (async()=>{
     try{
       const{initializeApp}=await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js");
-      const app=initializeApp(firebaseConfig);
-      const{getAnalytics,isSupported}=await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-analytics.js");
-      if(await isSupported())getAnalytics(app);
+      initializeApp(firebaseConfig);
+      /* ★Analytics(GA)は つかわない。
+         位置・地域・IPなどの じどう収集を したくないので 読みこみ自体を やめる。 */
     }catch(e){console.warn("firebase skipped",e);}
   })();
   /* フォント・背景画像は実ユーザーだけ読み込む（クローラーのフェッチエラーを防ぐ） */
@@ -6524,6 +6580,7 @@ function _wireHiraInput(inp,after){
 }
 function jstDayOf(ts){const d=new Date((ts||0)+9*3600*1000);return d.getUTCFullYear()+"-"+(d.getUTCMonth()+1)+"-"+d.getUTCDate();}
 async function syncClubroomPresence(){
+  try{if(tutOn())return;}catch(_){}
   try{
     const db=await getDB();if(!db)return;
     const p=getProfile()||{};
@@ -7611,7 +7668,7 @@ async function ensureAuth(){
       /* まだ だれでもない → ゲスト（匿名）で サインイン */
       var cred=await m.signInAnonymously(auth);
       _authUser=cred&&cred.user||auth.currentUser||null;
-      if(_authUser&&!acctMode())setAcctMode("guest");
+      /* ここでは モードを きめない（ログイン/ゲストは 本人に えらんでもらう） */
       return _authUser;
     }catch(e){
       console.warn("auth failed",e&&e.code||e);
@@ -7806,6 +7863,7 @@ async function googleLogout(){
   }catch(_){}
 })();
 async function publishProfile(){
+  try{if(tutOn())return;}catch(_){}
   const p=getProfile();if(!p)return;
   const db=await getDB();if(!db)return;
   try{
@@ -9575,6 +9633,7 @@ function _startRecentCycle(){
   },5000);   /* 5秒ごとに 直近3日→今日(全員)→今日(同じ所) を巡回 */
 }
 async function loadHillCats(){
+  try{if(tutOn())return;}catch(_){}   /* チュートリアル中は みんなを 出さない（仮想空間） */
   const cont=$("hillCats");if(!cont)return;
   if(!(_hillAllCats&&_hillAllCats.length>1))renderEmptyCat();   /* すでに他の猫が居るなら消さない（読み込み失敗で自分だけにならないように） */
   if($("recentPostCount"))$("recentPostCount").textContent="";
@@ -10783,6 +10842,7 @@ function autoAddStamp(src,dateLabel){
 function _stampCompact(e){const i=POOL.indexOf(e.src);return{i:i>=0?i:-1,d:e.date};}
 function _stampExpand(c){const i=(typeof c.i==="number")?c.i:-1;return{src:(i>=0&&i<POOL.length)?POOL[i]:POOL[0],date:c.d||""};}
 async function syncStampCardsFB(){
+  try{if(tutOn())return;}catch(_){}
   try{const db=await getDB();if(!db)return;
     const compact=getStampCards().map(card=>(card||[]).map(_stampCompact));
     const{ref,set}=await import(FB_DB);
@@ -10874,8 +10934,9 @@ async function autoStampFlow(){
   const _showDone=()=>{
     try{_askTidy();}catch(_){}
     $("taisoScreen").classList.add("visible");
+    try{if(tutStep()==="1")_tutGo2();}catch(_){}   /* ★チュートリアル：ステップ2へ */
     try{setTimeout(function(){try{_yumeMaybeGacha();}catch(_){}},650);}catch(_){}   /* ★毎朝 仲間ゲット演出 */
-    setTimeout(()=>{try{_autoPostToday();}catch(_){}},400);   /* コメント空でも 自動でとうこう */
+    setTimeout(()=>{try{if(!tutOn())_autoPostToday();}catch(_){}},400);   /* コメント空でも 自動でとうこう（チュートリアル中は しない） */
     try{setTimeout(()=>{try{_aiMaybeNudge();}catch(_){}},1500);}catch(_){}
   };
   var _askDone=false,_waitDone=null;
@@ -11140,6 +11201,15 @@ async function tsDoPost(){
   const b=$("tsPostBtn");if(b)b.disabled=true;
   const c=hiraOnly(($("tsComment").value||"").trim())||_todayMoodText();
   let ok=false;
+  /* ★チュートリアル中は「仮想空間」＝みんなには 送らない */
+  if(tutOn()){
+    ok=true;
+    try{markPosted();refreshSaveBtn();refreshGroundPost();}catch(_){}
+    if(b){b.textContent="とうこう ずみ";b.classList.add("posted");b.disabled=false;}
+    try{toast("とうこう できたよ！");}catch(_){}
+    try{_tutGoAdv();}catch(_){}
+    return;
+  }
   try{ ok=await postToday($("tsAnon").checked,c); }   /* 同じ日は上書き＝差し替え（二重にならない） */
   catch(_){ ok=false; }
   if(!ok){ if(b)b.disabled=false; try{toast("投稿できなかったみたい");}catch(__){} return; }
@@ -12086,9 +12156,11 @@ function _exShowUI(){
   }catch(_){}
 }
 function _exHideUI(){ try{const sk=$("exSkip");if(sk)sk.classList.remove("on");}catch(_){} }
+function _tutOnExerciseStart(){try{if(tutStep()==="1")_tutClear();}catch(_){}}
 function startMorningExercise(opts){
   opts=opts||{};
   if(_exerciseActive)return;_exerciseActive=true;
+  try{_tutOnExerciseStart();}catch(_){}   /* チュートリアル：スポットライトを 消す */
   _exOnDone=opts.onDone||null;
   if(!opts.manual){try{localStorage.setItem("radio_exercise_date",jstKey());}catch(_){}}
   const morning=(function(){try{return profileWake()<12;}catch(_){return true;}})();
@@ -12576,10 +12648,10 @@ async function saveFromSetup(){
   closeProfileSetup();
   renderProfileBar();refreshHome();loadHillCats();publishProfile();
   if(wasNew && !firstMeetDone()){
-    /* ★初対面の演出（チュートリアル）は やめて、そのまま お部屋を ひらく */
+    /* ★はじめての人：お部屋では なく チュートリアルを はじめる */
     try{localStorage.setItem(FIRSTMEET_KEY,"1");}catch(_){}
-    try{if(typeof showSelect==="function")showSelect();}catch(_){}
-    setTimeout(function(){try{openRoom();}catch(_){}},220);
+    try{_tutSnapshot();}catch(_){}      /* いまの ようすを おぼえておく */
+    try{_tutGo1();}catch(_){try{if(typeof showSelect==="function")showSelect();}catch(__){}}
   }
 }
 async function _renamePropagate(newName){
@@ -15948,15 +16020,25 @@ function cancelAutoPlay(){
 }
 $("titlePlay").addEventListener("click",()=>{playClick();doTitlePlay();});
 /* ===== はじめて ひらいた時：ログイン か ゲストか えらぶ ===== */
-function _acctNeedPick(){try{return !acctMode();}catch(_){return false;}}
+/* ★「目標時間を まだ きめてない人」に 見せる（初回かどうかでは ない）。
+   ＝プロフィール（MY猫）が まだ 無い人 */
+function _acctNeedPick(){
+  try{
+    if(typeof getProfile==="function"){var p=getProfile();if(p&&p.name)return false;}
+    return true;
+  }catch(_){return false;}
+}
 function _acctShowPick(){
   try{
     var box=$("acctPick"),pb=$("titlePlay");if(!box)return;
-    box.hidden=false; if(pb)pb.hidden=true;
+    box.hidden=false;
+    /* ★えらぶ間は「プレイ」を 押せないように 消す（DOMごと 取りのぞく） */
+    if(pb&&pb.parentNode)pb.parentNode.removeChild(pb);
     try{cancelAutoPlay();}catch(_){}
+    try{var ab=$("autoPlayBar");if(ab)ab.hidden=true;}catch(_){}
   }catch(_){}
 }
-function _acctHidePick(){try{var box=$("acctPick");if(box)box.hidden=true;var pb=$("titlePlay");if(pb)pb.hidden=false;}catch(_){}}
+function _acctHidePick(){try{var box=$("acctPick");if(box)box.hidden=true;}catch(_){}}
 async function _acctChoose(mode){
   try{playClick();}catch(_){}
   if(mode==="google"){
@@ -16032,8 +16114,8 @@ function profileBoot(){
   try{ensureDevHomeBtn();}catch(_){}   /* 【テスト用・あとで消す】 */
   $("titleScreen").classList.add("visible");   /* タイトルは毎回最初に表示 */
   if(getProfile()){ setTimeout(()=>{ try{ if($("titleScreen").classList.contains("visible")) doTitlePlay(); }catch(_){} try{_removeBootCover();}catch(_){} }, 380); }   /* 2回目以降：カバーの下で タイトル→きろく まで進めてから外す */
-  else{$("titlePlay").hidden=false;$("autoPlayBar").hidden=true;try{_removeBootCover();}catch(_){}
-    try{if(_acctNeedPick())_acctShowPick();}catch(_){}   /* ★はじめての人：ログイン/ゲストを えらぶ */
+  else{try{var _tp=$("titlePlay");if(_tp)_tp.hidden=false;}catch(_){}$("autoPlayBar").hidden=true;try{_removeBootCover();}catch(_){}
+    try{if(_acctNeedPick())_acctShowPick();}catch(_){}   /* ★目標時間を まだ きめてない人：ログイン/ゲストを えらぶ */
   }   /* 初回：タイトルを見せる */
   try{setTimeout(_removeBootCover,3500);}catch(_){}   /* 保険：必ず外す */
 }
@@ -27269,7 +27351,8 @@ function _yumeMaxLv(y){return Math.max(y&&y.hp||0,y&&y.atk||0,y&&y.spd||0)|0;}
 /* 1試合で あがるレベル（勝ち＝満額 / 負け＝4わり）。約20勝で カンスト＝3週間くらい */
 function _yumeGainLv(diff,win){
   var g=Math.round(34+(diff||1)*2.2+Math.random()*18);
-  return win?g:Math.max(4,Math.round(g*0.4));
+  /* 負けても すこしは のびる（1〜9レベル） */
+  return win?g:Math.max(1,Math.min(9,Math.round(g*0.12)));
 }
 /* ★これまでの子（0〜100の古い数値）を 1000のものさしに あわせる（1回だけ） */
 var YUME_MIGRATE_KEY="radio_yume_mig1000";
@@ -28121,6 +28204,187 @@ function _advDexRender(){
     }).join("");
   }
 }
+/* ============================================================
+   ★はじめての チュートリアル
+   ながれ：目標時間を きめる → ホームで ステップ1（体操を おす）
+        → いつもどおり 体操 → 完了画面で ステップ2（とうこう）
+        → ホームに 猫が でる → おしまい（お部屋 と 冒険の しょうかい）
+   ※チュートリアル中は「仮想空間」＝みんなには 何も 共有しない。
+     おわったら 仮の 記録は 消して、ユメっ子だけ ごほうびで のこす。
+   ============================================================ */
+var TUT_KEY="radio_tut2", TUT_SNAP="radio_tut2_snap";
+function tutStep(){try{return localStorage.getItem(TUT_KEY)||"";}catch(_){return"";}}
+function tutSet(v){try{localStorage.setItem(TUT_KEY,v);}catch(_){}}
+function tutOn(){var v=tutStep();return v==="1"||v==="2"||v==="2a"||v==="3";}
+/* いまの ようすを まるごと おぼえておく（あとで もどす） */
+function _tutSnapshot(){
+  try{
+    var o={};
+    for(var i=0;i<localStorage.length;i++){
+      var k=localStorage.key(i);
+      if(!k||k.indexOf("radio_")!==0)continue;
+      if(k===TUT_KEY||k===TUT_SNAP)continue;
+      o[k]=localStorage.getItem(k);
+    }
+    localStorage.setItem(TUT_SNAP,JSON.stringify(o));
+  }catch(_){}
+}
+/* 仮の 記録を 消して、はじめの じょうたいに もどす（ユメっ子だけ のこす） */
+function _tutRestore(){
+  try{
+    var keepDex=localStorage.getItem("radio_yume_dex");
+    var keepMig=localStorage.getItem("radio_yume_mig1000");
+    var snap=null;
+    try{snap=JSON.parse(localStorage.getItem(TUT_SNAP)||"null");}catch(_){}
+    if(snap){
+      var now=[];
+      for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k&&k.indexOf("radio_")===0)now.push(k);}
+      now.forEach(function(k){
+        if(k===TUT_KEY||k===TUT_SNAP)return;
+        if(Object.prototype.hasOwnProperty.call(snap,k))localStorage.setItem(k,snap[k]);
+        else localStorage.removeItem(k);
+      });
+    }
+    if(keepDex)localStorage.setItem("radio_yume_dex",keepDex);      /* ★ユメっ子は ごほうび */
+    if(keepMig)localStorage.setItem("radio_yume_mig1000",keepMig);
+    localStorage.removeItem(TUT_SNAP);
+  }catch(_){}
+}
+/* ---- スポットライト（そこだけ さわれる） ---- */
+var _tutTargetEl=null,_tutReposT=null;
+function _tutSpot(el,stepNo,msg,opts){
+  opts=opts||{};
+  var ov=$("tutOv");if(!ov)return;
+  _tutTargetEl=el;
+  ov.hidden=false;
+  var sn=$("tutStepNo");if(sn){sn.textContent=stepNo||"";sn.style.display=stepNo?"":"none";}
+  var mg=$("tutMsg");if(mg)mg.innerHTML=msg||"";
+  var ok=$("tutOk");if(ok){ok.hidden=!opts.okBtn;ok.textContent=opts.okText||"わかった";}
+  _tutReposition();
+  clearInterval(_tutReposT);
+  _tutReposT=setInterval(_tutReposition,260);   /* 画面が うごいても ついていく */
+}
+function _tutReposition(){
+  try{
+    var ov=$("tutOv");if(!ov||ov.hidden)return;
+    var el=_tutTargetEl;
+    var W=window.innerWidth,H=window.innerHeight;
+    var r=el?el.getBoundingClientRect():null;
+    if(!r||(!r.width&&!r.height)){r={top:H/2,left:W/2,width:0,height:0,bottom:H/2,right:W/2};}
+    var pad=10;
+    var t=Math.max(0,r.top-pad),b=Math.min(H,r.bottom+pad),l=Math.max(0,r.left-pad),g=Math.min(W,r.right+pad);
+    var set=function(id,st){var e=$(id);if(!e)return;for(var k in st)e.style[k]=st[k];};
+    set("tutBlkT",{top:"0px",left:"0px",width:W+"px",height:t+"px"});
+    set("tutBlkB",{top:b+"px",left:"0px",width:W+"px",height:Math.max(0,H-b)+"px"});
+    set("tutBlkL",{top:t+"px",left:"0px",width:l+"px",height:Math.max(0,b-t)+"px"});
+    set("tutBlkR",{top:t+"px",left:g+"px",width:Math.max(0,W-g)+"px",height:Math.max(0,b-t)+"px"});
+    var ring=$("tutRing");
+    if(ring){
+      if(r.width||r.height){ring.style.display="";ring.style.top=t+"px";ring.style.left=l+"px";
+        ring.style.width=Math.max(0,g-l)+"px";ring.style.height=Math.max(0,b-t)+"px";}
+      else ring.style.display="none";
+    }
+    var bub=$("tutBubble");
+    if(bub){
+      var below=(t<H*0.5);
+      bub.style.top=below?(b+16)+"px":"";
+      bub.style.bottom=below?"":(Math.max(0,H-t)+16)+"px";
+    }
+  }catch(_){}
+}
+function _tutClear(){
+  try{clearInterval(_tutReposT);}catch(_){}
+  _tutReposT=null;_tutTargetEl=null;
+  var ov=$("tutOv");if(ov)ov.hidden=true;
+}
+/* ---- ステップ1：ホームで 体操ボタン ---- */
+/* 読みこみ直した時：とちゅうなら つづきから */
+function _tutResume(){
+  try{
+    var v=tutStep();
+    if(v==="1"){setTimeout(function(){var el=$("randomModeBtn");if(el)_tutSpot(el,"ステップ 1","あさ おきたら この サイトを ひらいてね。<br>まずは <b>ラジオ体操</b>を おしてみよう！");},900);}
+    else if(v==="2"){setTimeout(function(){var el=$("tsPostBtn");if(el&&el.offsetParent)_tutSpot(el,"ステップ 2","おきた 時間を みんなに 共有してみよう。<br><b>投稿する</b>を おしてね！");},900);}
+    else if(v==="2a"){setTimeout(function(){var el=$("tsAdvBtn");if(el&&el.offsetParent)_tutSpot(el,"ステップ 3","あつめた ユメっ子と <b>冒険</b>に 行ってみよう！",{okBtn:true,okText:"つぎへ"});else _tutGo3();},900);}
+    else if(v==="3"){setTimeout(function(){var el=$("ground")||$("randomModeBtn");_tutSpot(el,"","ホームに あなたの 猫が でてきたよ！<br>みんなも おなじように あつまるんだ。",{okBtn:true});},900);}
+  }catch(_){}
+}
+try{setTimeout(function(){try{if(tutOn())_tutResume();}catch(_){}},1600);}catch(_){}
+function _tutGo1(){
+  tutSet("1");
+  try{if(typeof showSelect==="function")showSelect();}catch(_){}
+  setTimeout(function(){
+    var el=$("randomModeBtn");
+    _tutSpot(el,"ステップ 1",
+      "あさ おきたら この サイトを ひらいてね。<br>まずは <b>ラジオ体操</b>を おしてみよう！");
+  },420);
+}
+/* ---- ステップ2：完了画面で とうこう ---- */
+function _tutGo2(){
+  if(tutStep()!=="1")return;
+  tutSet("2");
+  setTimeout(function(){
+    var el=$("tsPostBtn");
+    try{if(el&&el.scrollIntoView)el.scrollIntoView({block:"center",behavior:"smooth"});}catch(_){}
+    setTimeout(function(){
+      _tutSpot($("tsPostBtn"),"ステップ 2",
+        "おきた 時間を みんなに 共有してみよう。<br>コメントを かいても かかなくても だいじょうぶ。<br><b>投稿する</b>を おしてね！");
+    },420);
+  },1400);
+}
+/* ---- ステップ2.5：完了画面から 冒険へ さそう ---- */
+function _tutGoAdv(){
+  tutSet("2a");
+  _tutClear();
+  setTimeout(function(){
+    var el=$("tsAdvBtn");
+    try{if(el&&el.scrollIntoView)el.scrollIntoView({block:"center",behavior:"smooth"});}catch(_){}
+    setTimeout(function(){
+      _tutSpot($("tsAdvBtn"),"ステップ 3",
+        "たいそうが おわると <b>ユメっ子</b>に 会えるよ。<br>あつめた子と <b>冒険</b>に 行ってみよう！<br><span class=\"tutSm\">（あとで いつでも 行けるよ）</span>",
+        {okBtn:true,okText:"つぎへ"});
+    },420);
+  },900);
+}
+/* ---- ステップ3：ホームに 猫が でる ---- */
+function _tutGo3(){
+  tutSet("3");
+  _tutClear();
+  try{toast("ホームに もどるよ");}catch(_){}
+  setTimeout(function(){
+    try{if(typeof taisoNext==="function")taisoNext();else showSelect();}catch(_){try{showSelect();}catch(__){}}
+    setTimeout(function(){
+      var el=$("ground")||$("hillCats")||$("randomModeBtn");
+      _tutSpot(el,"",
+        "ホームに あなたの 猫が でてきたよ！<br>みんなも おなじように あつまるんだ。",{okBtn:true});
+    },900);
+  },700);
+}
+/* ---- おしまい ---- */
+function _tutFinish(){
+  _tutClear();
+  _tutRestore();                 /* 仮の 記録を 消す（ユメっ子は のこる） */
+  tutSet("done");
+  try{refreshHome();}catch(_){}
+  try{refreshGroundPost();}catch(_){}
+  try{loadHillCats();}catch(_){}  /* みんなの 猫が でてくる */
+  try{publishProfile();}catch(_){}
+  try{renderProfileBar();}catch(_){}
+  var e=$("tutEnd");if(e)e.hidden=false;
+}
+try{
+  var _tok=document.getElementById("tutOk");
+  if(_tok)_tok.addEventListener("click",function(){
+    try{playClick();}catch(_){}
+    if(tutStep()==="2a"){_tutGo3();return;}   /* 冒険の しょうかい → ホームへ */
+    _tutFinish();
+  });
+  var _teb=document.getElementById("tutEndBtn");
+  if(_teb)_teb.addEventListener("click",function(){
+    try{playClick();}catch(_){}
+    var e=$("tutEnd");if(e)e.hidden=true;
+    try{showSelect();updateTop();}catch(_){}
+  });
+}catch(_){}
 /* ===== ユメっ子ずかん（もってない子は シルエット） ===== */
 function _ybBest(name){
   /* 同じ名前を 何人か もっている時は いちばん 育っている子を 見せる */
@@ -32542,6 +32806,27 @@ function _gpStreetHTML(){
   <div id="advDexTabs"><button id="advDexTabStage" class="advDexTab on" type="button">ステージ</button><button id="advDexTabYume" class="advDexTab" type="button">ユメっ子</button></div>
   <div id="advDexHint"></div>
   <div id="advDexGrid" class="advDexGrid stage"></div>
+</div>
+<div id="tutOv" hidden>
+  <div class="tutBlk" id="tutBlkT"></div><div class="tutBlk" id="tutBlkB"></div>
+  <div class="tutBlk" id="tutBlkL"></div><div class="tutBlk" id="tutBlkR"></div>
+  <div id="tutRing"></div>
+  <div id="tutBubble"><div id="tutStepNo"></div><div id="tutMsg"></div><button id="tutOk" type="button" hidden>わかった</button></div>
+</div>
+<div id="tutEnd" hidden>
+  <div id="tutEndBox">
+    <div id="tutEndTtl">これで じゅんび かんりょう！</div>
+    <div id="tutEndSub">さいごに ふたつ しょうかいするね</div>
+    <div class="tutEndCard">
+      <div class="tecIco">🏠</div>
+      <div class="tecTxt"><b>お部屋</b><br>ねこと おしゃべりできるよ。こまった ことが あったら いつでも 相談してね</div>
+    </div>
+    <div class="tutEndCard">
+      <div class="tecIco">⚔️</div>
+      <div class="tecTxt"><b>冒険</b><br>ユメっ子を あつめて、まいにち ひとつずつ ステージを すすめられるよ</div>
+    </div>
+    <button id="tutEndBtn" type="button">はじめる！</button>
+  </div>
 </div>
 <div id="yumeBook">
   <div id="ybTop"><button id="ybClose" type="button">✕</button><span id="ybTtl">📖 ユメっ子ずかん</span></div>

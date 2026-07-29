@@ -1447,6 +1447,8 @@ body.exercising #randomModeBtn{animation:none !important;}
 #acctPickNote{font-size:12px;font-weight:700;color:#7fa0b3;text-align:center;line-height:1.6;margin-bottom:8px;}
 .acctBtn{width:100%;border-radius:999px;padding:13px 14px;font-family:inherit;font-size:14.5px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;transition:transform .15s;}
 .acctBtn:active{transform:scale(.97);}
+#acctWord{width:100%;box-sizing:border-box;margin:4px 0 10px;padding:13px 14px;border:2px solid #cfe3f0;border-radius:14px;font-family:inherit;font-size:15px;color:#33475c;background:#fbfdfe;text-align:center;}
+#acctWord:focus{outline:none;border-color:#7fc4e6;}
 .acctBtn.main{border:none;color:#fff;background:linear-gradient(135deg,#7fc9e8,#4ea8d8);box-shadow:0 6px 16px rgba(78,168,216,.4);}
 .acctBtn.sub{border:1.5px solid #d6e7f0;background:#fff;color:#6d93a8;margin-top:6px;}
 .acctBtn .gIco{width:19px;height:19px;background:#fff;border-radius:50%;padding:2px;flex:0 0 auto;}
@@ -4927,6 +4929,20 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
   font-size:15px;font-weight:900;color:#fff;cursor:pointer;
   background:linear-gradient(135deg,#8ad9a8,#5cbf88);box-shadow:0 8px 20px rgba(92,191,136,.4);}
 #tutEndBtn:active{transform:scale(.97);}
+.wField{display:block;margin:0 0 9px;}
+.wField span{display:block;font-size:11px;font-weight:800;color:#7d94a8;margin-bottom:3px;}
+.wField input{width:100%;box-sizing:border-box;padding:11px 12px;border:2px solid #d8e6f0;border-radius:12px;font-family:inherit;font-size:14px;color:#33475c;background:#fbfdfe;}
+.wField input:focus{outline:none;border-color:#7fc4e6;}
+#wAcctNow{background:#eef8ff;border:1.5px solid #cfe6f5;border-radius:14px;padding:11px 13px;margin-bottom:11px;font-size:12.5px;font-weight:800;color:#3a6683;}
+#wAcctNow[hidden]{display:none;}
+#wAcctNow b{color:#2f7d9e;}
+#wList{margin-top:10px;display:flex;flex-direction:column;gap:6px;}
+.wRow{display:flex;align-items:center;gap:8px;background:#f6fafd;border:1.5px solid #e3eef5;border-radius:12px;padding:9px 11px;}
+.wRow .wRname{flex:1;font-size:12.5px;font-weight:800;color:#3f5f74;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.wRow .wRnow{font-size:10px;font-weight:900;color:#2f9e6a;background:#e5f8ee;border-radius:99px;padding:2px 8px;flex:0 0 auto;}
+.wRow button{border:none;border-radius:999px;font-family:inherit;font-size:11.5px;font-weight:800;cursor:pointer;padding:6px 12px;flex:0 0 auto;}
+.wRow .wRgo{background:linear-gradient(135deg,#8fd3f0,#4ea8d8);color:#fff;}
+.wRow .wRdel{background:#f2f2f4;color:#b56b64;}
 .gBtnDanger{color:#b56b64!important;border-color:#eccbc8!important;}
 .gBtnDanger:active{background:#fbeeed;}
 .acctCard{background:#f5fbff;border:1.5px solid #dcecf6;border-radius:14px;padding:11px 13px;margin-bottom:10px;}
@@ -6008,11 +6024,12 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
     <button id="titlePlay" type="button">▶ プレイ</button>
     <div id="acctPick" hidden>
       <div id="acctPickTtl">はじめまして！</div>
-      <div id="acctPickNote">記録を どこに 保存する？<br>あとから 設定で かえられるよ</div>
-      <button id="acctGoogle" type="button" class="acctBtn main"><svg class="gIco" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.9 0 6.6 1.7 8.1 3.1l6-5.8C34.6 3.2 29.8 1 24 1 14.6 1 6.5 6.4 2.7 14.3l7 5.4C11.5 13.6 17.2 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-2.8-.4-4H24v7.6h12.7c-.3 2.1-1.6 5.2-4.7 7.3l7.2 5.6c4.3-4 6.3-9.9 6.3-16.5z"/><path fill="#FBBC05" d="M9.7 19.7C9.2 21.1 9 22.5 9 24s.2 2.9.7 4.3l-7 5.4C1.3 30.6 0 27.5 0 24s1.3-6.6 2.7-9.7l7 5.4z"/><path fill="#34A853" d="M24 47c6.5 0 11.9-2.1 15.9-5.8l-7.2-5.6c-2 1.4-4.6 2.3-8.7 2.3-6.8 0-12.5-4.1-14.3-9.9l-7 5.4C6.5 41.6 14.6 47 24 47z"/></svg>Googleで ログイン</button>
-      <div class="acctSub">どの端末でも おなじ記録に なるよ</div>
-      <button id="acctGuest" type="button" class="acctBtn sub">ゲストで あそぶ</button>
-      <div class="acctSub">この端末だけ。あとで ログインできるよ</div>
+      <div id="acctPickNote">「あいことば」を きめると、どの端末でも<br>おなじ記録で あそべるよ（メモしてね）</div>
+      <input id="acctWord" type="text" inputmode="text" autocomplete="off" placeholder="すきな あいことば（れい：ゆめの ひみつ2024）">
+      <button id="acctWordGo" type="button" class="acctBtn main">この あいことばで はじめる</button>
+      <div class="acctSub">同じ あいことばを 入れれば、別の端末でも つながるよ</div>
+      <button id="acctGuest" type="button" class="acctBtn sub">あとで（ゲストで あそぶ）</button>
+      <div class="acctSub">この端末だけ。あとから 設定で あいことばを きめられるよ</div>
     </div>
     <div id="autoPlayBar" hidden><div id="autoPlayFill"></div><span id="autoPlayText">ロード中…</span></div>
   </div>
@@ -7518,21 +7535,55 @@ const UID_KEY="radio_uid";
    これで「1アカウント＝1データ」「どの端末でも おなじ」「サイトデータを
    消しても ログインで もどる」が 成りたつ。
    ============================================================ */
-var GUID_KEY="radio_guid";   /* ログイン中の Google UID（覚えておく＝起動直後から アカウント側を 見る） */
+/* ============================================================
+   ★アカウント＝「あいことば」方式（Xみたいに 気軽に 切りかえ）
+   ・あいことばを きめる → それが アカウント。ID＝あいことばから 作る 固定の 文字列。
+   ・同じ あいことばを 入れれば、どの端末でも 同じ データ。
+   ・Google も 別サイトへの 移動も 一切 なし＝あのエラーが 出ない。
+   ・データは Firebase の sync/<ID> に 保存（読み書きには 匿名サインインだけ 使う。
+     これは 別サイトに 飛ばないので 今までの 問題とは 無関係）。
+   ============================================================ */
+var GUID_KEY="radio_guid";       /* いまログイン中の アカウントID（あいことばから 作ったもの） */
+var ACCTS_KEY="radio_accts";     /* この端末で つかった アカウントの 一覧（切りかえ用） */
 function deviceUid(){
   let u=localStorage.getItem(UID_KEY);
   if(!u){u="u"+Math.random().toString(36).slice(2,10);localStorage.setItem(UID_KEY,u);}
   return u;
 }
 function savedGuid(){try{return localStorage.getItem(GUID_KEY)||"";}catch(_){return"";}}
-/* いま データを 読み書きする ID。ログイン中は Google UID。 */
+/* あいことば（すきな文字）→ 固定の アカウントID（同じ入力なら いつも 同じID）。
+   全角/大文字小文字/前後の空白を そろえてから ハッシュ。衝突しにくい 2種の ハッシュを つなぐ。 */
+function _acctNorm(word){
+  try{return String(word||"").normalize("NFKC").trim().toLowerCase().replace(/\s+/g," ");}catch(_){return String(word||"").trim().toLowerCase();}
+}
+function acctIdFromWord(word){
+  var w=_acctNorm(word);if(!w)return "";
+  /* djb2 と sdbm の 2つを つないで 16進に（ライブラリ不要・端末で 同じ結果） */
+  var h1=5381,h2=0;
+  for(var i=0;i<w.length;i++){var c=w.charCodeAt(i);h1=((h1*33)^c)>>>0;h2=(c+(h2<<6)+(h2<<16)-h2)>>>0;}
+  var hex=("00000000"+h1.toString(16)).slice(-8)+("00000000"+h2.toString(16)).slice(-8);
+  return "a_"+hex;   /* 例：a_1a2b3c4d5e6f7a8b */
+}
+/* いま データを 読み書きする ID。あいことばで ログイン中は そのID、でなければ この端末。 */
 function getUid(){
   var g=savedGuid();
-  if(g)return g;                 /* ログイン済み＝アカウントが 持ち主 */
-  if(_authUser&&!_authUser.isAnonymous)return _authUser.uid;
-  return deviceUid();            /* ゲスト＝この端末 */
+  if(g)return g;
+  return deviceUid();
 }
-function isLoggedIn(){return !!savedGuid()||!!(_authUser&&!_authUser.isAnonymous);}
+function isLoggedIn(){return !!savedGuid();}
+/* この端末で つかった アカウントの おぼえ書き（名前つきで 一覧・切りかえ用） */
+function _acctList(){try{return JSON.parse(localStorage.getItem(ACCTS_KEY)||"[]");}catch(_){return[];}}
+function _acctRemember(id,label){
+  try{
+    var a=_acctList().filter(function(x){return x&&x.id&&x.id!==id;});
+    a.unshift({id:id,label:label||"",at:Date.now()});
+    if(a.length>12)a=a.slice(0,12);
+    localStorage.setItem(ACCTS_KEY,JSON.stringify(a));
+  }catch(_){}
+}
+function _acctForget(id){
+  try{localStorage.setItem(ACCTS_KEY,JSON.stringify(_acctList().filter(function(x){return x&&x.id!==id;})));}catch(_){}
+}
 /* ===== 連動（PC⇄スマホ）：ローカル記録をクラウドに自動同期。復元IDでuidを揃えた端末どうしが同じ状態になる ===== */
 /* ★同期しないのは「この端末だけのもの」と「AIの会話」だけ。
    それ以外は ぜんぶ Firebaseに 保存する（別の端末でも おなじになる）。 */
@@ -7802,14 +7853,8 @@ async function ensureAuth(){
   })();
   return _authPromise;
 }
-/* サインインが ととのった時：Googleユーザーなら GUID を そろえる */
-function _afterAuthReady(){
-  try{
-    if(_authUser&&!_authUser.isAnonymous){
-      if(savedGuid()!==_authUser.uid){try{localStorage.setItem(GUID_KEY,_authUser.uid);}catch(_){}}
-    }
-  }catch(_){}
-}
+/* あいことば方式では ここで 何もしない（匿名サインインは 読み書きの ためだけ） */
+function _afterAuthReady(){}
 async function getDB(){
   if(_isCrawler)return null;   /* クローラーにはFirebase接続を張らない（Search Consoleの.lpエラー対策） */
   try{await ensureAuth();}catch(_){}   /* ★かならず サインインしてから つなぐ */
@@ -7861,31 +7906,39 @@ async function _getAuth(){
   const m=await import(FB_AUTH);
   return {auth:m.getAuth(app),m};
 }
-function _devLabel(){
+
+function _renderGoogleUI(){ try{_renderWAcct();}catch(_){} }
+function _acctShort(id){return id?(id.slice(0,2)+"…"+id.slice(-4)):"";}
+function _renderWAcct(){
   try{
-    var ua=navigator.userAgent||"";
-    var mobile=/iPhone|iPad|iPod|Android|Mobile/i.test(ua);
-    return mobile?"スマホ":"パソコン";
-  }catch(_){return "この端末";}
-}
-function _renderGoogleUI(){
-  try{
-    const info=_gInfo(),btn=$("gLoginBtn"),st=$("gLoginState"),em=$("gLoginEmail"),note=$("gLoginNote");
-    const on=isLoggedIn()&&info&&(info.email||info.name);
-    if(on){
-      if(btn)btn.style.display="none";
-      if(st)st.hidden=false;
-      if(em)em.textContent=info.email||info.name||"ログイン中";
-      if(note)note.style.display="none";
-      var pn=$("gLoginPName");
-      if(pn){var nm="";try{var p=getProfile();nm=(p&&p.name)||"";}catch(_){}pn.textContent=nm||"（未設定）";}
-      var dv=$("gLoginDev");if(dv)dv.textContent=_devLabel();
-    }else{
-      if(btn)btn.style.display="";
-      if(st)st.hidden=true;
-      if(note)note.style.display="";
+    var now=savedGuid();
+    var box=$("wAcctNow");
+    if(box){
+      if(now){
+        var lb="";try{(_acctList()||[]).forEach(function(x){if(x.id===now&&x.label)lb=x.label;});}catch(_){}
+        var pnm="";try{var p=getProfile();pnm=(p&&p.name)||"";}catch(_){}
+        box.hidden=false;
+        box.innerHTML="いま：<b>"+escHtml(lb||pnm||"あいことばの記録")+"</b>（"+_devLabel()+"）";
+      }else{ box.hidden=true; }
+    }
+    var lo=$("wLogoutBtn");if(lo)lo.hidden=!now;
+    /* 履歴一覧（この端末で つかった あいことば） */
+    var list=$("wList");
+    if(list){
+      var arr=_acctList()||[];
+      list.innerHTML=arr.map(function(x){
+        var isNow=(x.id===now);
+        return '<div class="wRow" data-id="'+escHtml(x.id)+'" data-label="'+escHtml(x.label||"")+'">'+
+          '<span class="wRname">'+escHtml(x.label||_acctShort(x.id))+'</span>'+
+          (isNow?'<span class="wRnow">いま</span>':'<button class="wRgo" type="button">つなぐ</button>')+
+          '<button class="wRdel" type="button">消す</button>'+
+        '</div>';
+      }).join("");
     }
   }catch(_){}
+}
+function _devLabel(){
+  try{var ua=navigator.userAgent||"";return /iPhone|iPad|iPod|Android|Mobile/i.test(ua)?"スマホ":"パソコン";}catch(_){return "この端末";}
 }
 /* ============================================================
    ★アカウントに 保存する データの まとまり（移植で 選べる項目）
@@ -8073,6 +8126,35 @@ async function _gRedirect(auth,m,provider){
      「missing initial state」や init.json 404 を さける
    ・新しい Firebase SDK は COOP環境を 自分で 見わけて うまく やる
    ・どうしても ダメな端末だけ 最後の 手として リダイレクト */
+/* ============================================================
+   ★あいことば ログイン・切りかえ・ログアウト
+   ============================================================ */
+async function acctLogin(word,label){
+  var id=acctIdFromWord(word);
+  if(!id){toast("あいことばを 入れてね");return false;}
+  var cur=savedGuid();
+  if(cur===id){toast("もう そのアカウントだよ");return true;}
+  try{ if(isLoggedIn()){ await cloudSyncPush(true); await cloudBigPush(true); } }catch(_){}
+  try{localStorage.setItem(GUID_KEY,id);}catch(_){}
+  try{localStorage.removeItem("radio_sync_meta");localStorage.removeItem("radio_syncbig_meta");}catch(_){}
+  try{setAcctMode("word");}catch(_){}
+  _acctRemember(id,label||"");
+  _ownerDone=false;try{await claimOwner();}catch(_){}
+  toast("つないでいます…");
+  var got=false;
+  try{ got=await cloudSyncPull(true); }catch(_){}
+  try{ await cloudBigPull(true); }catch(_){}
+  if(!got){ try{ await cloudSyncPush(true); await cloudBigPush(true); }catch(_){} }
+  setTimeout(function(){try{location.reload();}catch(_){}},500);
+  return true;
+}
+async function acctLogout(){
+  try{ if(isLoggedIn()){ await cloudSyncPush(true); await cloudBigPush(true); } }catch(_){}
+  try{localStorage.removeItem(GUID_KEY);localStorage.removeItem("radio_sync_meta");localStorage.removeItem("radio_syncbig_meta");}catch(_){}
+  try{setAcctMode("guest");}catch(_){}
+  toast("ログアウトしたよ");
+  setTimeout(function(){try{location.reload();}catch(_){}},500);
+}
 async function googleLogin(){
   let A;try{A=await _getAuth();}catch(e){toast("Googleログインは使えないよ（設定が必要）");return;}
   const{auth,m}=A;const provider=new m.GoogleAuthProvider();
@@ -15978,9 +16060,30 @@ async function saveRestoreId(p){
 }
 let _restoreSel=null;
 $("ppRestoreOpen").addEventListener("click",async()=>{playClick();await openRestore();});
-try{const _gb=$("gLoginBtn");if(_gb)_gb.addEventListener("click",()=>{playClick();googleLogin();});}catch(_){}
-try{const _go=$("gLogoutBtn");if(_go)_go.addEventListener("click",()=>{playClick();googleLogout();});}catch(_){}
-try{const _mb=$("gMigrateBtn");if(_mb)_mb.addEventListener("click",()=>{playClick();if(!isLoggedIn()){toast("さきに Googleでログインしてね");return;}_openMigrate(getUid(),"","manual");});}catch(_){}
+try{const _wl=$("wLoginBtn");if(_wl)_wl.addEventListener("click",async()=>{playClick();
+  var w=($("wWord")&&$("wWord").value)||"";var lb=($("wLabel")&&$("wLabel").value)||"";
+  if(!_acctNorm(w)){toast("あいことばを 入れてね");return;}
+  await acctLogin(w,lb);
+});}catch(_){}
+try{const _wo=$("wLogoutBtn");if(_wo)_wo.addEventListener("click",()=>{playClick();acctLogout();});}catch(_){}
+/* 履歴一覧の 切りかえ／削除（イベント委任） */
+try{const _wlist=$("wList");if(_wlist)_wlist.addEventListener("click",async(ev)=>{
+  var go=ev.target.closest(".wRgo"),del=ev.target.closest(".wRdel");
+  var row=ev.target.closest(".wRow");if(!row)return;
+  var id=row.getAttribute("data-id"),label=row.getAttribute("data-label")||"";
+  if(del){ playClick(); if(confirm("この あいことばを この端末の 一覧から 消す？\n（記録じたいは 消えない）")){ _acctForget(id); _renderWAcct(); } return; }
+  if(go){ playClick(); if(id===savedGuid()){toast("もう そのアカウントだよ");return;}
+    /* 一覧からの 切りかえは ID直接（あいことばは 保存してないので ID で つなぐ） */
+    try{ if(isLoggedIn()){ await cloudSyncPush(true); await cloudBigPush(true); } }catch(_){}
+    try{localStorage.setItem(GUID_KEY,id);}catch(_){}
+    try{localStorage.removeItem("radio_sync_meta");localStorage.removeItem("radio_syncbig_meta");}catch(_){}
+    try{setAcctMode("word");}catch(_){}
+    _acctRemember(id,label);_ownerDone=false;try{await claimOwner();}catch(_){}
+    toast("切りかえ中…");
+    try{ await cloudSyncPull(true); await cloudBigPull(true); }catch(_){}
+    setTimeout(function(){try{location.reload();}catch(_){}},500);
+  }
+});}catch(_){}
 try{const _rl=$("gResetLocal");if(_rl)_rl.addEventListener("click",async()=>{
   playClick();
   if(!confirm("この端末の 記録を ぜんぶ 消して、まっさらに するよ。\n\n（Googleに ログインしていた 記録は アカウント側に 残るので、また ログインすれば もどせるよ）\n\n消して いい？"))return;
@@ -16351,20 +16454,20 @@ function _acctShowPick(){
 function _acctHidePick(){try{var box=$("acctPick");if(box)box.hidden=true;}catch(_){}}
 async function _acctChoose(mode){
   try{playClick();}catch(_){}
-  _acctHidePick();
-  if(mode==="google"){
-    setAcctMode("google");
-    /* ポップアップで ログイン（この中で 記録の 読みこみ／移植の 案内／reload まで やる）。
-       ポップアップを 閉じた等で 進まなかった時のため、タイトルは 出しておく。 */
-    try{await googleLogin();}catch(_){}
-    try{doTitlePlay();}catch(_){}
-  }else{
-    setAcctMode("guest");           /* ゲスト＝この端末だけ。クラウドには 触らない */
-    try{await ensureAuth();}catch(_){}
-    try{doTitlePlay();}catch(_){}
+  if(mode==="word"){
+    var w=($("acctWord")&&$("acctWord").value)||"";
+    if(!_acctNorm(w)){toast("あいことばを 入れてね");return;}
+    _acctHidePick();
+    try{ await acctLogin(w,""); }catch(_){ try{doTitlePlay();}catch(__){} }
+    return;   /* acctLogin が reload するので ここで おわり */
   }
+  _acctHidePick();
+  setAcctMode("guest");             /* ゲスト＝この端末だけ。クラウドには 触らない */
+  try{await ensureAuth();}catch(_){}
+  try{doTitlePlay();}catch(_){}
 }
-try{var _ag=$("acctGoogle");if(_ag)_ag.addEventListener("click",function(){_acctChoose("google");});}catch(_){}
+try{var _aw=$("acctWordGo");if(_aw)_aw.addEventListener("click",function(){_acctChoose("word");});}catch(_){}
+try{var _awi=$("acctWord");if(_awi)_awi.addEventListener("keydown",function(e){if(e.key==="Enter")_acctChoose("word");});}catch(_){}
 try{var _aq=$("acctGuest");if(_aq)_aq.addEventListener("click",function(){_acctChoose("guest");});}catch(_){}
 $("autoPlayBar").addEventListener("click",()=>{playClick();cancelAutoPlay();});   /* バーを押すと自動を中止してプレイボタンに */
 function buildTitleArt(body,ear,cos,msg,pose){
@@ -32916,18 +33019,14 @@ function _gpStreetHTML(){
       <details id="gLoginCard" class="setCard setCardDetails">
         <summary><span class="setCardIco ico-id"><svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.9 0 6.6 1.7 8.1 3.1l6-5.8C34.6 3.2 29.8 1 24 1 14.6 1 6.5 6.4 2.7 14.3l7 5.4C11.5 13.6 17.2 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-2.8-.4-4H24v7.6h12.7c-.3 2.1-1.6 5.2-4.7 7.3l7.2 5.6c4.3-4 6.3-9.9 6.3-16.5z"/><path fill="#FBBC05" d="M9.7 19.7C9.2 21.1 9 22.5 9 24s.2 2.9.7 4.3l-7 5.4C1.3 30.6 0 27.5 0 24s1.3-6.6 2.7-9.7l7 5.4z"/><path fill="#34A853" d="M24 47c6.5 0 11.9-2.1 15.9-5.8l-7.2-5.6c-2 1.4-4.6 2.3-8.7 2.3-6.8 0-12.5-4.1-14.3-9.9l-7 5.4C6.5 41.6 14.6 47 24 47z"/></svg></span><span class="setCardTxt"><b>Googleでログイン</b><small>スマホ⇄PCをかんたんに同期</small></span><span class="setCardArrow">›</span></summary>
         <div class="psRestoreInner">
-          <div id="gLoginNote" class="restoreNote">Googleでログインすると、この記録を他の端末とも共有できるよ。別の端末で同じGoogleでログインすると、同じ記録に繋がるよ。</div>
-          <button id="gResetLocal" type="button" class="gBtnSub gBtnDanger" style="margin-bottom:10px;">うまくいかない時：この端末を まっさらにする</button>
-          <button id="gLoginBtn" type="button" class="gBtn"><svg class="gIco" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.9 0 6.6 1.7 8.1 3.1l6-5.8C34.6 3.2 29.8 1 24 1 14.6 1 6.5 6.4 2.7 14.3l7 5.4C11.5 13.6 17.2 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-2.8-.4-4H24v7.6h12.7c-.3 2.1-1.6 5.2-4.7 7.3l7.2 5.6c4.3-4 6.3-9.9 6.3-16.5z"/><path fill="#FBBC05" d="M9.7 19.7C9.2 21.1 9 22.5 9 24s.2 2.9.7 4.3l-7 5.4C1.3 30.6 0 27.5 0 24s1.3-6.6 2.7-9.7l7 5.4z"/><path fill="#34A853" d="M24 47c6.5 0 11.9-2.1 15.9-5.8l-7.2-5.6c-2 1.4-4.6 2.3-8.7 2.3-6.8 0-12.5-4.1-14.3-9.9l-7 5.4C6.5 41.6 14.6 47 24 47z"/></svg>Googleでログイン</button>
-          <div id="gLoginState" hidden>
-            <div class="acctCard">
-              <div class="acctRow"><span class="acctK">アカウント</span><b id="gLoginEmail" class="acctV"></b></div>
-              <div class="acctRow"><span class="acctK">なまえ</span><span id="gLoginPName" class="acctV"></span></div>
-              <div class="acctRow"><span class="acctK">つないでる端末</span><span id="gLoginDev" class="acctV"></span></div>
-            </div>
-            <button id="gMigrateBtn" type="button" class="gBtnSub">この端末の記録を アカウントに移す</button>
-            <button id="gLogoutBtn" type="button" class="gBtnSub">ログアウト</button>
-          </div>
+          <div id="gLoginNote" class="restoreNote">「あいことば」を きめると、どの端末でも 同じ記録で あそべるよ。<br>別の端末で 同じ あいことばを 入れると つながる。X みたいに 何個でも 作れて、切りかえも かんたん。<br><b>あいことばは メモしてね</b>（わすれると もどせないよ）。</div>
+          <div id="wAcctNow" hidden></div>
+          <label class="wField"><span>あいことば</span><input id="wWord" type="text" autocomplete="off" placeholder="れい：ゆめの ひみつ2024"></label>
+          <label class="wField"><span>名前（メモ用・任意）</span><input id="wLabel" type="text" autocomplete="off" placeholder="れい：メインの記録"></label>
+          <button id="wLoginBtn" type="button" class="gBtn">この あいことばで ログイン／作る</button>
+          <div id="wList"></div>
+          <button id="wLogoutBtn" type="button" class="gBtnSub" hidden>ログアウト（ゲストに もどる）</button>
+          <button id="gResetLocal" type="button" class="gBtnSub gBtnDanger" style="margin-top:10px;">うまくいかない時：この端末を まっさらにする</button>
         </div>
       </details>
       <details id="aicSetCard" class="setCard setCardDetails">

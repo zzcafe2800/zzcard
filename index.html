@@ -7996,13 +7996,24 @@ function _gname(u){return (u&&(u.displayName||u.email))||"";}
 async function _afterGoogleUser(user){
   if(!user||user.isAnonymous)return;
   var gid=user.uid;
-  var wasLoggedIn=isLoggedIn() && savedGuid() && savedGuid()!==gid;
-  var db=await getDB();if(!db){toast("いまはつながらないよ");return;}
+  var wasLoggedIn=savedGuid() && savedGuid()!==gid;
+  /* ★まず ログイン状態を 確定させる（DB接続の 前に）。
+     こうすると DBが 一瞬 つながらなくても ログインは 消えず、
+     「ログインしたのに 一瞬で 戻る」ことが なくなる。 */
+  _saveGInfo({email:user.email||"",name:user.displayName||"",gid:gid});
+  var db=await getDB();
+  if(!db){
+    /* DBに つながらなくても ログイン自体は 成立させる（この端末＝そのアカウント） */
+    try{localStorage.setItem(GUID_KEY,gid);}catch(_){}
+    try{setAcctMode("google");}catch(_){}
+    toast("ログインしたよ（記録の 読みこみは あとで）");
+    setTimeout(function(){try{location.reload();}catch(_){}},900);
+    return;
+  }
   var{ref,get}=await import(FB_DB);
   /* アカウント側に 記録が あるか みる */
   var has=false;
   try{var sn=await get(ref(db,"sync/"+gid));has=sn.exists()&&sn.val()&&sn.val().t;}catch(_){}
-  _saveGInfo({email:user.email||"",name:user.displayName||"",gid:gid});
 
   if(has){
     /* アカウントに 記録あり → それが 正。GUID を それに して 読みこみ→再読込 */
@@ -8064,23 +8075,29 @@ async function googleLogin(){
       const c=e&&e.code||"";
       if(c==="auth/popup-closed-by-user"||c==="auth/cancelled-popup-request"){toast("ログインを やめたよ");return;}
       if(c==="auth/operation-not-allowed"){toast("Firebaseで Googleサインインを有効にしてね");return;}
-      if(c==="auth/unauthorized-domain"){toast("このドメインを Firebaseの許可ドメインに追加してね");return;}
+      if(c==="auth/unauthorized-domain"){
+        alert("⚠ このサイトの アドレスが Firebaseに 登録されていません。\n\nFirebaseコンソール →\nAuthentication → Settings → 承認済みドメイン に\n\n  zzcafe2800.github.io\n\nを 追加してください。\n（これが 原因で ログインが 一瞬で 戻ります）");
+        return;
+      }
       /* ポップアップが 使えない端末 → 最後の 手として リダイレクト */
       if(c==="auth/popup-blocked"||c==="auth/operation-not-supported-in-this-environment"||/popup/i.test(String(e&&e.message||""))){
         await _gRedirect(auth,m,provider);return;
       }
-      throw e;
+      /* それ以外の エラーは 中身を 見せる（原因さがしの ため） */
+      alert("ログインエラー："+(c||(e&&e.message)||"ふめい")+"\n\nこの文字を おしえてくれたら 直せるよ。");
+      return;
     }
     const user=(result&&result.user)||auth.currentUser;
     if(user&&!user.isAnonymous){
       try{_authUser=user;_ownerDone=false;setAcctMode("google");}catch(_){}
+      toast("ログインできたよ！");
       await _afterGoogleUser(user);
     }else{
       toast("ログインできなかったよ。もう一度 ためしてね");
     }
   }catch(e){
     console.warn("glogin",e);
-    toast("Googleログインに失敗したよ");
+    alert("ログインエラー："+((e&&e.code)||(e&&e.message)||"ふめい")+"\n\nこの文字を おしえてくれたら 直せるよ。");
   }
 }
 async function googleLogout(){

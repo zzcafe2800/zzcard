@@ -1447,8 +1447,14 @@ body.exercising #randomModeBtn{animation:none !important;}
 #acctPickNote{font-size:12px;font-weight:700;color:#7fa0b3;text-align:center;line-height:1.6;margin-bottom:8px;}
 .acctBtn{width:100%;border-radius:999px;padding:13px 14px;font-family:inherit;font-size:14.5px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;transition:transform .15s;}
 .acctBtn:active{transform:scale(.97);}
-#acctWord{width:100%;box-sizing:border-box;margin:4px 0 10px;padding:13px 14px;border:2px solid #cfe3f0;border-radius:14px;font-family:inherit;font-size:15px;color:#33475c;background:#fbfdfe;text-align:center;}
-#acctWord:focus{outline:none;border-color:#7fc4e6;}
+#acctTabs{display:flex;gap:6px;margin:2px 0 12px;}
+.acctTab{flex:1;border:2px solid #d8e6f0;background:#fff;color:#8aa5b8;font-family:inherit;font-size:13.5px;font-weight:800;border-radius:12px;padding:10px 6px;cursor:pointer;transition:.14s;}
+.acctTab.on{background:linear-gradient(135deg,#8fd3f0,#4ea8d8);border-color:#4ea8d8;color:#fff;box-shadow:0 3px 10px rgba(78,168,216,.3);}
+.acctPane{display:block;}
+.acctPane[hidden]{display:none;}
+.acctPaneNote{font-size:12px;color:#7d94a8;line-height:1.7;margin-bottom:10px;font-weight:700;}
+#acctNewName,#acctNewPw,#acctLoginName,#acctLoginPw{width:100%;box-sizing:border-box;margin:0 0 9px;padding:12px 14px;border:2px solid #cfe3f0;border-radius:13px;font-family:inherit;font-size:15px;color:#33475c;background:#fbfdfe;text-align:center;}
+#acctNewName:focus,#acctNewPw:focus,#acctLoginName:focus,#acctLoginPw:focus{outline:none;border-color:#7fc4e6;}
 .acctBtn.main{border:none;color:#fff;background:linear-gradient(135deg,#7fc9e8,#4ea8d8);box-shadow:0 6px 16px rgba(78,168,216,.4);}
 .acctBtn.sub{border:1.5px solid #d6e7f0;background:#fff;color:#6d93a8;margin-top:6px;}
 .acctBtn .gIco{width:19px;height:19px;background:#fff;border-radius:50%;padding:2px;flex:0 0 auto;}
@@ -4929,6 +4935,8 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
   font-size:15px;font-weight:900;color:#fff;cursor:pointer;
   background:linear-gradient(135deg,#8ad9a8,#5cbf88);box-shadow:0 8px 20px rgba(92,191,136,.4);}
 #tutEndBtn:active{transform:scale(.97);}
+.wHint{font-size:11px;color:#9db4c4;font-weight:700;margin-top:6px;text-align:center;}
+#wTabs{display:flex;gap:6px;margin:0 0 11px;}
 .wField{display:block;margin:0 0 9px;}
 .wField span{display:block;font-size:11px;font-weight:800;color:#7d94a8;margin-bottom:3px;}
 .wField input{width:100%;box-sizing:border-box;padding:11px 12px;border:2px solid #d8e6f0;border-radius:12px;font-family:inherit;font-size:14px;color:#33475c;background:#fbfdfe;}
@@ -6024,12 +6032,27 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
     <button id="titlePlay" type="button">▶ プレイ</button>
     <div id="acctPick" hidden>
       <div id="acctPickTtl">はじめまして！</div>
-      <div id="acctPickNote">「あいことば」を きめると、どの端末でも<br>おなじ記録で あそべるよ（メモしてね）</div>
-      <input id="acctWord" type="text" inputmode="text" autocomplete="off" placeholder="すきな あいことば（れい：ゆめの ひみつ2024）">
-      <button id="acctWordGo" type="button" class="acctBtn main">この あいことばで はじめる</button>
-      <div class="acctSub">同じ あいことばを 入れれば、別の端末でも つながるよ</div>
+      <div id="acctTabs">
+        <button id="acctTabNew" type="button" class="acctTab on">はじめて（作る）</button>
+        <button id="acctTabLogin" type="button" class="acctTab">ログイン</button>
+      </div>
+      <!-- 新規登録 -->
+      <div id="acctPaneNew" class="acctPane">
+        <div class="acctPaneNote">なまえと パスワードを きめて はじめよう。<br>今の あそんだ記録が、この なまえのものに なるよ。</div>
+        <input id="acctNewName" type="text" autocomplete="off" placeholder="なまえ（すきに きめてOK）">
+        <input id="acctNewPw" type="password" autocomplete="new-password" placeholder="パスワード（メモしてね）">
+        <button id="acctNewGo" type="button" class="acctBtn main">この なまえで はじめる</button>
+        <div class="acctSub">パスワードは わすれると もどせないよ。かならず メモしてね</div>
+      </div>
+      <!-- ログイン -->
+      <div id="acctPaneLogin" class="acctPane" hidden>
+        <div class="acctPaneNote">前に つくった なまえと パスワードで<br>記録を よびもどそう。</div>
+        <input id="acctLoginName" type="text" autocomplete="off" placeholder="なまえ">
+        <input id="acctLoginPw" type="password" autocomplete="current-password" placeholder="パスワード">
+        <button id="acctLoginGo" type="button" class="acctBtn main">ログイン</button>
+      </div>
       <button id="acctGuest" type="button" class="acctBtn sub">あとで（ゲストで あそぶ）</button>
-      <div class="acctSub">この端末だけ。あとから 設定で あいことばを きめられるよ</div>
+      <div class="acctSub">ログインしないと 記録は この端末だけ。<br>ログアウトすると ゲストは まっさらに なるよ</div>
     </div>
     <div id="autoPlayBar" hidden><div id="autoPlayFill"></div><span id="autoPlayText">ロード中…</span></div>
   </div>
@@ -7551,26 +7574,40 @@ function deviceUid(){
   return u;
 }
 function savedGuid(){try{return localStorage.getItem(GUID_KEY)||"";}catch(_){return"";}}
-/* あいことば（すきな文字）→ 固定の アカウントID（同じ入力なら いつも 同じID）。
-   全角/大文字小文字/前後の空白を そろえてから ハッシュ。衝突しにくい 2種の ハッシュを つなぐ。 */
-function _acctNorm(word){
-  try{return String(word||"").normalize("NFKC").trim().toLowerCase().replace(/\s+/g," ");}catch(_){return String(word||"").trim().toLowerCase();}
+/* ============================================================
+   ★アカウント＝「なまえ＋パスワード」方式
+   ・なまえ から 固定の ID を つくる（同じ なまえ＝同じ場所）。
+   ・パスワードは そのまま 保存せず、ハッシュにして 照合だけに つかう。
+   ・新規登録：なまえが 空いていれば アカウントを つくって そこに 今のデータを 保存＋自動ログイン。
+   ・ログイン：なまえの アカウントの パスワードと 合えば つなぐ。
+   ・ログアウト：手もとの データを 消して ゲストに もどる。
+   ============================================================ */
+function _acctNorm(name){
+  try{return String(name||"").normalize("NFKC").trim().toLowerCase().replace(/\s+/g," ");}catch(_){return String(name||"").trim().toLowerCase();}
 }
-function acctIdFromWord(word){
-  var w=_acctNorm(word);if(!w)return "";
-  /* djb2 と sdbm の 2つを つないで 16進に（ライブラリ不要・端末で 同じ結果） */
-  var h1=5381,h2=0;
+/* 文字列 → 16桁hex（djb2+sdbm・ライブラリ不要・端末で同じ結果） */
+function _hash16(str){
+  var w=String(str||"");var h1=5381,h2=0;
   for(var i=0;i<w.length;i++){var c=w.charCodeAt(i);h1=((h1*33)^c)>>>0;h2=(c+(h2<<6)+(h2<<16)-h2)>>>0;}
-  var hex=("00000000"+h1.toString(16)).slice(-8)+("00000000"+h2.toString(16)).slice(-8);
-  return "a_"+hex;   /* 例：a_1a2b3c4d5e6f7a8b */
+  return ("00000000"+h1.toString(16)).slice(-8)+("00000000"+h2.toString(16)).slice(-8);
 }
-/* いま データを 読み書きする ID。あいことばで ログイン中は そのID、でなければ この端末。 */
+/* なまえ → アカウントID（保存場所） */
+function acctIdFromName(name){
+  var w=_acctNorm(name);if(!w)return "";
+  return "a_"+_hash16("name:"+w);
+}
+/* パスワード → 保存用ハッシュ（なまえも 混ぜて 使い回しを 防ぐ） */
+function _pwHash(name,pw){
+  return _hash16("pw:"+_acctNorm(name)+":"+String(pw||""));
+}
+/* いま データを 読み書きする ID。ログイン中は そのID、でなければ この端末。 */
 function getUid(){
   var g=savedGuid();
   if(g)return g;
   return deviceUid();
 }
 function isLoggedIn(){return !!savedGuid();}
+function myAcctName(){try{return localStorage.getItem("radio_acctname")||"";}catch(_){return"";}}
 /* この端末で つかった アカウントの おぼえ書き（名前つきで 一覧・切りかえ用） */
 function _acctList(){try{return JSON.parse(localStorage.getItem(ACCTS_KEY)||"[]");}catch(_){return[];}}
 function _acctRemember(id,label){
@@ -7607,7 +7644,7 @@ function _permHint(e){
     if(!/permission|PERMISSION_DENIED/i.test(msg))return;
     if(_permWarned)return;_permWarned=true;
     if(acctMode()==="google")toast("保存できないよ。設定から ログインし直してね");
-    else toast("この記録は 保存できないよ。設定から Googleでログインしてね");
+    else toast("この記録は 保存できないよ。設定から なまえ＋パスワードで はじめてね");
   }catch(_){}
 }
 async function cloudSyncPush(force){
@@ -8129,31 +8166,90 @@ async function _gRedirect(auth,m,provider){
 /* ============================================================
    ★あいことば ログイン・切りかえ・ログアウト
    ============================================================ */
-async function acctLogin(word,label){
-  var id=acctIdFromWord(word);
-  if(!id){toast("あいことばを 入れてね");return false;}
-  var cur=savedGuid();
-  if(cur===id){toast("もう そのアカウントだよ");return true;}
-  try{ if(isLoggedIn()){ await cloudSyncPush(true); await cloudBigPush(true); } }catch(_){}
+/* アカウントの 情報（なまえ・パスワードのハッシュ）を Firebaseから 読む */
+async function _acctMeta(id){
+  try{
+    var db=await getDB();if(!db)return null;
+    var{ref,get}=await import(FB_DB);
+    var sn=await get(ref(db,"sync/"+id+"/acct"));
+    return sn.exists()?sn.val():null;
+  }catch(_){return null;}
+}
+/* アカウントの 情報を 書く */
+async function _acctMetaSet(id,meta){
+  try{
+    var db=await getDB();if(!db)return false;
+    var{ref,set}=await import(FB_DB);
+    await set(ref(db,"sync/"+id+"/acct"),meta);
+    return true;
+  }catch(_){return false;}
+}
+/* ★新規登録：なまえが 空いていれば つくって、今のデータを そこに 保存＋自動ログイン */
+async function acctRegister(name,pw){
+  var nm=String(name||"").trim(); var id=acctIdFromName(nm);
+  if(!id){toast("なまえを 入れてね");return false;}
+  if(!String(pw||"")){toast("パスワードを 入れてね");return false;}
+  var db=await getDB();
+  if(!db){toast("いまは つながらないよ。あとで ためしてね");return false;}
+  toast("つくっています…");
+  var ex=await _acctMeta(id);
+  if(ex){ toast("「"+nm+"」は もう つかわれてるよ"); return false; }
+  /* このIDに して、アカウント情報を 書いてから 今のデータを 保存 */
   try{localStorage.setItem(GUID_KEY,id);}catch(_){}
+  try{localStorage.setItem("radio_acctname",nm);}catch(_){}
   try{localStorage.removeItem("radio_sync_meta");localStorage.removeItem("radio_syncbig_meta");}catch(_){}
-  try{setAcctMode("word");}catch(_){}
-  _acctRemember(id,label||"");
+  try{setAcctMode("acct");}catch(_){}
+  /* なまえを プロフィールにも 反映（初期＝その人の なまえ） */
+  try{var p=getProfile&&getProfile();if(p){p.name=nm;saveProfile(p);}}catch(_){}
   _ownerDone=false;try{await claimOwner();}catch(_){}
-  toast("つないでいます…");
-  var got=false;
-  try{ got=await cloudSyncPull(true); }catch(_){}
-  try{ await cloudBigPull(true); }catch(_){}
-  if(!got){ try{ await cloudSyncPush(true); await cloudBigPush(true); }catch(_){} }
-  setTimeout(function(){try{location.reload();}catch(_){}},500);
+  await _acctMetaSet(id,{name:nm,pw:_pwHash(nm,pw),at:Date.now()});
+  try{ await cloudSyncPush(true); await cloudBigPush(true); }catch(_){}  /* 今のデータを このアカウントに */
+  _acctRemember(id,nm);
+  toast("「"+nm+"」を つくったよ！");
+  setTimeout(function(){try{location.reload();}catch(_){}},600);
   return true;
 }
+/* ★ログイン：なまえの アカウントの パスワードが 合えば つなぐ */
+async function acctLogin(name,pw){
+  var nm=String(name||"").trim(); var id=acctIdFromName(nm);
+  if(!id){toast("なまえを 入れてね");return false;}
+  if(!String(pw||"")){toast("パスワードを 入れてね");return false;}
+  if(savedGuid()===id){toast("もう ログイン してるよ");return true;}
+  var db=await getDB();
+  if(!db){toast("いまは つながらないよ。あとで ためしてね");return false;}
+  toast("かくにん中…");
+  var meta=await _acctMeta(id);
+  if(!meta){ toast("「"+nm+"」は 見つからないよ（新規で つくってね）"); return false; }
+  if(meta.pw!==_pwHash(nm,pw)){ toast("パスワードが ちがうよ"); return false; }
+  /* 合った → そのアカウントに つなぐ（今の手もとでは 上書きしない＝アカウント側を 読む） */
+  try{localStorage.setItem(GUID_KEY,id);}catch(_){}
+  try{localStorage.setItem("radio_acctname",meta.name||nm);}catch(_){}
+  try{localStorage.removeItem("radio_sync_meta");localStorage.removeItem("radio_syncbig_meta");}catch(_){}
+  try{setAcctMode("acct");}catch(_){}
+  _acctRemember(id,meta.name||nm);
+  _ownerDone=false;try{await claimOwner();}catch(_){}
+  toast("つないでいます…");
+  try{ await cloudSyncPull(true); }catch(_){}
+  try{ await cloudBigPull(true); }catch(_){}
+  toast("おかえり、"+(meta.name||nm)+"！");
+  setTimeout(function(){try{location.reload();}catch(_){}},600);
+  return true;
+}
+/* ★ログアウト：手もとの データを 消して ゲストに もどる（アカウント側は 残る） */
 async function acctLogout(){
   try{ if(isLoggedIn()){ await cloudSyncPush(true); await cloudBigPush(true); } }catch(_){}
-  try{localStorage.removeItem(GUID_KEY);localStorage.removeItem("radio_sync_meta");localStorage.removeItem("radio_syncbig_meta");}catch(_){}
+  /* 手もとの 記録を 消す（radio_* を 全部・ただし 端末IDと AIの記憶は 残す） */
+  try{
+    var keepPrefix=["radio_uid"];
+    var keepAI=/^radio_ai_/;
+    var del=[];
+    for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);
+      if(k&&k.indexOf("radio_")===0 && keepPrefix.indexOf(k)<0 && !keepAI.test(k))del.push(k);}
+    del.forEach(function(k){try{localStorage.removeItem(k);}catch(_){}});
+  }catch(_){}
   try{setAcctMode("guest");}catch(_){}
-  toast("ログアウトしたよ");
-  setTimeout(function(){try{location.reload();}catch(_){}},500);
+  toast("ログアウトしたよ（ゲストに もどるよ）");
+  setTimeout(function(){try{location.reload();}catch(_){}},600);
 }
 async function googleLogin(){
   let A;try{A=await _getAuth();}catch(e){toast("Googleログインは使えないよ（設定が必要）");return;}
@@ -16060,28 +16156,46 @@ async function saveRestoreId(p){
 }
 let _restoreSel=null;
 $("ppRestoreOpen").addEventListener("click",async()=>{playClick();await openRestore();});
+/* 設定カード：タブ切りかえ（作る／ログイン） */
+function _wTab(which){
+  try{
+    var isNew=(which==="new");
+    var tn=$("wTabNew"),tl=$("wTabLogin"),pn=$("wPaneNew"),pl=$("wPaneLogin");
+    if(tn)tn.classList.toggle("on",isNew);
+    if(tl)tl.classList.toggle("on",!isNew);
+    if(pn)pn.hidden=!isNew;
+    if(pl)pl.hidden=isNew;
+  }catch(_){}
+}
+try{var _wtn=$("wTabNew");if(_wtn)_wtn.addEventListener("click",function(){playClick();_wTab("new");});}catch(_){}
+try{var _wtl=$("wTabLogin");if(_wtl)_wtl.addEventListener("click",function(){playClick();_wTab("login");});}catch(_){}
+/* 新規登録（作る） */
+try{const _wn=$("wNewBtn");if(_wn)_wn.addEventListener("click",async()=>{playClick();
+  var nm=($("wNewName")&&$("wNewName").value)||"";var pw=($("wNewPw")&&$("wNewPw").value)||"";
+  if(!nm.trim()){toast("なまえを 入れてね");return;}
+  if(!pw){toast("パスワードを 入れてね");return;}
+  await acctRegister(nm,pw);
+});}catch(_){}
+/* ログイン */
 try{const _wl=$("wLoginBtn");if(_wl)_wl.addEventListener("click",async()=>{playClick();
-  var w=($("wWord")&&$("wWord").value)||"";var lb=($("wLabel")&&$("wLabel").value)||"";
-  if(!_acctNorm(w)){toast("あいことばを 入れてね");return;}
-  await acctLogin(w,lb);
+  var nm=($("wLoginName")&&$("wLoginName").value)||"";var pw=($("wLoginPw")&&$("wLoginPw").value)||"";
+  if(!nm.trim()){toast("なまえを 入れてね");return;}
+  if(!pw){toast("パスワードを 入れてね");return;}
+  await acctLogin(nm,pw);
 });}catch(_){}
 try{const _wo=$("wLogoutBtn");if(_wo)_wo.addEventListener("click",()=>{playClick();acctLogout();});}catch(_){}
-/* 履歴一覧の 切りかえ／削除（イベント委任） */
+/* 履歴一覧の 切りかえ／削除（イベント委任）。切りかえは パスワードが 要るので ログインタブに 名前を入れて 誘導。 */
 try{const _wlist=$("wList");if(_wlist)_wlist.addEventListener("click",async(ev)=>{
   var go=ev.target.closest(".wRgo"),del=ev.target.closest(".wRdel");
   var row=ev.target.closest(".wRow");if(!row)return;
   var id=row.getAttribute("data-id"),label=row.getAttribute("data-label")||"";
-  if(del){ playClick(); if(confirm("この あいことばを この端末の 一覧から 消す？\n（記録じたいは 消えない）")){ _acctForget(id); _renderWAcct(); } return; }
-  if(go){ playClick(); if(id===savedGuid()){toast("もう そのアカウントだよ");return;}
-    /* 一覧からの 切りかえは ID直接（あいことばは 保存してないので ID で つなぐ） */
-    try{ if(isLoggedIn()){ await cloudSyncPush(true); await cloudBigPush(true); } }catch(_){}
-    try{localStorage.setItem(GUID_KEY,id);}catch(_){}
-    try{localStorage.removeItem("radio_sync_meta");localStorage.removeItem("radio_syncbig_meta");}catch(_){}
-    try{setAcctMode("word");}catch(_){}
-    _acctRemember(id,label);_ownerDone=false;try{await claimOwner();}catch(_){}
-    toast("切りかえ中…");
-    try{ await cloudSyncPull(true); await cloudBigPull(true); }catch(_){}
-    setTimeout(function(){try{location.reload();}catch(_){}},500);
+  if(del){ playClick(); if(confirm("この なまえを この端末の 一覧から 消す？\n（記録じたいは 消えないよ）")){ _acctForget(id); _renderWAcct(); } return; }
+  if(go){ playClick();
+    if(id===savedGuid()){toast("もう ログイン してるよ");return;}
+    /* 切りかえは パスワードが 必要 → ログインタブに 名前を入れて 案内 */
+    _wTab("login");
+    try{ if($("wLoginName"))$("wLoginName").value=label||""; if($("wLoginPw"))$("wLoginPw").focus(); }catch(_){}
+    toast("「"+(label||"このなまえ")+"」の パスワードを 入れてね");
   }
 });}catch(_){}
 try{const _rl=$("gResetLocal");if(_rl)_rl.addEventListener("click",async()=>{
@@ -16452,23 +16566,45 @@ function _acctShowPick(){
   }catch(_){}
 }
 function _acctHidePick(){try{var box=$("acctPick");if(box)box.hidden=true;}catch(_){}}
-async function _acctChoose(mode){
+/* タブ切りかえ（作る／ログイン） */
+function _acctTab(which){
+  try{
+    var isNew=(which==="new");
+    var tn=$("acctTabNew"),tl=$("acctTabLogin"),pn=$("acctPaneNew"),pl=$("acctPaneLogin");
+    if(tn)tn.classList.toggle("on",isNew);
+    if(tl)tl.classList.toggle("on",!isNew);
+    if(pn)pn.hidden=!isNew;
+    if(pl)pl.hidden=isNew;
+  }catch(_){}
+}
+async function _acctGuestGo(){
   try{playClick();}catch(_){}
-  if(mode==="word"){
-    var w=($("acctWord")&&$("acctWord").value)||"";
-    if(!_acctNorm(w)){toast("あいことばを 入れてね");return;}
-    _acctHidePick();
-    try{ await acctLogin(w,""); }catch(_){ try{doTitlePlay();}catch(__){} }
-    return;   /* acctLogin が reload するので ここで おわり */
-  }
   _acctHidePick();
-  setAcctMode("guest");             /* ゲスト＝この端末だけ。クラウドには 触らない */
+  setAcctMode("guest");
   try{await ensureAuth();}catch(_){}
   try{doTitlePlay();}catch(_){}
 }
-try{var _aw=$("acctWordGo");if(_aw)_aw.addEventListener("click",function(){_acctChoose("word");});}catch(_){}
-try{var _awi=$("acctWord");if(_awi)_awi.addEventListener("keydown",function(e){if(e.key==="Enter")_acctChoose("word");});}catch(_){}
-try{var _aq=$("acctGuest");if(_aq)_aq.addEventListener("click",function(){_acctChoose("guest");});}catch(_){}
+try{var _tn=$("acctTabNew");if(_tn)_tn.addEventListener("click",function(){playClick();_acctTab("new");});}catch(_){}
+try{var _tl=$("acctTabLogin");if(_tl)_tl.addEventListener("click",function(){playClick();_acctTab("login");});}catch(_){}
+try{var _ng=$("acctNewGo");if(_ng)_ng.addEventListener("click",async function(){
+  playClick();
+  var nm=($("acctNewName")&&$("acctNewName").value)||"";
+  var pw=($("acctNewPw")&&$("acctNewPw").value)||"";
+  if(!nm.trim()){toast("なまえを 入れてね");return;}
+  if(!pw){toast("パスワードを 入れてね");return;}
+  await acctRegister(nm,pw);   /* 成功時は reload */
+});}catch(_){}
+try{var _lg=$("acctLoginGo");if(_lg)_lg.addEventListener("click",async function(){
+  playClick();
+  var nm=($("acctLoginName")&&$("acctLoginName").value)||"";
+  var pw=($("acctLoginPw")&&$("acctLoginPw").value)||"";
+  if(!nm.trim()){toast("なまえを 入れてね");return;}
+  if(!pw){toast("パスワードを 入れてね");return;}
+  await acctLogin(nm,pw);      /* 成功時は reload */
+});}catch(_){}
+try{var _lpw=$("acctLoginPw");if(_lpw)_lpw.addEventListener("keydown",function(e){if(e.key==="Enter")$("acctLoginGo")&&$("acctLoginGo").click();});}catch(_){}
+try{var _npw=$("acctNewPw");if(_npw)_npw.addEventListener("keydown",function(e){if(e.key==="Enter")$("acctNewGo")&&$("acctNewGo").click();});}catch(_){}
+try{var _aq=$("acctGuest");if(_aq)_aq.addEventListener("click",function(){_acctGuestGo();});}catch(_){}
 $("autoPlayBar").addEventListener("click",()=>{playClick();cancelAutoPlay();});   /* バーを押すと自動を中止してプレイボタンに */
 function buildTitleArt(body,ear,cos,msg,pose){
   const cat=`<g transform="translate(160,134)">${catFigureHTML(body,ear,pose||"sit",[0,0],"normal",cos).replace(/^<svg[^>]*>/,"").replace(/<\/svg>$/,"")}</g>`;
@@ -33017,13 +33153,28 @@ function _gpStreetHTML(){
         </div>
       </details>
       <details id="gLoginCard" class="setCard setCardDetails">
-        <summary><span class="setCardIco ico-id"><svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.9 0 6.6 1.7 8.1 3.1l6-5.8C34.6 3.2 29.8 1 24 1 14.6 1 6.5 6.4 2.7 14.3l7 5.4C11.5 13.6 17.2 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-2.8-.4-4H24v7.6h12.7c-.3 2.1-1.6 5.2-4.7 7.3l7.2 5.6c4.3-4 6.3-9.9 6.3-16.5z"/><path fill="#FBBC05" d="M9.7 19.7C9.2 21.1 9 22.5 9 24s.2 2.9.7 4.3l-7 5.4C1.3 30.6 0 27.5 0 24s1.3-6.6 2.7-9.7l7 5.4z"/><path fill="#34A853" d="M24 47c6.5 0 11.9-2.1 15.9-5.8l-7.2-5.6c-2 1.4-4.6 2.3-8.7 2.3-6.8 0-12.5-4.1-14.3-9.9l-7 5.4C6.5 41.6 14.6 47 24 47z"/></svg></span><span class="setCardTxt"><b>Googleでログイン</b><small>スマホ⇄PCをかんたんに同期</small></span><span class="setCardArrow">›</span></summary>
+        <summary><span class="setCardIco ico-id"><svg viewBox="0 0 48 48"><path fill="#8fd3f0" d="M24 4a9 9 0 0 0-9 9v6h-2a3 3 0 0 0-3 3v16a3 3 0 0 0 3 3h22a3 3 0 0 0 3-3V22a3 3 0 0 0-3-3h-2v-6a9 9 0 0 0-9-9zm0 4a5 5 0 0 1 5 5v6H19v-6a5 5 0 0 1 5-5zm0 18a3 3 0 0 1 1 5.8V33a1 1 0 0 1-2 0v-1.2A3 3 0 0 1 24 26z"/></svg></span><span class="setCardTxt"><b>なまえ＋パスワードで同期</b><small>どの端末でも 同じ記録に</small></span><span class="setCardArrow">›</span></summary>
         <div class="psRestoreInner">
-          <div id="gLoginNote" class="restoreNote">「あいことば」を きめると、どの端末でも 同じ記録で あそべるよ。<br>別の端末で 同じ あいことばを 入れると つながる。X みたいに 何個でも 作れて、切りかえも かんたん。<br><b>あいことばは メモしてね</b>（わすれると もどせないよ）。</div>
+          <div id="gLoginNote" class="restoreNote">なまえと パスワードで、どの端末でも 同じ記録に なるよ。<br>ログアウトすると 手もとは ゲスト（まっさら）に なって、また ログインすると 記録が もどるよ。<br><b>パスワードは かならず メモしてね</b>（わすれると もどせないよ）。</div>
           <div id="wAcctNow" hidden></div>
-          <label class="wField"><span>あいことば</span><input id="wWord" type="text" autocomplete="off" placeholder="れい：ゆめの ひみつ2024"></label>
-          <label class="wField"><span>名前（メモ用・任意）</span><input id="wLabel" type="text" autocomplete="off" placeholder="れい：メインの記録"></label>
-          <button id="wLoginBtn" type="button" class="gBtn">この あいことばで ログイン／作る</button>
+          <!-- ログインしていない時：作る／ログイン -->
+          <div id="wLoggedOut">
+            <div id="wTabs">
+              <button id="wTabNew" type="button" class="acctTab on">はじめて（作る）</button>
+              <button id="wTabLogin" type="button" class="acctTab">ログイン</button>
+            </div>
+            <div id="wPaneNew" class="acctPane">
+              <label class="wField"><span>なまえ</span><input id="wNewName" type="text" autocomplete="off" placeholder="すきに きめてOK"></label>
+              <label class="wField"><span>パスワード</span><input id="wNewPw" type="password" autocomplete="new-password" placeholder="メモしてね"></label>
+              <button id="wNewBtn" type="button" class="gBtn">この なまえで はじめる</button>
+              <div class="wHint">今の記録が この なまえのものに なるよ</div>
+            </div>
+            <div id="wPaneLogin" class="acctPane" hidden>
+              <label class="wField"><span>なまえ</span><input id="wLoginName" type="text" autocomplete="off" placeholder="前に つくった なまえ"></label>
+              <label class="wField"><span>パスワード</span><input id="wLoginPw" type="password" autocomplete="current-password" placeholder="パスワード"></label>
+              <button id="wLoginBtn" type="button" class="gBtn">ログイン</button>
+            </div>
+          </div>
           <div id="wList"></div>
           <button id="wLogoutBtn" type="button" class="gBtnSub" hidden>ログアウト（ゲストに もどる）</button>
           <button id="gResetLocal" type="button" class="gBtnSub gBtnDanger" style="margin-top:10px;">うまくいかない時：この端末を まっさらにする</button>

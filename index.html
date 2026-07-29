@@ -7589,7 +7589,7 @@ async function cloudSyncPush(force){
     return true;
   }catch(_){return false;}
 }
-async function cloudSyncPull(){
+async function cloudSyncPull(force){
   try{
     const db=await getDB();if(!db)return false;
     const{ref,get}=await import(FB_DB);
@@ -7597,7 +7597,7 @@ async function cloudSyncPull(){
     if(!s.exists())return false;
     const v=s.val();if(!v||!v.t)return false;
     let meta={};try{meta=JSON.parse(localStorage.getItem(SYNC_META_KEY)||"{}");}catch(_){}
-    if(v.t<=(meta.t||0))return false;   /* こっちが最新 */
+    if(!force && v.t<=(meta.t||0))return false;   /* こっちが最新（force時は 無視して 必ず読む） */
     const _preH=_syncHash(JSON.stringify(_syncCollect()));   /* マージ前のローカル内容 */
     const data=JSON.parse(v.data||"{}");
     /* 累積キーはローカルとクラウドをマージして消えないようにする */
@@ -7645,7 +7645,7 @@ async function cloudBigPush(force){
     return true;
   }catch(_){return false;}
 }
-async function cloudBigPull(){
+async function cloudBigPull(force){
   try{
     const db=await getDB();if(!db)return false;
     const{ref,get}=await import(FB_DB);
@@ -7653,7 +7653,7 @@ async function cloudBigPull(){
     if(!s.exists())return false;
     const v=s.val();if(!v||!v.t)return false;
     let meta={};try{meta=JSON.parse(localStorage.getItem(BIG_META_KEY)||"{}");}catch(_){}
-    if(v.t<=(meta.t||0))return false;
+    if(!force && v.t<=(meta.t||0))return false;
     const _preB=_syncHash(JSON.stringify(_bigCollect()));
     const data=JSON.parse(v.data||"{}");
     /* クラウドに ある ものだけ 入れかえる（無い ものは 消さない＝消失ぼうし） */
@@ -7685,10 +7685,24 @@ function _canSyncReload(){try{const last=+(localStorage.getItem("radio_last_relo
      ゲストの間は クラウドに 触らない（勝手に データを 作らない＝混乱と 負担を へらす）。 */
   if(isLoggedIn()){
     try{await claimOwner();}catch(_){}
-    const a=await cloudSyncPull();
-    const b=await cloudBigPull();
+    /* ★ログイン済みで この端末に まだ 同期メタが 無い＝はじめて この端末で ひらいた／
+       ログイン直後 ＝ アカウント側を「強制」で 読む（空ローカルで 上書きするのを ふせぐ） */
+    var _noMeta=false;try{_noMeta=!localStorage.getItem(SYNC_META_KEY);}catch(_){_noMeta=true;}
+    const a=await cloudSyncPull(_noMeta);
+    const b=await cloudBigPull(_noMeta);
     if(a||b)_showReloadPrompt();
-    try{await cloudSyncPush(false);await cloudBigPush(false);}catch(_){}
+    /* pull できた（またはアカウントに 記録あり）なら、こちらから 上書きしない。
+       アカウントに 何も 無い時だけ この端末のぶんを 初期保存。 */
+    if(!a && !b){
+      try{
+        const _db=await getDB();
+        if(_db){
+          const{ref,get}=await import(FB_DB);
+          const _sn=await get(ref(_db,"sync/"+getUid()));
+          if(!_sn.exists()){ await cloudSyncPush(true); await cloudBigPush(true); }
+        }
+      }catch(_){}
+    }
   }
 }catch(_){}})();
 /* 変化があったら素早くアップロード（デバウンス）＝相手にすぐ反映 */
@@ -8016,23 +8030,31 @@ async function _afterGoogleUser(user){
   try{var sn=await get(ref(db,"sync/"+gid));has=sn.exists()&&sn.val()&&sn.val().t;}catch(_){}
 
   if(has){
-    /* アカウントに 記録あり → それが 正。GUID を それに して 読みこみ→再読込 */
+    /* ★アカウントに 記録あり → それが 正。
+       GUIDを セットして、メタを 消して、その場で「強制」読みこみ。
+       reload には たよらない（reload後に 読みこみが 空ぶりする バグを ふせぐ）。 */
     try{localStorage.setItem(GUID_KEY,gid);}catch(_){}
     try{localStorage.removeItem("radio_sync_meta");localStorage.removeItem("radio_syncbig_meta");}catch(_){}
+    try{setAcctMode("google");}catch(_){}
     _ownerDone=false;try{await claimOwner();}catch(_){}
     toast(_gname(user)+" の記録を よみこむよ");
-    setTimeout(function(){try{location.reload();}catch(_){}},900);
+    var ok=false;
+    try{ ok=await cloudSyncPull(true); }catch(_){}   /* ★force＝メタを 無視して 必ず読む */
+    try{ await cloudBigPull(true); }catch(_){}
+    /* 読みこんだら 画面を そのまま 立ち上げ直す（reloadせず 中身を 反映） */
+    try{ _closeMigrate&&_closeMigrate(); }catch(_){}
+    setTimeout(function(){try{location.reload();}catch(_){}},600);  /* 中身を 反映した うえで 1回だけ reload */
     return;
   }
   /* アカウントに 記録なし（初めての アカウント） */
   if(wasLoggedIn){
-    /* 別アカウントから 切りかえ → まっさらな 新アカウント。今の端末のは 前アカウントに 残る。
-       ＝ここでは 何も 移さず、新アカウントで はじめる */
+    /* 別アカウントから 切りかえ → まっさらな 新アカウント。今の端末のは 前アカウントに 残る。 */
     try{localStorage.setItem(GUID_KEY,gid);}catch(_){}
     try{localStorage.removeItem("radio_sync_meta");localStorage.removeItem("radio_syncbig_meta");}catch(_){}
+    try{setAcctMode("google");}catch(_){}
     _ownerDone=false;try{await claimOwner();}catch(_){}
     toast("あたらしい アカウントに ログインしたよ");
-    setTimeout(function(){try{location.reload();}catch(_){}},900);
+    setTimeout(function(){try{location.reload();}catch(_){}},700);
     return;
   }
   /* ゲスト → 初アカウント：今の端末データを 移すか 許可制で えらぶ */

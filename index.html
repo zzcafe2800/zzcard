@@ -4927,8 +4927,100 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
   font-size:15px;font-weight:900;color:#fff;cursor:pointer;
   background:linear-gradient(135deg,#8ad9a8,#5cbf88);box-shadow:0 8px 20px rgba(92,191,136,.4);}
 #tutEndBtn:active{transform:scale(.97);}
+.gBtnDanger{color:#b56b64!important;border-color:#eccbc8!important;}
+.gBtnDanger:active{background:#fbeeed;}
+.acctCard{background:#f5fbff;border:1.5px solid #dcecf6;border-radius:14px;padding:11px 13px;margin-bottom:10px;}
+.acctRow{display:flex;align-items:baseline;gap:10px;padding:3px 0;}
+.acctRow+.acctRow{border-top:1px dashed #e2edf4;}
+.acctK{font-size:10.5px;font-weight:800;color:#9db4c4;width:88px;flex:0 0 auto;}
+.acctV{font-size:12.5px;font-weight:800;color:#3f5f74;word-break:break-all;flex:1;}
+#gLoginDev.acctV{color:#4a90b8;}
+/* ===== アカウント移植の画面 ===== */
+#migOv{position:fixed;inset:0;z-index:3700;display:flex;align-items:center;justify-content:center;
+  background:rgba(18,38,58,.58);padding:18px;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);}
+#migOv[hidden]{display:none;}
+#migBox{width:min(400px,94vw);max-height:88vh;overflow-y:auto;background:#fff;border-radius:22px;
+  padding:20px 18px 16px;box-shadow:0 18px 48px rgba(10,30,50,.4);}
+#migTtl{font-size:18px;font-weight:900;color:#3a6377;font-family:"Yomogi","Kosugi Maru",sans-serif;}
+#migSub{font-size:12.5px;font-weight:700;color:#7f9bad;line-height:1.7;margin:6px 0 10px;}
+#migWarn{font-size:12px;font-weight:700;color:#9a5a3a;background:#fff3ea;border-left:3px solid #f0a878;
+  border-radius:0 10px 10px 0;padding:9px 12px;line-height:1.7;margin-bottom:12px;}
+#migWarn[hidden]{display:none;}
+#migList{display:flex;flex-direction:column;gap:2px;margin-bottom:14px;}
+.migRow{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:12px;cursor:pointer;transition:.12s;
+  border:1.5px solid transparent;}
+.migRow:hover{background:#f5fbff;}
+.migRow.on{background:#eef8ff;border-color:#bfe3f5;}
+.migRow input{width:20px;height:20px;flex:0 0 auto;accent-color:#4ea8d8;cursor:pointer;}
+.migRow .mrName{font-size:13.5px;font-weight:800;color:#3f5f74;flex:1;}
+.migRow .mrArrow{font-size:11px;font-weight:800;color:#a8bfce;}
+.migRow.on .mrArrow{color:#4ea8d8;}
+#migAll{display:flex;align-items:center;gap:11px;padding:10px 12px;margin-bottom:6px;
+  border-bottom:1.5px dashed #e2edf4;cursor:pointer;}
+#migAll input{width:20px;height:20px;accent-color:#4ea8d8;}
+#migAll span{font-size:13px;font-weight:900;color:#4a7089;}
+#migBtns{display:flex;gap:10px;}
+#migBtns button{flex:1;border:none;border-radius:999px;padding:13px;font-family:inherit;font-size:14px;font-weight:900;cursor:pointer;}
+#migCancel{background:#eef2f5;color:#7c93a5;}
+#migGo{color:#fff;background:linear-gradient(135deg,#8ad9a8,#5cbf88);box-shadow:0 6px 16px rgba(92,191,136,.38);}
+#migGo:active,#migCancel:active{transform:scale(.97);}
+/* ===== 世界樹（ホームの背景・丘のあいだ） ===== */
+#worldTree{position:absolute;left:50%;bottom:20%;transform:translateX(-50%);
+  border:none;background:none;padding:0;cursor:pointer;z-index:3;
+  display:flex;flex-direction:column;align-items:center;line-height:1;}
+#wtCrown{display:block;width:54px;height:44px;border-radius:50% 50% 44% 44%;
+  background:radial-gradient(circle at 38% 32%,#a8e0a8,#5da86a 68%,#3f8a52);
+  box-shadow:0 3px 10px rgba(50,110,70,.32),inset -5px -6px 12px rgba(30,80,50,.28);}
+#wtTrunk{display:block;width:9px;height:30px;border-radius:3px 3px 1px 1px;
+  background:linear-gradient(90deg,#9a6f4a,#7d5837 55%,#6a4a2d);margin-top:-3px;}
+#wtTag{margin-top:3px;display:flex;flex-direction:column;align-items:center;gap:1px;
+  background:rgba(255,255,255,.82);border-radius:9px;padding:2px 8px;
+  box-shadow:0 2px 7px rgba(60,100,130,.2);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);}
+#wtM{font-size:11px;font-weight:900;color:#3f7d55;font-family:"Yomogi","Kosugi Maru",sans-serif;}
+#wtN{font-size:8.5px;font-weight:800;color:#8aa5b5;font-style:normal;}
+#worldTree:active{transform:translateX(-50%) scale(.96);}
+@media (max-width:420px){#wtCrown{width:44px;height:36px;}#wtTrunk{height:24px;}}
+/* ===== 世界樹を 上へ 見にいく画面 ===== */
+#treeView{position:fixed;inset:0;z-index:3600;overflow:hidden;}
+#treeView[hidden]{display:none;}
+#tvSky{position:absolute;inset:0;transition:background .35s linear;}
+#tvStars{position:absolute;inset:0;opacity:0;transition:opacity .5s linear;pointer-events:none;
+  background-image:
+    radial-gradient(1.4px 1.4px at 12% 18%,#fff,transparent),radial-gradient(1.2px 1.2px at 78% 8%,#fff,transparent),
+    radial-gradient(1.6px 1.6px at 32% 62%,#fff,transparent),radial-gradient(1.1px 1.1px at 64% 41%,#fff,transparent),
+    radial-gradient(1.5px 1.5px at 88% 72%,#fff,transparent),radial-gradient(1.2px 1.2px at 22% 88%,#fff,transparent),
+    radial-gradient(1.3px 1.3px at 52% 26%,#fff,transparent),radial-gradient(1px 1px at 92% 34%,#fff,transparent),
+    radial-gradient(1.4px 1.4px at 8% 52%,#fff,transparent),radial-gradient(1.1px 1.1px at 44% 78%,#fff,transparent);
+  background-size:100% 100%;}
+#tvScroll{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
+#tvInner{position:relative;width:100%;}
+#tvTrunk{position:absolute;left:50%;transform:translateX(-50%);width:26px;bottom:0;
+  background:linear-gradient(90deg,rgba(154,111,74,.55),#7d5837 40%,#6a4a2d 62%,rgba(90,62,38,.55));
+  border-radius:6px 6px 0 0;box-shadow:0 0 26px rgba(0,0,0,.18);}
+#tvTop{position:absolute;left:50%;transform:translateX(-50%);width:150px;height:118px;
+  border-radius:50% 50% 42% 42%;
+  background:radial-gradient(circle at 38% 30%,#b6e8b2,#5da86a 62%,#3d8450);
+  box-shadow:0 8px 30px rgba(40,100,60,.4),inset -12px -14px 30px rgba(28,74,46,.3);}
+.tvMark{position:absolute;left:0;right:0;display:flex;align-items:center;gap:8px;padding:0 16px;pointer-events:none;}
+.tvMark:before{content:"";flex:1;height:1px;background:currentColor;opacity:.28;}
+.tvMark span{font-size:10.5px;font-weight:800;letter-spacing:.04em;opacity:.85;white-space:nowrap;}
+.tvMark:after{content:"";flex:1;height:1px;background:currentColor;opacity:.28;}
+#tvHud{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;gap:10px;
+  padding:calc(12px + env(safe-area-inset-top)) 14px 10px;pointer-events:none;}
+#tvHud button{pointer-events:auto;border:none;border-radius:999px;font-family:inherit;font-weight:900;cursor:pointer;
+  background:rgba(255,255,255,.9);color:#3d5b70;box-shadow:0 3px 12px rgba(0,0,0,.2);}
+#tvClose{font-size:15px;padding:8px 14px;}
+#tvUp{font-size:12px;padding:8px 14px;margin-left:auto;}
+#tvHudMid{flex:0 0 auto;text-align:center;background:rgba(255,255,255,.86);border-radius:14px;padding:5px 14px;
+  box-shadow:0 3px 12px rgba(0,0,0,.18);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);}
+#tvAlt{display:block;font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:17px;font-weight:900;color:#2f5f7d;line-height:1.15;}
+#tvZone{display:block;font-size:10px;font-weight:800;color:#7f9bad;font-style:normal;}
+#tvFoot{position:absolute;left:0;right:0;bottom:0;padding:10px 16px calc(14px + env(safe-area-inset-bottom));
+  text-align:center;pointer-events:none;}
+#tvTotal{display:inline-block;background:rgba(255,255,255,.86);border-radius:999px;padding:6px 16px;
+  font-size:11.5px;font-weight:800;color:#4a7089;box-shadow:0 3px 12px rgba(0,0,0,.16);}
 /* ===== ユメっ子ずかん ===== */
-#yumeBook{position:fixed;inset:0;z-index:2450;display:none;flex-direction:column;
+#yumeBook{position:fixed;inset:0;z-index:3460;display:none;flex-direction:column;
   background:linear-gradient(180deg,#eef7fd 0%,#f7fbff 60%,#fff 100%);}
 #yumeBook.show{display:flex;}
 #ybTop{display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top)) 14px 8px;flex:0 0 auto;}
@@ -5380,6 +5472,10 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
     <div class="cloud cloud2"></div>
     <div class="cloud cloud3"></div>
     <div class="hill hillBack"></div>
+    <button id="worldTree" type="button" aria-label="世界樹を見る">
+      <span id="wtCrown"></span><span id="wtTrunk"></span>
+      <span id="wtTag"><b id="wtM">0m</b><i id="wtN">みんなで 0回</i></span>
+    </button>
     <div id="hillCats"></div>
     <div class="hill hillFront"></div>
   </div>
@@ -6313,6 +6409,8 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 <audio id="clickSound" preload="none" playsinline></audio>
 
 <script src="https://js.puter.com/v2/"></script>
+<!-- ★ユメっ子・敵のデータ（この小さいファイルを 差しかえるだけで 中身が かわる） -->
+<script src="yume-data.js" onerror="window.__yumeDataMissing=1"></script>
 <script type="module">
 /* ===== エラー可視化 =====
    スマホだとコンソールが見れないので、何かエラーで止まったら画面下に出す。
@@ -7273,18 +7371,8 @@ function _buildWakeGraph(box){
   }
   s+='<line x1="'+pL+'" y1="'+Y(target).toFixed(1)+'" x2="'+(W-pR)+'" y2="'+Y(target).toFixed(1)+'" stroke="#ffb37a" stroke-width="2" stroke-dasharray="4 5"/>';
   s+='<text x="'+(W-pR)+'" y="'+(Y(target)-4).toFixed(1)+'" text-anchor="end" font-size="9" font-weight="800" fill="#e8a25a">目標 '+_floatHM(target)+'</text>';
-  /* ★気分の折れ線（ピンク）を 起床グラフに かさねる（気分1..5 を 専用スケールで） */
-  try{
-    const mm=(typeof _moodMap==="function")?_moodMap():{};
-    const md=data.map(d=>{const m=mm[d[0]];return (m&&m.l&&(_MOOD_VAL[m.l]!=null))?_MOOD_VAL[m.l]:null;});
-    if(md.some(v=>v!=null)){
-      const MY=v=>pT+(5.6-v)/(5.6-0.4)*(H-pT-pB);
-      const pts=[];md.forEach((v,i)=>{if(v!=null)pts.push(X(i).toFixed(1)+","+MY(v).toFixed(1));});
-      if(pts.length>=2)s+='<polyline points="'+pts.join(" ")+'" fill="none" stroke="#f5a8c8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>';
-      md.forEach((v,i)=>{if(v!=null)s+='<circle cx="'+X(i).toFixed(1)+'" cy="'+MY(v).toFixed(1)+'" r="2.8" fill="#f5a8c8"/>';});
-      s+='<text x="'+(pL+2)+'" y="12" font-size="8.5" font-weight="800" fill="#e58bb0">\u2014 きぶん</text>';
-    }
-  }catch(_){}
+  /* ★「起床だけ」を えらんだ時は 起床だけを 出す（気分の線は かさねない）。
+     気分を 見たい時は チェックで 気分を えらぶと 出るよ。 */
   s+='<polyline points="'+data.map((d,i)=>X(i).toFixed(1)+","+Y(d[1]).toFixed(1)).join(" ")+'" fill="none" stroke="#7fd0f0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>';
   data.forEach((d,i)=>{ s+='<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(d[1]).toFixed(1)+'" r="3.6" fill="'+_recDot(Math.round((d[1]-target)*60))+'"/>'; });
   s+='</svg>';
@@ -7423,11 +7511,28 @@ function buildRecWeekday(){
 const FB_APP="https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
 const FB_DB="https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
 const UID_KEY="radio_uid";
-function getUid(){
+/* ============================================================
+   ★データの ID（どこに 保存するか）
+   ・Googleで ログインしていたら → そのGoogleの UID（＝アカウントが 持ち主）
+   ・ゲストのときは → この端末だけの ID（radio_uid）
+   これで「1アカウント＝1データ」「どの端末でも おなじ」「サイトデータを
+   消しても ログインで もどる」が 成りたつ。
+   ============================================================ */
+var GUID_KEY="radio_guid";   /* ログイン中の Google UID（覚えておく＝起動直後から アカウント側を 見る） */
+function deviceUid(){
   let u=localStorage.getItem(UID_KEY);
   if(!u){u="u"+Math.random().toString(36).slice(2,10);localStorage.setItem(UID_KEY,u);}
   return u;
 }
+function savedGuid(){try{return localStorage.getItem(GUID_KEY)||"";}catch(_){return"";}}
+/* いま データを 読み書きする ID。ログイン中は Google UID。 */
+function getUid(){
+  var g=savedGuid();
+  if(g)return g;                 /* ログイン済み＝アカウントが 持ち主 */
+  if(_authUser&&!_authUser.isAnonymous)return _authUser.uid;
+  return deviceUid();            /* ゲスト＝この端末 */
+}
+function isLoggedIn(){return !!savedGuid()||!!(_authUser&&!_authUser.isAnonymous);}
 /* ===== 連動（PC⇄スマホ）：ローカル記録をクラウドに自動同期。復元IDでuidを揃えた端末どうしが同じ状態になる ===== */
 /* ★同期しないのは「この端末だけのもの」と「AIの会話」だけ。
    それ以外は ぜんぶ Firebaseに 保存する（別の端末でも おなじになる）。 */
@@ -7575,16 +7680,20 @@ function _showReloadPrompt(){try{
 function _canSyncReload(){try{const last=+(localStorage.getItem("radio_last_reload")||0);if(Date.now()-last<30000)return false;localStorage.setItem("radio_last_reload",String(Date.now()));return true;}catch(_){return true;}}
 /* 起動時：クラウドに新しい記録があれば（画像も）取り込んで一度だけ再読み込み */
 (async()=>{try{
-  await ensureAuth();          /* ★さきに サインイン（ゲスト＝匿名／ログイン＝Google） */
-  try{await claimOwner();}catch(_){}
-  const a=await cloudSyncPull();
-  const b=await cloudBigPull();
-  if(a||b)_showReloadPrompt();
-  try{await cloudSyncPush(false);await cloudBigPush(false);}catch(_){}   /* 初回：この端末のぶんを 保存 */
+  await ensureAuth();
+  /* ★ログイン中（アカウントが 持ち主）の時だけ、クラウドと やりとりする。
+     ゲストの間は クラウドに 触らない（勝手に データを 作らない＝混乱と 負担を へらす）。 */
+  if(isLoggedIn()){
+    try{await claimOwner();}catch(_){}
+    const a=await cloudSyncPull();
+    const b=await cloudBigPull();
+    if(a||b)_showReloadPrompt();
+    try{await cloudSyncPush(false);await cloudBigPush(false);}catch(_){}
+  }
 }catch(_){}})();
 /* 変化があったら素早くアップロード（デバウンス）＝相手にすぐ反映 */
 let _syncPushT=null;
-function syncSoon(){try{if(_syncPushT)clearTimeout(_syncPushT);_syncPushT=setTimeout(()=>{cloudSyncPush(false);},1500);}catch(_){}}
+function syncSoon(){try{if(!isLoggedIn())return;if(_syncPushT)clearTimeout(_syncPushT);_syncPushT=setTimeout(()=>{cloudSyncPush(false);},1500);}catch(_){}}
 /* ===== 相手の変更を即反映：Firebase sync/<uid> をリアルタイム購読（変化時だけ届く＝サーバー負担小） ===== */
 let _syncListenerUid=null,_syncListenerOff=null,_syncReloadT=null;
 function _syncReloadSoon(){
@@ -7597,6 +7706,7 @@ function _syncReloadSoon(){
 }
 async function _startSyncListener(){
   try{
+    if(!isLoggedIn())return;   /* ゲストは 購読しない */
     const uid=getUid();if(!uid)return;
     if(_syncListenerUid===uid)return;   /* 同じuidなら張り直さない */
     const db=await getDB();if(!db)return;
@@ -7618,15 +7728,15 @@ async function _startSyncListener(){
 try{setTimeout(()=>{_startSyncListener();},2500);}catch(_){}
 try{window.addEventListener("storage",syncSoon);}catch(_){}   /* 同端末の別タブ更新も拾う */
 /* 定期：変化チェックのみ（無変化なら送信しない＝サーバー負担小） */
-try{setInterval(()=>{cloudSyncPush(false);},30000);}catch(_){}
+try{setInterval(()=>{if(isLoggedIn())cloudSyncPush(false);},30000);}catch(_){}
 /* 画面を離れる時は確実に送る */
-try{window.addEventListener("pagehide",()=>{cloudSyncPush(false);cloudBigPush(false);});}catch(_){}
+try{window.addEventListener("pagehide",()=>{if(isLoggedIn()){cloudSyncPush(false);cloudBigPush(false);}});}catch(_){}
 /* 画面に戻る度に：まず相手の最新を取り込み、無ければ自分の変化を送る（＝開くたび自動同期） */
 let _syncPullBusy=false;
 try{document.addEventListener("visibilitychange",async()=>{
   if(document.visibilityState==="hidden"){cloudSyncPush(false);cloudBigPush(false);return;}
   if(_syncPullBusy)return;_syncPullBusy=true;
-  try{const a=await cloudSyncPull();const b=await cloudBigPull();if(a||b){_showReloadPrompt();return;}await cloudSyncPush(false);await cloudBigPush(false);}catch(_){}
+  try{if(isLoggedIn()){const a=await cloudSyncPull();const b=await cloudBigPull();if(a||b){_showReloadPrompt();return;}await cloudSyncPush(false);await cloudBigPush(false);}}catch(_){}
   try{_startSyncListener();}catch(_){}
   try{_checkPartyInviteBadge();}catch(_){}
   try{_tvCollect();}catch(_){}try{_tvDeliver();}catch(_){}   /* もどってきたら 売上/荷物を すぐ受けとる */
@@ -7662,21 +7772,29 @@ async function ensureAuth(){
   _authPromise=(async function(){
     try{
       var A=await _getAuth();var auth=A.auth,m=A.m;
-      if(auth.currentUser){_authUser=auth.currentUser;return _authUser;}
+      if(auth.currentUser){_authUser=auth.currentUser;_afterAuthReady();return _authUser;}
       var u=await _authWait(auth,m,4500);
-      if(u){_authUser=u;return u;}
+      if(u){_authUser=u;_afterAuthReady();return u;}
       /* まだ だれでもない → ゲスト（匿名）で サインイン */
       var cred=await m.signInAnonymously(auth);
       _authUser=cred&&cred.user||auth.currentUser||null;
-      /* ここでは モードを きめない（ログイン/ゲストは 本人に えらんでもらう） */
+      _afterAuthReady();
       return _authUser;
     }catch(e){
       console.warn("auth failed",e&&e.code||e);
-      _authFailed=true;      /* 匿名ログインが OFF の間は 今までどおり うごく */
+      _authFailed=true;
       return null;
     }finally{_authPromise=null;}
   })();
   return _authPromise;
+}
+/* サインインが ととのった時：Googleユーザーなら GUID を そろえる */
+function _afterAuthReady(){
+  try{
+    if(_authUser&&!_authUser.isAnonymous){
+      if(savedGuid()!==_authUser.uid){try{localStorage.setItem(GUID_KEY,_authUser.uid);}catch(_){}}
+    }
+  }catch(_){}
 }
 async function getDB(){
   if(_isCrawler)return null;   /* クローラーにはFirebase接続を張らない（Search Consoleの.lpエラー対策） */
@@ -7729,137 +7847,275 @@ async function _getAuth(){
   const m=await import(FB_AUTH);
   return {auth:m.getAuth(app),m};
 }
+function _devLabel(){
+  try{
+    var ua=navigator.userAgent||"";
+    var mobile=/iPhone|iPad|iPod|Android|Mobile/i.test(ua);
+    return mobile?"スマホ":"パソコン";
+  }catch(_){return "この端末";}
+}
 function _renderGoogleUI(){
   try{
-    const info=_gInfo(),btn=$("gLoginBtn"),st=$("gLoginState"),em=$("gLoginEmail"),note=$("gLoginNote"),sw=$("gSwapBtn");
-    if(info&&(info.email||info.name)){
+    const info=_gInfo(),btn=$("gLoginBtn"),st=$("gLoginState"),em=$("gLoginEmail"),note=$("gLoginNote");
+    const on=isLoggedIn()&&info&&(info.email||info.name);
+    if(on){
       if(btn)btn.style.display="none";
       if(st)st.hidden=false;
       if(em)em.textContent=info.email||info.name||"ログイン中";
       if(note)note.style.display="none";
-      if(sw)sw.hidden=!info.alt;   /* 別の記録があるときだけ「切り替える」を出す */
+      var pn=$("gLoginPName");
+      if(pn){var nm="";try{var p=getProfile();nm=(p&&p.name)||"";}catch(_){}pn.textContent=nm||"（未設定）";}
+      var dv=$("gLoginDev");if(dv)dv.textContent=_devLabel();
     }else{
       if(btn)btn.style.display="";
       if(st)st.hidden=true;
       if(note)note.style.display="";
-      if(sw)sw.hidden=true;
     }
   }catch(_){}
 }
-let _gPending=null;
-async function _afterGoogleUser(user){
-  if(!user)return;
-  const db=await getDB();if(!db){toast("いまはつながらないよ");return;}
-  const{ref,get,set}=await import(FB_DB);
-  const gid=user.uid,cur=getUid();
-  let snap;try{snap=await get(ref(db,"glinks/"+gid));}catch(e){toast("接続に失敗したよ");return;}
-  const v=snap.exists()?snap.val():null;
-  if(v&&v.uid){
-    const appUid=String(v.uid);
-    if(appUid===cur){
-      _saveGInfo({email:user.email||"",name:user.displayName||"",gid,alt:v.alt||""});
-      toast("Googleでログインしたよ");_renderGoogleUI();
-      try{_afterLoginSyncExtra();}catch(_){}   /* あとから足したデータも そろえる */
-    }else{
-      /* 競合：この端末とGoogleで記録が違う→どっちを使うか選ばせる（どちらも消さない） */
-      _gPending={gid,thisUid:cur,gUid:appUid,email:user.email||"",name:user.displayName||""};
-      try{$("gChoice").classList.add("show");}catch(_){}
-    }
-  }else{
-    try{await set(ref(db,"glinks/"+gid),{uid:cur,at:Date.now()});}catch(e){toast("連携に失敗したよ");return;}
-    _saveGInfo({email:user.email||"",name:user.displayName||"",gid,alt:""});
-    try{await cloudSyncPush(true);}catch(_){}   /* 今の記録をクラウドへ保存 */
-    try{_startSyncListener();}catch(_){}
-    toast("Googleと連携したよ！他の端末とも繋がる");_renderGoogleUI();
+/* ============================================================
+   ★アカウントに 保存する データの まとまり（移植で 選べる項目）
+   ============================================================ */
+var MIG_GROUPS=[
+  {id:"prof",  name:"なまえ・プロフィール", keys:["radio_profile","radio_mytag"]},
+  {id:"money", name:"お金・チケット",       keys:["radio_zz","radio_zz_at","radio_zz_paid","radio_tickets","radio_income"]},
+  {id:"look",  name:"衣装・ポーズ・持ち物", keys:["radio_equip","radio_equip_ball","radio_equip_toy","radio_pose_equip","radio_poses","radio_items","radio_item_colors","radio_artcos","radio_artstamp","radio_artemo","radio_art_colors","radio_stamps","radio_seen_stamps"]},
+  {id:"rec",   name:"起床・就寝・気分の記録",keys:["radio_wakelog","radio_sleeplog","radio_moods","radio_done_dates","radio_done_time","radio_wake_start","radio_wake_changes"]},
+  {id:"yume",  name:"ユメっ子・図鑑",       keys:["radio_yume_dex","radio_yume_mig1000","radio_yume_gacha_day"]},
+  {id:"adv",   name:"冒険のすすみ",         keys:["radio_adv_chapter","radio_adv_day"]},
+  {id:"shop",  name:"お店・カフェ・商品棚", keys:["radio_shop","radio_shop_p","radio_shop_pick","radio_shopmode","radio_cafe","radio_cafe_menu","radio_salelog","radio_town"]},
+  {id:"tree",  name:"世界樹・登山",         keys:["radio_wt_done","radio_wt_cache","radio_target_mt"]},
+  {id:"cards", name:"スタンプカード・作品(画像)",keys:["radio_stamp_cards","radio_auto_card","radio_art"]}
+];
+function _migAvail(){
+  return MIG_GROUPS.filter(function(g){
+    return g.keys.some(function(k){var v=localStorage.getItem(k);return v!=null&&v!=="null"&&v!=="{}"&&v!=="[]"&&v!=="";});
+  });
+}
+function _migKeys(ids){
+  var set={};
+  MIG_GROUPS.forEach(function(g){if(ids.indexOf(g.id)>=0)g.keys.forEach(function(k){set[k]=1;});});
+  return Object.keys(set);
+}
+/* ============================================================
+   ★移植の画面（ゲスト→初アカウント／設定からの「アカウントに移す」）
+   mode: "login"（ログイン直後）/ "manual"（設定から）
+   ============================================================ */
+var _migMode="login",_migGid="";
+function _openMigrate(gid,name,mode){
+  _migGid=gid||getUid();_migMode=mode||"login";
+  var ov=$("migOv");if(!ov)return;
+  var avail=_migAvail();
+  var sub=$("migSub");
+  if(sub)sub.innerHTML=(_migMode==="login"
+    ? (escHtml(name||"このアカウント")+" は はじめてだね。<br>いまの この端末の 記録を、アカウントに いれる？")
+    : "いまの この端末の 記録を、ログイン中の アカウントに うつすよ。<br>うつす ものを えらんでね。");
+  var warn=$("migWarn");
+  if(warn){
+    warn.hidden=false;
+    warn.innerHTML="⚠ えらんだ ものは アカウント側に <b>上書き</b>されるよ。"+
+      "アカウントに すでに あった その項目は 消える ことが あるから 気をつけてね。";
   }
+  /* 一覧（あるものだけ・ぜんぶ ONで スタート） */
+  var list=$("migList");
+  if(list){
+    list.innerHTML=
+      '<label id="migAll"><input type="checkbox" id="migAllChk" checked><span>ぜんぶ えらぶ</span></label>'+
+      avail.map(function(g){
+        return '<label class="migRow on"><input type="checkbox" class="migChk" value="'+g.id+'" checked>'+
+          '<span class="mrName">'+escHtml(g.name)+'</span><span class="mrArrow">今の → アカウント</span></label>';
+      }).join("");
+    if(!avail.length)list.innerHTML='<div style="font-size:12.5px;color:#8fa6b8;padding:10px;text-align:center;">うつせる 記録は まだ ないよ</div>';
+    var sync=function(){
+      var chks=list.querySelectorAll(".migChk");
+      chks.forEach(function(c){c.closest(".migRow").classList.toggle("on",c.checked);});
+      var all=list.querySelector("#migAllChk");
+      if(all){var on=[].every.call(chks,function(c){return c.checked;});all.checked=on&&chks.length>0;}
+    };
+    list.addEventListener("change",function(ev){
+      if(ev.target.id==="migAllChk"){
+        var on=ev.target.checked;list.querySelectorAll(".migChk").forEach(function(c){c.checked=on;});
+      }
+      sync();
+    });
+  }
+  ov.hidden=false;
 }
-async function _gChooseThis(){
-  const P=_gPending;if(!P)return;
-  try{$("gChoice").classList.remove("show");}catch(_){}
-  const db=await getDB();if(!db){toast("つながらないよ");return;}
-  const{ref,set}=await import(FB_DB);
-  try{await cloudSyncPush(true);}catch(_){}   /* この端末の記録を保存 */
-  try{await set(ref(db,"glinks/"+P.gid),{uid:P.thisUid,alt:P.gUid,at:Date.now()});}catch(e){toast("失敗したよ");return;}
-  _saveGInfo({email:P.email,name:P.name,gid:P.gid,alt:P.gUid});_gPending=null;
-  toast("この端末の記録にしたよ（Googleの記録も残ってるよ）");_renderGoogleUI();
-}
-async function _gChooseGoogle(){
-  const P=_gPending;if(!P)return;
-  try{$("gChoice").classList.remove("show");}catch(_){}
-  const db=await getDB();if(!db){toast("つながらないよ");return;}
-  const{ref,set}=await import(FB_DB);
-  try{await cloudSyncPush(true);}catch(_){}   /* この端末の記録も残す（消さない） */
-  try{await set(ref(db,"glinks/"+P.gid),{uid:P.gUid,alt:P.thisUid,at:Date.now()});}catch(e){toast("失敗したよ");return;}
-  localStorage.setItem(UID_KEY,P.gUid);
+function _closeMigrate(){var ov=$("migOv");if(ov)ov.hidden=true;_gPending=null;}
+async function _doMigrate(){
+  var list=$("migList");if(!list)return;
+  var ids=[].map.call(list.querySelectorAll(".migChk:checked"),function(c){return c.value;});
+  var gid=_migGid;
+  /* 移す ＝ この端末を そのアカウントの ものに して、えらんだ項目を push。
+     えらばなかった 項目は アカウント側を さわらない（消さない）。 */
+  try{localStorage.setItem(GUID_KEY,gid);}catch(_){}
   try{localStorage.removeItem("radio_sync_meta");localStorage.removeItem("radio_syncbig_meta");}catch(_){}
-  _saveGInfo({email:P.email,name:P.name,gid:P.gid,alt:P.thisUid});_gPending=null;
-  toast("Googleの記録にしたよ（この端末の記録も残ってるよ）");
-  setTimeout(()=>location.reload(),950);
+  _ownerDone=false;try{await claimOwner();}catch(_){}
+  _closeMigrate();
+  toast("アカウントに いれてるよ…");
+  try{
+    if(ids.length){
+      /* えらんだ項目だけ 残して あとは クラウドの値に あわせたい。
+         ＝いったん クラウドを 取りこみ、その上に えらんだ項目を のせて push */
+      var keep={};
+      _migKeys(ids).forEach(function(k){var v=localStorage.getItem(k);if(v!=null)keep[k]=v;});
+      var pulled=await cloudSyncPull();   /* アカウント側（初回は 空）を 取りこみ */
+      Object.keys(keep).forEach(function(k){try{localStorage.setItem(k,keep[k]);}catch(_){}});
+      await cloudSyncPush(true);
+      await cloudBigPush(true);
+    }else{
+      /* 何も 移さない → アカウント側（空 or 既存）を そのまま 使う */
+      await cloudSyncPull();await cloudBigPull();
+    }
+  }catch(_){}
+  setTimeout(function(){try{location.reload();}catch(_){}},700);
 }
-async function _gSwapBase(){
-  const info=_gInfo();if(!info||!info.gid||!info.alt){toast("切り替え先がないよ");return;}
-  const db=await getDB();if(!db){toast("つながらないよ");return;}
-  const{ref,set}=await import(FB_DB);
-  const cur=getUid(),other=String(info.alt);
-  try{await cloudSyncPush(true);}catch(_){}   /* 今の記録を保存してから切替 */
-  try{await set(ref(db,"glinks/"+info.gid),{uid:other,alt:cur,at:Date.now()});}catch(e){toast("失敗したよ");return;}
-  localStorage.setItem(UID_KEY,other);
-  try{localStorage.removeItem("radio_sync_meta");localStorage.removeItem("radio_syncbig_meta");}catch(_){}
-  _saveGInfo({email:info.email,name:info.name,gid:info.gid,alt:cur});
-  toast("記録を切り替えたよ");
-  setTimeout(()=>location.reload(),950);
+try{
+  var _mc=document.getElementById("migCancel");
+  if(_mc)_mc.addEventListener("click",function(){
+    try{playClick();}catch(_){}
+    /* ログイン直後に やめる → ログインは 成立してるが 何も 移さない＝アカウント側で はじめる */
+    if(_migMode==="login"){try{localStorage.setItem(GUID_KEY,_migGid);}catch(_){}
+      _closeMigrate();setTimeout(function(){try{location.reload();}catch(_){}},500);
+    }else _closeMigrate();
+  });
+  var _mg=document.getElementById("migGo");
+  if(_mg)_mg.addEventListener("click",function(){try{playClick();}catch(_){}_doMigrate();});
+}catch(_){}
+let _gPending=null;
+/* ============================================================
+   ★Googleログイン（作り直し）
+   考え方：データの 持ち主は「Googleアカウント」。
+   ・ログインしたら 保存先は sync/<Google UID> に なる（getUid が そう返す）
+   ・そのアカウントに 記録が あれば → それを 読みこむ（この端末のは 出さない）
+   ・記録が 無い 初めての アカウントなら → 今の端末のを アカウントに 移せる（許可制）
+   ・アカウント → 別アカウント（すでに どちらも クラウドに ある）
+        → 新しい方に そのまま 塗りかわる（前のは 前のアカウントに 残る）
+   ============================================================ */
+function _gname(u){return (u&&(u.displayName||u.email))||"";}
+async function _afterGoogleUser(user){
+  if(!user||user.isAnonymous)return;
+  var gid=user.uid;
+  var wasLoggedIn=isLoggedIn() && savedGuid() && savedGuid()!==gid;
+  var db=await getDB();if(!db){toast("いまはつながらないよ");return;}
+  var{ref,get}=await import(FB_DB);
+  /* アカウント側に 記録が あるか みる */
+  var has=false;
+  try{var sn=await get(ref(db,"sync/"+gid));has=sn.exists()&&sn.val()&&sn.val().t;}catch(_){}
+  _saveGInfo({email:user.email||"",name:user.displayName||"",gid:gid});
+
+  if(has){
+    /* アカウントに 記録あり → それが 正。GUID を それに して 読みこみ→再読込 */
+    try{localStorage.setItem(GUID_KEY,gid);}catch(_){}
+    try{localStorage.removeItem("radio_sync_meta");localStorage.removeItem("radio_syncbig_meta");}catch(_){}
+    _ownerDone=false;try{await claimOwner();}catch(_){}
+    toast(_gname(user)+" の記録を よみこむよ");
+    setTimeout(function(){try{location.reload();}catch(_){}},900);
+    return;
+  }
+  /* アカウントに 記録なし（初めての アカウント） */
+  if(wasLoggedIn){
+    /* 別アカウントから 切りかえ → まっさらな 新アカウント。今の端末のは 前アカウントに 残る。
+       ＝ここでは 何も 移さず、新アカウントで はじめる */
+    try{localStorage.setItem(GUID_KEY,gid);}catch(_){}
+    try{localStorage.removeItem("radio_sync_meta");localStorage.removeItem("radio_syncbig_meta");}catch(_){}
+    _ownerDone=false;try{await claimOwner();}catch(_){}
+    toast("あたらしい アカウントに ログインしたよ");
+    setTimeout(function(){try{location.reload();}catch(_){}},900);
+    return;
+  }
+  /* ゲスト → 初アカウント：今の端末データを 移すか 許可制で えらぶ */
+  _gPending={gid:gid,name:_gname(user)};
+  _openMigrate(gid,_gname(user));
 }
+/* ★リダイレクト方式で ログインする（ポップアップの COOP問題を さける）。
+   別ページで Google に とんで、もどってきた時に radio_gredirect を見て 続きを やる。 */
+async function _gRedirect(auth,m,provider){
+  try{localStorage.setItem("radio_gredirect","1");}catch(_){}
+  try{localStorage.setItem("radio_glogin_pending","1");}catch(_){}
+  await m.signInWithRedirect(auth,provider);
+}
+/* ★Googleログイン（ポップアップ方式・別ドメインの往復を しない）
+   ・ポップアップの中で 完結するので firebaseapp.com への 移動が おきず、
+     「missing initial state」や init.json 404 を さける
+   ・新しい Firebase SDK は COOP環境を 自分で 見わけて うまく やる
+   ・どうしても ダメな端末だけ 最後の 手として リダイレクト */
 async function googleLogin(){
   let A;try{A=await _getAuth();}catch(e){toast("Googleログインは使えないよ（設定が必要）");return;}
   const{auth,m}=A;const provider=new m.GoogleAuthProvider();
+  try{provider.setCustomParameters({prompt:"select_account"});}catch(_){}
+  toast("Googleに つなぐよ…");
   try{
-    let result;
+    let result=null;
     try{
-      /* ★いま ゲスト(匿名)なら「リンク」して 認証IDを そのまま 引きつぐ */
+      /* ゲスト（匿名）を Googleに つなぐ → 中身を 引きついで ログイン */
       if(auth.currentUser&&auth.currentUser.isAnonymous&&m.linkWithPopup){
         try{ result=await m.linkWithPopup(auth.currentUser,provider); }
         catch(le){
-          var lc=le&&le.code||"";
+          const lc=le&&le.code||"";
           if(lc==="auth/credential-already-in-use"||lc==="auth/email-already-in-use"||lc==="auth/provider-already-linked"){
-            result=await m.signInWithPopup(auth,provider);   /* すでに ある アカウント → そっちに 入る */
+            result=await m.signInWithPopup(auth,provider);   /* すでに あるアカウント → ふつうに ログイン */
           }else throw le;
         }
       }else{
         result=await m.signInWithPopup(auth,provider);
       }
-    }
-    catch(e){
+    }catch(e){
       const c=e&&e.code||"";
-      if(c==="auth/popup-closed-by-user"||c==="auth/cancelled-popup-request")return;   /* ユーザーが閉じた */
-      if(c==="auth/popup-blocked"||c==="auth/operation-not-supported-in-this-environment"){
-        try{localStorage.setItem("radio_gredirect","1");}catch(_){}
-        await m.signInWithRedirect(auth,provider);return;   /* モバイル等：リダイレクト方式へ */
+      if(c==="auth/popup-closed-by-user"||c==="auth/cancelled-popup-request"){toast("ログインを やめたよ");return;}
+      if(c==="auth/operation-not-allowed"){toast("Firebaseで Googleサインインを有効にしてね");return;}
+      if(c==="auth/unauthorized-domain"){toast("このドメインを Firebaseの許可ドメインに追加してね");return;}
+      /* ポップアップが 使えない端末 → 最後の 手として リダイレクト */
+      if(c==="auth/popup-blocked"||c==="auth/operation-not-supported-in-this-environment"||/popup/i.test(String(e&&e.message||""))){
+        await _gRedirect(auth,m,provider);return;
       }
       throw e;
     }
-    try{_authUser=(result&&result.user)||auth.currentUser||_authUser;_ownerDone=false;}catch(_){}
-    try{setAcctMode("google");}catch(_){}
-    await _afterGoogleUser(result.user);
-    try{await claimOwner();}catch(_){}
+    const user=(result&&result.user)||auth.currentUser;
+    if(user&&!user.isAnonymous){
+      try{_authUser=user;_ownerDone=false;setAcctMode("google");}catch(_){}
+      await _afterGoogleUser(user);
+    }else{
+      toast("ログインできなかったよ。もう一度 ためしてね");
+    }
   }catch(e){
-    console.warn("glogin",e);const c=e&&e.code||"";
-    if(c==="auth/operation-not-allowed")toast("Firebaseで Googleサインインを有効にしてね");
-    else if(c==="auth/unauthorized-domain")toast("このドメインを Firebaseの許可ドメインに追加してね");
-    else toast("Googleログインに失敗したよ");
+    console.warn("glogin",e);
+    toast("Googleログインに失敗したよ");
   }
 }
 async function googleLogout(){
   try{const{auth,m}=await _getAuth();await m.signOut(auth);}catch(_){}
   try{_authUser=null;_authPromise=null;_authFailed=false;_ownerDone=false;setAcctMode("guest");}catch(_){}
-  _clearGInfo();toast("ログアウトしたよ（記録はこの端末に残るよ）");_renderGoogleUI();
+  try{localStorage.removeItem(GUID_KEY);localStorage.removeItem("radio_sync_meta");localStorage.removeItem("radio_syncbig_meta");}catch(_){}
+  _clearGInfo();
+  toast("ログアウトしたよ（この端末の記録に もどるよ）");_renderGoogleUI();
+  setTimeout(function(){try{location.reload();}catch(_){}},900);
 }
-/* リダイレクト方式で戻ってきた時だけauthを読んで処理（普段は読み込まない＝軽い） */
+/* ★リダイレクトから もどってきた時：Google の 結果を 受けとって ログインを 完了する。
+   radio_gredirect / radio_glogin_pending の どちらかが あれば 処理する。 */
 (function(){
   try{
     if(typeof _isCrawler!=="undefined"&&_isCrawler)return;
-    if(localStorage.getItem("radio_gredirect")!=="1")return;
-    localStorage.removeItem("radio_gredirect");
-    (async()=>{ try{ const{auth,m}=await _getAuth(); const res=await m.getRedirectResult(auth); if(res&&res.user){try{_authUser=res.user;_ownerDone=false;setAcctMode("google");}catch(_){} await _afterGoogleUser(res.user); try{await claimOwner();}catch(_){}} }catch(e){console.warn("gredirect",e);} })();
+    var pend=(localStorage.getItem("radio_gredirect")==="1")||(localStorage.getItem("radio_glogin_pending")==="1");
+    if(!pend)return;
+    try{localStorage.removeItem("radio_gredirect");}catch(_){}
+    (async()=>{
+      try{
+        const{auth,m}=await _getAuth();
+        var res=null;
+        try{res=await m.getRedirectResult(auth);}catch(re){console.warn("getRedirectResult",re);}
+        var user=(res&&res.user)||null;
+        /* getRedirectResult が 空でも、すでに サインイン済みなら それを つかう */
+        if(!user&&auth.currentUser&&!auth.currentUser.isAnonymous)user=auth.currentUser;
+        try{localStorage.removeItem("radio_glogin_pending");}catch(_){}
+        if(user&&!user.isAnonymous){
+          try{_authUser=user;_ownerDone=false;setAcctMode("google");}catch(_){}
+          await _afterGoogleUser(user);   /* この中で 記録の 読みこみ／移植の 案内／reload を やる */
+        }else{
+          /* 結果が とれなかった（キャンセル等）→ そのまま */
+        }
+      }catch(e){console.warn("gredirect",e);try{localStorage.removeItem("radio_glogin_pending");}catch(_){}}
+    })();
   }catch(_){}
 })();
 async function publishProfile(){
@@ -10925,6 +11181,7 @@ async function autoStampFlow(){
   if(!src){ openCardMenu(); return; }   /* 念のため手動へフォールバック */
   _lastStampSrc=src;
   try{markTodayDone();}catch(_){}
+  try{_wtAdd();}catch(_){}   /* ★世界樹を 1回ぶん のばす */
   const p=jstKey().split("-"),dateLabel=(+p[1])+"/"+(+p[2]);
   const r=autoAddStamp(src,dateLabel);   /* データに記録（何枚目・どのマス・何日・スタンプ） */
   if(r.added){try{syncStampCardsFB();}catch(_){}try{syncClubroomPresence();}catch(_){}}   /* 保険：Firebaseにも保存＋部室に今日いる印 */
@@ -11321,6 +11578,7 @@ function startRally(skipRoulette){
 function doPostOnly(){
   if(!todayStamp())assignTodayStamp(pickStampIdx());
   try{markTodayDone();}catch(_){}
+  try{_wtAdd();}catch(_){}
   try{refreshHome();}catch(_){}
   if(postedToday()){ toast("きょうは 投稿ずみだよ"); return; }
   showPostConfirm(false);
@@ -15683,6 +15941,19 @@ let _restoreSel=null;
 $("ppRestoreOpen").addEventListener("click",async()=>{playClick();await openRestore();});
 try{const _gb=$("gLoginBtn");if(_gb)_gb.addEventListener("click",()=>{playClick();googleLogin();});}catch(_){}
 try{const _go=$("gLogoutBtn");if(_go)_go.addEventListener("click",()=>{playClick();googleLogout();});}catch(_){}
+try{const _mb=$("gMigrateBtn");if(_mb)_mb.addEventListener("click",()=>{playClick();if(!isLoggedIn()){toast("さきに Googleでログインしてね");return;}_openMigrate(getUid(),"","manual");});}catch(_){}
+try{const _rl=$("gResetLocal");if(_rl)_rl.addEventListener("click",async()=>{
+  playClick();
+  if(!confirm("この端末の 記録を ぜんぶ 消して、まっさらに するよ。\n\n（Googleに ログインしていた 記録は アカウント側に 残るので、また ログインすれば もどせるよ）\n\n消して いい？"))return;
+  try{const{auth,m}=await _getAuth();await m.signOut(auth);}catch(_){}
+  try{
+    var del=[];
+    for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k&&k.indexOf("radio_")===0)del.push(k);}
+    del.forEach(function(k){try{localStorage.removeItem(k);}catch(_){}});
+  }catch(_){}
+  toast("まっさらに したよ");
+  setTimeout(function(){try{location.reload();}catch(_){}},800);
+});}catch(_){}
 try{const _c1=$("gChooseThis");if(_c1)_c1.addEventListener("click",()=>{playClick();_gChooseThis();});}catch(_){}
 try{const _c2=$("gChooseGoogle");if(_c2)_c2.addEventListener("click",()=>{playClick();_gChooseGoogle();});}catch(_){}
 try{const _cc=$("gChoiceCancel");if(_cc)_cc.addEventListener("click",()=>{playClick();_gPending=null;$("gChoice").classList.remove("show");});}catch(_){}
@@ -16041,19 +16312,18 @@ function _acctShowPick(){
 function _acctHidePick(){try{var box=$("acctPick");if(box)box.hidden=true;}catch(_){}}
 async function _acctChoose(mode){
   try{playClick();}catch(_){}
-  if(mode==="google"){
-    try{
-      await googleLogin();                    /* Googleで サインイン（リダイレクトの場合は もどってくる） */
-      if(authUid()||_gInfo()){setAcctMode("google");}
-      else{setAcctMode("guest");}             /* しっぱい時は ゲストで つづける */
-    }catch(_){setAcctMode("guest");}
-  }else{
-    setAcctMode("guest");
-    try{await ensureAuth();}catch(_){}
-  }
-  try{await claimOwner();}catch(_){}
   _acctHidePick();
-  try{doTitlePlay();}catch(_){}
+  if(mode==="google"){
+    setAcctMode("google");
+    /* ポップアップで ログイン（この中で 記録の 読みこみ／移植の 案内／reload まで やる）。
+       ポップアップを 閉じた等で 進まなかった時のため、タイトルは 出しておく。 */
+    try{await googleLogin();}catch(_){}
+    try{doTitlePlay();}catch(_){}
+  }else{
+    setAcctMode("guest");           /* ゲスト＝この端末だけ。クラウドには 触らない */
+    try{await ensureAuth();}catch(_){}
+    try{doTitlePlay();}catch(_){}
+  }
 }
 try{var _ag=$("acctGoogle");if(_ag)_ag.addEventListener("click",function(){_acctChoose("google");});}catch(_){}
 try{var _aq=$("acctGuest");if(_aq)_aq.addEventListener("click",function(){_acctChoose("guest");});}catch(_){}
@@ -27381,6 +27651,75 @@ function _yumeRoll(){
     shiny:shiny,hue:shiny?Math.floor(Math.random()*360):0,at:Date.now()};   /* 色違いの色は 人によって ちがう */
 }
 /* ============================================================
+   ★ユメっ子・敵の データを 外から 差しかえる しくみ
+   ・yume-data.js（小さいファイル）があれば それを つかう
+   ・Firebase に 新しいのが あれば そちらを つかう（編集ツールから 反映）
+   ・どちらも 無ければ 下の はじめの内容の まま
+   ＝ index.html を もう 編集しなくて いい
+   ============================================================ */
+var GD_CACHE="radio_gamedata";
+function _gdApply(d,why){
+  var ch=false;
+  try{
+    if(d&&Array.isArray(d.yume)&&d.yume.length){
+      YUME_MASTER.length=0;
+      d.yume.forEach(function(x){
+        if(!x||!x.img||!x.name)return;
+        var y={img:String(x.img),name:String(x.name),star:Math.max(1,Math.min(3,parseInt(x.star,10)||1))};
+        if(x.sk!=null&&x.sk!=="")y.sk=parseInt(x.sk,10)||0;
+        YUME_MASTER.push(y);
+      });
+      ch=true;
+      /* 画像の あるなし調べを やり直す */
+      try{_yumeImgOK=null;_yumeImgProbe=null;}catch(_){}
+    }
+    if(d&&Array.isArray(d.adv)&&d.adv.length){
+      ADV_CHAPTERS.length=0;
+      d.adv.forEach(function(x,i){
+        if(!x||!x.name)return;
+        ADV_CHAPTERS.push({
+          teki:String(x.teki||("teki"+(i+1)+".png")),
+          name:String(x.name),
+          area:String(x.area||""),
+          lv:String(x.lv||""),
+          diff:Math.max(1,parseInt(x.diff,10)||(i+1))
+        });
+      });
+      ch=true;
+    }
+  }catch(_){}
+  if(ch){
+    try{if(typeof _advRenderSetup==="function"&&document.getElementById("advScreen"))_advRenderSetup();}catch(_){}
+    try{if(typeof _ybRender==="function")_ybRender();}catch(_){}
+  }
+  return ch;
+}
+/* 1) すぐ つかえる もの（ファイル → まえに もらった内容）
+      ※じっさいに あてるのは ADV_CHAPTERS を つくった あと（下の _gdBoot） */
+function _gdBoot(){
+  try{
+    if(window.YUME_DATA){_gdApply(window.YUME_DATA,"file");return;}
+    var c=localStorage.getItem(GD_CACHE);if(c)_gdApply(JSON.parse(c),"cache");
+  }catch(_){}
+}
+/* 2) Firebase に 新しいのが あれば 差しかえる（編集ツールから 反映したもの） */
+async function _gdFetch(){
+  try{
+    var db=await getDB();if(!db)return;
+    var{ref,get}=await import(FB_DB);
+    var snap=await get(ref(db,"gamedata"));
+    if(!snap||!snap.exists())return;
+    var d=snap.val();if(!d)return;
+    var localAt=0;
+    try{localAt=(JSON.parse(localStorage.getItem(GD_CACHE)||"{}").at)|0;}catch(_){}
+    if((d.at|0)<localAt)return;                 /* 古いなら 何もしない */
+    if(_gdApply(d,"fb")){
+      try{localStorage.setItem(GD_CACHE,JSON.stringify(d));}catch(_){}
+    }
+  }catch(_){}
+}
+try{setTimeout(function(){try{_gdFetch();}catch(_){}},2600);}catch(_){}
+/* ============================================================
    ★ユメっ子の とくべつな技（20しゅるい）
    つかいかた：YUME_MASTER の その子に  sk:5  のように 番号を 書くだけ。
    （番号を 変えれば その子の 技が かわる。書かないと 名前から 自動で きまる）
@@ -27626,6 +27965,9 @@ var ADV_CHAPTERS=[
   {teki:"teki11.png", name:"ソレイユ",          area:"夜明けの神殿", lv:"40〜43", diff:11},
   {teki:"teki12.png", name:"ユメノハナ",        area:"ユメの花園",   lv:"44〜48", diff:12}
 ];
+/* ★ここで 外のデータ（yume-data.js / まえの内容）を あてる */
+try{_gdBoot();}catch(_){}
+
 /* ============================================================ */
 
 /* --- 記憶（この子と 何回 戦ったか）→ 100回で 親友（攻撃+5%） --- */
@@ -27667,7 +28009,11 @@ function _advUnit(y){
 }
 /* 敵：1000ものさしに あわせて 作りなおし＋ぜんたいに つよく（およそ2ばい） */
 function _advEnemy(ch){
-  var d=ch.diff||1, last=(d>=ADV_CHAPTERS.length);
+  var d=ch.diff||1;
+  /* ★いちばん さいごの ステージ＝最終ボス（むずかしさの 数字では 見ない。
+     データを 差しかえても ちゃんと はたらくように） */
+  var _lc=ADV_CHAPTERS[ADV_CHAPTERS.length-1];
+  var last=!!(_lc&&ch&&ch.name===_lc.name&&(ch.diff|0)===(_lc.diff|0));
   var maxhp=Math.round(last?3800:(150+d*300));
   var kinds=["dodge","heal","sleep","power"];
   return {name:ch.name, teki:ch.teki, atk:(last?340:(34+d*42)), spd:60+d*26, hp:maxhp, maxhp:maxhp,
@@ -28385,6 +28731,152 @@ try{
     try{showSelect();updateTop();}catch(_){}
   });
 }catch(_){}
+/* ============================================================
+   ★世界樹（みんなで そだてる 木）
+   ・だれかが ラジオ体操を すると 1回ぶん のびる（1回＝100m）
+   ・のびた 高さは Firebaseで みんなと 共有
+   ・背景を 上に スクロール（マウスの ころころも）すると
+     どこまで のびたか 見にいける。空は 高さで かわって いつまでも つづく。
+   ============================================================ */
+var WT_M_PER=100;                      /* 1回で のびる 高さ(m) */
+var WT_CACHE_KEY="radio_wt_cache";     /* さいごに 見た 合計（すぐ 出すため） */
+var WT_DONE_KEY="radio_wt_done";       /* きょう ぶんを 足したか */
+var _wtCount=0;
+function _wtFmt(n){try{return Number(n).toLocaleString("ja-JP");}catch(_){return String(n);}}
+function _wtMeters(){return _wtCount*WT_M_PER;}
+/* 高さから 空の いろ と 名まえ（宇宙の さきまで ずっと つづく） */
+function _wtZone(m){
+  if(m<1000)   return {n:"じめん ちかく", a:"#8fd3f0", b:"#d9f0fb", star:0};
+  if(m<3000)   return {n:"雲の あたり",   a:"#79c6ec", b:"#cfe9f7", star:0};
+  if(m<8000)   return {n:"高い 雲の 上",  a:"#59aee2", b:"#a9d8f0", star:0};
+  if(m<20000)  return {n:"成層圏",        a:"#2f7fc4", b:"#79b8e2", star:.12};
+  if(m<50000)  return {n:"高い 成層圏",   a:"#1b4f90", b:"#3f86c4", star:.35};
+  if(m<80000)  return {n:"中間圏",        a:"#0d2a5c", b:"#1f4f8f", star:.6};
+  if(m<100000) return {n:"熱圏の 入口",   a:"#061634", b:"#0f2f60", star:.8};
+  if(m<400000) return {n:"宇宙",          a:"#02060f", b:"#08142c", star:1};
+  if(m<1000000)return {n:"ふかい 宇宙",   a:"#01030a", b:"#040a18", star:1};
+  return {n:"星の うみ", a:"#000004", b:"#02040c", star:1};
+}
+function _wtApplyScene(){
+  try{
+    var m=_wtMeters();
+    var el=$("wtM");if(el)el.textContent=_wtFmt(m)+"m";
+    var el2=$("wtN");if(el2)el2.textContent="みんなで "+_wtFmt(_wtCount)+"回";
+    /* 背景の 木は のびるほど すこしだけ 大きく（見た目の うるささを おさえる） */
+    var cr=$("wtCrown"),tr=$("wtTrunk");
+    var g=Math.min(1,Math.log10(Math.max(1,m))/6);      /* 0〜1 */
+    if(cr){var w=44+g*26;cr.style.width=w.toFixed(0)+"px";cr.style.height=(w*0.8).toFixed(0)+"px";}
+    if(tr)tr.style.height=(24+g*30).toFixed(0)+"px";
+  }catch(_){}
+}
+function _wtLoadCache(){
+  try{var v=parseInt(localStorage.getItem(WT_CACHE_KEY)||"0",10);if(Number.isFinite(v)&&v>0)_wtCount=v;}catch(_){}
+  _wtApplyScene();
+}
+async function _wtFetch(){
+  try{
+    var db=await getDB();if(!db)return;
+    var{ref,get}=await import(FB_DB);
+    var snap=await get(ref(db,"worldtree/n"));
+    var v=snap&&snap.exists()?parseInt(snap.val(),10):0;
+    if(Number.isFinite(v)&&v>=0){_wtCount=v;try{localStorage.setItem(WT_CACHE_KEY,String(v));}catch(_){}}
+    _wtApplyScene();
+  }catch(_){}
+}
+/* ラジオ体操が おわったら 1回ぶん のばす（1日1回・チュートリアル中は 足さない） */
+async function _wtAdd(){
+  try{
+    if(tutOn())return;
+    var today=jstKey();
+    if(localStorage.getItem(WT_DONE_KEY)===today)return;
+    localStorage.setItem(WT_DONE_KEY,today);
+    _wtCount++;_wtApplyScene();
+    try{localStorage.setItem(WT_CACHE_KEY,String(_wtCount));}catch(_){}
+    var db=await getDB();if(!db)return;
+    var{ref,runTransaction}=await import(FB_DB);
+    await runTransaction(ref(db,"worldtree/n"),function(cur){return (parseInt(cur,10)||0)+1;});
+    _wtFetch();
+  }catch(_){}
+}
+/* ---- 上へ 見にいく画面 ---- */
+var WT_PX_PER_M=0.22;        /* 1m を 何px で えがくか */
+var _wtViewOpen=false;
+function _wtOpen(){
+  var v=$("treeView");if(!v)return;
+  _wtViewOpen=true;v.hidden=false;
+  var m=_wtMeters();
+  var H=Math.max(window.innerHeight*2, m*WT_PX_PER_M+window.innerHeight*1.6);
+  var inner=$("tvInner");if(inner)inner.style.height=H+"px";
+  var trunk=$("tvTrunk");if(trunk)trunk.style.height=Math.max(0,m*WT_PX_PER_M)+"px";
+  var top=$("tvTop");
+  if(top)top.style.bottom=(m*WT_PX_PER_M-20)+"px";
+  /* 高さの めもり */
+  try{
+    var marks=$("tvMarks");
+    if(marks){
+      /* めもりが 8〜12本くらいに なる きりの いい きざみ（1・2・5×10^n） */
+      var raw=Math.max(100,m/10), p10=Math.pow(10,Math.floor(Math.log10(raw))), r=raw/p10;
+      var step=(r<=1?1:r<=2?2:r<=5?5:10)*p10;
+      var h="";
+      for(var q=step;q<=m;q+=step){
+        h+='<div class="tvMark" style="bottom:'+(q*WT_PX_PER_M)+'px"><span>'+_wtFmt(q)+'m</span></div>';
+      }
+      marks.innerHTML=h;
+    }
+  }catch(_){}
+  var tt=$("tvTotal");
+  if(tt)tt.textContent="みんなで "+_wtFmt(_wtCount)+"回 ／ "+_wtFmt(m)+"m のびたよ";
+  var sc=$("tvScroll");
+  if(sc){sc.scrollTop=sc.scrollHeight;_wtPaint();}
+  try{_wtFetch();}catch(_){}
+}
+function _wtClose(){_wtViewOpen=false;var v=$("treeView");if(v)v.hidden=true;}
+function _wtPaint(){
+  try{
+    var sc=$("tvScroll");if(!sc)return;
+    var fromBottom=(sc.scrollHeight-sc.scrollTop-sc.clientHeight);
+    var alt=Math.max(0,fromBottom/WT_PX_PER_M);
+    var z=_wtZone(alt);
+    var sky=$("tvSky");
+    if(sky)sky.style.background="linear-gradient(180deg,"+z.a+" 0%,"+z.b+" 100%)";
+    var st=$("tvStars");if(st)st.style.opacity=String(z.star);
+    var a=$("tvAlt");if(a)a.textContent=_wtFmt(Math.round(alt))+"m";
+    var zn=$("tvZone");if(zn)zn.textContent=z.n;
+    var mk=$("tvMarks");if(mk)mk.style.color=(z.star>.5)?"#dfe8f5":"#3f6b86";
+  }catch(_){}
+}
+try{
+  var _sc=document.getElementById("tvScroll");
+  if(_sc)_sc.addEventListener("scroll",function(){if(_wtViewOpen)_wtPaint();},{passive:true});
+  var _wc=document.getElementById("tvClose");
+  if(_wc)_wc.addEventListener("click",function(){try{playClick();}catch(_){}_wtClose();});
+  var _wu=document.getElementById("tvUp");
+  if(_wu)_wu.addEventListener("click",function(){
+    try{playClick();}catch(_){}
+    var sc=$("tvScroll");if(!sc)return;
+    var m=_wtMeters();
+    sc.scrollTo({top:Math.max(0,sc.scrollHeight-sc.clientHeight-(m*WT_PX_PER_M)+sc.clientHeight*0.55),behavior:"smooth"});
+  });
+  var _wt=document.getElementById("worldTree");
+  if(_wt)_wt.addEventListener("click",function(){try{playClick();}catch(_){}_wtOpen();});
+  /* 背景で 上に スクロール／ころころを 上に → 見にいく */
+  var _sd=document.getElementById("skyDecor");
+  if(_sd){
+    _sd.addEventListener("wheel",function(e){
+      if(_wtViewOpen)return;
+      if(e.deltaY<-6){e.preventDefault();_wtOpen();}
+    },{passive:false});
+    var _ty=null;
+    _sd.addEventListener("touchstart",function(e){_ty=(e.touches&&e.touches[0])?e.touches[0].clientY:null;},{passive:true});
+    _sd.addEventListener("touchmove",function(e){
+      if(_wtViewOpen||_ty==null)return;
+      var y=(e.touches&&e.touches[0])?e.touches[0].clientY:null;if(y==null)return;
+      if(y-_ty>52){_ty=null;_wtOpen();}     /* 下に ひっぱる＝上を のぞく */
+    },{passive:true});
+    _sd.addEventListener("touchend",function(){_ty=null;},{passive:true});
+  }
+}catch(_){}
+try{_wtLoadCache();setTimeout(function(){try{_wtFetch();}catch(_){}},2200);}catch(_){}
 /* ===== ユメっ子ずかん（もってない子は シルエット） ===== */
 function _ybBest(name){
   /* 同じ名前を 何人か もっている時は いちばん 育っている子を 見せる */
@@ -32386,8 +32878,17 @@ function _gpStreetHTML(){
         <summary><span class="setCardIco ico-id"><svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.9 0 6.6 1.7 8.1 3.1l6-5.8C34.6 3.2 29.8 1 24 1 14.6 1 6.5 6.4 2.7 14.3l7 5.4C11.5 13.6 17.2 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-2.8-.4-4H24v7.6h12.7c-.3 2.1-1.6 5.2-4.7 7.3l7.2 5.6c4.3-4 6.3-9.9 6.3-16.5z"/><path fill="#FBBC05" d="M9.7 19.7C9.2 21.1 9 22.5 9 24s.2 2.9.7 4.3l-7 5.4C1.3 30.6 0 27.5 0 24s1.3-6.6 2.7-9.7l7 5.4z"/><path fill="#34A853" d="M24 47c6.5 0 11.9-2.1 15.9-5.8l-7.2-5.6c-2 1.4-4.6 2.3-8.7 2.3-6.8 0-12.5-4.1-14.3-9.9l-7 5.4C6.5 41.6 14.6 47 24 47z"/></svg></span><span class="setCardTxt"><b>Googleでログイン</b><small>スマホ⇄PCをかんたんに同期</small></span><span class="setCardArrow">›</span></summary>
         <div class="psRestoreInner">
           <div id="gLoginNote" class="restoreNote">Googleでログインすると、この記録を他の端末とも共有できるよ。別の端末で同じGoogleでログインすると、同じ記録に繋がるよ。</div>
+          <button id="gResetLocal" type="button" class="gBtnSub gBtnDanger" style="margin-bottom:10px;">うまくいかない時：この端末を まっさらにする</button>
           <button id="gLoginBtn" type="button" class="gBtn"><svg class="gIco" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.9 0 6.6 1.7 8.1 3.1l6-5.8C34.6 3.2 29.8 1 24 1 14.6 1 6.5 6.4 2.7 14.3l7 5.4C11.5 13.6 17.2 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-2.8-.4-4H24v7.6h12.7c-.3 2.1-1.6 5.2-4.7 7.3l7.2 5.6c4.3-4 6.3-9.9 6.3-16.5z"/><path fill="#FBBC05" d="M9.7 19.7C9.2 21.1 9 22.5 9 24s.2 2.9.7 4.3l-7 5.4C1.3 30.6 0 27.5 0 24s1.3-6.6 2.7-9.7l7 5.4z"/><path fill="#34A853" d="M24 47c6.5 0 11.9-2.1 15.9-5.8l-7.2-5.6c-2 1.4-4.6 2.3-8.7 2.3-6.8 0-12.5-4.1-14.3-9.9l-7 5.4C6.5 41.6 14.6 47 24 47z"/></svg>Googleでログイン</button>
-          <div id="gLoginState" hidden><div class="restoreNote">ログイン中：<b id="gLoginEmail"></b></div><button id="gSwapBtn" type="button" class="gBtnSub" hidden>別の記録に切り替える</button><button id="gLogoutBtn" type="button" class="gBtnSub">ログアウト</button></div>
+          <div id="gLoginState" hidden>
+            <div class="acctCard">
+              <div class="acctRow"><span class="acctK">アカウント</span><b id="gLoginEmail" class="acctV"></b></div>
+              <div class="acctRow"><span class="acctK">なまえ</span><span id="gLoginPName" class="acctV"></span></div>
+              <div class="acctRow"><span class="acctK">つないでる端末</span><span id="gLoginDev" class="acctV"></span></div>
+            </div>
+            <button id="gMigrateBtn" type="button" class="gBtnSub">この端末の記録を アカウントに移す</button>
+            <button id="gLogoutBtn" type="button" class="gBtnSub">ログアウト</button>
+          </div>
         </div>
       </details>
       <details id="aicSetCard" class="setCard setCardDetails">
@@ -32827,6 +33328,35 @@ function _gpStreetHTML(){
     </div>
     <button id="tutEndBtn" type="button">はじめる！</button>
   </div>
+</div>
+<div id="migOv" hidden>
+  <div id="migBox">
+    <div id="migTtl">アカウントに 記録を いれる</div>
+    <div id="migSub"></div>
+    <div id="migWarn"></div>
+    <div id="migList"></div>
+    <div id="migBtns">
+      <button id="migCancel" type="button">やめる</button>
+      <button id="migGo" type="button" class="pri">これで はじめる</button>
+    </div>
+  </div>
+</div>
+<div id="treeView" hidden>
+  <div id="tvSky"></div>
+  <div id="tvStars"></div>
+  <div id="tvScroll">
+    <div id="tvInner">
+      <div id="tvTrunk"></div>
+      <div id="tvMarks"></div>
+      <div id="tvTop"></div>
+    </div>
+  </div>
+  <div id="tvHud">
+    <button id="tvClose" type="button">✕</button>
+    <div id="tvHudMid"><b id="tvAlt">0m</b><i id="tvZone">じめん</i></div>
+    <button id="tvUp" type="button" aria-label="てっぺんへ">↑ てっぺん</button>
+  </div>
+  <div id="tvFoot"><span id="tvTotal"></span></div>
 </div>
 <div id="yumeBook">
   <div id="ybTop"><button id="ybClose" type="button">✕</button><span id="ybTtl">📖 ユメっ子ずかん</span></div>

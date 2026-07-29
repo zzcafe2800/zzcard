@@ -4927,41 +4927,6 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
   font-size:15px;font-weight:900;color:#fff;cursor:pointer;
   background:linear-gradient(135deg,#8ad9a8,#5cbf88);box-shadow:0 8px 20px rgba(92,191,136,.4);}
 #tutEndBtn:active{transform:scale(.97);}
-.acctCard{background:#f5fbff;border:1.5px solid #dcecf6;border-radius:14px;padding:11px 13px;margin-bottom:10px;}
-.acctRow{display:flex;align-items:baseline;gap:10px;padding:3px 0;}
-.acctRow+.acctRow{border-top:1px dashed #e2edf4;}
-.acctK{font-size:10.5px;font-weight:800;color:#9db4c4;width:88px;flex:0 0 auto;}
-.acctV{font-size:12.5px;font-weight:800;color:#3f5f74;word-break:break-all;flex:1;}
-#gLoginDev.acctV{color:#4a90b8;}
-/* ===== アカウント移植の画面 ===== */
-#migOv{position:fixed;inset:0;z-index:3700;display:flex;align-items:center;justify-content:center;
-  background:rgba(18,38,58,.58);padding:18px;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);}
-#migOv[hidden]{display:none;}
-#migBox{width:min(400px,94vw);max-height:88vh;overflow-y:auto;background:#fff;border-radius:22px;
-  padding:20px 18px 16px;box-shadow:0 18px 48px rgba(10,30,50,.4);}
-#migTtl{font-size:18px;font-weight:900;color:#3a6377;font-family:"Yomogi","Kosugi Maru",sans-serif;}
-#migSub{font-size:12.5px;font-weight:700;color:#7f9bad;line-height:1.7;margin:6px 0 10px;}
-#migWarn{font-size:12px;font-weight:700;color:#9a5a3a;background:#fff3ea;border-left:3px solid #f0a878;
-  border-radius:0 10px 10px 0;padding:9px 12px;line-height:1.7;margin-bottom:12px;}
-#migWarn[hidden]{display:none;}
-#migList{display:flex;flex-direction:column;gap:2px;margin-bottom:14px;}
-.migRow{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:12px;cursor:pointer;transition:.12s;
-  border:1.5px solid transparent;}
-.migRow:hover{background:#f5fbff;}
-.migRow.on{background:#eef8ff;border-color:#bfe3f5;}
-.migRow input{width:20px;height:20px;flex:0 0 auto;accent-color:#4ea8d8;cursor:pointer;}
-.migRow .mrName{font-size:13.5px;font-weight:800;color:#3f5f74;flex:1;}
-.migRow .mrArrow{font-size:11px;font-weight:800;color:#a8bfce;}
-.migRow.on .mrArrow{color:#4ea8d8;}
-#migAll{display:flex;align-items:center;gap:11px;padding:10px 12px;margin-bottom:6px;
-  border-bottom:1.5px dashed #e2edf4;cursor:pointer;}
-#migAll input{width:20px;height:20px;accent-color:#4ea8d8;}
-#migAll span{font-size:13px;font-weight:900;color:#4a7089;}
-#migBtns{display:flex;gap:10px;}
-#migBtns button{flex:1;border:none;border-radius:999px;padding:13px;font-family:inherit;font-size:14px;font-weight:900;cursor:pointer;}
-#migCancel{background:#eef2f5;color:#7c93a5;}
-#migGo{color:#fff;background:linear-gradient(135deg,#8ad9a8,#5cbf88);box-shadow:0 6px 16px rgba(92,191,136,.38);}
-#migGo:active,#migCancel:active{transform:scale(.97);}
 /* ===== 世界樹（ホームの背景・丘のあいだ） ===== */
 #worldTree{position:absolute;left:50%;bottom:20%;transform:translateX(-50%);
   border:none;background:none;padding:0;cursor:pointer;z-index:3;
@@ -7509,28 +7474,11 @@ function buildRecWeekday(){
 const FB_APP="https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
 const FB_DB="https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
 const UID_KEY="radio_uid";
-/* ============================================================
-   ★データの ID（どこに 保存するか）
-   ・Googleで ログインしていたら → そのGoogleの UID（＝アカウントが 持ち主）
-   ・ゲストのときは → この端末だけの ID（radio_uid）
-   これで「1アカウント＝1データ」「どの端末でも おなじ」「サイトデータを
-   消しても ログインで もどる」が 成りたつ。
-   ============================================================ */
-var GUID_KEY="radio_guid";   /* ログイン中の Google UID（覚えておく＝起動直後から アカウント側を 見る） */
-function deviceUid(){
+function getUid(){
   let u=localStorage.getItem(UID_KEY);
   if(!u){u="u"+Math.random().toString(36).slice(2,10);localStorage.setItem(UID_KEY,u);}
   return u;
 }
-function savedGuid(){try{return localStorage.getItem(GUID_KEY)||"";}catch(_){return"";}}
-/* いま データを 読み書きする ID。ログイン中は Google UID。 */
-function getUid(){
-  var g=savedGuid();
-  if(g)return g;                 /* ログイン済み＝アカウントが 持ち主 */
-  if(_authUser&&!_authUser.isAnonymous)return _authUser.uid;
-  return deviceUid();            /* ゲスト＝この端末 */
-}
-function isLoggedIn(){return !!savedGuid()||!!(_authUser&&!_authUser.isAnonymous);}
 /* ===== 連動（PC⇄スマホ）：ローカル記録をクラウドに自動同期。復元IDでuidを揃えた端末どうしが同じ状態になる ===== */
 /* ★同期しないのは「この端末だけのもの」と「AIの会話」だけ。
    それ以外は ぜんぶ Firebaseに 保存する（別の端末でも おなじになる）。 */
@@ -7678,20 +7626,16 @@ function _showReloadPrompt(){try{
 function _canSyncReload(){try{const last=+(localStorage.getItem("radio_last_reload")||0);if(Date.now()-last<30000)return false;localStorage.setItem("radio_last_reload",String(Date.now()));return true;}catch(_){return true;}}
 /* 起動時：クラウドに新しい記録があれば（画像も）取り込んで一度だけ再読み込み */
 (async()=>{try{
-  await ensureAuth();
-  /* ★ログイン中（アカウントが 持ち主）の時だけ、クラウドと やりとりする。
-     ゲストの間は クラウドに 触らない（勝手に データを 作らない＝混乱と 負担を へらす）。 */
-  if(isLoggedIn()){
-    try{await claimOwner();}catch(_){}
-    const a=await cloudSyncPull();
-    const b=await cloudBigPull();
-    if(a||b)_showReloadPrompt();
-    try{await cloudSyncPush(false);await cloudBigPush(false);}catch(_){}
-  }
+  await ensureAuth();          /* ★さきに サインイン（ゲスト＝匿名／ログイン＝Google） */
+  try{await claimOwner();}catch(_){}
+  const a=await cloudSyncPull();
+  const b=await cloudBigPull();
+  if(a||b)_showReloadPrompt();
+  try{await cloudSyncPush(false);await cloudBigPush(false);}catch(_){}   /* 初回：この端末のぶんを 保存 */
 }catch(_){}})();
 /* 変化があったら素早くアップロード（デバウンス）＝相手にすぐ反映 */
 let _syncPushT=null;
-function syncSoon(){try{if(!isLoggedIn())return;if(_syncPushT)clearTimeout(_syncPushT);_syncPushT=setTimeout(()=>{cloudSyncPush(false);},1500);}catch(_){}}
+function syncSoon(){try{if(_syncPushT)clearTimeout(_syncPushT);_syncPushT=setTimeout(()=>{cloudSyncPush(false);},1500);}catch(_){}}
 /* ===== 相手の変更を即反映：Firebase sync/<uid> をリアルタイム購読（変化時だけ届く＝サーバー負担小） ===== */
 let _syncListenerUid=null,_syncListenerOff=null,_syncReloadT=null;
 function _syncReloadSoon(){
@@ -7704,7 +7648,6 @@ function _syncReloadSoon(){
 }
 async function _startSyncListener(){
   try{
-    if(!isLoggedIn())return;   /* ゲストは 購読しない */
     const uid=getUid();if(!uid)return;
     if(_syncListenerUid===uid)return;   /* 同じuidなら張り直さない */
     const db=await getDB();if(!db)return;
@@ -7726,15 +7669,15 @@ async function _startSyncListener(){
 try{setTimeout(()=>{_startSyncListener();},2500);}catch(_){}
 try{window.addEventListener("storage",syncSoon);}catch(_){}   /* 同端末の別タブ更新も拾う */
 /* 定期：変化チェックのみ（無変化なら送信しない＝サーバー負担小） */
-try{setInterval(()=>{if(isLoggedIn())cloudSyncPush(false);},30000);}catch(_){}
+try{setInterval(()=>{cloudSyncPush(false);},30000);}catch(_){}
 /* 画面を離れる時は確実に送る */
-try{window.addEventListener("pagehide",()=>{if(isLoggedIn()){cloudSyncPush(false);cloudBigPush(false);}});}catch(_){}
+try{window.addEventListener("pagehide",()=>{cloudSyncPush(false);cloudBigPush(false);});}catch(_){}
 /* 画面に戻る度に：まず相手の最新を取り込み、無ければ自分の変化を送る（＝開くたび自動同期） */
 let _syncPullBusy=false;
 try{document.addEventListener("visibilitychange",async()=>{
   if(document.visibilityState==="hidden"){cloudSyncPush(false);cloudBigPush(false);return;}
   if(_syncPullBusy)return;_syncPullBusy=true;
-  try{if(isLoggedIn()){const a=await cloudSyncPull();const b=await cloudBigPull();if(a||b){_showReloadPrompt();return;}await cloudSyncPush(false);await cloudBigPush(false);}}catch(_){}
+  try{const a=await cloudSyncPull();const b=await cloudBigPull();if(a||b){_showReloadPrompt();return;}await cloudSyncPush(false);await cloudBigPush(false);}catch(_){}
   try{_startSyncListener();}catch(_){}
   try{_checkPartyInviteBadge();}catch(_){}
   try{_tvCollect();}catch(_){}try{_tvDeliver();}catch(_){}   /* もどってきたら 売上/荷物を すぐ受けとる */
@@ -7770,29 +7713,21 @@ async function ensureAuth(){
   _authPromise=(async function(){
     try{
       var A=await _getAuth();var auth=A.auth,m=A.m;
-      if(auth.currentUser){_authUser=auth.currentUser;_afterAuthReady();return _authUser;}
+      if(auth.currentUser){_authUser=auth.currentUser;return _authUser;}
       var u=await _authWait(auth,m,4500);
-      if(u){_authUser=u;_afterAuthReady();return u;}
+      if(u){_authUser=u;return u;}
       /* まだ だれでもない → ゲスト（匿名）で サインイン */
       var cred=await m.signInAnonymously(auth);
       _authUser=cred&&cred.user||auth.currentUser||null;
-      _afterAuthReady();
+      /* ここでは モードを きめない（ログイン/ゲストは 本人に えらんでもらう） */
       return _authUser;
     }catch(e){
       console.warn("auth failed",e&&e.code||e);
-      _authFailed=true;
+      _authFailed=true;      /* 匿名ログインが OFF の間は 今までどおり うごく */
       return null;
     }finally{_authPromise=null;}
   })();
   return _authPromise;
-}
-/* サインインが ととのった時：Googleユーザーなら GUID を そろえる */
-function _afterAuthReady(){
-  try{
-    if(_authUser&&!_authUser.isAnonymous){
-      if(savedGuid()!==_authUser.uid){try{localStorage.setItem(GUID_KEY,_authUser.uid);}catch(_){}}
-    }
-  }catch(_){}
 }
 async function getDB(){
   if(_isCrawler)return null;   /* クローラーにはFirebase接続を張らない（Search Consoleの.lpエラー対策） */
@@ -7845,217 +7780,120 @@ async function _getAuth(){
   const m=await import(FB_AUTH);
   return {auth:m.getAuth(app),m};
 }
-function _devLabel(){
-  try{
-    var ua=navigator.userAgent||"";
-    var mobile=/iPhone|iPad|iPod|Android|Mobile/i.test(ua);
-    return mobile?"スマホ":"パソコン";
-  }catch(_){return "この端末";}
-}
 function _renderGoogleUI(){
   try{
-    const info=_gInfo(),btn=$("gLoginBtn"),st=$("gLoginState"),em=$("gLoginEmail"),note=$("gLoginNote");
-    const on=isLoggedIn()&&info&&(info.email||info.name);
-    if(on){
+    const info=_gInfo(),btn=$("gLoginBtn"),st=$("gLoginState"),em=$("gLoginEmail"),note=$("gLoginNote"),sw=$("gSwapBtn");
+    if(info&&(info.email||info.name)){
       if(btn)btn.style.display="none";
       if(st)st.hidden=false;
       if(em)em.textContent=info.email||info.name||"ログイン中";
       if(note)note.style.display="none";
-      var pn=$("gLoginPName");
-      if(pn){var nm="";try{var p=getProfile();nm=(p&&p.name)||"";}catch(_){}pn.textContent=nm||"（未設定）";}
-      var dv=$("gLoginDev");if(dv)dv.textContent=_devLabel();
+      if(sw)sw.hidden=!info.alt;   /* 別の記録があるときだけ「切り替える」を出す */
     }else{
       if(btn)btn.style.display="";
       if(st)st.hidden=true;
       if(note)note.style.display="";
+      if(sw)sw.hidden=true;
     }
   }catch(_){}
 }
-/* ============================================================
-   ★アカウントに 保存する データの まとまり（移植で 選べる項目）
-   ============================================================ */
-var MIG_GROUPS=[
-  {id:"prof",  name:"なまえ・プロフィール", keys:["radio_profile","radio_mytag"]},
-  {id:"money", name:"お金・チケット",       keys:["radio_zz","radio_zz_at","radio_zz_paid","radio_tickets","radio_income"]},
-  {id:"look",  name:"衣装・ポーズ・持ち物", keys:["radio_equip","radio_equip_ball","radio_equip_toy","radio_pose_equip","radio_poses","radio_items","radio_item_colors","radio_artcos","radio_artstamp","radio_artemo","radio_art_colors","radio_stamps","radio_seen_stamps"]},
-  {id:"rec",   name:"起床・就寝・気分の記録",keys:["radio_wakelog","radio_sleeplog","radio_moods","radio_done_dates","radio_done_time","radio_wake_start","radio_wake_changes"]},
-  {id:"yume",  name:"ユメっ子・図鑑",       keys:["radio_yume_dex","radio_yume_mig1000","radio_yume_gacha_day"]},
-  {id:"adv",   name:"冒険のすすみ",         keys:["radio_adv_chapter","radio_adv_day"]},
-  {id:"shop",  name:"お店・カフェ・商品棚", keys:["radio_shop","radio_shop_p","radio_shop_pick","radio_shopmode","radio_cafe","radio_cafe_menu","radio_salelog","radio_town"]},
-  {id:"tree",  name:"世界樹・登山",         keys:["radio_wt_done","radio_wt_cache","radio_target_mt"]},
-  {id:"cards", name:"スタンプカード・作品(画像)",keys:["radio_stamp_cards","radio_auto_card","radio_art"]}
-];
-function _migAvail(){
-  return MIG_GROUPS.filter(function(g){
-    return g.keys.some(function(k){var v=localStorage.getItem(k);return v!=null&&v!=="null"&&v!=="{}"&&v!=="[]"&&v!=="";});
-  });
-}
-function _migKeys(ids){
-  var set={};
-  MIG_GROUPS.forEach(function(g){if(ids.indexOf(g.id)>=0)g.keys.forEach(function(k){set[k]=1;});});
-  return Object.keys(set);
-}
-/* ============================================================
-   ★移植の画面（ゲスト→初アカウント／設定からの「アカウントに移す」）
-   mode: "login"（ログイン直後）/ "manual"（設定から）
-   ============================================================ */
-var _migMode="login",_migGid="";
-function _openMigrate(gid,name,mode){
-  _migGid=gid||getUid();_migMode=mode||"login";
-  var ov=$("migOv");if(!ov)return;
-  var avail=_migAvail();
-  var sub=$("migSub");
-  if(sub)sub.innerHTML=(_migMode==="login"
-    ? (escHtml(name||"このアカウント")+" は はじめてだね。<br>いまの この端末の 記録を、アカウントに いれる？")
-    : "いまの この端末の 記録を、ログイン中の アカウントに うつすよ。<br>うつす ものを えらんでね。");
-  var warn=$("migWarn");
-  if(warn){
-    warn.hidden=false;
-    warn.innerHTML="⚠ えらんだ ものは アカウント側に <b>上書き</b>されるよ。"+
-      "アカウントに すでに あった その項目は 消える ことが あるから 気をつけてね。";
-  }
-  /* 一覧（あるものだけ・ぜんぶ ONで スタート） */
-  var list=$("migList");
-  if(list){
-    list.innerHTML=
-      '<label id="migAll"><input type="checkbox" id="migAllChk" checked><span>ぜんぶ えらぶ</span></label>'+
-      avail.map(function(g){
-        return '<label class="migRow on"><input type="checkbox" class="migChk" value="'+g.id+'" checked>'+
-          '<span class="mrName">'+escHtml(g.name)+'</span><span class="mrArrow">今の → アカウント</span></label>';
-      }).join("");
-    if(!avail.length)list.innerHTML='<div style="font-size:12.5px;color:#8fa6b8;padding:10px;text-align:center;">うつせる 記録は まだ ないよ</div>';
-    var sync=function(){
-      var chks=list.querySelectorAll(".migChk");
-      chks.forEach(function(c){c.closest(".migRow").classList.toggle("on",c.checked);});
-      var all=list.querySelector("#migAllChk");
-      if(all){var on=[].every.call(chks,function(c){return c.checked;});all.checked=on&&chks.length>0;}
-    };
-    list.addEventListener("change",function(ev){
-      if(ev.target.id==="migAllChk"){
-        var on=ev.target.checked;list.querySelectorAll(".migChk").forEach(function(c){c.checked=on;});
-      }
-      sync();
-    });
-  }
-  ov.hidden=false;
-}
-function _closeMigrate(){var ov=$("migOv");if(ov)ov.hidden=true;_gPending=null;}
-async function _doMigrate(){
-  var list=$("migList");if(!list)return;
-  var ids=[].map.call(list.querySelectorAll(".migChk:checked"),function(c){return c.value;});
-  var gid=_migGid;
-  /* 移す ＝ この端末を そのアカウントの ものに して、えらんだ項目を push。
-     えらばなかった 項目は アカウント側を さわらない（消さない）。 */
-  try{localStorage.setItem(GUID_KEY,gid);}catch(_){}
-  try{localStorage.removeItem("radio_sync_meta");localStorage.removeItem("radio_syncbig_meta");}catch(_){}
-  _ownerDone=false;try{await claimOwner();}catch(_){}
-  _closeMigrate();
-  toast("アカウントに いれてるよ…");
-  try{
-    if(ids.length){
-      /* えらんだ項目だけ 残して あとは クラウドの値に あわせたい。
-         ＝いったん クラウドを 取りこみ、その上に えらんだ項目を のせて push */
-      var keep={};
-      _migKeys(ids).forEach(function(k){var v=localStorage.getItem(k);if(v!=null)keep[k]=v;});
-      var pulled=await cloudSyncPull();   /* アカウント側（初回は 空）を 取りこみ */
-      Object.keys(keep).forEach(function(k){try{localStorage.setItem(k,keep[k]);}catch(_){}});
-      await cloudSyncPush(true);
-      await cloudBigPush(true);
-    }else{
-      /* 何も 移さない → アカウント側（空 or 既存）を そのまま 使う */
-      await cloudSyncPull();await cloudBigPull();
-    }
-  }catch(_){}
-  setTimeout(function(){try{location.reload();}catch(_){}},700);
-}
-try{
-  var _mc=document.getElementById("migCancel");
-  if(_mc)_mc.addEventListener("click",function(){
-    try{playClick();}catch(_){}
-    /* ログイン直後に やめる → ログインは 成立してるが 何も 移さない＝アカウント側で はじめる */
-    if(_migMode==="login"){try{localStorage.setItem(GUID_KEY,_migGid);}catch(_){}
-      _closeMigrate();setTimeout(function(){try{location.reload();}catch(_){}},500);
-    }else _closeMigrate();
-  });
-  var _mg=document.getElementById("migGo");
-  if(_mg)_mg.addEventListener("click",function(){try{playClick();}catch(_){}_doMigrate();});
-}catch(_){}
 let _gPending=null;
-/* ============================================================
-   ★Googleログイン（作り直し）
-   考え方：データの 持ち主は「Googleアカウント」。
-   ・ログインしたら 保存先は sync/<Google UID> に なる（getUid が そう返す）
-   ・そのアカウントに 記録が あれば → それを 読みこむ（この端末のは 出さない）
-   ・記録が 無い 初めての アカウントなら → 今の端末のを アカウントに 移せる（許可制）
-   ・アカウント → 別アカウント（すでに どちらも クラウドに ある）
-        → 新しい方に そのまま 塗りかわる（前のは 前のアカウントに 残る）
-   ============================================================ */
-function _gname(u){return (u&&(u.displayName||u.email))||"";}
 async function _afterGoogleUser(user){
-  if(!user||user.isAnonymous)return;
-  var gid=user.uid;
-  var wasLoggedIn=isLoggedIn() && savedGuid() && savedGuid()!==gid;
-  var db=await getDB();if(!db){toast("いまはつながらないよ");return;}
-  var{ref,get}=await import(FB_DB);
-  /* アカウント側に 記録が あるか みる */
-  var has=false;
-  try{var sn=await get(ref(db,"sync/"+gid));has=sn.exists()&&sn.val()&&sn.val().t;}catch(_){}
-  _saveGInfo({email:user.email||"",name:user.displayName||"",gid:gid});
-
-  if(has){
-    /* アカウントに 記録あり → それが 正。GUID を それに して 読みこみ→再読込 */
-    try{localStorage.setItem(GUID_KEY,gid);}catch(_){}
-    try{localStorage.removeItem("radio_sync_meta");localStorage.removeItem("radio_syncbig_meta");}catch(_){}
-    _ownerDone=false;try{await claimOwner();}catch(_){}
-    toast(_gname(user)+" の記録を よみこむよ");
-    setTimeout(function(){try{location.reload();}catch(_){}},900);
-    return;
+  if(!user)return;
+  const db=await getDB();if(!db){toast("いまはつながらないよ");return;}
+  const{ref,get,set}=await import(FB_DB);
+  const gid=user.uid,cur=getUid();
+  let snap;try{snap=await get(ref(db,"glinks/"+gid));}catch(e){toast("接続に失敗したよ");return;}
+  const v=snap.exists()?snap.val():null;
+  if(v&&v.uid){
+    const appUid=String(v.uid);
+    if(appUid===cur){
+      _saveGInfo({email:user.email||"",name:user.displayName||"",gid,alt:v.alt||""});
+      toast("Googleでログインしたよ");_renderGoogleUI();
+      try{_afterLoginSyncExtra();}catch(_){}   /* あとから足したデータも そろえる */
+    }else{
+      /* 競合：この端末とGoogleで記録が違う→どっちを使うか選ばせる（どちらも消さない） */
+      _gPending={gid,thisUid:cur,gUid:appUid,email:user.email||"",name:user.displayName||""};
+      try{$("gChoice").classList.add("show");}catch(_){}
+    }
+  }else{
+    try{await set(ref(db,"glinks/"+gid),{uid:cur,at:Date.now()});}catch(e){toast("連携に失敗したよ");return;}
+    _saveGInfo({email:user.email||"",name:user.displayName||"",gid,alt:""});
+    try{await cloudSyncPush(true);}catch(_){}   /* 今の記録をクラウドへ保存 */
+    try{_startSyncListener();}catch(_){}
+    toast("Googleと連携したよ！他の端末とも繋がる");_renderGoogleUI();
   }
-  /* アカウントに 記録なし（初めての アカウント） */
-  if(wasLoggedIn){
-    /* 別アカウントから 切りかえ → まっさらな 新アカウント。今の端末のは 前アカウントに 残る。
-       ＝ここでは 何も 移さず、新アカウントで はじめる */
-    try{localStorage.setItem(GUID_KEY,gid);}catch(_){}
-    try{localStorage.removeItem("radio_sync_meta");localStorage.removeItem("radio_syncbig_meta");}catch(_){}
-    _ownerDone=false;try{await claimOwner();}catch(_){}
-    toast("あたらしい アカウントに ログインしたよ");
-    setTimeout(function(){try{location.reload();}catch(_){}},900);
-    return;
-  }
-  /* ゲスト → 初アカウント：今の端末データを 移すか 許可制で えらぶ */
-  _gPending={gid:gid,name:_gname(user)};
-  _openMigrate(gid,_gname(user));
 }
-/* ★リダイレクト方式で ログインする（ポップアップの COOP問題を さける）。
-   別ページで Google に とんで、もどってきた時に radio_gredirect を見て 続きを やる。 */
-async function _gRedirect(auth,m,provider){
-  try{localStorage.setItem("radio_gredirect","1");}catch(_){}
-  try{localStorage.setItem("radio_glogin_pending","1");}catch(_){}
-  await m.signInWithRedirect(auth,provider);
+async function _gChooseThis(){
+  const P=_gPending;if(!P)return;
+  try{$("gChoice").classList.remove("show");}catch(_){}
+  const db=await getDB();if(!db){toast("つながらないよ");return;}
+  const{ref,set}=await import(FB_DB);
+  try{await cloudSyncPush(true);}catch(_){}   /* この端末の記録を保存 */
+  try{await set(ref(db,"glinks/"+P.gid),{uid:P.thisUid,alt:P.gUid,at:Date.now()});}catch(e){toast("失敗したよ");return;}
+  _saveGInfo({email:P.email,name:P.name,gid:P.gid,alt:P.gUid});_gPending=null;
+  toast("この端末の記録にしたよ（Googleの記録も残ってるよ）");_renderGoogleUI();
+}
+async function _gChooseGoogle(){
+  const P=_gPending;if(!P)return;
+  try{$("gChoice").classList.remove("show");}catch(_){}
+  const db=await getDB();if(!db){toast("つながらないよ");return;}
+  const{ref,set}=await import(FB_DB);
+  try{await cloudSyncPush(true);}catch(_){}   /* この端末の記録も残す（消さない） */
+  try{await set(ref(db,"glinks/"+P.gid),{uid:P.gUid,alt:P.thisUid,at:Date.now()});}catch(e){toast("失敗したよ");return;}
+  localStorage.setItem(UID_KEY,P.gUid);
+  try{localStorage.removeItem("radio_sync_meta");localStorage.removeItem("radio_syncbig_meta");}catch(_){}
+  _saveGInfo({email:P.email,name:P.name,gid:P.gid,alt:P.thisUid});_gPending=null;
+  toast("Googleの記録にしたよ（この端末の記録も残ってるよ）");
+  setTimeout(()=>location.reload(),950);
+}
+async function _gSwapBase(){
+  const info=_gInfo();if(!info||!info.gid||!info.alt){toast("切り替え先がないよ");return;}
+  const db=await getDB();if(!db){toast("つながらないよ");return;}
+  const{ref,set}=await import(FB_DB);
+  const cur=getUid(),other=String(info.alt);
+  try{await cloudSyncPush(true);}catch(_){}   /* 今の記録を保存してから切替 */
+  try{await set(ref(db,"glinks/"+info.gid),{uid:other,alt:cur,at:Date.now()});}catch(e){toast("失敗したよ");return;}
+  localStorage.setItem(UID_KEY,other);
+  try{localStorage.removeItem("radio_sync_meta");localStorage.removeItem("radio_syncbig_meta");}catch(_){}
+  _saveGInfo({email:info.email,name:info.name,gid:info.gid,alt:cur});
+  toast("記録を切り替えたよ");
+  setTimeout(()=>location.reload(),950);
 }
 async function googleLogin(){
   let A;try{A=await _getAuth();}catch(e){toast("Googleログインは使えないよ（設定が必要）");return;}
   const{auth,m}=A;const provider=new m.GoogleAuthProvider();
-  try{provider.setCustomParameters({prompt:"select_account"});}catch(_){}
-  toast("Googleに つなぐよ…");
   try{
-    /* ゲスト（匿名）を Google に つなぎたい時は まず リンクを ためす。
-       ただし リンクは ポップアップしか 無いので、ダメなら リダイレクトに 切りかえる。 */
-    if(auth.currentUser&&auth.currentUser.isAnonymous&&m.linkWithRedirect){
-      try{
-        try{localStorage.setItem("radio_gredirect","1");}catch(_){}
-        try{localStorage.setItem("radio_glogin_pending","1");}catch(_){}
-        await m.linkWithRedirect(auth.currentUser,provider);return;
-      }catch(le){
-        /* すでに あるアカウント等 → ふつうの リダイレクトログインへ */
-        await _gRedirect(auth,m,provider);return;
+    let result;
+    try{
+      /* ★いま ゲスト(匿名)なら「リンク」して 認証IDを そのまま 引きつぐ */
+      if(auth.currentUser&&auth.currentUser.isAnonymous&&m.linkWithPopup){
+        try{ result=await m.linkWithPopup(auth.currentUser,provider); }
+        catch(le){
+          var lc=le&&le.code||"";
+          if(lc==="auth/credential-already-in-use"||lc==="auth/email-already-in-use"||lc==="auth/provider-already-linked"){
+            result=await m.signInWithPopup(auth,provider);   /* すでに ある アカウント → そっちに 入る */
+          }else throw le;
+        }
+      }else{
+        result=await m.signInWithPopup(auth,provider);
       }
     }
-    /* ふつうは リダイレクトで ログイン（いちばん 確実） */
-    await _gRedirect(auth,m,provider);
+    catch(e){
+      const c=e&&e.code||"";
+      if(c==="auth/popup-closed-by-user"||c==="auth/cancelled-popup-request")return;   /* ユーザーが閉じた */
+      if(c==="auth/popup-blocked"||c==="auth/operation-not-supported-in-this-environment"){
+        try{localStorage.setItem("radio_gredirect","1");}catch(_){}
+        await m.signInWithRedirect(auth,provider);return;   /* モバイル等：リダイレクト方式へ */
+      }
+      throw e;
+    }
+    try{_authUser=(result&&result.user)||auth.currentUser||_authUser;_ownerDone=false;}catch(_){}
+    try{setAcctMode("google");}catch(_){}
+    await _afterGoogleUser(result.user);
+    try{await claimOwner();}catch(_){}
   }catch(e){
     console.warn("glogin",e);const c=e&&e.code||"";
-    try{localStorage.removeItem("radio_glogin_pending");}catch(_){}
     if(c==="auth/operation-not-allowed")toast("Firebaseで Googleサインインを有効にしてね");
     else if(c==="auth/unauthorized-domain")toast("このドメインを Firebaseの許可ドメインに追加してね");
     else toast("Googleログインに失敗したよ");
@@ -8064,36 +7902,15 @@ async function googleLogin(){
 async function googleLogout(){
   try{const{auth,m}=await _getAuth();await m.signOut(auth);}catch(_){}
   try{_authUser=null;_authPromise=null;_authFailed=false;_ownerDone=false;setAcctMode("guest");}catch(_){}
-  try{localStorage.removeItem(GUID_KEY);localStorage.removeItem("radio_sync_meta");localStorage.removeItem("radio_syncbig_meta");}catch(_){}
-  _clearGInfo();
-  toast("ログアウトしたよ（この端末の記録に もどるよ）");_renderGoogleUI();
-  setTimeout(function(){try{location.reload();}catch(_){}},900);
+  _clearGInfo();toast("ログアウトしたよ（記録はこの端末に残るよ）");_renderGoogleUI();
 }
-/* ★リダイレクトから もどってきた時：Google の 結果を 受けとって ログインを 完了する。
-   radio_gredirect / radio_glogin_pending の どちらかが あれば 処理する。 */
+/* リダイレクト方式で戻ってきた時だけauthを読んで処理（普段は読み込まない＝軽い） */
 (function(){
   try{
     if(typeof _isCrawler!=="undefined"&&_isCrawler)return;
-    var pend=(localStorage.getItem("radio_gredirect")==="1")||(localStorage.getItem("radio_glogin_pending")==="1");
-    if(!pend)return;
-    try{localStorage.removeItem("radio_gredirect");}catch(_){}
-    (async()=>{
-      try{
-        const{auth,m}=await _getAuth();
-        var res=null;
-        try{res=await m.getRedirectResult(auth);}catch(re){console.warn("getRedirectResult",re);}
-        var user=(res&&res.user)||null;
-        /* getRedirectResult が 空でも、すでに サインイン済みなら それを つかう */
-        if(!user&&auth.currentUser&&!auth.currentUser.isAnonymous)user=auth.currentUser;
-        try{localStorage.removeItem("radio_glogin_pending");}catch(_){}
-        if(user&&!user.isAnonymous){
-          try{_authUser=user;_ownerDone=false;setAcctMode("google");}catch(_){}
-          await _afterGoogleUser(user);   /* この中で 記録の 読みこみ／移植の 案内／reload を やる */
-        }else{
-          /* 結果が とれなかった（キャンセル等）→ そのまま */
-        }
-      }catch(e){console.warn("gredirect",e);try{localStorage.removeItem("radio_glogin_pending");}catch(_){}}
-    })();
+    if(localStorage.getItem("radio_gredirect")!=="1")return;
+    localStorage.removeItem("radio_gredirect");
+    (async()=>{ try{ const{auth,m}=await _getAuth(); const res=await m.getRedirectResult(auth); if(res&&res.user){try{_authUser=res.user;_ownerDone=false;setAcctMode("google");}catch(_){} await _afterGoogleUser(res.user); try{await claimOwner();}catch(_){}} }catch(e){console.warn("gredirect",e);} })();
   }catch(_){}
 })();
 async function publishProfile(){
@@ -15919,7 +15736,6 @@ let _restoreSel=null;
 $("ppRestoreOpen").addEventListener("click",async()=>{playClick();await openRestore();});
 try{const _gb=$("gLoginBtn");if(_gb)_gb.addEventListener("click",()=>{playClick();googleLogin();});}catch(_){}
 try{const _go=$("gLogoutBtn");if(_go)_go.addEventListener("click",()=>{playClick();googleLogout();});}catch(_){}
-try{const _mb=$("gMigrateBtn");if(_mb)_mb.addEventListener("click",()=>{playClick();if(!isLoggedIn()){toast("さきに Googleでログインしてね");return;}_openMigrate(getUid(),"","manual");});}catch(_){}
 try{const _c1=$("gChooseThis");if(_c1)_c1.addEventListener("click",()=>{playClick();_gChooseThis();});}catch(_){}
 try{const _c2=$("gChooseGoogle");if(_c2)_c2.addEventListener("click",()=>{playClick();_gChooseGoogle();});}catch(_){}
 try{const _cc=$("gChoiceCancel");if(_cc)_cc.addEventListener("click",()=>{playClick();_gPending=null;$("gChoice").classList.remove("show");});}catch(_){}
@@ -16278,18 +16094,19 @@ function _acctShowPick(){
 function _acctHidePick(){try{var box=$("acctPick");if(box)box.hidden=true;}catch(_){}}
 async function _acctChoose(mode){
   try{playClick();}catch(_){}
-  _acctHidePick();
   if(mode==="google"){
-    setAcctMode("google");
-    /* リダイレクトで Google に とぶ（画面が 離れる）。もどってきた時に 続きが 走る。 */
-    try{await googleLogin();}catch(_){}
-    /* ここには ふつう 来ない（ページが 移動するため）。来たら 失敗なので タイトルへ。 */
-    setTimeout(function(){try{doTitlePlay();}catch(_){}},1500);
+    try{
+      await googleLogin();                    /* Googleで サインイン（リダイレクトの場合は もどってくる） */
+      if(authUid()||_gInfo()){setAcctMode("google");}
+      else{setAcctMode("guest");}             /* しっぱい時は ゲストで つづける */
+    }catch(_){setAcctMode("guest");}
   }else{
-    setAcctMode("guest");           /* ゲスト＝この端末だけ。クラウドには 触らない */
+    setAcctMode("guest");
     try{await ensureAuth();}catch(_){}
-    try{doTitlePlay();}catch(_){}
   }
+  try{await claimOwner();}catch(_){}
+  _acctHidePick();
+  try{doTitlePlay();}catch(_){}
 }
 try{var _ag=$("acctGoogle");if(_ag)_ag.addEventListener("click",function(){_acctChoose("google");});}catch(_){}
 try{var _aq=$("acctGuest");if(_aq)_aq.addEventListener("click",function(){_acctChoose("guest");});}catch(_){}
@@ -32845,15 +32662,7 @@ function _gpStreetHTML(){
         <div class="psRestoreInner">
           <div id="gLoginNote" class="restoreNote">Googleでログインすると、この記録を他の端末とも共有できるよ。別の端末で同じGoogleでログインすると、同じ記録に繋がるよ。</div>
           <button id="gLoginBtn" type="button" class="gBtn"><svg class="gIco" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.9 0 6.6 1.7 8.1 3.1l6-5.8C34.6 3.2 29.8 1 24 1 14.6 1 6.5 6.4 2.7 14.3l7 5.4C11.5 13.6 17.2 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-2.8-.4-4H24v7.6h12.7c-.3 2.1-1.6 5.2-4.7 7.3l7.2 5.6c4.3-4 6.3-9.9 6.3-16.5z"/><path fill="#FBBC05" d="M9.7 19.7C9.2 21.1 9 22.5 9 24s.2 2.9.7 4.3l-7 5.4C1.3 30.6 0 27.5 0 24s1.3-6.6 2.7-9.7l7 5.4z"/><path fill="#34A853" d="M24 47c6.5 0 11.9-2.1 15.9-5.8l-7.2-5.6c-2 1.4-4.6 2.3-8.7 2.3-6.8 0-12.5-4.1-14.3-9.9l-7 5.4C6.5 41.6 14.6 47 24 47z"/></svg>Googleでログイン</button>
-          <div id="gLoginState" hidden>
-            <div class="acctCard">
-              <div class="acctRow"><span class="acctK">アカウント</span><b id="gLoginEmail" class="acctV"></b></div>
-              <div class="acctRow"><span class="acctK">なまえ</span><span id="gLoginPName" class="acctV"></span></div>
-              <div class="acctRow"><span class="acctK">つないでる端末</span><span id="gLoginDev" class="acctV"></span></div>
-            </div>
-            <button id="gMigrateBtn" type="button" class="gBtnSub">この端末の記録を アカウントに移す</button>
-            <button id="gLogoutBtn" type="button" class="gBtnSub">ログアウト</button>
-          </div>
+          <div id="gLoginState" hidden><div class="restoreNote">ログイン中：<b id="gLoginEmail"></b></div><button id="gSwapBtn" type="button" class="gBtnSub" hidden>別の記録に切り替える</button><button id="gLogoutBtn" type="button" class="gBtnSub">ログアウト</button></div>
         </div>
       </details>
       <details id="aicSetCard" class="setCard setCardDetails">
@@ -33292,18 +33101,6 @@ function _gpStreetHTML(){
       <div class="tecTxt"><b>冒険</b><br>ユメっ子を あつめて、まいにち ひとつずつ ステージを すすめられるよ</div>
     </div>
     <button id="tutEndBtn" type="button">はじめる！</button>
-  </div>
-</div>
-<div id="migOv" hidden>
-  <div id="migBox">
-    <div id="migTtl">アカウントに 記録を いれる</div>
-    <div id="migSub"></div>
-    <div id="migWarn"></div>
-    <div id="migList"></div>
-    <div id="migBtns">
-      <button id="migCancel" type="button">やめる</button>
-      <button id="migGo" type="button" class="pri">これで はじめる</button>
-    </div>
   </div>
 </div>
 <div id="treeView" hidden>

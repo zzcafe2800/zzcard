@@ -4896,6 +4896,15 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 #advBattle.show{display:flex;}
 #abTopWrap{padding:calc(16px + env(safe-area-inset-top)) 16px 8px;}
 /* ===== はじめての チュートリアル ===== */
+#tutAsk{position:fixed;inset:0;z-index:3600;display:none;align-items:center;justify-content:center;background:rgba(60,90,110,.34);padding:22px;}
+#tutAsk.show{display:flex;}
+#tutAsk .tutAskBox{background:#fff;border-radius:22px;padding:22px 20px 18px;max-width:340px;width:100%;box-shadow:0 14px 40px rgba(70,110,140,.32);text-align:center;}
+#tutAsk .tutAskTtl{font-size:18px;font-weight:900;color:#3a6377;margin-bottom:10px;}
+#tutAsk .tutAskMsg{font-size:12.5px;font-weight:700;color:#7a94a6;line-height:1.75;margin-bottom:16px;}
+#tutAsk .tutAskBtn{width:100%;box-sizing:border-box;border:none;border-radius:14px;font-family:inherit;font-size:15px;font-weight:800;padding:13px;margin-top:8px;cursor:pointer;}
+#tutAsk .tutAskBtn.main{background:linear-gradient(135deg,#8fd3f0,#4ea8d8);color:#fff;box-shadow:0 4px 12px rgba(78,168,216,.34);}
+#tutAsk .tutAskBtn.sub{background:#eef4f8;color:#7a94a6;}
+#tutAsk .tutAskBtn:active{transform:scale(.97);}
 #tutOv{position:fixed;inset:0;z-index:3200;pointer-events:none;}
 #tutOv[hidden]{display:none;}
 .tutBlk{position:fixed;background:rgba(18,38,58,.62);pointer-events:auto;backdrop-filter:blur(1.5px);-webkit-backdrop-filter:blur(1.5px);}
@@ -4937,6 +4946,9 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 #tutEndBtn:active{transform:scale(.97);}
 .wHint{font-size:11px;color:#9db4c4;font-weight:700;margin-top:6px;text-align:center;}
 #wTabs{display:flex;gap:6px;margin:0 0 11px;}
+.wDataInfo{font-size:11px;font-weight:800;color:#5f9bc4;margin-top:6px;line-height:1.5;}
+.wCloudSize{font-weight:800;color:#3aa06a;}
+.wCloudSize.empty{color:#d08a3a;}
 .wField{display:block;margin:0 0 9px;}
 .wField span{display:block;font-size:11px;font-weight:800;color:#7d94a8;margin-bottom:3px;}
 .wField input{width:100%;box-sizing:border-box;padding:11px 12px;border:2px solid #d8e6f0;border-radius:12px;font-family:inherit;font-size:14px;color:#33475c;background:#fbfdfe;}
@@ -7946,6 +7958,42 @@ async function _getAuth(){
 
 function _renderGoogleUI(){ try{_renderWAcct();}catch(_){} }
 function _acctShort(id){return id?(id.slice(0,2)+"…"+id.slice(-4)):"";}
+/* バイト数を 読みやすく（KB/MB） */
+function _fmtBytes(n){
+  n=Number(n)||0;
+  if(n<1024)return n+" B";
+  if(n<1024*1024)return (n/1024).toFixed(1)+" KB";
+  return (n/1024/1024).toFixed(2)+" MB";
+}
+/* この端末に ある 記録の 量（radio_* を JSON化した ざっくり量） */
+function _localDataSize(){
+  try{
+    var data=(typeof _syncCollect==="function")?_syncCollect():{};
+    var big=0;
+    try{ for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);
+      if(k&&k.indexOf("radio_")===0){var v=localStorage.getItem(k)||"";big+=k.length+v.length;}}
+    }catch(_){}
+    var js=0;try{js=JSON.stringify(data).length;}catch(_){}
+    return _fmtBytes(Math.max(big,js));
+  }catch(_){return "?";}
+}
+/* アカウント（クラウド）に ほんとうに データが 入っているか＝量を 取りにいく */
+async function _fillCloudSize(id){
+  var el=document.getElementById("wCloudSize");if(!el)return;
+  if(!id){el.textContent="";return;}
+  try{
+    var db=await getDB();if(!db){el.textContent="（クラウド：みられない）";return;}
+    var{ref,get}=await import(FB_DB);
+    var sn=await get(ref(db,"sync/"+id));
+    var big=await get(ref(db,"syncbig/"+id));
+    if(!sn.exists()&&!big.exists()){ el.textContent="（クラウド：まだ 空っぽ）"; el.classList.add("empty"); return; }
+    var n=0;
+    try{ if(sn.exists())n+=JSON.stringify(sn.val()).length; }catch(_){}
+    try{ if(big.exists())n+=JSON.stringify(big.val()).length; }catch(_){}
+    el.classList.remove("empty");
+    el.textContent="（クラウド："+_fmtBytes(n)+" 入ってるよ）";
+  }catch(_){ el.textContent="（クラウド：しらべられない）"; }
+}
 function _renderWAcct(){
   try{
     var now=savedGuid();
@@ -7955,7 +8003,9 @@ function _renderWAcct(){
         var lb="";try{(_acctList()||[]).forEach(function(x){if(x.id===now&&x.label)lb=x.label;});}catch(_){}
         var pnm="";try{var p=getProfile();pnm=(p&&p.name)||"";}catch(_){}
         box.hidden=false;
-        box.innerHTML="いま：<b>"+escHtml(lb||pnm||"あいことばの記録")+"</b>（"+_devLabel()+"）";
+        box.innerHTML="いま：<b>"+escHtml(lb||pnm||"この記録")+"</b>（"+_devLabel()+"）"+
+          '<div id="wDataInfo" class="wDataInfo">データ量：'+_localDataSize()+' <span id="wCloudSize" class="wCloudSize">（クラウド：しらべ中…）</span></div>';
+        try{_fillCloudSize(now);}catch(_){}
       }else{ box.hidden=true; }
     }
     var lo=$("wLogoutBtn");if(lo)lo.hidden=!now;
@@ -8199,12 +8249,13 @@ async function acctRegister(name,pw){
   try{localStorage.setItem("radio_acctname",nm);}catch(_){}
   try{localStorage.removeItem("radio_sync_meta");localStorage.removeItem("radio_syncbig_meta");}catch(_){}
   try{setAcctMode("acct");}catch(_){}
-  /* なまえを プロフィールにも 反映（初期＝その人の なまえ） */
-  try{var p=getProfile&&getProfile();if(p){p.name=nm;saveProfile(p);}}catch(_){}
+  /* なまえを プロフィールにも 反映（初期＝その人の なまえ）。新規端末で profile が 無ければ 作る。 */
+  try{var p=(getProfile&&getProfile())||{};p.name=nm;saveProfile(p);}catch(_){}
   _ownerDone=false;try{await claimOwner();}catch(_){}
   await _acctMetaSet(id,{name:nm,pw:_pwHash(nm,pw),at:Date.now()});
   try{ await cloudSyncPush(true); await cloudBigPush(true); }catch(_){}  /* 今のデータを このアカウントに */
   _acctRemember(id,nm);
+  try{localStorage.setItem("radio_after_auth","1");}catch(_){}   /* reload後に まっすぐ はじめる */
   toast("「"+nm+"」を つくったよ！");
   setTimeout(function(){try{location.reload();}catch(_){}},600);
   return true;
@@ -8231,6 +8282,7 @@ async function acctLogin(name,pw){
   toast("つないでいます…");
   try{ await cloudSyncPull(true); }catch(_){}
   try{ await cloudBigPull(true); }catch(_){}
+  try{localStorage.setItem("radio_after_auth","1");}catch(_){}   /* reload後に まっすぐ はじめる */
   toast("おかえり、"+(meta.name||nm)+"！");
   setTimeout(function(){try{location.reload();}catch(_){}},600);
   return true;
@@ -13123,11 +13175,34 @@ async function saveFromSetup(){
   closeProfileSetup();
   renderProfileBar();refreshHome();loadHillCats();publishProfile();
   if(wasNew && !firstMeetDone()){
-    /* ★はじめての人：お部屋では なく チュートリアルを はじめる */
+    /* ★はじめての人：チュートリアルを する？ しない？ を きく */
     try{localStorage.setItem(FIRSTMEET_KEY,"1");}catch(_){}
-    try{_tutSnapshot();}catch(_){}      /* いまの ようすを おぼえておく */
-    try{_tutGo1();}catch(_){try{if(typeof showSelect==="function")showSelect();}catch(__){}}
+    _askTutorial();
   }
+}
+/* はじめての人に「あそびかたの せつめい（チュートリアル）する？」を きく小さな画面 */
+function _askTutorial(){
+  var ov=document.getElementById("tutAsk");
+  if(!ov){
+    ov=document.createElement("div");ov.id="tutAsk";
+    ov.innerHTML='<div class="tutAskBox">'+
+      '<div class="tutAskTtl">あそびかた、みる？</div>'+
+      '<div class="tutAskMsg">はじめての人には、かんたんな あそびかたを<br>いっしょに やってみるよ（1〜2分）。<br>もう わかってる人は とばしてOK！</div>'+
+      '<button id="tutAskYes" type="button" class="tutAskBtn main">うん、みる</button>'+
+      '<button id="tutAskNo" type="button" class="tutAskBtn sub">とばす（あとで 設定から みれるよ）</button>'+
+    '</div>';
+    document.body.appendChild(ov);
+  }
+  ov.classList.add("show");
+  var yes=document.getElementById("tutAskYes"),no=document.getElementById("tutAskNo");
+  function close(){try{ov.classList.remove("show");}catch(_){}}
+  if(yes)yes.onclick=function(){try{playClick();}catch(_){}close();
+    try{_tutSnapshot();}catch(_){}
+    try{_tutGo1();}catch(_){try{if(typeof showSelect==="function")showSelect();}catch(__){}}
+  };
+  if(no)no.onclick=function(){try{playClick();}catch(_){}close();
+    try{if(typeof showSelect==="function"){showSelect();updateTop&&updateTop();}}catch(_){}
+  };
 }
 async function _renamePropagate(newName){
   /* 今日の投稿の名前を更新（匿名投稿はそのまま） */
@@ -16653,6 +16728,19 @@ function renderTitleCat(){
 }
 function _removeBootCover(){try{var c=$("bootCover");if(c&&!c.classList.contains("gone")){c.classList.add("gone");setTimeout(function(){try{c.remove();}catch(_){}},520);}}catch(_){}}
 function profileBoot(){
+  /* ★ログイン／新規作成の 直後：まっすぐ はじめる */
+  var _afterAuth=false;
+  try{ if(localStorage.getItem("radio_after_auth")==="1"){ _afterAuth=true; localStorage.removeItem("radio_after_auth"); } }catch(_){}
+  if(_afterAuth && !firstMeetDone()){
+    /* はじめて（新規作成）：MY猫づくり → そのあと チュートリアル確認 */
+    try{$("titleScreen").classList.remove("visible");}catch(_){}
+    try{renderProfileBar();}catch(_){}
+    try{subscribeNotif();}catch(_){}
+    try{syncServerOffset();}catch(_){}
+    try{openProfileSetup(false);}catch(_){}
+    try{_removeBootCover();}catch(_){}
+    return;
+  }
   renderProfileBar();
   renderTitleCat();
   subscribeNotif();

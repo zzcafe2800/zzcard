@@ -481,6 +481,27 @@ body.exercising #randomModeBtn{animation:none !important;}
 #liveCount[hidden]{display:none;}
 .sky-night #liveCount,.sky-evening #liveCount{background:rgba(70,82,130,.34);border-color:rgba(255,255,255,.25);color:#ffd08a;}
 #topLeftStack>*{pointer-events:auto;}
+#topLeftStack{flex-direction:column!important;align-items:flex-start!important;gap:10px!important;}
+#todayRecCard,#streakCard{pointer-events:auto;box-sizing:border-box;min-width:170px;
+  background:rgba(255,255,255,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.7);border-radius:16px;padding:12px 14px;box-shadow:0 6px 18px rgba(90,140,180,.18);}
+.trTitle,.stkTitle{font-size:12px;font-weight:900;color:#6f8ba0;margin-bottom:8px;}
+.trRow{display:flex;align-items:center;gap:7px;margin:5px 0;}
+.trIco{font-size:14px;width:18px;text-align:center;}
+.trLbl{font-size:12.5px;font-weight:800;color:#5a7183;flex:1;}
+.trVal{font-size:13.5px;font-weight:900;color:#3f5568;white-space:nowrap;}
+.stkMain{display:flex;align-items:baseline;gap:4px;margin:2px 0 4px;}
+.stkFire{font-size:20px;}
+.stkNum{font-size:26px;font-weight:900;color:#f0913a;line-height:1;}
+.stkUnit{font-size:13px;font-weight:900;color:#f0913a;}
+.stkBest{font-size:10.5px;font-weight:800;color:#93a7b6;}
+/* 夜・夕方は 白カードを 濃色に（読みやすさ） */
+#selectScreen.sky-night #todayRecCard,#selectScreen.sky-night #streakCard,
+#selectScreen.sky-evening #todayRecCard,#selectScreen.sky-evening #streakCard{background:rgba(38,52,78,.62);border-color:rgba(255,255,255,.22);}
+#selectScreen.sky-night .trTitle,#selectScreen.sky-night .stkTitle,
+#selectScreen.sky-evening .trTitle,#selectScreen.sky-evening .stkTitle{color:#b9cadb;}
+#selectScreen.sky-night .trLbl,#selectScreen.sky-evening .trLbl{color:#cdd9e6;}
+#selectScreen.sky-night .trVal,#selectScreen.sky-evening .trVal{color:#eef4fa;}
 #selectScreen.hidden ~ #topLeftStack{display:none;}
 #buddyCount{margin:0;width:auto;max-width:100%;box-sizing:border-box;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10.5px;font-weight:700;color:#6b95ab;background:rgba(255,255,255,.42);border:1px solid rgba(255,255,255,.5);border-radius:12px;padding:4px 10px;box-shadow:none;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);letter-spacing:.02em;animation:homeStatIn .5s ease-out both;}
 #buddyCount .bcLive{color:#ef8a4d;}
@@ -2089,6 +2110,14 @@ body.exercising #randomModeBtn{animation:none !important;}
 #tsRangeMini svg{width:100%;height:auto;display:block;}
 #tsRangeStat{font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:12px;font-weight:800;
   color:#7fa3b8;text-align:center;margin-top:8px;line-height:1.5;}
+#tsMtTitle,#tsMtName,#tsRangeStat{display:none!important;}
+#tsPostPreviewWrap{display:flex;flex-direction:column;align-items:center;gap:7px;flex:0 0 auto;}
+#tsPostQuick{border:none;border-radius:13px;padding:9px 14px;font-family:inherit;font-size:14px;font-weight:900;color:#fff;cursor:pointer;
+  background:linear-gradient(135deg,#7ed08a,#4fb26a);box-shadow:0 4px 12px rgba(79,178,106,.4);white-space:nowrap;width:100%;box-sizing:border-box;}
+#tsPostQuick:active{transform:scale(.96);}
+#tsPostQuick.hidden{display:none;}
+/* 詳細（tsMore）を ひらいている間は 下の緑ボタンを 隠す＝重複ぼうし */
+#tsPostCard.detailOpen #tsPostQuick{display:none;}
 .tsRangeMore{margin-top:10px;border:none;border-radius:999px;padding:9px 14px;width:100%;
   font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:12.5px;font-weight:800;cursor:pointer;
   color:#5b8ba4;background:rgba(143,190,220,.16);}
@@ -5968,7 +5997,7 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
       <div class="taisoCard" id="tsPostCard">
         <div class="tsCardTitle">とうこう</div>
         <div id="tsPostHead">
-          <div id="tsPostPreview"></div>
+          <div id="tsPostPreviewWrap"><div id="tsPostPreview"></div><button id="tsPostQuick" type="button">とうこうする</button></div>
           <div id="tsPostRight">
             <div id="wakeAdjRow"><span class="waLabel">おきた<br>じかん</span><div class="waCtrl"><button id="wakeAdjMinus" type="button" aria-label="はやく">◀</button><span id="wakeAdjTime">–</span><button id="wakeAdjPlus" type="button" aria-label="おそく">▶</button></div></div>
             <div id="tsAutoNote" hidden>とうこう ずみ</div>
@@ -5976,7 +6005,7 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
               <textarea id="tsComment" maxlength="20" rows="2" placeholder="ひとこと（ひらがな）" inputmode="kana"></textarea>
             </div>
             <details id="tsMore">
-              <summary id="tsMoreSum">＋ ひろげる（きぶん・れいぶん）</summary>
+              <summary id="tsMoreSum">詳細</summary>
               <div id="tsMoreBody">
                 <div class="cmtChips" id="tsCmtChips"></div>
                 <button id="tsMoodBtn" type="button"><span>😊</span> 気分</button>
@@ -6018,10 +6047,10 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
           <button id="tsMtPgNext" type="button" aria-label="つぎ">›</button>
         </div>
         <div id="tsRangeStat"></div>
-        <button class="tsRangeMore" id="tsRangeMore" type="button">大きく 見る ▸</button>
+        <button class="tsRangeMore" id="tsRangeMore" type="button">詳細 ▸</button>
       </div>
     </div>
-    <div id="taisoFooter"><label id="storyJoinChkRow"><input type="checkbox" id="storyJoinChk" checked/> ストーリーに参加(明日)</label><button class="tsSum" id="tsSumBtn" type="button">📋 まとめ</button><button class="tsCat" id="tsCatBtn" type="button">🐱 ねこと はなす</button><button class="tsAdv" id="tsAdvBtn" type="button">⚔️ 冒険</button><button class="tsNext" id="tsNextBtn" type="button">ホームへ →</button></div>
+    <div id="taisoFooter"><label id="storyJoinChkRow"><input type="checkbox" id="storyJoinChk" checked/> ストーリーに参加(明日)</label><button class="tsCat" id="tsCatBtn" type="button">🐱 ねこと はなす</button><button class="tsAdv" id="tsAdvBtn" type="button">⚔️ 冒険</button><button class="tsNext" id="tsNextBtn" type="button">ホームへ →</button></div>
   </div>
 </div>
 
@@ -6039,9 +6068,18 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 </div>
 <div id="topLeftStack">
   <div id="buddyCount" hidden></div>
-  <div id="postRow">
-    <div id="recentPostCount"></div>
-    <div id="liveCount" hidden></div>
+  <div id="recentPostCount" hidden></div>
+  <div id="liveCount" hidden></div>
+  <div id="todayRecCard">
+    <div class="trTitle">今日の記録</div>
+    <div class="trRow"><span class="trIco">\u2600\ufe0f</span><span class="trLbl">早起き</span><b class="trVal" id="trWake">–</b></div>
+    <div class="trRow"><span class="trIco">\ud83c\udfb5</span><span class="trLbl">体操</span><b class="trVal" id="trExer">–</b></div>
+    <div class="trRow"><span class="trIco">\ud83d\ude0a</span><span class="trLbl">気分</span><b class="trVal" id="trMood">–</b></div>
+  </div>
+  <div id="streakCard">
+    <div class="stkTitle">連続早起き</div>
+    <div class="stkMain"><span class="stkFire">\ud83d\udd25</span><b class="stkNum" id="stkNum">0</b><span class="stkUnit">日</span></div>
+    <div class="stkBest" id="stkBest">最高記録 0日</div>
   </div>
 </div>
 
@@ -11876,10 +11914,8 @@ function taisoNext(){
     const k="radio_sum_shown",today=jstKey();
     const needSum=(localStorage.getItem(k)!==today);
     if(needSum)localStorage.setItem(k,today);
-    /* もらえる日は チケットを 先に。えらび終わってから まとめを 出す */
-    let offered=false;
-    try{offered=_tkOffer(needSum);}catch(_){}
-    if(!offered&&needSum)setTimeout(()=>{try{openTodaySum();}catch(_){}},950);
+    /* もらえる日は チケットだけ（まとめは 自動で 出さない） */
+    try{_tkOffer(needSum);}catch(_){}
   }catch(_){}
 }
 function taisoGoCat(){
@@ -12897,8 +12933,33 @@ function stopMorningExercise(){
   };
   if(_fin){setTimeout(finish,750);}else{finish();}
 }
+function _renderTodayRec(){
+  try{
+    var done=getDoneDates().indexOf(jstKey())>=0;
+    /* 早起き（起床時刻） */
+    var w=$("trWake");
+    if(w){
+      var wf=(typeof getActualWake==="function")?getActualWake():null;
+      w.textContent=(done&&Number.isFinite(wf))?fmtHM(Math.floor(wf),Math.round((wf%1)*60)):"–";
+    }
+    /* 体操（完了時刻） */
+    var ex=$("trExer");
+    if(ex){
+      var df=(typeof _doneTimeHf==="function")?_doneTimeHf():null;
+      ex.textContent=(done&&Number.isFinite(df))?fmtHM(Math.floor(df),Math.round((df%1)*60)):"–";
+    }
+    /* 気分 */
+    var mo=$("trMood");
+    if(mo){ var mt=(typeof _todayMoodText==="function")?_todayMoodText():""; mo.textContent=mt||"–"; }
+    /* 連続早起き */
+    var st=(typeof calcStreak==="function")?calcStreak():{current:0,best:0};
+    var sn=$("stkNum");if(sn)sn.textContent=String(st.current||0);
+    var sb=$("stkBest");if(sb)sb.textContent="最高記録 "+(st.best||0)+"日";
+  }catch(_){}
+}
 function refreshHome(){
   try{_aiRefreshBadge();}catch(_){}
+  try{_renderTodayRec();}catch(_){}
   refreshHomeGate();
   let _pct=100;
   try{const done=todayDone();const gt=$("selectTitle"),sub=$("lobbySub");if(done){if(gt){gt.textContent="体操済み";gt.classList.add("titleDone");}if(sub)sub.textContent="";}else{try{_pct=Math.round((1-missRate())*100);}catch(_){}if(gt){gt.textContent="ボーナス率";gt.classList.remove("titleDone");}if(sub)sub.textContent=_pct+"%";}const top=$("homeGateTop");if(top)top.style.display="none";}catch(_){}
@@ -16681,6 +16742,10 @@ try{_wireWakeRepeat($("wakeAdjMinus"),-1);}catch(_){}
 try{_wireWakeRepeat($("wakeAdjPlus"),1);}catch(_){}
 try{const _h=$("tsShowTime");if(_h)_h.addEventListener("change",tsUpdatePreview);}catch(_){}
 $("tsPostBtn").addEventListener("click",()=>{playClick();tsDoPost();});
+try{var _tpq=$("tsPostQuick");if(_tpq)_tpq.addEventListener("click",function(){playClick();tsDoPost();});}catch(_){}
+try{var _tm=$("tsMore"),_tpc=$("tsPostCard");
+  if(_tm&&_tpc){_tm.addEventListener("toggle",function(){_tpc.classList.toggle("detailOpen",_tm.open);});}
+}catch(_){}
 $("tsNextBtn").addEventListener("click",()=>{playClick();taisoNext();});
 try{var _tcb=$("tsCatBtn");if(_tcb)_tcb.addEventListener("click",()=>{try{taisoGoCat();}catch(_){}});}catch(_){}
 try{var _tab=$("tsAdvBtn");if(_tab)_tab.addEventListener("click",()=>{try{playClick();}catch(_){}try{openAdventure();}catch(_){}});}catch(_){}
@@ -26591,7 +26656,7 @@ function _tkOpenPick(){
 function _tkClosePick(){
   const w=$("tkPick");if(w)w.classList.remove("show");
   try{localStorage.setItem(TICKETDAY_KEY,jstKey());}catch(_){}
-  if(_tkThenSum){_tkThenSum=false;setTimeout(()=>{try{openTodaySum();}catch(_){}},350);}
+  _tkThenSum=false;   /* まとめは 自動で 出さない */
 }
 function _tkTake(kind){
   const t=getTickets();

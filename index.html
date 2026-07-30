@@ -4936,6 +4936,13 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 .advPosBtn:active{transform:scale(.94);}
 .abUnit{position:relative;}
 .abShield{position:absolute;top:-6px;right:2px;font-size:14px;z-index:3;filter:drop-shadow(0 1px 2px rgba(80,110,130,.5));}
+#abTeam .abUnit{cursor:pointer;transition:transform .12s;}
+#abTeam .abUnit.picked{transform:translateY(-6px);}
+#abTeam .abUnit.picked .abUnitPic{filter:drop-shadow(0 0 0 2px #7fe0ff) drop-shadow(0 4px 10px rgba(80,180,230,.55));}
+#abTeam .abUnit.picked::after{content:"";position:absolute;left:50%;bottom:-7px;transform:translateX(-50%);width:22px;height:5px;border-radius:3px;background:#7fe0ff;box-shadow:0 0 8px rgba(127,224,255,.8);}
+#abPosHelp{text-align:center;font-size:10.5px;font-weight:800;color:rgba(255,255,255,.62);margin-top:8px;letter-spacing:.3px;}
+.abMoveMsg{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);background:rgba(40,70,90,.86);color:#fff;font-size:15px;font-weight:900;padding:8px 18px;border-radius:999px;z-index:40;pointer-events:none;animation:abMovePop .9s ease both;}
+@keyframes abMovePop{0%{opacity:0;transform:translate(-50%,-40%) scale(.8);}18%{opacity:1;transform:translate(-50%,-50%) scale(1.06);}72%{opacity:1;}100%{opacity:0;transform:translate(-50%,-58%) scale(1);}}
 .abUnit.front .abUnitPic{filter:drop-shadow(0 0 6px rgba(255,200,100,.55));}
 .advCardPic{width:44px;height:44px;position:relative;}
 .advPicInner{width:100%;height:100%;position:relative;overflow:hidden;}
@@ -28643,9 +28650,10 @@ function _advUnit(y){
   var friend=_yumeIsFriend(y.id);
   var eA=_yumeEff(y,"atk"),eH=_yumeEff(y,"hp"),eS=_yumeEff(y,"spd");
   var pos=_advPosGet(y.id)||"back";
-  var atk=(12+eA*0.30)*(friend?1.05:1)*((pos==="front")?1.15:1);   /* ★前衛は 攻撃+15% */
+  var atkBase=(12+eA*0.30)*(friend?1.05:1);
+  var atk=atkBase*((pos==="front")?1.15:1);   /* ★前衛は 攻撃+15% */
   var maxhp=Math.round(260 + eH*2.2);
-  return {y:y, id:y.id, name:y.name, pos:pos, pers:_yumePers(y), skill:_yumeSkill(y), lv:_yumeLv(y),
+  return {y:y, id:y.id, name:y.name, pos:pos, atkBase:atkBase, pers:_yumePers(y), skill:_yumeSkill(y), lv:_yumeLv(y),
           atk:atk, spd:eS, hp:maxhp, maxhp:maxhp, friend:friend, guard:0, spdUp:0, sleep:0};
 }
 /* 敵：1000ものさしに あわせて 作りなおし＋ぜんたいに つよく（およそ2ばい） */
@@ -28905,6 +28913,79 @@ function _advBuildBattleUI(){
     var lg=$("abLog");if(lg)lg.innerHTML="";
     var rs=$("abResult");if(rs)rs.hidden=true;
     _advPaintHP();
+    _advPaintSel();
+    _advShowPosHelp();
+  }catch(_){}
+}
+/* ★バトル中に えらんでいる 味方（キーの 1/2/3・タップで えらぶ） */
+var _advSelIdx=0;
+function _advPaintSel(){
+  try{
+    _advTeamUnits.forEach(function(u,i){
+      var row=document.querySelector('.abUnit[data-i="'+i+'"]');
+      if(row)row.classList.toggle("picked", i===_advSelIdx && u.hp>0);
+    });
+  }catch(_){}
+}
+/* 前後移動の 使い方ヒント（1回だけ） */
+function _advShowPosHelp(){
+  try{
+    var el=$("abPosHelp");
+    if(el){
+      var seen=false; try{seen=localStorage.getItem("radio_adv_poshelp")==="1";}catch(_){}
+      el.textContent = _advIsTouch()? "タップで えらんで まえ／うしろ" : "1 2 3 で えらぶ・W まえ / S うしろ";
+    }
+  }catch(_){}
+}
+function _advIsTouch(){try{return ('ontouchstart' in window)||navigator.maxTouchPoints>0;}catch(_){return false;}}
+/* えらぶ（0〜team-1・たおれた子は とばす） */
+function _advSelectUnit(i){
+  if(!_advState||_advState.over)return;
+  if(i<0||i>=_advTeamUnits.length)return;
+  if(_advTeamUnits[i].hp<=0){try{toast("その子は たおれているよ");}catch(_){}return;}
+  _advSelIdx=i; _advPaintSel();
+  try{playClick();}catch(_){}
+}
+/* 選択中の子を 前／後ろへ（pos変更→atk再計算→記憶→再描画） */
+function _advMoveSel(pos){
+  if(!_advState||_advState.over)return;
+  var u=_advTeamUnits[_advSelIdx]; if(!u||u.hp<=0)return;
+  if(u.pos===pos)return;
+  u.pos=pos;
+  u.atk=u.atkBase*((pos==="front")?1.15:1);   /* 前衛ボーナスを 即 反映 */
+  try{_advPosSet(u.id,pos);}catch(_){}          /* 次回にも のこす */
+  /* 盾アイコン・枠を 付けかえ（HPバー等は こわさないよう class だけ 更新） */
+  try{
+    var row=document.querySelector('.abUnit[data-i="'+_advSelIdx+'"]');
+    if(row){
+      var fr=(pos==="front");
+      row.classList.toggle("front",fr);
+      var sh=row.querySelector(".abShield");
+      if(fr && !sh){ var sp=document.createElement("span"); sp.className="abShield"; sp.title="前衛"; sp.textContent="\ud83d\udee1\ufe0f"; row.insertBefore(sp,row.firstChild); }
+      else if(!fr && sh){ sh.remove(); }
+    }
+  }catch(_){}
+  try{ _advFloatMsg(u.name+" を "+(pos==="front"?"まえ":"うしろ")+"に！"); }catch(_){}
+  try{playPop();}catch(_){}
+}
+/* まん中に さっと 出る 小さな メッセージ */
+function _advFloatMsg(txt){
+  try{
+    var host=$("advBattle"); if(!host)return;
+    var d=document.createElement("div"); d.className="abMoveMsg"; d.textContent=txt;
+    host.appendChild(d);
+    setTimeout(function(){try{d.remove();}catch(_){}},900);
+  }catch(_){}
+}
+/* キーボード操作（バトル中だけ） */
+function _advBattleKey(e){
+  try{
+    var bt=$("advBattle"); if(!bt||!bt.classList.contains("show"))return;
+    if(!_advState||_advState.over)return;
+    var k=(e.key||"").toLowerCase();
+    if(k==="1"||k==="2"||k==="3"){ _advSelectUnit(parseInt(k,10)-1); e.preventDefault(); }
+    else if(k==="w"||k==="arrowup"){ _advMoveSel("front"); e.preventDefault(); }
+    else if(k==="s"||k==="arrowdown"){ _advMoveSel("back"); e.preventDefault(); }
   }catch(_){}
 }
 function _advPaintHP(){
@@ -28915,6 +28996,12 @@ function _advPaintHP(){
       var b=document.querySelector('.abUnitHp[data-h="'+i+'"]');if(b)b.style.width=Math.max(0,Math.round(u.hp/u.maxhp*100))+"%";
       var row=document.querySelector('.abUnit[data-i="'+i+'"]');if(row)row.classList.toggle("down",u.hp<=0);
     });
+    /* えらんでいる子が たおれたら 生きてる子へ */
+    if(_advTeamUnits[_advSelIdx] && _advTeamUnits[_advSelIdx].hp<=0){
+      var alive=-1; for(var k=0;k<_advTeamUnits.length;k++){if(_advTeamUnits[k].hp>0){alive=k;break;}}
+      if(alive>=0)_advSelIdx=alive;
+    }
+    _advPaintSel();
   }catch(_){}
 }
 function _advPushLog(lines){
@@ -28935,9 +29022,11 @@ function _advStartBattle(){
   _advBattleStage=_advPickStage();
   _advTeamUnits=team;
   _advState=_advInit(team,_advEnemy(_advCh));
+  _advSelIdx=0;
   _advBuildBattleUI();
   var bt=$("advBattle");if(bt)bt.classList.add("show");
   try{playPop();}catch(_){}
+  try{window.addEventListener("keydown",_advBattleKey);}catch(_){}   /* 1/2/3・W/S で 隊列 */
   clearInterval(_advBattleTimer);
   _advSetSpeed(false);
 }
@@ -29173,6 +29262,7 @@ function _advRetryBattle(){
 try{var _rb=document.getElementById("abRetry");if(_rb)_rb.addEventListener("click",_advRetryBattle);}catch(_){}
 function _advCloseBattle(){
   var bt=$("advBattle");if(bt)bt.classList.remove("show");
+  try{window.removeEventListener("keydown",_advBattleKey);}catch(_){}
   clearInterval(_advBattleTimer);_advState=null;
   var wasDev=_advDevMode; _advDevMode=false;
   if(!wasDev){ _advSel=[]; try{_advRenderSetup();}catch(_){} }   /* おためしは dex を のこす */
@@ -29622,6 +29712,17 @@ function _advDexBattle(chIdx){
   var _apath=$("advPath");if(_apath)_apath.addEventListener("click",function(e){var n=e.target&&e.target.closest?e.target.closest(".advNode"):null;if(!n)return;var st=n.getAttribute("data-stg");if(st==null)return;try{playClick();}catch(_){}_advSetPick(parseInt(st,10));_advRenderSetup();});
   var st=$("advStart");if(st)st.addEventListener("click",function(){if(st.disabled)return;try{playClick();}catch(_){}_advStartBattle();});
   var bc=$("abClose");if(bc)bc.addEventListener("click",function(){try{playClick();}catch(_){}_advCloseBattle();});
+  var _abt=$("abTeam");
+  if(_abt)_abt.addEventListener("click",function(e){
+    var row=e.target&&e.target.closest?e.target.closest(".abUnit"):null; if(!row)return;
+    e.stopPropagation();
+    var i=parseInt(row.getAttribute("data-i"),10); if(isNaN(i))return;
+    if(!_advState||_advState.over)return;
+    if(_advTeamUnits[i]&&_advTeamUnits[i].hp<=0){try{toast("その子は たおれているよ");}catch(_){}return;}
+    if(i===_advSelIdx){ /* もう えらんでいる子を タップ＝前後を いれかえ */
+      _advMoveSel(_advTeamUnits[i].pos==="front"?"back":"front");
+    } else { _advSelectUnit(i); }
+  });
   var dxb=$("advDexBtn");if(dxb)dxb.addEventListener("click",function(){try{playClick();}catch(_){}_advDexOpen();});
   var dxc=$("advDexClose");if(dxc)dxc.addEventListener("click",function(){try{playClick();}catch(_){}_advDexClose();});
   var dts=$("advDexTabStage");if(dts)dts.addEventListener("click",function(){try{playClick();}catch(_){}_advDexTab="stage";_advDexRender();});
@@ -33961,6 +34062,7 @@ function _gpStreetHTML(){
         </div>
       </div>
       <div id="abTeam"></div>
+      <div id="abPosHelp"></div>
     </div>
   </div>
   <div id="abSkillBanner"></div>

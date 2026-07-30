@@ -2036,6 +2036,8 @@ body.exercising #randomModeBtn{animation:none !important;}
   width:84px;box-sizing:border-box;}
 .askChip .askE{font-size:24px;line-height:1;}
 .askChip .askL{font-size:12px;}
+.askChip.nowh{position:relative;box-shadow:0 0 0 3px #ff7ab0, 0 0 0 6px rgba(255,122,176,.28);}
+.askChip.nowh::after{content:"いま";position:absolute;top:-9px;right:-6px;background:#ff7ab0;color:#fff;font-size:9px;font-weight:900;padding:1px 6px;border-radius:9px;box-shadow:0 2px 5px rgba(255,122,176,.5);}
 .askChip.on{background:linear-gradient(180deg,#ffd9a8,#ffbe72);color:#8a5320;
   box-shadow:0 3px 0 rgba(200,140,70,.4);}
 .askChip:active{transform:scale(.95);}
@@ -4753,6 +4755,19 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 #yumeGacha[hidden]{display:none;}
 #ygSky{position:absolute;inset:0;background:radial-gradient(circle at 50% 44%,rgba(8,10,26,0) 18%,#05060f 74%);opacity:0;transition:opacity 1.2s ease;pointer-events:none;}
 #ygFlash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;}
+/* ★「バン！」演出レイヤー */
+#ygBang{position:absolute;inset:0;z-index:6;pointer-events:none;display:flex;align-items:center;justify-content:center;opacity:0;}
+#ygBang.go{animation:ygBangAnim .34s cubic-bezier(.15,.85,.3,1) both;}
+#ygBang.go.big{animation-duration:.5s;}
+#ygBang::before{content:"";position:absolute;left:50%;top:48%;width:60vmin;height:60vmin;transform:translate(-50%,-50%) scale(var(--bs,1));
+  border-radius:50%;
+  background:radial-gradient(circle,var(--bc,#fff) 0%,var(--bc2,rgba(255,255,255,.5)) 34%,transparent 62%);
+  opacity:var(--ba,.8);mix-blend-mode:screen;filter:blur(1px);}
+#ygBang::after{content:"バン！";position:absolute;left:50%;top:48%;transform:translate(-50%,-50%) scale(var(--bs,1)) rotate(-6deg);
+  font-family:"Yomogi","Kosugi Maru",sans-serif;font-weight:900;font-size:14vmin;color:#fff;
+  -webkit-text-stroke:3px var(--bc,#ff9);text-stroke:3px var(--bc,#ff9);
+  text-shadow:0 4px 0 rgba(60,40,0,.55),0 0 24px var(--bc,#fff);letter-spacing:2px;}
+@keyframes ygBangAnim{0%{opacity:0;transform:scale(.6);}18%{opacity:1;transform:scale(1.08);}55%{opacity:1;transform:scale(1);}100%{opacity:0;transform:scale(1.04);}}
 #ygStage{position:relative;width:min(90vw,420px);height:min(72vh,520px);display:flex;align-items:center;justify-content:center;transform-origin:50% 52%;transition:transform 1.1s cubic-bezier(.5,0,.4,1);}
 #ygCat{position:absolute;top:22%;left:50%;transform:translate(-50%,-50%);width:150px;height:150px;z-index:3;transform-origin:50% 90%;}
 #ygCat svg,#ygCat img{width:100%;height:100%;display:block;}
@@ -4790,9 +4805,27 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 #yumeGacha.s-reveal #ygSil{animation:ygPop .6s cubic-bezier(.2,.9,.3,1.5) both;}
 #yumeGacha.s-reveal #ygSparks{opacity:1;animation:ygTwinkle 1.2s ease-in-out infinite;}
 #yumeGacha.s-reveal #ygFlash{animation:ygFlashAnim .6s ease-out;}
+/* ★星＋名前：キャラの 上に のせる */
+#ygTop{position:absolute;top:calc(6% + env(safe-area-inset-top));left:0;right:0;z-index:7;display:flex;flex-direction:column;align-items:center;gap:4px;opacity:0;transform:translateY(-14px);transition:opacity .5s ease,transform .5s cubic-bezier(.2,.9,.3,1.2);pointer-events:none;}
+#ygTop.show{opacity:1;transform:translateY(0);}
+/* ★キャラを 大きく・見やすく */
+#yumeGacha.s-reveal #ygSilWrap{width:min(60vw,240px);height:min(60vw,240px);top:44%;}
+#ygLvWrap{width:100%;max-width:340px;margin:2px 0 4px;}
+#ygLvBar{display:block;width:100%;height:16px;border-radius:999px;background:#e3e8ec;box-shadow:inset 0 1px 3px rgba(80,110,130,.18);overflow:hidden;position:relative;}
+#ygLvFill{display:block;height:100%;width:0;border-radius:999px;transition:width 1.1s cubic-bezier(.25,.9,.3,1);box-shadow:0 0 8px rgba(255,255,255,.5) inset;}
+#ygSkill{display:flex;align-items:center;gap:8px;justify-content:center;flex-wrap:wrap;margin:2px 0 4px;}
+#ygSkill .ygSkTag{font-size:10px;font-weight:900;color:#fff;background:#8fb7cf;border-radius:999px;padding:2px 9px;}
+#ygSkill .ygSkName{font-size:15px;font-weight:900;color:#3f6178;}
 #ygInfo{position:absolute;bottom:0;left:0;right:0;padding:26px 20px calc(26px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(255,255,255,0),rgba(255,255,255,.97) 24%);display:flex;flex-direction:column;align-items:center;gap:8px;transform:translateY(34px);opacity:0;transition:transform .5s cubic-bezier(.2,.9,.3,1.2),opacity .5s;pointer-events:none;z-index:6;}
 #ygInfo.show{transform:translateY(0);opacity:1;pointer-events:auto;}
-.ygStars{font-size:26px;letter-spacing:3px;color:#c9c9c9;}
+.ygStars{font-size:30px;letter-spacing:4px;color:#c9c9c9;filter:drop-shadow(0 2px 4px rgba(0,0,0,.12));}
+@media(min-width:600px){
+  #ygStage{width:min(70vw,520px);height:min(70vh,560px);}
+  #yumeGacha.s-reveal #ygSilWrap{width:min(38vw,300px);height:min(38vw,300px);}
+  #ygInfo,#ygLvWrap{max-width:460px;margin-left:auto;margin-right:auto;left:0;right:0;}
+  #ygName{font-size:28px;}
+  .ygStat b.ygGrade{font-size:34px;}
+}
 .ygStars.r1{color:#9fb4c0;}
 .ygStars.r2{color:#5aa8e0;text-shadow:0 0 8px rgba(90,168,224,.5);}
 .ygStars.r3{color:#f5b800;text-shadow:0 0 12px rgba(245,184,0,.65);}
@@ -4801,7 +4834,14 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 #ygStats{display:flex;gap:10px;margin-top:2px;}
 .ygStat{display:flex;flex-direction:column;align-items:center;background:#f2f7fb;border-radius:14px;padding:7px 14px;min-width:62px;}
 .ygStat i{font-style:normal;font-size:11px;color:#8aa2b2;font-weight:800;}
-.ygStat b{font-size:22px;color:#4a7fa0;font-weight:900;line-height:1.1;}
+.ygStat{min-width:74px;}
+.ygStat b.ygGrade{font-size:30px;font-weight:900;line-height:1;letter-spacing:1px;}
+.ygGrade.gD{color:#9aa7b0;}
+.ygGrade.gC{color:#5b9bd0;}
+.ygGrade.gB{color:#3bbf82;text-shadow:0 1px 6px rgba(59,191,130,.35);}
+.ygGrade.gA{color:#ff9b3d;text-shadow:0 1px 8px rgba(255,155,61,.45);}
+.ygGrade.gS{background:linear-gradient(90deg,#ff4d6d,#ffb020,#3bd16f,#3aa0ff,#a366ff,#ff4d6d);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:ygRainbow 3s linear infinite;filter:drop-shadow(0 1px 5px rgba(255,120,180,.4));}
+@keyframes ygRainbow{0%{background-position:0% 50%;}100%{background-position:300% 50%;}}
 /* ★が 1つずつ ふえる */
 .ygStar{display:inline-block;transition:none;}
 .ygStar.pop{animation:ygStarPop .5s cubic-bezier(.2,1.5,.4,1) both;}
@@ -21050,6 +21090,14 @@ function _askPaint(){
       else if(!G[gi].h.length){h=chip(G[gi].e,G[gi].l,true,ga+'="'+gi+'"',gTint(G[gi]));}
       else{h=G[gi].h.map(x=>chip("",x+"じ",hi===x,ha+'="'+x+'"',_hourTint(x))).join("");}
       if(row)row.innerHTML=h;
+      /* ★いまの時刻に いちばん近い ボタンを 色で かこう（起床の 時刻えらびだけ） */
+      try{
+        if(row && ha==="data-wh" && gi!=null && G[gi].h && G[gi].h.length){
+          var _nowH=new Date().getHours();
+          var _btn=row.querySelector('[data-wh="'+_nowH+'"]');
+          if(_btn)_btn.classList.add("nowh");
+        }
+      }catch(_){}
       if(st)st.textContent=(gi==null?"1/2":"2/2");
       show(bkId,gi!=null);
       if(v)v.textContent=(gi==null)?"":(!G[gi].h.length?G[gi].l:(hi!=null?hi+"じ":""));
@@ -28212,7 +28260,65 @@ function _yumeGachaStart(){
   clearTimeout(_ygT1);clearTimeout(_ygT2);
   /* ためる音は ズームに 入るタイミングから（1.4秒ぶん） */
   _ygT1=setTimeout(function(){try{el.classList.remove("s-dance");el.classList.add("s-zoom");var h=$("ygHint");if(h)h.textContent="";_ygChargeSound(1.4);}catch(_){}},2300);
-  _ygT2=setTimeout(function(){try{el.classList.remove("s-zoom");el.classList.add("s-reveal");_ygReleaseSound();_ygBurst();_ygRenderReveal(y);}catch(_){}},3700);
+  _ygT2=setTimeout(function(){try{
+    el.classList.remove("s-zoom");
+    /* ★キャラを 出す前に「バン！バン！バン！」＝星の数ぶん・だんだん 豪華に */
+    _ygBangSeq(y, function(){
+      try{el.classList.add("s-reveal");_ygReleaseSound();_ygBurst();_ygRenderReveal(y);}catch(_){}
+    });
+  }catch(_){ try{el.classList.add("s-reveal");_ygReleaseSound();_ygBurst();_ygRenderReveal(y);}catch(__){} }},3700);
+}
+/* ★「バン！」演出：星が おおいほど 回数が ふえ、色は 星の色、あとになるほど 大きく 豪華に */
+function _ygBangSeq(y, done){
+  try{
+    var star=(y&&y.star)||1;
+    var col=_ygStarColor(star);
+    var bang=$("ygBang"); if(!bang){ if(done)done(); return; }
+    /* 回数：★1→2発, ★2→3発, ★3→4発（最後の1発が いちばん 大きい） */
+    var n=star+1;
+    var i=0;
+    /* 星が おおいほど 1発ずつが ながく のこる（余韻） */
+    var gap=170+star*55;
+    function one(){
+      if(i>=n){ if(done)setTimeout(done,star>=3?260:160); return; }
+      var last=(i===n-1);
+      var scale=(0.7+i*0.42).toFixed(2);                 /* だんだん 大きく */
+      var alpha=Math.min(0.95,0.5+i*0.16).toFixed(2);
+      bang.style.setProperty("--bc",col);
+      bang.style.setProperty("--bc2",_ygRgba(col,.5));
+      bang.style.setProperty("--bs",scale);
+      bang.style.setProperty("--ba",alpha);
+      bang.className="";void bang.offsetWidth;
+      bang.classList.add("go");
+      if(last)bang.classList.add("big");
+      try{_ygBangSound(i,n,star);}catch(_){}
+      i++;
+      setTimeout(one, last?gap+120:gap);
+    }
+    one();
+  }catch(_){ if(done)done(); }
+}
+/* 「バン！」の音：後になるほど 高く 強く */
+function _ygBangSound(i,n,star){
+  try{
+    var ctx=ensureCtx();if(!ctx)return;var now=ctx.currentTime;
+    var o=ctx.createOscillator(),g=ctx.createGain();
+    o.type="triangle";
+    var base=180+i*60;
+    o.frequency.setValueAtTime(base,now);
+    o.frequency.exponentialRampToValueAtTime(base*0.5,now+0.18);
+    var vol=Math.min(0.5,0.22+i*0.08);
+    g.gain.setValueAtTime(vol,now);
+    g.gain.exponentialRampToValueAtTime(0.0001,now+0.22);
+    o.connect(g);g.connect(ctx.destination);o.start(now);o.stop(now+0.24);
+    /* 最後の一発は キラッと 倍音 */
+    if(i===n-1 && star>=2){
+      var o2=ctx.createOscillator(),g2=ctx.createGain();
+      o2.type="square";o2.frequency.setValueAtTime(base*3,now+0.02);
+      g2.gain.setValueAtTime(0.12,now+0.02);g2.gain.exponentialRampToValueAtTime(0.0001,now+0.2);
+      o2.connect(g2);g2.connect(ctx.destination);o2.start(now+0.02);o2.stop(now+0.22);
+    }
+  }catch(_){}
 }
 var _ygStarT=null;
 function _ygBurst(){
@@ -28226,10 +28332,13 @@ function _ygBurst(){
     sp.innerHTML=h;sp.classList.remove("go");void sp.offsetWidth;sp.classList.add("go");
   }catch(_){}
 }
+/* 星の色（1つの ところで きめる。バー・グレードにも つかう） */
+function _ygStarColor(star){return (star>=3)?"#f5b800":(star>=2)?"#5aa8e0":"#9fb4c0";}
 function _ygRenderReveal(y){
   try{
     var sil=$("ygSil");
     if(sil)sil.style.filter=y.shiny?("hue-rotate("+y.hue+"deg) saturate(1.3) drop-shadow(0 0 10px rgba(255,220,120,.75))"):"";
+    /* ---- 星（キャラの 上）---- */
     var st=$("ygStars");
     if(st){
       st.className="ygStars r"+y.star;
@@ -28249,28 +28358,46 @@ function _ygRenderReveal(y){
         }, i===0?420:340);
       })(0);
     }
+    /* ---- 名前（キャラの 上）---- */
     var nm=$("ygName");if(nm)nm.innerHTML=escHtml(y.name)+(y.shiny?'<span class="ygShiny">\u2728色違い</span>':"");
-    /* ★のびしろ（＝どこまで つよく なれるか）を バーで わかりやすく */
+    try{var tp=$("ygTop");if(tp){void tp.offsetWidth;tp.classList.add("show");}}catch(_){}
+    var col=_ygStarColor(y.star);
+    /* ---- のびしろレベルバー（最大1000・灰色地・星の色で満たす・数値なし）---- */
+    var maxLv=_yumeMaxLv(y);
+    var pc=Math.max(3,Math.min(100,maxLv/YUME_LV_MAX*100));
+    var lf=$("ygLvFill");
+    if(lf){
+      lf.style.background="linear-gradient(90deg,"+col+","+_ygLighten(col)+")";
+      lf.style.width="0%";
+      setTimeout(function(){try{lf.style.width=pc.toFixed(1)+"%";}catch(_){}},380);   /* 左から すーっと たまる */
+    }
+    /* ---- とくいわざ ---- */
+    var sk=_yumeSkill(y);
+    var skb=$("ygSkill");
+    if(skb)skb.innerHTML= sk ? ('<span class="ygSkTag">とくいわざ</span><span class="ygSkName">'+sk.e+' '+escHtml(sk.n)+'</span>') : "";
+    /* ---- 3ステータス（グレード文字を 色分け・Sは虹）---- */
     var stt=$("ygStats");
     if(stt){
       var rows=[["たいりょく",y.hp],["ちから",y.atk],["すばやさ",y.spd]];
-      var h="";
-      rows.forEach(function(r,i){
-        var v=Math.round(r[1]||0),pc=Math.max(0,Math.min(100,v/YUME_LV_MAX*100));
-        var cls=(v>=750)?"hi":(v>=450)?"mid":"";
-        h+='<div class="ygCapRow"><span class="ygCapLbl">'+r[0]+'</span>'+
-           '<span class="ygCapBar"><span class="ygCapFill '+cls+'" data-w="'+pc.toFixed(1)+'"></span></span>'+
-           '<span class="ygCapV">'+_yumeGrade(v)+'</span></div>';
-      });
-      h+='<div class="ygMaxLv">この子は <b>Lv'+_yumeMaxLv(y)+'</b> まで そだつよ（いまは Lv'+_yumeLv(y)+'）</div>';
-      var sk=_yumeSkill(y);
-      if(sk)h+='<div class="ygMaxLv">とくいわざ： '+sk.e+' <b>'+escHtml(sk.n)+'</b></div>';
-      stt.innerHTML=h;
-      /* バーが すーっと のびる */
-      setTimeout(function(){try{stt.querySelectorAll(".ygCapFill").forEach(function(f){f.style.width=f.getAttribute("data-w")+"%";});}catch(_){}},260);
+      stt.innerHTML=rows.map(function(r){
+        var v=Math.round(r[1]||0),g=_yumeGrade(v);
+        return '<div class="ygStat"><i>'+r[0]+'</i><b class="ygGrade g'+g+'">'+g+'</b></div>';
+      }).join("");
     }
   }catch(_){}
   try{var inf=$("ygInfo");if(inf){void inf.offsetWidth;inf.classList.add("show");}}catch(_){}
+}
+/* hex → rgba（半透明） */
+function _ygRgba(hex,a){
+  try{var h=hex.replace("#","");return "rgba("+parseInt(h.slice(0,2),16)+","+parseInt(h.slice(2,4),16)+","+parseInt(h.slice(4,6),16)+","+a+")";}catch(_){return hex;}
+}
+/* 色を すこし 明るく（バーの グラデ用） */
+function _ygLighten(hex){
+  try{
+    var h=hex.replace("#","");var r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16);
+    r=Math.min(255,r+45);g=Math.min(255,g+45);b=Math.min(255,b+45);
+    return "rgb("+r+","+g+","+b+")";
+  }catch(_){return hex;}
 }
 function _yumeGachaClose(){
   var el=$("yumeGacha");if(!el)return;
@@ -33749,12 +33876,19 @@ function _gpStreetHTML(){
     <div id="ygSilWrap"><div id="ygSil"></div><div id="ygSparks"></div></div>
   </div>
   <div id="ygHint"></div>
-  <div id="ygInfo">
+  <!-- ★星＋名前は キャラの 上に -->
+  <div id="ygTop">
     <div id="ygStars" class="ygStars"></div>
     <div id="ygName"></div>
+  </div>
+  <div id="ygInfo">
+    <div id="ygLvWrap"><span id="ygLvBar"><span id="ygLvFill"></span></span></div>
+    <div id="ygSkill"></div>
     <div id="ygStats"></div>
     <div id="ygBtns"><button id="ygNo" type="button">いまは しない</button><button id="ygYes" type="button">なかまに する</button></div>
   </div>
+  <!-- ★キャラ登場前の「バン！バン！」演出 -->
+  <div id="ygBang"></div>
 </div>
 <!-- ===================== きょうの まとめ（1枚に あつめる） ===================== -->
 <div id="todaySum">

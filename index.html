@@ -1713,6 +1713,13 @@ body.exercising #randomModeBtn{animation:none !important;}
 .closetColorInput{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;}
 #psTitle{font-size:18px;font-weight:700;color:#5c93ad;text-align:center;letter-spacing:.06em;}
 .psField{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:700;color:#6f9fb6;}
+.psPwHint{font-size:11px;color:#8aa7b8;font-weight:700;line-height:1.6;margin:-2px 0 8px;}
+#psPwField[hidden],#psResumeBox[hidden],.psPwHint[hidden]{display:none!important;}
+.psResumeBox{background:#fff6e9;border:2px solid #ffd9a0;border-radius:16px;padding:13px 14px;margin:2px 0 10px;text-align:center;}
+.psResumeMsg{font-size:13px;font-weight:800;color:#a86a2a;line-height:1.7;margin-bottom:10px;}
+.psResumeBtn{width:100%;border:none;border-radius:12px;padding:12px;font-family:inherit;font-size:15px;font-weight:900;background:linear-gradient(135deg,#ffc46b,#ff9e3d);color:#fff;box-shadow:0 4px 12px rgba(255,158,61,.35);cursor:pointer;}
+.psResumeOther{width:100%;border:none;background:none;color:#b98a4a;font-family:inherit;font-size:12px;font-weight:800;margin-top:8px;cursor:pointer;text-decoration:underline;}
+.psResumeBtn:active{transform:scale(.97);}
 .gBtn{height:46px;border:1.5px solid #dcdfe4;border-radius:999px;background:#fff;color:#3c4043;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;width:100%;box-sizing:border-box;box-shadow:0 2px 6px rgba(60,64,67,.12);}
 .gBtn:active{transform:scale(.985);}
 .gBtn .gIco{width:18px;height:18px;flex:0 0 auto;}
@@ -4888,6 +4895,14 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 .advNodeNo{font-size:7.5px;font-weight:900;color:rgba(255,255,255,.4);line-height:1;}
 .advNode.done .advNodeNo{color:rgba(255,224,138,.85);}
 .advNode.now .advNodeNo{color:#fff;font-size:9px;}
+/* ★ステージえらび：解放ずみは 押せる／ロックは 暗く鍵／えらび中は 光る枠 */
+.advNode[data-stg]{cursor:pointer;}
+.advNode.lock{opacity:.5;}
+.advNode.lock .advDot{background:rgba(255,255,255,.14);box-shadow:none;font-size:8px;display:flex;align-items:center;justify-content:center;}
+.advNode.front .advDot{width:19px;height:19px;margin-top:-3px;background:radial-gradient(circle at 40% 35%,#fff6d8,#ffc44d);border-color:#fff;box-shadow:0 0 0 4px rgba(255,196,77,.28),0 0 14px rgba(255,214,120,.9);animation:advPulse 1.5s ease-in-out infinite;}
+.advNode.pick .advDot{outline:3px solid #7fe0ff;outline-offset:2px;}
+.advNode.pick .advNodeNo{color:#7fe0ff;font-size:9px;}
+.advNode .advNowTag{background:#4bb8e0;}
 .advNowTag{position:absolute;top:-15px;font-size:8.5px;font-weight:900;color:#3b2c12;background:linear-gradient(135deg,#fff0b8,#ffd45e);border-radius:99px;padding:1px 7px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.25);}
 #advNextRow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px;padding-top:9px;border-top:1px solid rgba(255,255,255,.13);}
 #advProgTxt{font-size:11px;font-weight:900;color:#ffd98a;white-space:nowrap;}
@@ -4912,6 +4927,16 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 .advCard:active{transform:scale(.96);}
 .advCard.sel{border-color:#4bb0e6;box-shadow:0 6px 16px rgba(75,176,230,.35);background:#f2fbff;}
 .advCardNo{position:absolute;top:-8px;left:-8px;width:24px;height:24px;border-radius:50%;background:#4bb0e6;color:#fff;font-size:13px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(75,176,230,.5);z-index:2;}
+/* ★前衛の さりげない 盾アイコン（右上）＋前衛カードの ふち */
+.advShield{position:absolute;top:-7px;right:-6px;font-size:15px;z-index:2;filter:drop-shadow(0 1px 2px rgba(90,120,140,.5));}
+.advCard.front{box-shadow:0 0 0 2px #ffca6b, 0 4px 12px rgba(255,180,70,.25);}
+.advPosBtn{display:inline-block;margin-top:5px;font-size:10.5px;font-weight:900;border-radius:999px;padding:3px 10px;cursor:pointer;}
+.advPosBtn.front{background:linear-gradient(135deg,#ffd98a,#ffb64d);color:#7a4e12;}
+.advPosBtn.back{background:#e7edf1;color:#7a94a6;}
+.advPosBtn:active{transform:scale(.94);}
+.abUnit{position:relative;}
+.abShield{position:absolute;top:-6px;right:2px;font-size:14px;z-index:3;filter:drop-shadow(0 1px 2px rgba(80,110,130,.5));}
+.abUnit.front .abUnitPic{filter:drop-shadow(0 0 6px rgba(255,200,100,.55));}
 .advCardPic{width:44px;height:44px;position:relative;}
 .advPicInner{width:100%;height:100%;position:relative;overflow:hidden;}
 .advCardName{font-size:10.5px;font-weight:900;color:#3a5567;text-align:center;line-height:1.1;word-break:break-all;}
@@ -5548,7 +5573,7 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
     <div class="cloud cloud2"></div>
     <div class="cloud cloud3"></div>
     <div class="hill hillBack"></div>
-    <button id="worldTree" type="button" aria-label="世界樹を見る">
+    <button id="worldTree" type="button" aria-label="世界樹を見る" hidden style="display:none!important">
       <span id="wtCrown"></span><span id="wtTrunk"></span>
       <span id="wtTag"><b id="wtM">0m</b><i id="wtN">みんなで 0回</i></span>
     </button>
@@ -6148,6 +6173,13 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
       <div class="psStepTitle">マイ猫の なまえを きめよう</div>
       <div class="psStepArt"><svg viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg"><rect x="20" y="34" width="80" height="40" rx="9" fill="#fff" stroke="#9fd4f0" stroke-width="3"/><circle cx="34" cy="30" r="6" fill="#ffd45f"/><line x1="34" y1="36" x2="34" y2="44" stroke="#9fd4f0" stroke-width="3"/><line x1="32" y1="50" x2="88" y2="50" stroke="#bfe6ff" stroke-width="4" stroke-linecap="round"/><line x1="32" y1="60" x2="72" y2="60" stroke="#dcefff" stroke-width="4" stroke-linecap="round"/><path d="M92 70 l16 -16 6 6 -16 16 -8 2 2 -8 Z" fill="#ffd45f" stroke="#e9b94e" stroke-width="2"/></svg></div>
       <label class="psField"><span>マイ猫のなまえ</span><input id="psName" type="text" maxlength="12" placeholder="ねこ"></label>
+      <label class="psField" id="psPwField"><span>あいことば（パスワード）</span><input id="psPw" type="password" autocomplete="off" placeholder="すきな パスワード"></label>
+      <div id="psPwHint" class="psPwHint">なまえと あいことばを きめると、スマホを かえても データが 消えないよ（メモしてね）</div>
+      <div id="psResumeBox" class="psResumeBox" hidden>
+        <div class="psResumeMsg">「<b id="psResumeName"></b>」は もう あるよ！<br>あいことばが 合えば <b>つづきから</b> あそべる。</div>
+        <button id="psResumeBtn" type="button" class="psResumeBtn">つづきから はじめる</button>
+        <button id="psResumeOther" type="button" class="psResumeOther">べつの なまえに する</button>
+      </div>
       <div class="psNav"><button class="psBackBtn" id="psBack2" type="button">◀ 戻る</button><button class="psNextBtn" id="psNext2" type="button">次へ ▶</button></div>
     </div>
     <div id="psStep3" class="psStep" hidden>
@@ -8437,7 +8469,7 @@ async function publishProfile(){
     if(p.isPublic){
       await set(ref(db,"profiles/"+getUid()),{
         name:p.name||"匿名さん",color:p.color||"#8fdcff",catBody:p.catBody||"#1c1c1c",comment:p.comment||"",
-        wakeHour:Number.isFinite(p.wakeHour)?p.wakeHour:6,streak:st.current,best:st.best,
+        wakeHour:Number.isFinite(p.wakeHour)?p.wakeHour:6,streak:st.current,best:st.best,total:getDoneDates().length,
         public:true,updatedAt:Date.now()
       });
     }else{
@@ -8496,7 +8528,7 @@ async function postToday(anon,comment,showArg){
     try{const _ed=JSON.parse(localStorage.getItem("radio_post_edit")||"null");if(_ed&&_ed.date===date&&Number.isFinite(_ed.createdAt))_cAt=_ed.createdAt;}catch(_){}
     const _cm=(comment||"").slice(0,30);
     await set(ref(db,"posts/"+getUid()+"_"+date),{   /* キーが uid_date なので上書き＝二重投稿にならない */
-      uid:getUid(),gold:((typeof _aiNormaGoldToday==="function")&&_aiNormaGoldToday())||false,name:anon?"匿名さん":(p.name||"匿名さん"),color:p.color||"#8fdcff",catBody:p.catBody||"#1c1c1c",acos:acosPayload(),cos:(getEquippedCostume()||null),date,stamp,createdAt:_cAt,wakeHour:Number.isFinite(p.wakeHour)?p.wakeHour:null,wakeMin:Number.isFinite(p.wakeMin)?p.wakeMin:0,streak:calcStreak().current,goume:_weekDoneCount(),comment:_cm,pose:getEquippedPose(),cos:getEquippedCostume()||null,thanks:getThanksWord(),showTime:_show,wakeHF:getActualWake(),storyJoin:(function(){try{const v=localStorage.getItem("radio_story_join");return v===null?true:v==="1";}catch(_){return true;}})()
+      uid:getUid(),gold:((typeof _aiNormaGoldToday==="function")&&_aiNormaGoldToday())||false,name:anon?"匿名さん":(p.name||"匿名さん"),color:p.color||"#8fdcff",catBody:p.catBody||"#1c1c1c",acos:acosPayload(),cos:(getEquippedCostume()||null),date,stamp,createdAt:_cAt,wakeHour:Number.isFinite(p.wakeHour)?p.wakeHour:null,wakeMin:Number.isFinite(p.wakeMin)?p.wakeMin:0,streak:calcStreak().current,total:getDoneDates().length,goume:_weekDoneCount(),comment:_cm,pose:getEquippedPose(),cos:getEquippedCostume()||null,thanks:getThanksWord(),showTime:_show,wakeHF:getActualWake(),storyJoin:(function(){try{const v=localStorage.getItem("radio_story_join");return v===null?true:v==="1";}catch(_){return true;}})()
     });
     try{localStorage.setItem("radio_post_edit",JSON.stringify({date,createdAt:_cAt,comment:_cm,anon:!!anon,show:_show}));}catch(_){}
     return true;
@@ -10171,11 +10203,11 @@ function _applyHillFromVal(val){
       self={uid:me,isSelf:true,name:p.name||"あなた",catBody:profileBody(),color:profileColor(),
         wakeHour:selfPost.wakeHour,wakeMin:selfPost.wakeMin,
         createdAt:selfPost.createdAt||Date.now(),
-        streak:Number.isFinite(selfPost.streak)?selfPost.streak:calcStreak().current,
+        streak:Number.isFinite(selfPost.streak)?selfPost.streak:calcStreak().current,total:getDoneDates().length,
         comment:selfPost.comment||"",thanks:getThanksWord()};
     }else{
       self={uid:me,isSelf:true,needsPost:true,name:p.name||"あなた",catBody:profileBody(),color:profileColor(),
-        createdAt:0,comment:"",streak:calcStreak().current};
+        createdAt:0,comment:"",streak:calcStreak().current,total:getDoneDates().length};
     }
     renderCats([self,...cats]);   /* 自分の猫は常に表示（未投稿なら投稿ボタン／投稿済みなら実データ・いいねは付かない） */
   }catch(e){console.warn("hill filter:",e&&e.message);}
@@ -10275,7 +10307,8 @@ function renderHillPage(){
     const _bt=_hashStr(po.uid||po.name||i)%4;
     const lab=document.createElement("div");lab.className="catLabel bub bub"+_bt+((po.isSelf&&po.needsPost)?" catLabelSelf":"")+_dayCls;
     const _fireSvg='<svg viewBox="0 0 20 22"><path d="M10 1.5 C12.4 5.5 16.5 7 16.5 12.5 C16.5 16.6 13.6 19.5 10 19.5 C6.4 19.5 3.5 16.6 3.5 12.5 C3.5 8.5 6.8 7.6 7.3 3.8 C8.6 5.2 9.4 7.4 9.4 9.8 C10.2 8.4 10.6 6 10 1.5 Z" fill="#ff7a2f"/><path d="M10 8.5 C11.4 11 13 12 13 15 C13 17 11.6 18.6 10 18.6 C8.4 18.6 7 17 7 15 C7 12.6 8.6 12.4 9 10 C9.6 11.2 10 12.6 10 13.8 C10.6 12.6 10.8 10.4 10 8.5 Z" fill="#ffc24d"/></svg>';
-    const fireBadge=(po.streak>=2)?`<span class="catStreakNum" aria-label="${po.streak}日れんぞく">${po.streak}</span>`:"";
+    const _totDays=(po.total!=null?po.total:(po.streak||0));
+    const fireBadge=(_totDays>=1)?`<span class="catStreakNum" aria-label="これまで ${_totDays}日">${_totDays}</span>`:"";
     const riseTxt=riseTextFromPost(po);
     const comment=po.comment||"";
     const _isGold=po.isSelf?((typeof _aiNormaGoldToday==="function")&&_aiNormaGoldToday()):!!po.gold;
@@ -13143,6 +13176,15 @@ function openProfileSetup(edit){
   $("psTitle").textContent=edit?"MY猫を編集":"MY猫をつくろう";
   try{if(edit)ensureUnlockBtn();else removeUnlockBtn();}catch(_){}
   $("psName").value=p.name||_pendingCatName||"";
+  /* ★あいことば欄は「新規＆まだ アカウント無し」の人だけ 見せる（ログイン済み・編集は 隠す） */
+  try{
+    var _showPw=(!edit && !isLoggedIn());
+    var _pf=$("psPwField"),_ph=$("psPwHint"),_rb=$("psResumeBox"),_pwi=$("psPw");
+    if(_pf)_pf.hidden=!_showPw;
+    if(_ph)_ph.hidden=!_showPw;
+    if(_rb)_rb.hidden=true;
+    if(_pwi)_pwi.value="";
+  }catch(_){}
   wpSet(Number.isFinite(p.wakeHour)?p.wakeHour:6,Number.isFinite(p.wakeMin)?p.wakeMin:0);
   $("psWake").value=Number.isFinite(p.wakeHour)?p.wakeHour:6;
   $("psWakeMin").value=Number.isFinite(p.wakeMin)?p.wakeMin:0;
@@ -13177,12 +13219,24 @@ async function saveFromSetup(){
   /* なまえの変更は5回まで */
   let chg=parseInt(localStorage.getItem("radio_name_changes")||"0",10)||0;
   if(isRename&&chg>=NAME_CHG_MAX){toast("なまえの変更は "+NAME_CHG_MAX+"回までだよ");try{$("psName").value=oldName;}catch(_){}return;}
-  /* 同じ名前は登録できない（公開プロフィールと照合） */
-  if((wasNew||isRename)&&newName!=="匿名さん"){
+  /* ★同じ名前の アカウントが あるなら「つづきから」に 誘導（ブロックではなく 復元へ） */
+  if((wasNew||isRename)&&newName!=="匿名さん" && !isLoggedIn()){
     const sb=$("psSubmit");const _old=sb?sb.textContent:"";if(sb){sb.disabled=true;sb.textContent="確認中…";}
-    const taken=await _nameTaken(newName,getUid());
+    let acctExists=false;
+    try{ acctExists=!!(await _acctMeta(acctIdFromName(newName))); }catch(_){}
     if(sb){sb.disabled=false;sb.textContent=_old;}
-    if(taken){toast("その なまえは もう つかわれてるよ");return;}
+    if(acctExists){
+      /* パスワードが 入っていれば その場で ログイン＝つづきから */
+      var _pw=($("psPw")&&$("psPw").value)||"";
+      try{psGoStep(2);}catch(_){}
+      var box=$("psResumeBox");if(box)box.hidden=false;
+      var rn=$("psResumeName");if(rn)rn.textContent=newName;
+      var hint=$("psPwHint");if(hint)hint.hidden=true;
+      if(_pw){ await acctLogin(newName,_pw); return; }   /* 合えば reload、違えば トーストで残る */
+      toast("「"+newName+"」は もう あるよ。あいことばを 入れて「つづきから」してね");
+      try{$("psPw").focus();}catch(_){}
+      return;
+    }
   }
   let wake=parseInt($("psWake").value,10);if(!Number.isFinite(wake)||wake<0)wake=0;if(wake>23)wake=23;
   let wmin=parseInt($("psWakeMin").value,10);if(!Number.isFinite(wmin)||wmin<0)wmin=0;if(wmin>59)wmin=59;
@@ -13212,6 +13266,16 @@ async function saveFromSetup(){
   try{window._applyCatAppIcon&&window._applyCatAppIcon();}catch(_){}   /* my猫を変えたらアイコンも更新 */
   try{setThanksWord(hiraOnly(($("psThanks").value||"").trim()));}catch(_){}
   ensureWakeStart();   /* 「始める」を押した日を起点に3日間 */
+  /* ★はじめての人で あいことばを 入れていたら アカウント登録＝データを クラウドに バックアップ（reloadする） */
+  if(wasNew && !isLoggedIn() && newName!=="匿名さん"){
+    var _npw=($("psPw")&&$("psPw").value)||"";
+    if(_npw){
+      try{localStorage.setItem(FIRSTMEET_KEY,"1");}catch(_){}   /* 登録後の reload後に チュートリアル確認へ */
+      try{localStorage.setItem("radio_want_tut","1");}catch(_){}
+      await acctRegister(newName,_npw);   /* 今の全データを この名前で 保存＋自動ログイン→reload */
+      return;
+    }
+  }
   closeProfileSetup();
   renderProfileBar();refreshHome();loadHillCats();publishProfile();
   if(wasNew && !firstMeetDone()){
@@ -16393,8 +16457,37 @@ $("restoreDo").addEventListener("click",async()=>{
   }catch(e){toast("復元に失敗したよ");console.warn(e);}
 });
 $("psSubmit").addEventListener("click",()=>{playClick();saveFromSetup();});
-$("psNext1").addEventListener("click",()=>{playClick();psGoStep(_psEdit?2:3);});  /* 編集時は名前ステップを表示、新規は物語で決めた名前を使う */
+$("psNext1").addEventListener("click",()=>{playClick();psGoStep(2);});  /* 名前＋あいことば ステップは 新規でも 通す（データ保存のため） */
 $("psNext2").addEventListener("click",()=>{playClick();psGoStep(3);});
+/* ★名前を 打ったら アカウントが あるか しらべ、あれば「つづきから」を出す */
+let _psNameChkT=null,_psKnownName="";
+async function _psCheckName(){
+  try{
+    var nm=($("psName").value||"").trim();
+    var box=$("psResumeBox"),hint=$("psPwHint"),rn=$("psResumeName");
+    if(!nm||nm==="匿名さん"){ if(box)box.hidden=true; if(hint)hint.hidden=false; return; }
+    /* 自分の いまの名前なら 何もしない（編集中） */
+    var mine=(getProfile()||{}).name||"";
+    if(nm===mine){ if(box)box.hidden=true; if(hint)hint.hidden=false; return; }
+    var meta=await _acctMeta(acctIdFromName(nm));
+    if(meta){ _psKnownName=nm; if(rn)rn.textContent=nm; if(box)box.hidden=false; if(hint)hint.hidden=true; }
+    else{ if(box)box.hidden=true; if(hint)hint.hidden=false; }
+  }catch(_){}
+}
+try{var _pn=$("psName");if(_pn)_pn.addEventListener("input",function(){clearTimeout(_psNameChkT);_psNameChkT=setTimeout(_psCheckName,600);});}catch(_){}
+/* 「つづきから」＝その名前で ログイン（あいことば照合→データ復元→reload） */
+try{var _prb=$("psResumeBtn");if(_prb)_prb.addEventListener("click",async function(){
+  playClick();
+  var nm=($("psName").value||"").trim(), pw=($("psPw").value||"");
+  if(!pw){toast("あいことばを 入れてね");try{$("psPw").focus();}catch(_){}return;}
+  await acctLogin(nm,pw);   /* 合えば reload して つづきから */
+});}catch(_){}
+/* 「べつの名前にする」 */
+try{var _pro=$("psResumeOther");if(_pro)_pro.addEventListener("click",function(){
+  playClick();try{$("psName").value="";$("psName").focus();}catch(_){}
+  var box=$("psResumeBox");if(box)box.hidden=true;
+  var hint=$("psPwHint");if(hint)hint.hidden=false;
+});}catch(_){}
 $("psNext3").addEventListener("click",()=>{playClick();psGoStep(4);});
 $("psBack2").addEventListener("click",()=>{playClick();psGoStep(1);});
 $("psBack3").addEventListener("click",()=>{playClick();psGoStep(_psEdit?2:1);});
@@ -16771,6 +16864,17 @@ function profileBoot(){
   /* ★ログイン／新規作成の 直後：まっすぐ はじめる */
   var _afterAuth=false;
   try{ if(localStorage.getItem("radio_after_auth")==="1"){ _afterAuth=true; localStorage.removeItem("radio_after_auth"); } }catch(_){}
+  /* ★アカウント登録の 直後：ホームに 入ってから チュートリアル確認 */
+  var _wantTut=false;
+  try{ if(localStorage.getItem("radio_want_tut")==="1"){ _wantTut=true; localStorage.removeItem("radio_want_tut"); } }catch(_){}
+  if(_wantTut){
+    try{$("titleScreen").classList.remove("visible");}catch(_){}
+    try{renderProfileBar();renderTitleCat();subscribeNotif();syncServerOffset();}catch(_){}
+    try{if(typeof showSelect==="function"){showSelect();updateTop&&updateTop();}}catch(_){}
+    try{_removeBootCover();}catch(_){}
+    setTimeout(function(){try{_askTutorial();}catch(_){}},500);
+    return;
+  }
   if(_afterAuth && !firstMeetDone()){
     /* はじめて（新規作成）：MY猫づくり → そのあと チュートリアル確認 */
     try{$("titleScreen").classList.remove("visible");}catch(_){}
@@ -16791,7 +16895,7 @@ function profileBoot(){
   $("titleScreen").classList.add("visible");   /* タイトルは毎回最初に表示 */
   if(getProfile()){ setTimeout(()=>{ try{ if($("titleScreen").classList.contains("visible")) doTitlePlay(); }catch(_){} try{_removeBootCover();}catch(_){} }, 380); }   /* 2回目以降：カバーの下で タイトル→きろく まで進めてから外す */
   else{try{var _tp=$("titlePlay");if(_tp)_tp.hidden=false;}catch(_){}$("autoPlayBar").hidden=true;try{_removeBootCover();}catch(_){}
-    try{if(_acctNeedPick())_acctShowPick();}catch(_){}   /* ★目標時間を まだ きめてない人：ログイン/ゲストを えらぶ */
+    /* ★最初の ログイン画面は 出さない：名前ステップで バックアップ／つづきから を さばく */
   }   /* 初回：タイトルを見せる */
   try{setTimeout(_removeBootCover,3500);}catch(_){}   /* 保険：必ず外す */
 }
@@ -28025,7 +28129,12 @@ function _yumePick(star){
    ★1:0〜1000 / ★2:200〜1000 / ★3:500〜1000 と、星が 高いほど 良い数値が 出やすい。
    じっさいの つよさ ＝ min(いまのレベル, のびしろ)。だから 高い子ほど ずっと のびる。 */
 var YUME_LV_MAX=1000;
-function _yumeStat(star){var fl=(star>=3)?500:(star>=2)?200:0;return Math.round(fl+Math.random()*(YUME_LV_MAX-fl));}
+function _yumeStat(star){
+  var fl=(star>=3)?500:(star>=2)?200:0;
+  /* ★高いのびしろほど レア：random^2.2 で 低い側に かたよる（上限ちかくは めったに 出ない） */
+  var t=Math.pow(Math.random(),2.2);
+  return Math.round(fl+t*(YUME_LV_MAX-fl));
+}
 /* いまのレベル（もってない子は 1） */
 function _yumeLv(y){var v=(y&&y.lv)|0;return v>0?v:1;}
 /* じっさいの つよさ ＝ レベルと のびしろの 小さいほう */
@@ -28484,7 +28593,18 @@ function _advPersLabel(p){
 /* --- 冒険の しんちょく／今日1回 --- */
 function _advChapter(){var i=0;try{i=parseInt(localStorage.getItem(ADV_PROG_KEY)||"0",10)||0;}catch(_){}return Math.max(0,Math.min(ADV_CHAPTERS.length-1,i));}
 function _advDoneToday(){try{return localStorage.getItem(ADV_DAY_KEY)===jstKey();}catch(_){return false;}}
-function _advAvailToday(){try{return _yumeDex().length>0 && !_advDoneToday();}catch(_){return false;}}
+/* ★いま えらんでいる ステージ（既定＝いちばん 先の 解放ずみ）。過去のステージは いつでも 何回でも 挑戦できる。 */
+var _advPick=-1;
+function _advPickStage(){
+  var open=_advChapter();
+  if(_advPick<0||_advPick>open)_advPick=open;   /* 未設定 or 範囲外なら 最前線に */
+  return _advPick;
+}
+function _advSetPick(i){ var open=_advChapter(); _advPick=Math.max(0,Math.min(open,i|0)); }
+/* この ステージは「最前線（＝新しく 解放される所）」か？ 最前線だけ 1日1回・勝つと 次が 開く。過去のは 自由。 */
+function _advIsFrontier(i){ return (i===_advChapter()) && (_advChapter()<ADV_CHAPTERS.length-1 || !_advClearedLast()); }
+function _advClearedLast(){ try{return localStorage.getItem("radio_adv_lastclear")==="1";}catch(_){return false;} }
+function _advAvailToday(){try{return _yumeDex().length>0 && _advIsFrontier(_advChapter()) && !_advDoneToday();}catch(_){return false;}}
 function _advDiffStars(d){var n=Math.max(1,Math.min(5,Math.round((d||1)/2.4)));var s="";for(var i=0;i<5;i++)s+=(i<n)?"\u2605":"\u2606";return '<span class="advDiffStars">'+s+'</span>';}
 
 /* --- 画像スロット（敵・ミニ） --- */
@@ -28492,12 +28612,40 @@ function _advTekiInner(ch){return '<div class="advTekiBlob"></div><img class="ad
 function _yumeMiniInner(y){return '<div class="advPicInner"'+(y.shiny?' style="filter:hue-rotate('+y.hue+'deg) saturate(1.25)"':'')+'>'+_yumeSilInner(y)+'</div>';}
 
 /* --- 戦うための ユニット化 --- */
+/* ★隊列：前(front)＝ねらわれやすいが 攻撃+／後(back)＝守られる。id ごとに 記憶。 */
+var ADV_POS_KEY="radio_adv_pos";
+function _advPosMap(){try{return JSON.parse(localStorage.getItem(ADV_POS_KEY)||"{}")||{};}catch(_){return {};}}
+function _advPosGet(id){var m=_advPosMap();return (m[id]==="front"||m[id]==="back")?m[id]:null;}
+function _advPosSet(id,pos){try{var m=_advPosMap();m[id]=pos;localStorage.setItem(ADV_POS_KEY,JSON.stringify(m));}catch(_){}}
+function _advPosToggle(id){var cur=_advPosGet(id); _advPosSet(id,(cur==="front")?"back":"front"); }
+/* えらんだ子の うち 位置未設定なら、先頭を front・のこりを back に そろえる */
+function _advPosDefault(){
+  try{
+    var anyFront=_advSel.some(function(id){return _advPosGet(id)==="front";});
+    _advSel.forEach(function(id,i){
+      if(_advPosGet(id)==null)_advPosSet(id, (!anyFront&&i===0)?"front":"back");
+    });
+    /* 1体も frontが いないなら 先頭を front に */
+    if(_advSel.length && !_advSel.some(function(id){return _advPosGet(id)==="front";}))_advPosSet(_advSel[0],"front");
+  }catch(_){}
+}
+/* 敵の ねらい：前衛(front)が いれば 78%で 前衛から えらぶ（前衛が 盾に なる） */
+function _advPickTarget(alive){
+  try{
+    var fr=alive.filter(function(u){return u.pos==="front";});
+    var bk=alive.filter(function(u){return u.pos!=="front";});
+    if(fr.length && (bk.length===0 || Math.random()<0.78)) return fr[Math.floor(Math.random()*fr.length)];
+    if(bk.length) return bk[Math.floor(Math.random()*bk.length)];
+  }catch(_){}
+  return alive[Math.floor(Math.random()*alive.length)];
+}
 function _advUnit(y){
   var friend=_yumeIsFriend(y.id);
   var eA=_yumeEff(y,"atk"),eH=_yumeEff(y,"hp"),eS=_yumeEff(y,"spd");
-  var atk=(12+eA*0.30)*(friend?1.05:1);
+  var pos=_advPosGet(y.id)||"back";
+  var atk=(12+eA*0.30)*(friend?1.05:1)*((pos==="front")?1.15:1);   /* ★前衛は 攻撃+15% */
   var maxhp=Math.round(260 + eH*2.2);
-  return {y:y, name:y.name, pers:_yumePers(y), skill:_yumeSkill(y), lv:_yumeLv(y),
+  return {y:y, id:y.id, name:y.name, pos:pos, pers:_yumePers(y), skill:_yumeSkill(y), lv:_yumeLv(y),
           atk:atk, spd:eS, hp:maxhp, maxhp:maxhp, friend:friend, guard:0, spdUp:0, sleep:0};
 }
 /* 敵：1000ものさしに あわせて 作りなおし＋ぜんたいに つよく（およそ2ばい） */
@@ -28608,11 +28756,11 @@ function _advEnemyAct(st){
     _advFx(st,{t:"heal",who:"enemy",v:h});return out;
   }
   if(e.kind==="sleep" && Math.random()<0.16){
-    var t2=alive[Math.floor(Math.random()*alive.length)];t2.sleep=2;
+    var t2=_advPickTarget(alive);t2.sleep=2;
     out.push("\ud83d\udca4 てきの こもりうた！ "+t2.name+" は ねむってしまった！");
     _advFx(st,{t:"state",who:"team",u:t2,label:"ねむり"});return out;
   }
-  var target=alive[Math.floor(Math.random()*alive.length)];
+  var target=_advPickTarget(alive);
   if(_advDodge(target.spd)){ out.push("てきの こうげき！ "+target.name+" は ひらりと かわした！"); _advFx(st,{t:"miss",who:"team",u:target}); return out; }
   var big=(e.kind==="power"&&Math.random()<0.2);
   var d=_advDmg(e.atk*(big?1.8:1),0.12);
@@ -28660,9 +28808,11 @@ function openAdventure(){
 }
 function closeAdventure(){var sc=$("advScreen");if(sc)sc.classList.remove("show");try{_homeLocBadge();}catch(_){}}
 function _advRenderSetup(){
-  var ch=ADV_CHAPTERS[_advChapter()];
+  try{_advPosDefault();}catch(_){}
+  var _open=_advChapter(), _pi=_advPickStage(), _cn=ADV_CHAPTERS.length;
+  var ch=ADV_CHAPTERS[_pi];
   try{var _db=$("advDexBtn");if(_db)_db.hidden=!_devUnlockAll;}catch(_){}
-  var _ci=_advChapter(), _cn=ADV_CHAPTERS.length;
+  var _ci=_pi;
   try{var op=$("advOpp");if(op)op.innerHTML=
     '<div class="advOppTeki">'+_advTekiInner(ch)+'</div>'+
     '<div class="advOppMeta">'+
@@ -28671,24 +28821,25 @@ function _advRenderSetup(){
     _advDiffStars(ch.diff)+'</div>';
   }catch(_){}
   /* クエストの 見出し（第N章／ぜんぶでN章） */
-  try{var qn=$("advQuestNo");if(qn)qn.textContent="第"+(_ci+1)+"章 / 全"+_cn+"章";}catch(_){}
+  try{var qn=$("advQuestNo");if(qn)qn.textContent="第"+(_pi+1)+"章 / 全"+_cn+"章";}catch(_){}
   /* 道すじ：いま どこに いるか が 一目で わかる */
   try{
     var pa=$("advPath");
     if(pa)pa.innerHTML=ADV_CHAPTERS.map(function(c,i){
-      var cls="advNode"+((i<_ci)?" done":(i===_ci)?" now":"");
-      return '<span class="'+cls+'" title="'+escHtml(c.area)+'">'+
-        ((i===_ci)?'<span class="advNowTag">いま</span>':"")+
-        '<span class="advDot"></span>'+
+      var opened=(i<=_open);
+      var cls="advNode"+(opened?"":" lock")+((i===_pi)?" pick":"")+((i<_open)?" done":(i===_open)?" front":"");
+      return '<span class="'+cls+'" '+(opened?'data-stg="'+i+'" ':'')+'title="'+escHtml(c.area||c.name||"")+'">'+
+        ((i===_pi)?'<span class="advNowTag">えらび中</span>':"")+
+        '<span class="advDot">'+(opened?"":"\ud83d\udd12")+'</span>'+
         '<span class="advNodeNo">'+(i+1)+'</span>'+
       '</span>';
     }).join("");
   }catch(_){}
   /* すすみぐあい と つぎの 目的地 */
   try{
-    var pt=$("advProgTxt");if(pt)pt.textContent="\ud83c\udff3\ufe0f すすみ "+Math.round((_ci)/Math.max(1,_cn-1)*100)+"%";
+    var pt=$("advProgTxt");if(pt)pt.textContent="\ud83c\udff3\ufe0f すすみ "+Math.round((_open)/Math.max(1,_cn-1)*100)+"%";
     var nx=$("advNextTxt");
-    if(nx){var nc=ADV_CHAPTERS[_ci+1];nx.textContent=nc?("つぎは "+nc.name):"\u2728 さいごの ステージ！";}
+    if(nx){var nc=ADV_CHAPTERS[_open+1];nx.textContent=(_open<_cn-1)?("つぎに ひらく： "+(nc?nc.name:"")):"\u2728 さいごまで ひらいたよ！";}
   }catch(_){}
   try{
     var dex=_yumeDex(), g=$("advTeam");
@@ -28696,23 +28847,34 @@ function _advRenderSetup(){
       if(!dex.length){ g.innerHTML='<div class="advEmpty">まだ ユメっ子が いないよ。<br>あさの 体操の あとに 出会えるよ！</div>'; }
       else g.innerHTML=dex.map(function(y){
         var friend=_yumeIsFriend(y.id), pos=_advSel.indexOf(y.id), sel=pos>=0;
-        return '<button class="advCard'+(sel?" sel":"")+'" data-yid="'+y.id+'" type="button">'+
+        var fpos=_advPosGet(y.id)||"back", isFront=(fpos==="front");
+        return '<button class="advCard'+(sel?" sel":"")+(sel&&isFront?" front":"")+'" data-yid="'+y.id+'" type="button">'+
           (sel?'<span class="advCardNo">'+(pos+1)+'</span>':"")+
+          (sel&&isFront?'<span class="advShield" title="前衛（ねらわれやすい／攻撃+）">\ud83d\udee1\ufe0f</span>':"")+
           '<div class="advCardPic">'+_yumeMiniInner(y)+'</div>'+
           '<div class="advCardName">'+escHtml(y.name)+(y.shiny?' <span class="advMini">\u2728</span>':"")+'</div>'+
           '<div class="advCardStars r'+y.star+'">'+_yumeStarStr(y.star)+'</div>'+
           '<div class="advCardNums"><span>'+_yumeEff(y,"hp")+'</span><span>'+_yumeEff(y,"atk")+'</span><span>'+_yumeEff(y,"spd")+'</span></div>'+
           '<div class="advCardLv">Lv'+_yumeLv(y)+' / '+_yumeMaxLv(y)+'</div>'+
+          (sel?'<span class="advPosBtn '+(isFront?"front":"back")+'" data-pos="'+y.id+'">'+(isFront?"\ud83d\udee1\ufe0f まえ":"うしろ")+'</span>':"")+
           '<div class="advCardBadges">'+_advPersLabel(_yumePers(y))+(friend?'<span class="advFriend">親友</span>':"")+'</div>'+
           '</button>';
       }).join("");
     }
   }catch(_){}
   try{
-    var stbtn=$("advStart"), note=$("advNote"), done=_advDoneToday();
-    if(done){ if(stbtn){stbtn.disabled=true;stbtn.textContent="きょうは もう ちょうせん した";} if(note)note.textContent="また あした ちょうせん できるよ"; }
-    else if(!_advSel.length){ if(stbtn){stbtn.disabled=true;stbtn.textContent="ユメっ子を えらぼう（1〜3体）";} if(note)note.textContent=""; }
-    else { if(stbtn){stbtn.disabled=false;stbtn.textContent="この "+_advSel.length+"匹で ちょうせん！";} if(note)note.textContent="この あいてとは 今日しか 戦えないよ"; }
+    var stbtn=$("advStart"), note=$("advNote");
+    var frontier=_advIsFrontier(_pi), doneToday=_advDoneToday();
+    if(!_advSel.length){ if(stbtn){stbtn.disabled=true;stbtn.textContent="ユメっ子を えらぼう（1〜3体）";} if(note)note.textContent=""; }
+    else if(frontier && doneToday){
+      /* 最前線は 1日1回。過去のステージなら 自由に あそべる案内 */
+      if(stbtn){stbtn.disabled=true;stbtn.textContent="きょうの あたらしい ステージは クリア済み";}
+      if(note)note.innerHTML="また あした つぎが ひらくよ。<br>クリア済みの ステージは いつでも 何回でも あそべる！";
+    }
+    else {
+      if(stbtn){stbtn.disabled=false;stbtn.textContent="この "+_advSel.length+"匹で ちょうせん！";}
+      if(note)note.textContent= frontier ? "あたらしい ステージ！ 勝つと つぎが ひらくよ" : "クリア済み（何回でも あそべるよ）";
+    }
   }catch(_){}
 }
 function _advToggleSel(id){
@@ -28723,7 +28885,7 @@ function _advToggleSel(id){
 }
 
 /* --- 冒険 バトル --- */
-var _advBattleTimer=0,_advState=null,_advTeamUnits=null,_advCh=null,_advDevMode=false;
+var _advBattleTimer=0,_advState=null,_advTeamUnits=null,_advCh=null,_advDevMode=false,_advBattleStage=-1;
 function _advBuildBattleUI(){
   try{
     var e=_advState.enemy;
@@ -28731,7 +28893,9 @@ function _advBuildBattleUI(){
     var en=$("abEnemyName");if(en)en.textContent=e.name;
     var team=$("abTeam");
     if(team)team.innerHTML=_advTeamUnits.map(function(u,i){
-      return '<div class="abUnit" data-i="'+i+'">'+
+      var fr=(u.pos==="front");
+      return '<div class="abUnit'+(fr?" front":"")+'" data-i="'+i+'">'+
+        (fr?'<span class="abShield" title="前衛">\ud83d\udee1\ufe0f</span>':"")+
         '<div class="abNamePlate"><span class="abUnitName">'+escHtml(u.name)+'</span>'+
         '<span class="abHpWrap"><span class="abHp abUnitHp" data-h="'+i+'"></span></span></div>'+
         '<div class="abUnitPic">'+_yumeMiniInner(u.y)+'</div>'+
@@ -28762,11 +28926,13 @@ function _advPushLog(lines){
   }catch(_){}
 }
 function _advStartBattle(){
-  if(_advDoneToday())return;   /* きょう もう 勝っている */
+  var _pi=_advPickStage();
+  if(_advIsFrontier(_pi) && _advDoneToday())return;   /* 最前線は 1日1回。過去のは 自由 */
   var dex=_yumeDex();
   var team=_advSel.map(function(id){for(var i=0;i<dex.length;i++)if(dex[i].id===id)return dex[i];return null;}).filter(Boolean).map(_advUnit);
   if(!team.length)return;
-  _advCh=ADV_CHAPTERS[_advChapter()];   /* ★日づけの ロックは 勝った時だけ（負けたら 何回でも） */
+  _advCh=ADV_CHAPTERS[_advPickStage()];   /* ★えらんだ ステージで 戦う（過去のは 自由・最前線は 勝つと 次が ひらく） */
+  _advBattleStage=_advPickStage();
   _advTeamUnits=team;
   _advState=_advInit(team,_advEnemy(_advCh));
   _advBuildBattleUI();
@@ -28954,8 +29120,13 @@ function _advFinish(){
   }catch(_){}
   if(win){
     var cur=_advChapter();
-    if(cur<ADV_CHAPTERS.length-1){try{localStorage.setItem(ADV_PROG_KEY,String(cur+1));}catch(_){}advanced=true;}
-    try{localStorage.setItem(ADV_DAY_KEY,jstKey());}catch(_){}   /* ★勝った時だけ その日は おしまい */
+    var wasFrontier=(_advBattleStage===cur) && _advIsFrontier(cur);
+    if(wasFrontier){
+      if(cur<ADV_CHAPTERS.length-1){try{localStorage.setItem(ADV_PROG_KEY,String(cur+1));}catch(_){}advanced=true;_advPick=cur+1;}
+      else{try{localStorage.setItem("radio_adv_lastclear","1");}catch(_){}}
+      try{localStorage.setItem(ADV_DAY_KEY,jstKey());}catch(_){}   /* ★最前線を 勝った時だけ その日は おしまい */
+    }
+    /* 過去ステージの リプレイ勝ちは 進行に えいきょう しない（ごほうび・レベルだけ） */
   }
   _advShowResult(win,advanced,false,lvTxt);
 }
@@ -29352,22 +29523,7 @@ try{
   });
   var _wt=document.getElementById("worldTree");
   if(_wt)_wt.addEventListener("click",function(){try{playClick();}catch(_){}_wtOpen();});
-  /* 背景で 上に スクロール／ころころを 上に → 見にいく */
-  var _sd=document.getElementById("skyDecor");
-  if(_sd){
-    _sd.addEventListener("wheel",function(e){
-      if(_wtViewOpen)return;
-      if(e.deltaY<-6){e.preventDefault();_wtOpen();}
-    },{passive:false});
-    var _ty=null;
-    _sd.addEventListener("touchstart",function(e){_ty=(e.touches&&e.touches[0])?e.touches[0].clientY:null;},{passive:true});
-    _sd.addEventListener("touchmove",function(e){
-      if(_wtViewOpen||_ty==null)return;
-      var y=(e.touches&&e.touches[0])?e.touches[0].clientY:null;if(y==null)return;
-      if(y-_ty>52){_ty=null;_wtOpen();}     /* 下に ひっぱる＝上を のぞく */
-    },{passive:true});
-    _sd.addEventListener("touchend",function(){_ty=null;},{passive:true});
-  }
+  /* ★世界樹は ホームから 外したので スクロール／ドラッグの 導線は なし */
 }catch(_){}
 try{_wtLoadCache();setTimeout(function(){try{_wtFetch();}catch(_){}},2200);}catch(_){}
 /* ===== ユメっ子ずかん（もってない子は シルエット） ===== */
@@ -29458,7 +29614,12 @@ function _advDexBattle(chIdx){
 
 (function _advWire(){try{
   var cl=$("advClose");if(cl)cl.addEventListener("click",function(){try{playClick();}catch(_){}closeAdventure();});
-  var team=$("advTeam");if(team)team.addEventListener("click",function(e){var b=e.target&&e.target.closest?e.target.closest(".advCard"):null;if(!b)return;try{playClick();}catch(_){}_advToggleSel(b.getAttribute("data-yid"));});
+  var team=$("advTeam");if(team)team.addEventListener("click",function(e){
+    var pb=e.target&&e.target.closest?e.target.closest(".advPosBtn"):null;
+    if(pb){ e.stopPropagation(); try{playClick();}catch(_){} _advPosToggle(pb.getAttribute("data-pos")); _advRenderSetup(); return; }
+    var b=e.target&&e.target.closest?e.target.closest(".advCard"):null;if(!b)return;try{playClick();}catch(_){}_advToggleSel(b.getAttribute("data-yid"));
+  });
+  var _apath=$("advPath");if(_apath)_apath.addEventListener("click",function(e){var n=e.target&&e.target.closest?e.target.closest(".advNode"):null;if(!n)return;var st=n.getAttribute("data-stg");if(st==null)return;try{playClick();}catch(_){}_advSetPick(parseInt(st,10));_advRenderSetup();});
   var st=$("advStart");if(st)st.addEventListener("click",function(){if(st.disabled)return;try{playClick();}catch(_){}_advStartBattle();});
   var bc=$("abClose");if(bc)bc.addEventListener("click",function(){try{playClick();}catch(_){}_advCloseBattle();});
   var dxb=$("advDexBtn");if(dxb)dxb.addEventListener("click",function(){try{playClick();}catch(_){}_advDexOpen();});

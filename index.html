@@ -4936,10 +4936,14 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 .advPosBtn:active{transform:scale(.94);}
 .abUnit{position:relative;}
 .abShield{position:absolute;top:-6px;right:2px;font-size:14px;z-index:3;filter:drop-shadow(0 1px 2px rgba(80,110,130,.5));}
-#abTeam .abUnit{cursor:pointer;transition:transform .12s;}
-#abTeam .abUnit.picked{transform:translateY(-6px);}
-#abTeam .abUnit.picked .abUnitPic{filter:drop-shadow(0 0 0 2px #7fe0ff) drop-shadow(0 4px 10px rgba(80,180,230,.55));}
-#abTeam .abUnit.picked::after{content:"";position:absolute;left:50%;bottom:-7px;transform:translateX(-50%);width:22px;height:5px;border-radius:3px;background:#7fe0ff;box-shadow:0 0 8px rgba(127,224,255,.8);}
+#abTeam .abUnit{cursor:pointer;transition:transform .22s cubic-bezier(.25,.9,.3,1.2);}
+/* ★前衛は 一歩 前へ（てきに 近づく）／後衛は 少し 下がる＝見た目でも わかる */
+#abTeam .abUnit.front{transform:translateY(-12px) scale(1.04);}
+#abTeam .abUnit:not(.front){transform:translateY(6px) scale(.97);}
+/* ★選択中は キャラの まわりに ハッキリした 縁（フチ）＝えらんでいるのが 一目でわかる */
+#abTeam .abUnit.picked .abUnitPic::after{content:"";position:absolute;inset:-6px;border:3px solid #7fe0ff;border-radius:50%;box-shadow:0 0 10px rgba(127,224,255,.85),inset 0 0 8px rgba(127,224,255,.5);animation:abPickRing 1.1s ease-in-out infinite;pointer-events:none;}
+@keyframes abPickRing{0%,100%{opacity:.75;transform:scale(1);}50%{opacity:1;transform:scale(1.06);}}
+#abTeam .abUnit.picked::after{content:"";position:absolute;left:50%;bottom:-8px;transform:translateX(-50%);width:24px;height:5px;border-radius:3px;background:#7fe0ff;box-shadow:0 0 8px rgba(127,224,255,.8);}
 #abPosHelp{text-align:center;font-size:10.5px;font-weight:800;color:rgba(255,255,255,.62);margin-top:8px;letter-spacing:.3px;}
 .abMoveMsg{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);background:rgba(40,70,90,.86);color:#fff;font-size:15px;font-weight:900;padding:8px 18px;border-radius:999px;z-index:40;pointer-events:none;animation:abMovePop .9s ease both;}
 @keyframes abMovePop{0%{opacity:0;transform:translate(-50%,-40%) scale(.8);}18%{opacity:1;transform:translate(-50%,-50%) scale(1.06);}72%{opacity:1;}100%{opacity:0;transform:translate(-50%,-58%) scale(1);}}
@@ -28933,7 +28937,7 @@ function _advShowPosHelp(){
     var el=$("abPosHelp");
     if(el){
       var seen=false; try{seen=localStorage.getItem("radio_adv_poshelp")==="1";}catch(_){}
-      el.textContent = _advIsTouch()? "タップで えらんで まえ／うしろ" : "1 2 3 で えらぶ・W まえ / S うしろ";
+      el.textContent = _advIsTouch()? "タップで えらんで まえ／うしろ" : "1 2 3 で えらぶ・スペースで まえ／うしろ";
     }
   }catch(_){}
 }
@@ -28968,6 +28972,12 @@ function _advMoveSel(pos){
   try{ _advFloatMsg(u.name+" を "+(pos==="front"?"まえ":"うしろ")+"に！"); }catch(_){}
   try{playPop();}catch(_){}
 }
+/* スペース：選択中の子の 前後を いれかえ */
+function _advToggleSelPos(){
+  if(!_advState||_advState.over)return;
+  var u=_advTeamUnits[_advSelIdx]; if(!u||u.hp<=0)return;
+  _advMoveSel(u.pos==="front"?"back":"front");
+}
 /* まん中に さっと 出る 小さな メッセージ */
 function _advFloatMsg(txt){
   try{
@@ -28984,8 +28994,7 @@ function _advBattleKey(e){
     if(!_advState||_advState.over)return;
     var k=(e.key||"").toLowerCase();
     if(k==="1"||k==="2"||k==="3"){ _advSelectUnit(parseInt(k,10)-1); e.preventDefault(); }
-    else if(k==="w"||k==="arrowup"){ _advMoveSel("front"); e.preventDefault(); }
-    else if(k==="s"||k==="arrowdown"){ _advMoveSel("back"); e.preventDefault(); }
+    else if(k===" "||k==="spacebar"||e.code==="Space"){ _advToggleSelPos(); e.preventDefault(); }
   }catch(_){}
 }
 function _advPaintHP(){

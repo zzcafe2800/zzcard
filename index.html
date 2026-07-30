@@ -4937,6 +4937,18 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 .abUnit{position:relative;}
 .abShield{position:absolute;top:-6px;right:2px;font-size:14px;z-index:3;filter:drop-shadow(0 1px 2px rgba(80,110,130,.5));}
 #abTeam .abUnit{cursor:pointer;transition:transform .22s cubic-bezier(.25,.9,.3,1.2);}
+.abStatus{display:inline-flex;gap:1px;margin-left:3px;vertical-align:middle;}
+/* ★技を うつ瞬間：画面フリーズ＋白黒 */
+#advBattle.picking #abField{background:linear-gradient(180deg,#20242c,#2a2e38)!important;transition:background .18s;}
+#advBattle.picking #abEnemySide,#advBattle.picking #abGrid{filter:grayscale(1) brightness(.7);transition:filter .18s;}
+#advBattle.picking .abUnit:not(.pickable){filter:grayscale(1) brightness(.62);opacity:.7;}
+#advBattle.picking .abUnit.pickable{cursor:pointer;z-index:5;}
+#advBattle.picking .abUnit.pickable .abUnitPic{filter:drop-shadow(0 0 0 3px #7fffc4) drop-shadow(0 0 12px rgba(120,255,190,.9))!important;animation:abPickable .7s ease-in-out infinite!important;}
+@keyframes abPickable{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+#abPickHelp{position:absolute;left:50%;top:14px;transform:translateX(-50%);z-index:60;background:rgba(30,50,66,.92);color:#eafff4;font-size:13px;font-weight:900;padding:9px 18px;border-radius:999px;box-shadow:0 6px 18px rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .2s;white-space:nowrap;}
+#abPickHelp.show{opacity:1;}
+.abStatus .abSt{font-size:11px;line-height:1;animation:abStPop .3s ease;filter:drop-shadow(0 1px 1px rgba(0,0,0,.4));}
+@keyframes abStPop{0%{transform:scale(0);}70%{transform:scale(1.25);}100%{transform:scale(1);}}
 /* ★前衛は 一歩 前へ（てきに 近づく）／後衛は 少し 下がる＝見た目でも わかる */
 #abTeam .abUnit.front{transform:translateY(-12px) scale(1.04);}
 #abTeam .abUnit:not(.front){transform:translateY(6px) scale(.97);}
@@ -5289,7 +5301,13 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 .abNamePlate.enemy .abHpWrap{width:180px;height:9px;}
 .abNamePlate .abHp{display:block;}
 /* みかたは 下に よこ1れつ（てきと 向かい合う） */
-#abField #abTeam{display:flex;justify-content:center;align-items:flex-end;gap:14px;flex-wrap:nowrap;margin-top:2px;}
+#abField #abTeam{display:flex;justify-content:center;align-items:flex-end;gap:14px;flex-wrap:nowrap;margin-top:2px;position:relative;z-index:2;}
+/* ★足もとの 2×3 メモリ（前列＝てき側／後列＝下）。うっすら 光る 床のマス */
+#abGrid{position:absolute;left:50%;bottom:10px;transform:translateX(-50%) perspective(340px) rotateX(52deg);transform-origin:bottom center;width:min(78%,320px);z-index:1;pointer-events:none;display:flex;flex-direction:column;gap:6px;opacity:.55;}
+#abGrid .abGridRow{display:flex;gap:8px;}
+#abGrid .abGridRow span{flex:1 1 0;height:34px;border:1.5px solid rgba(150,200,235,.35);border-radius:7px;background:linear-gradient(180deg,rgba(150,200,235,.10),rgba(150,200,235,.02));}
+#abGrid .abGridFront span{border-color:rgba(255,205,120,.5);background:linear-gradient(180deg,rgba(255,205,120,.14),rgba(255,205,120,.03));}
+@media(max-width:420px){#abGrid{width:88%;}#abGrid .abGridRow span{height:28px;}}
 #abField .abUnit{position:relative;background:none;border-radius:0;padding:0;min-width:0;
   display:flex;flex-direction:column;align-items:center;gap:4px;transition:transform .18s,opacity .3s;}
 #abField .abUnitPic{width:58px;height:58px;position:relative;flex:0 0 auto;}
@@ -28279,7 +28297,12 @@ var YUME_SKILLS=[
   {n:"ふわふわクッション",e:"\u2601\ufe0f", p:0.17, kind:"guard",pow:0.45,col:"#bcd8f0", txt:"ふわりと うけながした！"},
   {n:"しんゆうのちから",e:"\ud83d\udc9d", p:0.12, kind:"crit",  pow:2.2, col:"#ff9fc0", txt:"きずなが ちからに なった！"},
   {n:"よあけのひかり",  e:"\ud83c\udf05", p:0.09, kind:"dmg",   pow:3.0, col:"#ffab6a", txt:"よあけが てきを つらぬいた！"},
-  {n:"ユメのはねおと",  e:"\ud83e\udeb6", p:0.13, kind:"drain", pow:1.8, col:"#c8b0f0", txt:"はねおとが ちからを うばった！"}
+  {n:"ユメのはねおと",  e:"\ud83e\udeb6", p:0.13, kind:"drain", pow:1.8, col:"#c8b0f0", txt:"はねおとが ちからを うばった！"},
+  {n:"いのちのうた",    e:"\ud83d\udc9e", p:0.10, kind:"revive", pow:0.5, col:"#ff9ec4", txt:"たおれた なかまを よみがえらせる！"},
+  {n:"どくのきり",      e:"\ud83e\uddea", p:0.13, kind:"poison", pow:3,   col:"#b06fd0", txt:"どくの きりが つつんだ！"},
+  {n:"いさましいうた",  e:"\ud83d\udd25", p:0.13, kind:"atkup",  pow:1.4, col:"#ff8f5a", txt:"みんなの ちからが あがった！"},
+  {n:"よわらせのまなざし",e:"\ud83d\udd3b",p:0.14, kind:"atkdown",pow:3,  col:"#7fa8d0", txt:"てきの ちからを よわめた！"},
+  {n:"めばえのいぶき",  e:"\ud83c\udf3f", p:0.14, kind:"regen",  pow:3,   col:"#8fd0a8", txt:"いのちの いぶきが めぐる！"}
 ];
 /* この子の 技（sk が 無ければ 名前から 自動で わりあて） */
 function _yumeSkill(y){
@@ -28640,6 +28663,31 @@ function _advPosDefault(){
     if(_advSel.length && !_advSel.some(function(id){return _advPosGet(id)==="front";}))_advPosSet(_advSel[0],"front");
   }catch(_){}
 }
+/* ★状態異常・バフを 絵文字で（名前の よこに 出す） */
+function _advStatusIcons(o){
+  if(!o)return "";
+  var ic=[];
+  try{
+    if(o.guard>0)   ic.push('<span class="abSt g" title="ガード">\ud83d\udee1\ufe0f</span>');
+    if(o.sleep>0)   ic.push('<span class="abSt s" title="ねむり">\ud83d\udca4</span>');
+    if(o.spdUp>0)   ic.push('<span class="abSt p" title="スピード↑">\ud83d\udca8</span>');
+    if(o.confused>0)ic.push('<span class="abSt c" title="こんらん">\ud83d\udcab</span>');
+    if(o.poison>0)  ic.push('<span class="abSt po" title="どく">\ud83d\udfe3</span>');
+    if(o.dark>0)    ic.push('<span class="abSt d" title="やみ（命中↓）">\ud83c\udf11</span>');
+    if(o.atkUp>0)   ic.push('<span class="abSt au" title="こうげき↑">\ud83d\udd25</span>');
+    if(o.atkDown>0) ic.push('<span class="abSt ad" title="こうげき↓">\ud83d\udd3b</span>');
+    if(o.regen>0)   ic.push('<span class="abSt rg" title="リジェネ（毎ターン回復）">\ud83c\udf3f</span>');
+  }catch(_){}
+  return ic.join("");
+}
+function _advPaintStatus(){
+  try{
+    var es=$("abEnemyStatus"); if(es)es.innerHTML=_advStatusIcons(_advState&&_advState.enemy);
+    if(_advTeamUnits)_advTeamUnits.forEach(function(u,i){
+      var el=document.querySelector('.abStatus[data-st="'+i+'"]'); if(el)el.innerHTML=_advStatusIcons(u);
+    });
+  }catch(_){}
+}
 /* 敵の ねらい：前衛(front)が いれば 78%で 前衛から えらぶ（前衛が 盾に なる） */
 function _advPickTarget(alive){
   try{
@@ -28657,8 +28705,8 @@ function _advUnit(y){
   var atkBase=(12+eA*0.30)*(friend?1.05:1);
   var atk=atkBase*((pos==="front")?1.15:1);   /* ★前衛は 攻撃+15% */
   var maxhp=Math.round(260 + eH*2.2);
-  return {y:y, id:y.id, name:y.name, pos:pos, atkBase:atkBase, pers:_yumePers(y), skill:_yumeSkill(y), lv:_yumeLv(y),
-          atk:atk, spd:eS, hp:maxhp, maxhp:maxhp, friend:friend, guard:0, spdUp:0, sleep:0};
+  return {y:y, id:y.id, name:y.name, pos:pos, atkBase:atkBase, spdBase:eS, pers:_yumePers(y), skill:_yumeSkill(y), lv:_yumeLv(y),
+          atk:atk, spd:eS, hp:maxhp, maxhp:maxhp, friend:friend, guard:0, spdUp:0, sleep:0, poison:0, regen:0, atkUp:0};
 }
 /* 敵：1000ものさしに あわせて 作りなおし＋ぜんたいに つよく（およそ2ばい） */
 function _advEnemy(ch){
@@ -28685,6 +28733,14 @@ function _advFx(st,o){try{(st.fx=st.fx||[]).push(o);}catch(_){}}
 function _advTeamAct(st,u){
   var e=st.enemy, out=[];
   st.fx=[];
+  /* ★リジェネ：毎ターン すこし 回復／バフの カウント減 */
+  if(u.regen>0){
+    u.regen--;
+    if(u.hp>0){var rg=Math.round(u.maxhp*0.08);u.hp=Math.min(u.maxhp,u.hp+rg);out.push("\ud83c\udf3f "+u.name+" は "+rg+" 回復！");_advFx(st,{t:"heal",who:"team",u:u,v:rg});}
+  }
+  if(u.guard>0)u.guard--;
+  if(u.spdUp>0){u.spdUp--; if(u.spdUp===0)u.spd=u.spdBase||u.spd;}
+  if(u.atkUp>0){u.atkUp--; if(u.atkUp===0)u.atk=u.atkBase*((u.pos==="front")?1.15:1);}
   if(u.sleep>0){ u.sleep--; out.push(u.name+" は ねむっている…"); _advFx(st,{t:"sleep",who:"team",u:u}); return out; }
   if(u.pers==="いたずら" && Math.random()<0.32){ e.confused=2; out.push(u.name+" の いたずら！ てきを こんらん させた！"); _advFx(st,{t:"state",who:"enemy",label:"こんらん"}); return out; }
   /* ★とくべつな技（まれに 出る） */
@@ -28710,17 +28766,29 @@ function _advSkill(st,u,sk){
   _advFx(st,{t:"skill",who:"team",u:u,sk:sk});
   var k=sk.kind;
   if(k==="heal"){
-    var h=Math.round(u.maxhp*sk.pow);u.hp=Math.min(u.maxhp,u.hp+h);
-    out.push(u.name+" は "+h+" かいふく した！");_advFx(st,{t:"heal",who:"team",u:u,v:h});return out;
+    /* ★だれに かけるか えらぶ（画面が とまって 白黒に）。既定は HPの いちばん 少ない子。 */
+    st.pick={kind:"heal",by:u,pow:sk.pow,sk:sk,pool:"aliveTeam"};
+    out.push(u.name+" は だれかを かいふくする！");
+    return out;
   }
   if(k==="healall"){
     st.team.forEach(function(t){if(t.hp>0){var hh=Math.round(t.maxhp*sk.pow);t.hp=Math.min(t.maxhp,t.hp+hh);_advFx(st,{t:"heal",who:"team",u:t,v:hh});}});
     out.push("みんなの きずが いえた！");return out;
   }
   if(k==="guard"){ u.guard=2; out.push(u.name+" は ぼうぎょの かまえ！"); _advFx(st,{t:"state",who:"team",u:u,label:"ガード"}); return out; }
-  if(k==="spd"){ u.spdUp=3;u.spd=Math.min(1000,u.spd*sk.pow); out.push(u.name+" の すばやさが あがった！"); _advFx(st,{t:"state",who:"team",u:u,label:"スピード↑"}); return out; }
+  if(k==="spd"){ u.spdUp=3;u.spd=Math.min(1000,(u.spdBase||u.spd)*sk.pow); out.push(u.name+" の すばやさが あがった！"); _advFx(st,{t:"state",who:"team",u:u,label:"スピード↑"}); return out; }
   if(k==="sleep"){ e.sleep=sk.pow; out.push("てきは ねむってしまった！"); _advFx(st,{t:"state",who:"enemy",label:"ねむり"}); return out; }
   if(k==="confuse"){ e.confused=sk.pow; out.push("てきは こんらん した！"); _advFx(st,{t:"state",who:"enemy",label:"こんらん"}); return out; }
+  if(k==="poison"){ e.poison=sk.pow; out.push("てきに どくが まわった！"); _advFx(st,{t:"state",who:"enemy",label:"どく"}); return out; }
+  if(k==="atkdown"){ e.atkDown=sk.pow; e.atk=Math.round((e.atkOrig||e.atk)*0.7); if(!e.atkOrig)e.atkOrig=Math.round(e.atk/0.7); out.push("てきの こうげきが さがった！"); _advFx(st,{t:"state",who:"enemy",label:"こうげき↓"}); return out; }
+  if(k==="atkup"){ st.team.forEach(function(t){if(t.hp>0){t.atkUp=3;t.atk=t.atkBase*((t.pos==="front")?1.15:1)*sk.pow;}}); out.push("みんなの こうげきが あがった！"); _advFx(st,{t:"state",who:"team",u:u,label:"こうげき↑"}); return out; }
+  if(k==="regen"){ st.team.forEach(function(t){if(t.hp>0)t.regen=sk.pow;}); out.push("みんなに いのちの いぶき！"); _advFx(st,{t:"state",who:"team",u:u,label:"リジェネ"}); return out; }
+  if(k==="revive"){
+    var downed=st.team.filter(function(t){return t.hp<=0;});
+    if(downed.length){ st.pick={kind:"revive",by:u,pow:sk.pow,sk:sk,pool:"downedTeam"}; out.push(u.name+" は だれを よみがえらせる…？"); }
+    else { var h9=Math.round(u.maxhp*0.25); u.hp=Math.min(u.maxhp,u.hp+h9); out.push("たおれた子は いないので "+u.name+" が "+h9+" 回復！"); _advFx(st,{t:"heal",who:"team",u:u,v:h9}); }
+    return out;
+  }
   if(k==="multi"){
     var n=2+Math.floor(Math.random()*3),tot=0;
     for(var i=0;i<n;i++){var dd=_advDmg(u.atk*sk.pow,0.1);e.hp=Math.max(0,e.hp-dd.v);tot+=dd.v;_advFx(st,{t:"dmg",who:"enemy",v:dd.v,crit:false,by:u,multi:true});}
@@ -28757,6 +28825,17 @@ function _advBossCheck(st,out){
 function _advEnemyAct(st){
   var e=st.enemy, out=[];
   st.fx=[];
+  /* ★どく：毎ターン ダメージ */
+  if(e.poison>0){
+    e.poison--;
+    var pd=Math.round(e.maxhp*0.06);e.hp=Math.max(0,e.hp-pd);
+    out.push("\ud83d\udfe3 てきは どくで "+pd+" ダメージ！");
+    _advFx(st,{t:"dmg",who:"enemy",v:pd,crit:false});
+    _advBossCheck(st,out);
+    if(e.hp<=0)return out;
+  }
+  if(e.atkDown>0){e.atkDown--; if(e.atkDown===0&&e.atkOrig){e.atk=e.atkOrig;e.atkOrig=0;}}
+  if(e.dark>0)e.dark--;
   if(e.sleep>0){ e.sleep--; out.push("てきは ぐっすり ねむっている…"); _advFx(st,{t:"sleep",who:"enemy"}); return out; }
   if(e.confused>0){ e.confused--; out.push("てきは こんらん している…"); return out; }
   var alive=st.team.filter(function(t){return t.hp>0;});
@@ -28909,6 +28988,7 @@ function _advBuildBattleUI(){
       return '<div class="abUnit'+(fr?" front":"")+'" data-i="'+i+'">'+
         (fr?'<span class="abShield" title="前衛">\ud83d\udee1\ufe0f</span>':"")+
         '<div class="abNamePlate"><span class="abUnitName">'+escHtml(u.name)+'</span>'+
+        '<span class="abStatus" data-st="'+i+'"></span>'+
         '<span class="abHpWrap"><span class="abHp abUnitHp" data-h="'+i+'"></span></span></div>'+
         '<div class="abUnitPic">'+_yumeMiniInner(u.y)+'</div>'+
         '<div class="abUnitShadow"></div>'+
@@ -28972,10 +29052,14 @@ function _advMoveSel(pos){
   try{ _advFloatMsg(u.name+" を "+(pos==="front"?"まえ":"うしろ")+"に！"); }catch(_){}
   try{playPop();}catch(_){}
 }
-/* スペース：選択中の子の 前後を いれかえ */
+/* スペース：選択中の子の 前後を いれかえ（クールタイム1秒） */
+var _advPosCd=0;
 function _advToggleSelPos(){
   if(!_advState||_advState.over)return;
+  var now=Date.now();
+  if(now<_advPosCd){ try{_advFloatMsg("ちょっと まってね…");}catch(_){} return; }
   var u=_advTeamUnits[_advSelIdx]; if(!u||u.hp<=0)return;
+  _advPosCd=now+1000;   /* 1秒 あける */
   _advMoveSel(u.pos==="front"?"back":"front");
 }
 /* まん中に さっと 出る 小さな メッセージ */
@@ -28993,6 +29077,10 @@ function _advBattleKey(e){
     var bt=$("advBattle"); if(!bt||!bt.classList.contains("show"))return;
     if(!_advState||_advState.over)return;
     var k=(e.key||"").toLowerCase();
+    if(_advPickState){   /* ★ターゲット選択中 */
+      if(k==="1"||k==="2"||k==="3"){ _advDoPick(parseInt(k,10)-1); e.preventDefault(); }
+      return;
+    }
     if(k==="1"||k==="2"||k==="3"){ _advSelectUnit(parseInt(k,10)-1); e.preventDefault(); }
     else if(k===" "||k==="spacebar"||e.code==="Space"){ _advToggleSelPos(); e.preventDefault(); }
   }catch(_){}
@@ -29011,6 +29099,7 @@ function _advPaintHP(){
       if(alive>=0)_advSelIdx=alive;
     }
     _advPaintSel();
+    _advPaintStatus();
   }catch(_){}
 }
 function _advPushLog(lines){
@@ -29188,7 +29277,82 @@ function _advTick(){
     });
   }catch(_){}
   _advPaintHP();
+  /* ★技を うつ瞬間：ターゲットを えらぶ（画面が とまって 白黒に） */
+  if(st.pick){ var pk=st.pick; st.pick=null; _advBeginPick(pk); return; }
   if(st.over){ clearInterval(_advBattleTimer); setTimeout(_advFinish,900); }
+}
+/* ===== 技のターゲット選択（フリーズ＋白黒＋えらぶ） ===== */
+var _advPickState=null;
+function _advBeginPick(pk){
+  try{
+    clearInterval(_advBattleTimer);          /* バトルを 止める */
+    var st=_advState; if(!st){return;}
+    /* 候補（生きてる味方 or たおれた味方） */
+    var cands=[];
+    _advTeamUnits.forEach(function(u,i){
+      var ok=(pk.pool==="downedTeam")?(u.hp<=0):(u.hp>0);
+      if(ok)cands.push(i);
+    });
+    if(!cands.length){ _advResumeAfterPick(); return; }
+    /* 既定ターゲット（回復＝HP割合 最小／蘇生＝先頭） */
+    var def=cands[0];
+    if(pk.pool!=="downedTeam"){
+      var lo=2; cands.forEach(function(i){var r=_advTeamUnits[i].hp/_advTeamUnits[i].maxhp; if(r<lo){lo=r;def=i;}});
+    }
+    _advPickState={pk:pk,cands:cands,def:def};
+    /* 画面を 白黒＋フリーズ */
+    var bt=$("advBattle"); if(bt)bt.classList.add("picking");
+    /* えらべる子を 光らせる＋案内 */
+    _advPaintPickHighlight();
+    var help=$("abPickHelp");
+    if(help){
+      help.textContent=(pk.kind==="revive"?"だれを よみがえらせる？":"だれを かいふくする？")+"（タップ／数字キー）";
+      help.classList.add("show");
+    }
+    /* 自動で えらぶ 保険（3秒） */
+    _advPickState.timer=setTimeout(function(){ _advDoPick(_advPickState?_advPickState.def:def); }, 3000);
+  }catch(_){ _advResumeAfterPick(); }
+}
+function _advPaintPickHighlight(){
+  try{
+    if(!_advPickState)return;
+    _advTeamUnits.forEach(function(u,i){
+      var row=document.querySelector('.abUnit[data-i="'+i+'"]');
+      if(row)row.classList.toggle("pickable", _advPickState.cands.indexOf(i)>=0);
+    });
+  }catch(_){}
+}
+function _advDoPick(i){
+  try{
+    if(!_advPickState)return;
+    if(_advPickState.cands.indexOf(i)<0)return;   /* えらべない子は 無視 */
+    clearTimeout(_advPickState.timer);
+    var pk=_advPickState.pk, st=_advState, tgt=_advTeamUnits[i];
+    /* 効果を 適用 */
+    if(pk.kind==="revive"){
+      tgt.hp=Math.round(tgt.maxhp*pk.pow);
+      _advPushLog([tgt.name+" が よみがえった！ HP"+tgt.hp+"！"]);
+      try{_advPop("team",tgt,"ふっかつ！","state");sndHeal();}catch(_){}
+      var de=document.querySelector('.abUnit[data-i="'+i+'"]');if(de)de.classList.remove("down");
+    }else{
+      var h=Math.round(tgt.maxhp*pk.pow); tgt.hp=Math.min(tgt.maxhp,tgt.hp+h);
+      _advPushLog([tgt.name+" は "+h+" かいふく した！"]);
+      try{_advPop("team",tgt,"+"+h,"heal");sndHeal();}catch(_){}
+    }
+    _advResumeAfterPick();
+  }catch(_){ _advResumeAfterPick(); }
+}
+function _advResumeAfterPick(){
+  try{
+    if(_advPickState&&_advPickState.timer)clearTimeout(_advPickState.timer);
+    _advPickState=null;
+    var bt=$("advBattle"); if(bt)bt.classList.remove("picking");
+    var help=$("abPickHelp"); if(help)help.classList.remove("show");
+    _advTeamUnits.forEach(function(u,i){var row=document.querySelector('.abUnit[data-i="'+i+'"]');if(row)row.classList.remove("pickable");});
+    _advPaintHP();
+    if(_advState&&_advState.over){ setTimeout(_advFinish,900); return; }
+    _advSetSpeed(_advFast);   /* バトル再開 */
+  }catch(_){}
 }
 function _advFinish(){
   var st=_advState;if(!st)return;
@@ -29272,6 +29436,7 @@ try{var _rb=document.getElementById("abRetry");if(_rb)_rb.addEventListener("clic
 function _advCloseBattle(){
   var bt=$("advBattle");if(bt)bt.classList.remove("show");
   try{window.removeEventListener("keydown",_advBattleKey);}catch(_){}
+  try{if(_advPickState&&_advPickState.timer)clearTimeout(_advPickState.timer);_advPickState=null;if(bt)bt.classList.remove("picking");var _ph=$("abPickHelp");if(_ph)_ph.classList.remove("show");}catch(_){}
   clearInterval(_advBattleTimer);_advState=null;
   var wasDev=_advDevMode; _advDevMode=false;
   if(!wasDev){ _advSel=[]; try{_advRenderSetup();}catch(_){} }   /* おためしは dex を のこす */
@@ -29726,6 +29891,7 @@ function _advDexBattle(chIdx){
     var row=e.target&&e.target.closest?e.target.closest(".abUnit"):null; if(!row)return;
     e.stopPropagation();
     var i=parseInt(row.getAttribute("data-i"),10); if(isNaN(i))return;
+    if(_advPickState){ _advDoPick(i); return; }   /* ★ターゲット選択中 */
     if(!_advState||_advState.over)return;
     if(_advTeamUnits[i]&&_advTeamUnits[i].hp<=0){try{toast("その子は たおれているよ");}catch(_){}return;}
     if(i===_advSelIdx){ /* もう えらんでいる子を タップ＝前後を いれかえ */
@@ -34065,14 +34231,19 @@ function _gpStreetHTML(){
     <div id="abField">
       <div id="abEnemySide">
         <div id="abEnemy">
-          <div class="abNamePlate enemy"><span id="abEnemyName"></span><span class="abHpWrap big"><span id="abEnemyHp" class="abHp enemy"></span></span></div>
+          <div class="abNamePlate enemy"><span id="abEnemyName"></span><span class="abStatus" id="abEnemyStatus"></span><span class="abHpWrap big"><span id="abEnemyHp" class="abHp enemy"></span></span></div>
           <div id="abEnemyPic"></div>
           <div id="abEnemyShadow"></div>
         </div>
       </div>
+      <div id="abGrid" aria-hidden="true">
+        <div class="abGridRow abGridFront"><span></span><span></span><span></span></div>
+        <div class="abGridRow abGridBack"><span></span><span></span><span></span></div>
+      </div>
       <div id="abTeam"></div>
       <div id="abPosHelp"></div>
     </div>
+    <div id="abPickHelp"></div>
   </div>
   <div id="abSkillBanner"></div>
   <div id="abLog"></div>

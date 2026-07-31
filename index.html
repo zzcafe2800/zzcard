@@ -5622,6 +5622,17 @@ body.exFast #exRadio,body.exFast .exNote,body.exFast #hillCats,body.exFast #hill
 #abCtrlHelp{text-align:center;font-size:10px;font-weight:800;color:rgba(255,255,255,.6);line-height:1.4;}
 #abPosHelp{display:none !important;}
 </style>
+<style id="likeFixCss">
+/* いいね♡が押せない対策：タップ範囲を大きく・最前面に・確実に押せるように 2025-07-31 */
+#hillCats .catLikeHeart{z-index:20 !important;pointer-events:auto !important;bottom:8px !important;right:0 !important;padding:10px !important;font-size:21px !important;line-height:1 !important;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+.hillCat{overflow:visible !important;}
+</style>
+<style id="shopDockPadCss">
+/* スマホ：商店街のリスト類を下ドックの上に出す（バーで隠れないよう余白） */
+html.lite #shopScreen.show .tvBody{padding-bottom:calc(78px + env(safe-area-inset-bottom)) !important;}
+html.lite #tvList.show .tvBody,html.lite #tvShop.show .tvBody{padding-bottom:calc(78px + env(safe-area-inset-bottom)) !important;}
+html.lite #shopScreen.show #shpBody{padding-bottom:calc(78px + env(safe-area-inset-bottom)) !important;}
+</style>
 </head>
 <body>
 <script>(function(){try{var m=/Mobi|Android|iPhone|iPod|iPad/i.test(navigator.userAgent||"");var p=(window.innerHeight||0)>=(window.innerWidth||0);if(m||p)document.documentElement.classList.add("lite");}catch(e){}})();</script>
@@ -5954,7 +5965,7 @@ body.exFast #exRadio,body.exFast .exNote,body.exFast #hillCats,body.exFast #hill
 
     <button class="fabItem" id="fabDex" type="button" aria-label="商店街"><span class="fi"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 27 L4 15 L11 10 L18 15 L18 27"/><path d="M18 27 L18 19 L24 15 L29 19 L29 27"/><path d="M2.5 27 L29.5 27"/></svg></span><span class="fl">商店街</span><span id="shopNewBadge" class="coinBadge dockBang" hidden>NEW</span></button>
     <button class="fabItem" id="fabRecord" type="button" aria-label="きろく"><span class="fi"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M6 6 L6 26 L26 26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="10" y="16" width="3.4" height="7" rx="1.2" fill="currentColor"/><rect x="15.3" y="11" width="3.4" height="12" rx="1.2" fill="currentColor"/><rect x="20.6" y="18" width="3.4" height="5" rx="1.2" fill="currentColor"/></svg></span><span class="fl">きろく</span></button>
-    <button class="fabItem" id="fabHome" type="button" aria-label="ホーム"><span class="fi"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M6 15 L16 6 L26 15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/><path d="M8 14 L8 26 L24 26 L24 14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M13 26 L13 19 L19 19 L19 26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg></span><span class="fl">ホーム</span></button>
+    <button class="fabItem" id="fabHome" type="button" aria-label="ラジオ体操"><span class="fi"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="7.5" r="4" fill="currentColor"/><path d="M16 11.5 L16 21" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M16 14 L8.5 8 M16 14 L23.5 8" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M16 21 L11 28 M16 21 L21 28" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></span><span class="fl">ラジオ体操</span></button>
     <button class="fabItem" id="fabCloset" type="button" aria-label="きせかえ"><span class="fi"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M16 6 Q13 6 13 9 Q13 11 11 12 L5 20 Q4 21 5 22 L9 25 Q10 26 11 24 L13 21 L13 26 L19 26 L19 21 L21 24 Q22 26 23 25 L27 22 Q28 21 27 20 L21 12 Q19 11 19 9 Q19 6 16 6 Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg></span><span class="fl">きせかえ</span><span id="bagBadge" class="coinBadge" hidden></span></button>
     <button class="fabItem" id="fabRoom" type="button" aria-label="おへや"><span class="fi" id="fabRoomIcon"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M6 15 L16 6 L26 15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/><path d="M8 14 L8 26 L24 26 L24 14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M13 26 L13 19 L19 19 L19 26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg></span><span class="fl">おへや</span><span id="roomReadyBadge" class="coinBadge dockBang" hidden>!</span></button>
     <button id="homeFab" type="button" aria-label="メニュー"><span class="fabRing"></span><span class="fabCore"></span></button>
@@ -8721,7 +8732,7 @@ function postDateLabel(ts){
 }
 async function likePost(po,btn){
   if(po.uid&&likedPost(po.uid,po.pid)){btn.classList.add("done");btn.textContent="♥";btn.onclick=null;return;}
-  if(!po.pid){console.warn("like skipped: no pid");return;}
+  if(!po.pid){console.warn("like skipped: no pid");try{toast("この人には まだ ♡ できないみたい");}catch(_){}return;}
   /* ★修正：書き込みが“成功してから”だけ「ありがとう♡」＆markLikedにする。
      以前は押した瞬間に成功表示＋markLiked（当日リトライ封じ）してから書きに行っていたため、
      getDBがnull／set失敗だといいねがFirebaseに届かないのに本人は成功した気になり、
@@ -10470,7 +10481,7 @@ function renderHillPage(){
       btn.dataset.pid=po.pid||"";btn.dataset.uid=po.uid||"";
       if(likedPost(po.uid,po.pid)){btn.classList.add("done");btn.textContent="♥";}
       else{btn.textContent="♡";btn.addEventListener("click",e=>{e.stopPropagation();likePost(po,btn);});}
-      el.appendChild(lab);el.appendChild(btn);el.appendChild(fig);
+      el.appendChild(lab);el.appendChild(fig);el.appendChild(btn);
     }
     try{
       const rnd=_sRand(_hashStr((po.uid||po.name||"")+"|deco"));
@@ -11986,6 +11997,9 @@ function taisoGoCat(){
 
 function afterStampReady(){ autoStampFlow(); }
 function startRandomMode(skipRoulette){
+  /* ★体操の曲(radiobgm)を かならず 止める：おはよう／気分えらび画面で ホームBGM(bgm11)と 二重に ならないように */
+  try{if(window._exAud){window._exAud.pause();try{window._exAud.currentTime=0;}catch(_){}}}catch(_){}
+  try{if(typeof _exerciseAudio!=="undefined"&&_exerciseAudio){_exerciseAudio.pause();_exerciseAudio=null;}}catch(_){}
   _startedOnce=true;   /* このセッションで一度始めた（次回から確認カードを省略） */
   startRally(skipRoulette);
 }
@@ -16149,14 +16163,16 @@ function refreshDock(){
   const onHome=$("selectScreen")&&!$("selectScreen").classList.contains("hidden");
   const roomEdit=$("catRoom")&&$("catRoom").classList.contains("editing");   /* おへやのおもちゃ編集中はドックを隠す */
   const onMain=vis("dexPopup")||vis("recordScreen")||vis("catRoom")||vis("profilePanel");
+  const onShop=$("shopScreen")&&$("shopScreen").classList.contains("show");   /* ★商店街でもドックを出す */
   const ppProfMode=vis("profilePanel")&&!$("profilePanel").classList.contains("bagMode");   /* 匿名さんから開くプロフ画面ではバーを出さない */
   const setOpen=$("settingsScreen")&&$("settingsScreen").classList.contains("show");   /* 設定・詳細設定・図鑑でもバーを出さない */
   const blocked=ppProfMode||setOpen||vis("profileSetup")||vis("dexPopup")||roomEdit||vis("friendScreen")||vis("clubScreen")||vis("tutorial")||vis("titleScreen")||vis("rouletteScreen")||vis("taisoScreen")||vis("firstMeet")||_firstMeetActive||($("catRoom")&&($("catRoom").classList.contains("guideGo")||$("catRoom").classList.contains("guideBack")))||vis("gachaReveal")||($("outingIntro")&&$("outingIntro").classList.contains("show"))||($("nyanShot")&&$("nyanShot").classList.contains("capmode"))||($("photoCancelBtn")&&!$("photoCancelBtn").hidden);
-  const show=(onHome||onMain)&&!blocked;
+  const show=(onHome||onMain||onShop)&&!blocked;
   d.style.display=show?"flex":"none";
+  try{d.style.zIndex=onShop?"3300":"";}catch(_){}   /* 商店街(z3200)の上に出す */
   if(show){
     /* いま開いてるアイコンをハイライト（ぱっと見で分かるように） */
-    const active=vis("catRoom")?"fabRoom":vis("recordScreen")?"fabRecord":vis("profilePanel")?"fabCloset":(onHome&&!vis("dexPopup")?"fabHome":null);
+    const active=vis("catRoom")?"fabRoom":vis("recordScreen")?"fabRecord":vis("profilePanel")?"fabCloset":onShop?"fabDex":(onHome&&!vis("dexPopup")?"fabHome":null);
     ["fabHome","fabRoom","fabDex","fabCloset","fabRecord"].forEach(id=>{const e=$(id);if(e)e.classList.toggle("active",id===active);});
     try{const ae=active?$(active):null;if(ae){d.style.setProperty("--nx",(ae.offsetLeft+ae.offsetWidth/2)+"px");}else{d.style.setProperty("--nx","-999px");}}catch(_){}
     try{const ic=$("fabRoomIcon");if(ic&&ic.dataset.k!==(profileBody()+profileColor())){ic.innerHTML=catFaceSvg(profileBody(),profileColor(),null);ic.dataset.k=profileBody()+profileColor();}}catch(_){}
@@ -16168,7 +16184,7 @@ function refreshDock(){
 /* 画面のclass変化で即座にドックを出し入れ（ラグなし） */
 (function dockObserver(){
   try{
-    const ids=["selectScreen","catRoom","recordScreen","profilePanel","dexPopup","friendScreen","clubScreen","tutorial","titleScreen","rouletteScreen","taisoScreen","firstMeet","gachaReveal","outingIntro","nyanShot","photoCancelBtn"];
+    const ids=["selectScreen","shopScreen","catRoom","recordScreen","profilePanel","dexPopup","friendScreen","clubScreen","tutorial","titleScreen","rouletteScreen","taisoScreen","firstMeet","gachaReveal","outingIntro","nyanShot","photoCancelBtn"];
     const obs=new MutationObserver(()=>{try{refreshDock();}catch(_){}});
     ids.forEach(id=>{const e=$(id);if(e)obs.observe(e,{attributes:true,attributeFilter:["class","hidden"]});});
   }catch(_){}
@@ -16178,6 +16194,9 @@ function dockGo(t){
   try{$("recordScreen").classList.remove("visible");}catch(_){}
   try{$("profilePanel").classList.remove("visible");}catch(_){}
   try{$("dexPopup").classList.remove("visible");}catch(_){}
+  try{if(typeof closeMyShop==="function")closeMyShop();}catch(_){}   /* ★商店街も閉じてから移動 */
+  try{$("tvList").classList.remove("show");}catch(_){}
+  try{$("tvShop").classList.remove("show");}catch(_){}
   try{refreshDock();}catch(_){}
   if(t==="home"){ try{showSelect();}catch(_){} }
   else if(t==="room"){ openRoom(); }
@@ -25420,14 +25439,8 @@ function _strShowMap(on){
   try{_strDock();}catch(_){}
 }
 /* この画面では 下のドックを かくす（上に ボタンが あるので） */
-function _strDock(){
-  try{
-    const d=$("fabWrap");if(!d)return;
-    const on=$("shopScreen")&&$("shopScreen").classList.contains("visible")
-      &&$("shpPage1")&&!$("shpPage1").hidden
-      &&$("tvStreet")&&!$("tvStreet").hidden;
-    d.style.display=on?"none":"";
-  }catch(_){}
+function _strDock(){   /* 商店街でもドックを出す（refreshDockに一本化） */
+  try{refreshDock();}catch(_){}
 }
 /* --- 地図 --- */
 let _tvView=null;

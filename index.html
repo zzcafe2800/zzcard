@@ -5571,6 +5571,16 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 #tsMore[open] #tsMoreSum{color:#5b95c9;}
 #tsMoreBody{padding-top:4px;}
 </style>
+<style id="upd731Css">
+/* 2025-07-31 依頼分 */
+/* ホーム左上の「たいそう／とうこう／いま体操中」人数カウンタを非表示 */
+#topLeftStack>#buddyCount,#topLeftStack>#recentPostCount,#topLeftStack>#liveCount{display:none !important;}
+/* スマホなど狭い画面ではホーム左上カードを少し小さく（画面幅に応じて自動調整） */
+@media (max-width:560px){#topLeftStack{transform:scale(.82);transform-origin:top left;}#todayRecCard,#streakCard{font-size:12px;}}
+@media (max-width:400px){#topLeftStack{transform:scale(.72);transform-origin:top left;}}
+/* ラジオ体操ちゅう：クリックで倍速（約1秒で終わる） */
+body.exFast #exRadio,body.exFast .exNote,body.exFast #hillCats,body.exFast #hillCats *{animation-duration:.3s !important;}
+</style>
 </head>
 <body>
 <script>(function(){try{var m=/Mobi|Android|iPhone|iPod|iPad/i.test(navigator.userAgent||"");var p=(window.innerHeight||0)>=(window.innerWidth||0);if(m||p)document.documentElement.classList.add("lite");}catch(e){}})();</script>
@@ -6072,13 +6082,13 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
   <div id="liveCount" hidden></div>
   <div id="todayRecCard">
     <div class="trTitle">今日の記録</div>
-    <div class="trRow"><span class="trIco">\u2600\ufe0f</span><span class="trLbl">早起き</span><b class="trVal" id="trWake">–</b></div>
-    <div class="trRow"><span class="trIco">\ud83c\udfb5</span><span class="trLbl">体操</span><b class="trVal" id="trExer">–</b></div>
-    <div class="trRow"><span class="trIco">\ud83d\ude0a</span><span class="trLbl">気分</span><b class="trVal" id="trMood">–</b></div>
+    <div class="trRow"><span class="trIco">☀️</span><span class="trLbl">早起き</span><b class="trVal" id="trWake">–</b></div>
+    <div class="trRow"><span class="trIco">🎵</span><span class="trLbl">体操</span><b class="trVal" id="trExer">–</b></div>
+    <div class="trRow"><span class="trIco">😊</span><span class="trLbl">気分</span><b class="trVal" id="trMood">–</b></div>
   </div>
   <div id="streakCard">
     <div class="stkTitle">連続早起き</div>
-    <div class="stkMain"><span class="stkFire">\ud83d\udd25</span><b class="stkNum" id="stkNum">0</b><span class="stkUnit">日</span></div>
+    <div class="stkMain"><span class="stkFire">🔥</span><b class="stkNum" id="stkNum">0</b><span class="stkUnit">日</span></div>
     <div class="stkBest" id="stkBest">最高記録 0日</div>
   </div>
 </div>
@@ -11602,7 +11612,7 @@ async function autoStampFlow(){
     $("taisoScreen").classList.add("visible");
     try{if(tutStep()==="1")_tutGo2();}catch(_){}   /* ★チュートリアル：ステップ2へ */
     try{setTimeout(function(){try{_yumeMaybeGacha();}catch(_){}},650);}catch(_){}   /* ★毎朝 仲間ゲット演出 */
-    setTimeout(()=>{try{if(!tutOn())_autoPostToday();}catch(_){}},400);   /* コメント空でも 自動でとうこう（チュートリアル中は しない） */
+    /* ★自動投稿は やめた：とうこうボタンを 押したときだけ 投稿する */
     try{setTimeout(()=>{try{_aiMaybeNudge();}catch(_){}},1500);}catch(_){}
   };
   var _askDone=false,_waitDone=null;
@@ -12816,7 +12826,7 @@ function _exShowSpotlight(){
 function _exHideSpotlight(){ try{var sp=$("exSpotlight");if(sp){sp.classList.remove("on");setTimeout(function(){try{if(sp&&!sp.classList.contains("on"))sp.style.display="none";}catch(_){}},1100);}}catch(_){} }
 function _exShowUI(){
   try{ let sk=$("exSkip");
-    if(!sk){sk=document.createElement("div");sk.id="exSkip";sk.innerHTML='<div id="exBanner">🎵 ラジオ体操ちゅう</div><div id="exHint">タップで スキップ</div>';document.body.appendChild(sk);sk.addEventListener("pointerdown",()=>{stopMorningExercise();});}
+    if(!sk){sk=document.createElement("div");sk.id="exSkip";sk.innerHTML='<div id="exBanner">🎵 ラジオ体操ちゅう</div><div id="exHint">タップで スキップ</div>';document.body.appendChild(sk);sk.addEventListener("pointerdown",()=>{_exFastFinish();});}
     sk.classList.add("on");
   }catch(_){}
 }
@@ -12824,7 +12834,7 @@ function _exHideUI(){ try{const sk=$("exSkip");if(sk)sk.classList.remove("on");}
 function _tutOnExerciseStart(){try{if(tutStep()==="1")_tutClear();}catch(_){}}
 function startMorningExercise(opts){
   opts=opts||{};
-  if(_exerciseActive)return;_exerciseActive=true;
+  if(_exerciseActive)return;_exerciseActive=true;window._exFasted=false;
   try{_tutOnExerciseStart();}catch(_){}   /* チュートリアル：スポットライトを 消す */
   _exOnDone=opts.onDone||null;
   if(!opts.manual){try{localStorage.setItem("radio_exercise_date",jstKey());}catch(_){}}
@@ -12915,6 +12925,14 @@ function _exFinaleMeow(){
     for(let i=0;i<n;i++){try{_playMeow(pit[i]||1,i*0.05);}catch(_){}}
     return cats.length;}catch(_){return 0;}
 }
+function _exFastFinish(){
+  if(!_exerciseActive)return;
+  if(window._exFasted){try{stopMorningExercise();}catch(_){}return;}
+  window._exFasted=true;
+  try{document.body.classList.add("exFast");}catch(_){}
+  try{clearTimeout(_exStopTimer);}catch(_){}
+  _exStopTimer=setTimeout(function(){try{stopMorningExercise();}catch(_){}},1000);
+}
 function stopMorningExercise(){
   if(!_exerciseActive)return;_exerciseActive=false;
   try{clearInterval(_exNoteTimer);}catch(_){}_exNoteTimer=null;
@@ -12926,7 +12944,7 @@ function stopMorningExercise(){
   try{if(bgmStarted&&!bgmMuted){bgmAudio.play().catch(()=>{});}}catch(_){}   /* ホームBGMを もどす */
   const _fin=_exFinaleMeow();   /* 最後に全員一斉ににゃっ（読み上げあり） */
   const finish=()=>{
-    document.body.classList.remove("exercising");for(let i=1;i<=7;i++)document.body.classList.remove("exmv"+i);
+    document.body.classList.remove("exercising","exFast");for(let i=1;i<=7;i++)document.body.classList.remove("exmv"+i);
     _hideExRadio();_exHideUI();
     const cb=_exOnDone;_exOnDone=null;
     if(cb){setTimeout(()=>{try{cb();}catch(_){}},150);}

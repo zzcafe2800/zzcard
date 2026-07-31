@@ -5647,6 +5647,12 @@ html.lite #shopScreen.show #shpBody{padding-bottom:calc(78px + env(safe-area-ins
 #abGrid .abGridRow span.struck::after{content:"";position:absolute;left:-14%;right:-14%;top:-40%;bottom:-40%;pointer-events:none;background:linear-gradient(118deg,transparent 42%,rgba(255,70,70,.9) 47%,#fff 50%,rgba(255,70,70,.9) 53%,transparent 58%);animation:abSlash .42s ease-out;}
 @keyframes abSlash{0%{opacity:0;transform:translateX(-40%);}40%{opacity:1;}100%{opacity:0;transform:translateX(40%);}}
 </style>
+<style id="tut2Css">
+/* チュートリアル：ひとこと欄の 青いひかり枠＆体操ボタン固定 2025-07-31 */
+.tutGlowField{outline:3px solid #4db6ff !important;outline-offset:2px;border-color:#4db6ff !important;animation:tutGlowPulse 1s ease-in-out infinite !important;}
+@keyframes tutGlowPulse{0%,100%{box-shadow:0 0 0 3px rgba(77,182,255,.3),0 0 12px 2px rgba(77,182,255,.5);}50%{box-shadow:0 0 0 4px rgba(77,182,255,.6),0 0 20px 5px rgba(77,182,255,.9);}}
+body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !important;}
+</style>
 </head>
 <body>
 <script>(function(){try{var m=/Mobi|Android|iPhone|iPod|iPad/i.test(navigator.userAgent||"");var p=(window.innerHeight||0)>=(window.innerWidth||0);if(m||p)document.documentElement.classList.add("lite");}catch(e){}})();</script>
@@ -6148,8 +6154,8 @@ html.lite #shopScreen.show #shpBody{padding-bottom:calc(78px + env(safe-area-ins
   <div id="liveCount" hidden></div>
   <div id="todayRecCard">
     <div class="trTitle">今日の記録</div>
-    <div class="trRow"><span class="trIco">☀️</span><span class="trLbl">早起き</span><b class="trVal" id="trWake">–</b></div>
-    <div class="trRow"><span class="trIco">🎵</span><span class="trLbl">体操</span><b class="trVal" id="trExer">–</b></div>
+    <div class="trRow"><span class="trIco">🌙</span><span class="trLbl">就寝</span><b class="trVal" id="trWake">–</b></div>
+    <div class="trRow"><span class="trIco" id="trExerIco">🎵</span><span class="trLbl" id="trExerLbl">体操</span><b class="trVal" id="trExer">–</b></div>
     <div class="trRow"><span class="trIco">😊</span><span class="trLbl">気分</span><b class="trVal" id="trMood">–</b></div>
   </div>
   <div id="streakCard">
@@ -12919,7 +12925,7 @@ function startMorningExercise(opts){
     _exNoteTimer=setInterval(_spawnExNote,380);
     /* ラジオ体操ちゅうは「にゃー」も「読み上げ」も出さない（削除） */
     try{bgmAudio.pause();}catch(_){}   /* ホームBGM(bgm11)は止めて ラジオ体操の曲だけに */
-    try{ if(!window._exAud){window._exAud=new Audio("radiobgm.mp3");window._exAud.preload="auto";} _exerciseAudio=window._exAud; try{_exerciseAudio.currentTime=0;}catch(_){} _exerciseAudio.volume=bgmMuted?0:Math.max(bgmVol,0.28); _exerciseAudio.play().catch(()=>{}); }catch(_){}
+    try{ if(!window._exAud){window._exAud=new Audio("radiobgm.mp3");window._exAud.preload="auto";} _exerciseAudio=window._exAud; try{_exerciseAudio.currentTime=0;}catch(_){} _exerciseAudio.volume=bgmMuted?0:bgmVol;   /* ホームBGMと 同じ音量に（爆音ぼうし） */ _exerciseAudio.play().catch(()=>{}); }catch(_){}
     _exStopTimer=setTimeout(()=>stopMorningExercise(),6000);   /* 6秒で自動的に次の画面へ */
   };
   if(morning)setTimeout(begin,400);else begin();   /* ラグ短縮：1500→400ms */
@@ -13023,17 +13029,24 @@ function stopMorningExercise(){
 function _renderTodayRec(){
   try{
     var done=getDoneDates().indexOf(jstKey())>=0;
-    /* 早起き（起床時刻） */
+    /* 就寝（寝た時刻・記録があれば表示） */
     var w=$("trWake");
     if(w){
-      var wf=(typeof getActualWake==="function")?getActualWake():null;
-      w.textContent=(done&&Number.isFinite(wf))?fmtHM(Math.floor(wf),Math.round((wf%1)*60)):"–";
+      var sf=(typeof todaySleepHF==="function")?todaySleepHF():null;
+      w.textContent=Number.isFinite(sf)?fmtHM(Math.floor(sf),Math.round((sf%1)*60)):"–";
     }
-    /* 体操（完了時刻） */
-    var ex=$("trExer");
+    /* 体操（完了時刻）。起床時間が 記録されていれば「起床」に かわる */
+    var ex=$("trExer"), exL=$("trExerLbl"), exI=$("trExerIco");
     if(ex){
-      var df=(typeof _doneTimeHf==="function")?_doneTimeHf():null;
-      ex.textContent=(done&&Number.isFinite(df))?fmtHM(Math.floor(df),Math.round((df%1)*60)):"–";
+      var wIn=null; try{wIn=getWakeLog()[jstKey()];}catch(_){}
+      if(Number.isFinite(wIn)){
+        if(exL)exL.textContent="起床"; if(exI)exI.textContent="☀️";
+        ex.textContent=fmtHM(Math.floor(wIn),Math.round((wIn%1)*60));
+      }else{
+        if(exL)exL.textContent="体操"; if(exI)exI.textContent="🎵";
+        var df=(typeof _doneTimeHf==="function")?_doneTimeHf():null;
+        ex.textContent=(done&&Number.isFinite(df))?fmtHM(Math.floor(df),Math.round((df%1)*60)):"–";
+      }
     }
     /* 気分 */
     var mo=$("trMood");
@@ -29811,6 +29824,7 @@ function _tutSpot(el,stepNo,msg,opts){
   opts=opts||{};
   var ov=$("tutOv");if(!ov)return;
   _tutTargetEl=el;
+  try{document.body.classList.toggle("tutFreezeBtn", !!(el&&el.id==="randomModeBtn"));}catch(_){}
   ov.hidden=false;
   var sn=$("tutStepNo");if(sn){sn.textContent=stepNo||"";sn.style.display=stepNo?"":"none";}
   var mg=$("tutMsg");if(mg)mg.innerHTML=msg||"";
@@ -29848,6 +29862,8 @@ function _tutReposition(){
   }catch(_){}
 }
 function _tutClear(){
+  try{document.body.classList.remove("tutFreezeBtn");}catch(_){}
+  try{document.querySelectorAll(".tutGlowField").forEach(function(x){x.classList.remove("tutGlowField");});}catch(_){}
   try{clearInterval(_tutReposT);}catch(_){}
   _tutReposT=null;_tutTargetEl=null;
   var ov=$("tutOv");if(ov)ov.hidden=true;
@@ -29858,12 +29874,13 @@ function _tutResume(){
   try{
     var v=tutStep();
     if(v==="1"){setTimeout(function(){var el=$("randomModeBtn");if(el)_tutSpot(el,"ステップ 1","あさ おきたら この サイトを ひらいてね。<br>まずは <b>ラジオ体操</b>を おしてみよう！");},900);}
-    else if(v==="2"){setTimeout(function(){var el=$("tsPostBtn");if(el&&el.offsetParent)_tutSpot(el,"ステップ 2","おきた 時間を みんなに 共有してみよう。<br><b>投稿する</b>を おしてね！");},900);}
+    else if(v==="2"){setTimeout(function(){var el=$("tsComment")||$("tsPostBtn");if(el){try{var c=$("tsComment");if(c)c.classList.add("tutGlowField");}catch(_){}_tutSpot(el,"ステップ 2","きょうの ひとことを かいてみよう！<br>かかなくても だいじょうぶ。<br><b>かいたり まわりを さわると つぎへ。</b>");}},900);}
     else if(v==="2a"){setTimeout(function(){var el=$("tsAdvBtn");if(el&&el.offsetParent)_tutSpot(el,"ステップ 3","あつめた ユメっ子と <b>冒険</b>に 行ってみよう！",{okBtn:true,okText:"つぎへ"});else _tutGo3();},900);}
     else if(v==="3"){setTimeout(function(){var el=$("ground")||$("randomModeBtn");_tutSpot(el,"","ホームに あなたの 猫が でてきたよ！<br>みんなも おなじように あつまるんだ。",{okBtn:true});},900);}
   }catch(_){}
 }
 try{setTimeout(function(){try{if(tutOn())_tutResume();}catch(_){}},1600);}catch(_){}
+try{ var _tutOvEl=document.getElementById("tutOv"); if(_tutOvEl)_tutOvEl.addEventListener("click",function(){try{if(tutStep()==="2")_tutGoAdv();}catch(_){}}); var _tutCmtEl=document.getElementById("tsComment"); if(_tutCmtEl)_tutCmtEl.addEventListener("input",function(){try{if(tutStep()==="2")_tutGoAdv();}catch(_){}}); }catch(_){}
 function _tutGo1(){
   tutSet("1");
   try{if(typeof showSelect==="function")showSelect();}catch(_){}
@@ -29878,11 +29895,12 @@ function _tutGo2(){
   if(tutStep()!=="1")return;
   tutSet("2");
   setTimeout(function(){
-    var el=$("tsPostBtn");
+    var el=$("tsComment")||$("tsPostBtn");
     try{if(el&&el.scrollIntoView)el.scrollIntoView({block:"center",behavior:"smooth"});}catch(_){}
     setTimeout(function(){
-      _tutSpot($("tsPostBtn"),"ステップ 2",
-        "おきた 時間を みんなに 共有してみよう。<br>コメントを かいても かかなくても だいじょうぶ。<br><b>投稿する</b>を おしてね！");
+      try{var c=$("tsComment");if(c)c.classList.add("tutGlowField");}catch(_){}
+      _tutSpot($("tsComment")||$("tsPostBtn"),"ステップ 2",
+        "きょうの ひとことを かいてみよう！<br>かかなくても だいじょうぶ。<br><b>かいたり まわりを さわると つぎへ すすむよ。</b>");
     },420);
   },1400);
 }

@@ -5343,8 +5343,8 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 #abField .abUnit.down{opacity:.3;filter:grayscale(1);}
 #abField .abUnit.down .abUnitPic{transform:rotate(-14deg) translateY(5px);}
 /* うごき：こうげき＝とびだす／ひっと＝ゆれる */
-@keyframes abAtkUp{0%{transform:translateY(0)}35%{transform:translateY(-16px) scale(1.06)}100%{transform:translateY(0)}}
-@keyframes abAtkDown{0%{transform:translateY(0)}35%{transform:translateY(14px) scale(1.06)}100%{transform:translateY(0)}}
+@keyframes abAtkUp{0%{transform:translateY(0)}22%{transform:translateY(-46px) scale(1.12)}40%{transform:translateY(-52px) scale(1.14)}100%{transform:translateY(0)}}
+@keyframes abAtkDown{0%{transform:translateY(0)}22%{transform:translateY(40px) scale(1.12)}40%{transform:translateY(46px) scale(1.14)}100%{transform:translateY(0)}}
 @keyframes abShake{0%,100%{transform:translateX(0)}14%{transform:translateX(-8px) rotate(-3deg)}30%{transform:translateX(7px) rotate(3deg)}48%{transform:translateX(-5px)}66%{transform:translateX(4px)}82%{transform:translateX(-2px)}}
 @keyframes abCrit{0%,100%{transform:translateX(0) scale(1)}12%{transform:translateX(-11px) scale(1.1) rotate(-5deg)}28%{transform:translateX(10px) scale(1.08) rotate(5deg)}50%{transform:translateX(-7px) scale(1.04)}72%{transform:translateX(5px)}}
 #abField .abUnit.atk{animation:abAtkUp .5s cubic-bezier(.3,1.2,.4,1);}
@@ -5580,6 +5580,47 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 @media (max-width:400px){#topLeftStack{transform:scale(.72);transform-origin:top left;}}
 /* ラジオ体操ちゅう：クリックで倍速（約1秒で終わる） */
 body.exFast #exRadio,body.exFast .exNote,body.exFast #hillCats,body.exFast #hillCats *{animation-duration:.3s !important;}
+</style>
+<style id="battleUpdCss">
+/* ===== 冒険バトル 見た目＆操作アップデート 2025-07-31 ===== */
+/* ③ 足もと▢を広く・間隔広く／ユニットを▢の上に */
+#abField #abTeam{gap:min(10vw,42px) !important;align-items:flex-end;padding-bottom:6px;}
+#abGrid{width:min(92%,380px) !important;opacity:.7 !important;}
+#abGrid .abGridRow{gap:min(9vw,34px) !important;}
+#abGrid .abGridRow span{height:38px;}
+/* 前衛=大きく前に＋金台座／後衛=小さく奥に＋青 */
+#abTeam .abUnit.front{transform:translateY(-4px) scale(1.12) !important;z-index:3;}
+#abTeam .abUnit:not(.front){transform:translateY(-22px) scale(.86) !important;z-index:1;filter:brightness(.9);}
+.abUnit.front .abUnitPic{filter:drop-shadow(0 6px 0 rgba(255,190,90,.35)) drop-shadow(0 0 10px rgba(255,200,100,.6)) !important;}
+.abUnit:not(.front) .abUnitPic{filter:drop-shadow(0 5px 0 rgba(120,180,235,.3)) !important;}
+.abUnit .abPosTag{display:block;font-size:9px;font-weight:900;letter-spacing:.5px;margin-top:1px;border-radius:6px;padding:0 5px;}
+.abUnit.front .abPosTag{color:#3a2400;background:linear-gradient(180deg,#ffe08a,#ffc24d);}
+.abUnit:not(.front) .abPosTag{color:#d8ecff;background:rgba(90,140,200,.5);}
+/* ⑥ フィールドを奥行きのある舞台に */
+#abField{background:radial-gradient(120% 90% at 50% 8%,#3a5a86 0%,#22344f 46%,#141d2e 100%) !important;box-shadow:inset 0 -30px 50px rgba(0,0,0,.4),inset 0 10px 24px rgba(120,170,220,.12);border:1px solid rgba(140,180,230,.18);}
+#abEnemy #abEnemyPic{filter:drop-shadow(0 8px 12px rgba(0,0,0,.5)) drop-shadow(0 0 18px rgba(255,120,120,.25));}
+/* ⑦ ログの敵側テキストを赤に */
+.abLogLine.en{color:#ff8f8f;}
+.abLogLine.en::before{content:"\25b8 ";color:#ff6b6b;}
+/* ⑧ 説明文＋操作を画面いちばん下へ */
+#abCtrl{flex:0 0 auto;padding:6px 14px calc(8px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:6px;}
+#abGauge{position:relative;height:16px;border-radius:999px;background:rgba(255,255,255,.14);overflow:hidden;border:1px solid rgba(255,255,255,.2);}
+#abGaugeFill{position:absolute;left:0;top:0;bottom:0;width:0%;border-radius:999px;background:linear-gradient(90deg,#7fd0ff,#c58bff);transition:width .12s;}
+#abGauge.ready #abGaugeFill{background:linear-gradient(90deg,#ffd45e,#ff7ac2);animation:abGaugePulse .6s ease-in-out infinite;}
+#abGaugeLbl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6);pointer-events:none;}
+#abGauge.ready #abGaugeLbl::after{content:" READY！";}
+@keyframes abGaugePulse{0%,100%{filter:brightness(1);}50%{filter:brightness(1.4);}}
+#abNumBar{display:flex;gap:6px;}
+.abNumBtn{flex:1;min-width:0;border:none;border-radius:12px;padding:6px 4px;font-family:inherit;font-weight:900;cursor:pointer;background:rgba(90,140,200,.5);color:#eaf3ff;display:flex;flex-direction:column;align-items:center;line-height:1.1;box-shadow:0 3px 0 rgba(0,0,0,.25);transition:transform .1s;}
+.abNumBtn:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.25);}
+.abNumBtn b{font-size:15px;}
+.abNumBtn span{font-size:9px;opacity:.9;max-width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.abNumBtn.front{background:linear-gradient(180deg,#ffdf88,#ffbf49);color:#3a2400;}
+.abNumBtn.down{opacity:.4;}
+#abMashBtn{flex:0 0 auto;border:none;border-radius:12px;padding:6px 12px;font-family:inherit;font-weight:900;font-size:11px;cursor:pointer;background:linear-gradient(180deg,#c58bff,#8a5cff);color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.3);line-height:1.15;}
+#abMashBtn:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.3);}
+#abCtrlHelp{text-align:center;font-size:10px;font-weight:800;color:rgba(255,255,255,.6);line-height:1.4;}
+#abPosHelp{display:none !important;}
 </style>
 </head>
 <body>
@@ -28825,6 +28866,7 @@ function _advTeamAct(st,u){
   if(u.spdUp>0){u.spdUp--; if(u.spdUp===0)u.spd=u.spdBase||u.spd;}
   if(u.atkUp>0){u.atkUp--; if(u.atkUp===0)u.atk=u.atkBase*((u.pos==="front")?1.15:1);}
   if(u.sleep>0){ u.sleep--; out.push(u.name+" は ねむっている…"); _advFx(st,{t:"sleep",who:"team",u:u}); return out; }
+  if(st._force){ st._force=false; if(u.skill){ return _advSkill(st,u,u.skill); } }
   if(u.pers==="いたずら" && Math.random()<0.32){ e.confused=2; out.push(u.name+" の いたずら！ てきを こんらん させた！"); _advFx(st,{t:"state",who:"enemy",label:"こんらん"}); return out; }
   /* ★とくべつな技（まれに 出る） */
   var sk=u.skill;
@@ -28958,7 +29000,9 @@ function _advStep(st){
   if(st.phase==="team"){
     var alive=st.team.filter(function(t){return t.hp>0;});
     if(!alive.length){ st.over=true; st.win=false; return ["ぜんめつ してしまった…"]; }
-    var u=alive[st.tIdx % alive.length]; st.tIdx++;
+    var u;
+    if(st.forceIdx!=null && st.team[st.forceIdx] && st.team[st.forceIdx].hp>0){ u=st.team[st.forceIdx]; st.forceIdx=null; st._force=true; }
+    else { u=alive[st.tIdx % alive.length]; st.tIdx++; }
     out=_advTeamAct(st,u); st.phase="enemy";
   }else{ out=_advEnemyAct(st); st.phase="team"; }
   return out;
@@ -29072,7 +29116,7 @@ function _advBuildBattleUI(){
         (fr?'<span class="abShield" title="前衛">\ud83d\udee1\ufe0f</span>':"")+
         '<div class="abNamePlate"><span class="abUnitName">'+escHtml(u.name)+'</span>'+
         '<span class="abStatus" data-st="'+i+'"></span>'+
-        '<span class="abHpWrap"><span class="abHp abUnitHp" data-h="'+i+'"></span></span></div>'+
+        '<span class="abHpWrap"><span class="abHp abUnitHp" data-h="'+i+'"></span></span>'+'<span class="abPosTag">'+(fr?"まえ":"うしろ")+'</span></div>'+
         '<div class="abUnitPic">'+_yumeMiniInner(u.y)+'</div>'+
         '<div class="abUnitShadow"></div>'+
       '</div>';
@@ -29082,6 +29126,8 @@ function _advBuildBattleUI(){
     _advPaintHP();
     _advPaintSel();
     _advShowPosHelp();
+    try{_advBuildNumBar();}catch(_){}
+    _advGauge=0;try{_advPaintGauge();}catch(_){}
   }catch(_){}
 }
 /* ★バトル中に えらんでいる 味方（キーの 1/2/3・タップで えらぶ） */
@@ -29093,6 +29139,45 @@ function _advPaintSel(){
       if(row)row.classList.toggle("picked", i===_advSelIdx && u.hp>0);
     });
   }catch(_){}
+}
+/* ★とくぎゲージ＆数字ボタン（クリックで まえ／うしろ・スペース連打で とくぎ） */
+var _advGauge=0;
+function _advBuildNumBar(){
+  try{ var nb=$("abNumBar"); if(!nb)return;
+    nb.innerHTML=_advTeamUnits.map(function(u,i){
+      return '<button class="abNumBtn'+(u.pos==="front"?" front":"")+'" data-n="'+i+'" type="button"><b>'+(i+1)+'</b><span>'+escHtml(u.name)+'</span></button>';
+    }).join("")+'<button id="abMashBtn" type="button">\u26a1 とくぎ<br>れんだ</button>';
+  }catch(_){}
+}
+function _advPaintNumBar(){
+  try{ _advTeamUnits.forEach(function(u,i){ var b=document.querySelector('.abNumBtn[data-n="'+i+'"]'); if(b){ b.classList.toggle("front",u.pos==="front"); b.classList.toggle("down",u.hp<=0);} }); }catch(_){}
+}
+function _advPaintGauge(){
+  try{ var f=$("abGaugeFill"); if(f)f.style.width=Math.round(_advGauge)+"%"; var w=$("abGauge"); if(w)w.classList.toggle("ready",_advGauge>=100); }catch(_){}
+}
+/* 数字＝その子の まえ／うしろ を いれかえ（回避にも つかう・クールタイム0.7秒） */
+function _advToggleUnitPos(i){
+  if(!_advState||_advState.over||_advPickState)return;
+  var u=_advTeamUnits[i]; if(!u||u.hp<=0)return;
+  var now=Date.now(); if(now<_advPosCd){ try{_advFloatMsg("ちょっと まってね…");}catch(_){} return; }
+  _advPosCd=now+700; _advSelIdx=i; _advMoveSel(u.pos==="front"?"back":"front");
+  try{_advPaintNumBar();}catch(_){}
+}
+/* スペース連打／れんだボタン＝ゲージをためる→満タンで とくぎ発動 */
+function _advMashSkill(){
+  if(!_advState||_advState.over||_advPickState)return;
+  if(_advGauge>=100){
+    _advGauge=0; _advPaintGauge();
+    var cand=_advTeamUnits.filter(function(u){return u.hp>0&&u.skill;});
+    if(!cand.length){ try{_advFloatMsg("とくぎを つかえる子が いないよ");}catch(_){} return; }
+    cand.sort(function(a,b){return ((b.pos==="front")?1:0)-((a.pos==="front")?1:0);});
+    var u=cand[0], idx=_advTeamUnits.indexOf(u);
+    if(_advState)_advState.forceIdx=idx;
+    try{_advFloatMsg(u.name+" の とくぎ、はなつ！");playPop();}catch(_){}
+  }else{
+    _advGauge=Math.min(100,_advGauge+13); _advPaintGauge();
+    try{_abTone(560+_advGauge*4.5,0,0.05,"square",0.05);}catch(_){}
+  }
 }
 /* 前後移動の 使い方ヒント（1回だけ） */
 function _advShowPosHelp(){
@@ -29127,6 +29212,7 @@ function _advMoveSel(pos){
     if(row){
       var fr=(pos==="front");
       row.classList.toggle("front",fr);
+      try{var pt=row.querySelector(".abPosTag");if(pt)pt.textContent=fr?"まえ":"うしろ";}catch(_){}
       var sh=row.querySelector(".abShield");
       if(fr && !sh){ var sp=document.createElement("span"); sp.className="abShield"; sp.title="前衛"; sp.textContent="\ud83d\udee1\ufe0f"; row.insertBefore(sp,row.firstChild); }
       else if(!fr && sh){ sh.remove(); }
@@ -29164,8 +29250,8 @@ function _advBattleKey(e){
       if(k==="1"||k==="2"||k==="3"){ _advDoPick(parseInt(k,10)-1); e.preventDefault(); }
       return;
     }
-    if(k==="1"||k==="2"||k==="3"){ _advSelectUnit(parseInt(k,10)-1); e.preventDefault(); }
-    else if(k===" "||k==="spacebar"||e.code==="Space"){ _advToggleSelPos(); e.preventDefault(); }
+    if(k==="1"||k==="2"||k==="3"){ _advToggleUnitPos(parseInt(k,10)-1); e.preventDefault(); }
+    else if(k===" "||k==="spacebar"||e.code==="Space"){ _advMashSkill(); e.preventDefault(); }
   }catch(_){}
 }
 function _advPaintHP(){
@@ -29183,12 +29269,13 @@ function _advPaintHP(){
     }
     _advPaintSel();
     _advPaintStatus();
+    try{_advPaintNumBar();}catch(_){}
   }catch(_){}
 }
-function _advPushLog(lines){
+function _advPushLog(lines,en){
   try{
     var lg=$("abLog");if(!lg)return;
-    lines.forEach(function(t){var d=document.createElement("div");d.className="abLogLine";d.textContent=t;lg.appendChild(d);});
+    lines.forEach(function(t){var d=document.createElement("div");d.className="abLogLine"+(en?" en":"");d.textContent=t;lg.appendChild(d);});
     while(lg.children.length>40)lg.removeChild(lg.firstChild);
     lg.scrollTop=lg.scrollHeight;
   }catch(_){}
@@ -29320,8 +29407,9 @@ function _advSkillBanner(u,sk){
 function _advTick(){
   var st=_advState;if(!st){clearInterval(_advBattleTimer);return;}
   var actor=(st.phase==="team")?(st.tIdx):-1;
+  var _wasEnemy=(st.phase==="enemy");
   var lines=_advStep(st);
-  if(lines&&lines.length)_advPushLog(lines);
+  if(lines&&lines.length)_advPushLog(lines,_wasEnemy);
   /* ★この手番で おきたことを 演出に する */
   try{
     (st.fx||[]).forEach(function(f){
@@ -29969,6 +30057,7 @@ function _advDexBattle(chIdx){
   var _apath=$("advPath");if(_apath)_apath.addEventListener("click",function(e){var n=e.target&&e.target.closest?e.target.closest(".advNode"):null;if(!n)return;var st=n.getAttribute("data-stg");if(st==null)return;try{playClick();}catch(_){}_advSetPick(parseInt(st,10));_advRenderSetup();});
   var st=$("advStart");if(st)st.addEventListener("click",function(){if(st.disabled)return;try{playClick();}catch(_){}_advStartBattle();});
   var bc=$("abClose");if(bc)bc.addEventListener("click",function(){try{playClick();}catch(_){}_advCloseBattle();});
+  var _nbar=$("abNumBar");if(_nbar)_nbar.addEventListener("click",function(e){var b=e.target&&e.target.closest?e.target.closest(".abNumBtn"):null;if(b){var n=parseInt(b.getAttribute("data-n"),10);if(!isNaN(n)){try{playClick();}catch(_){}_advToggleUnitPos(n);}return;}var m=e.target&&e.target.closest?e.target.closest("#abMashBtn"):null;if(m)_advMashSkill();});
   var _abt=$("abTeam");
   if(_abt)_abt.addEventListener("click",function(e){
     var row=e.target&&e.target.closest?e.target.closest(".abUnit"):null; if(!row)return;
@@ -34330,6 +34419,11 @@ function _gpStreetHTML(){
   </div>
   <div id="abSkillBanner"></div>
   <div id="abLog"></div>
+  <div id="abCtrl">
+    <div id="abGauge"><span id="abGaugeFill"></span><span id="abGaugeLbl">とくぎゲージ</span></div>
+    <div id="abNumBar"></div>
+    <div id="abCtrlHelp">①②③ を おすと まえ／うしろ（たてれつ）を いれかえ・スペース or「とくぎ れんだ」で ゲージがたまると とくぎ！</div>
+  </div>
   <div id="abResult" hidden><div id="abResultBig"></div><div id="abResultSub"></div><div id="abLvUp" hidden></div><div id="abResBtns"><button id="abRetry" type="button" hidden>↺ もう一度</button><button id="abClose" type="button">とじる</button></div></div>
 </div>
 <div id="advDex">

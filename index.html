@@ -5589,8 +5589,8 @@ body.exFast #exRadio,body.exFast .exNote,body.exFast #hillCats,body.exFast #hill
 #abGrid .abGridRow{gap:min(9vw,34px) !important;}
 #abGrid .abGridRow span{height:38px;}
 /* 前衛=大きく前に＋金台座／後衛=小さく奥に＋青 */
-#abTeam .abUnit.front{transform:translateY(-4px) scale(1.12) !important;z-index:3;}
-#abTeam .abUnit:not(.front){transform:translateY(-22px) scale(.86) !important;z-index:1;filter:brightness(.9);}
+#abTeam .abUnit.front{transform:translateY(-22px) scale(.86) !important;z-index:1;filter:brightness(.94);}
+#abTeam .abUnit:not(.front){transform:translateY(-4px) scale(1.12) !important;z-index:3;filter:none;}
 .abUnit.front .abUnitPic{filter:drop-shadow(0 6px 0 rgba(255,190,90,.35)) drop-shadow(0 0 10px rgba(255,200,100,.6)) !important;}
 .abUnit:not(.front) .abUnitPic{filter:drop-shadow(0 5px 0 rgba(120,180,235,.3)) !important;}
 .abUnit .abPosTag{display:block;font-size:9px;font-weight:900;letter-spacing:.5px;margin-top:1px;border-radius:6px;padding:0 5px;}
@@ -5632,6 +5632,20 @@ body.exFast #exRadio,body.exFast .exNote,body.exFast #hillCats,body.exFast #hill
 html.lite #shopScreen.show .tvBody{padding-bottom:calc(78px + env(safe-area-inset-bottom)) !important;}
 html.lite #tvList.show .tvBody,html.lite #tvShop.show .tvBody{padding-bottom:calc(78px + env(safe-area-inset-bottom)) !important;}
 html.lite #shopScreen.show #shpBody{padding-bottom:calc(78px + env(safe-area-inset-bottom)) !important;}
+</style>
+<style id="teleCss">
+/* てきの こうげき予兆：ねらわれた足もとの四角が赤く点滅 2025-07-31 */
+#abGrid .abGridRow span.aim{background:rgba(255,64,64,.6) !important;border-color:#ff4040 !important;box-shadow:0 0 12px 3px rgba(255,60,60,.75) !important;animation:abAimPulse .45s ease-in-out infinite !important;}
+@keyframes abAimPulse{0%,100%{opacity:.45;}50%{opacity:1;}}
+#abField .abUnit.aimed{animation:abAimedBlink .45s ease-in-out infinite;}
+@keyframes abAimedBlink{0%,100%{filter:none;}50%{filter:drop-shadow(0 0 7px rgba(255,70,70,.95));}}
+</style>
+<style id="tele2Css">
+#abGrid .abGridRow span{position:relative;}
+#abGrid .abGridRow span.struck{background:rgba(255,255,255,.92) !important;border-color:#fff !important;box-shadow:0 0 18px 6px rgba(255,90,90,.9) !important;animation:abStruck .42s ease-out !important;z-index:2;}
+@keyframes abStruck{0%{transform:scale(1);filter:brightness(1);}28%{transform:scale(1.28);filter:brightness(2);}100%{transform:scale(1);filter:brightness(1);}}
+#abGrid .abGridRow span.struck::after{content:"";position:absolute;left:-14%;right:-14%;top:-40%;bottom:-40%;pointer-events:none;background:linear-gradient(118deg,transparent 42%,rgba(255,70,70,.9) 47%,#fff 50%,rgba(255,70,70,.9) 53%,transparent 58%);animation:abSlash .42s ease-out;}
+@keyframes abSlash{0%{opacity:0;transform:translateX(-40%);}40%{opacity:1;}100%{opacity:0;transform:translateX(40%);}}
 </style>
 </head>
 <body>
@@ -28989,16 +29003,23 @@ function _advEnemyAct(st){
     out.push("\ud83d\udca4 てきの こもりうた！ "+t2.name+" は ねむってしまった！");
     _advFx(st,{t:"state",who:"team",u:t2,label:"ねむり"});return out;
   }
-  var target=_advPickTarget(alive);
-  if(_advDodge(target.spd)){ out.push("てきの こうげき！ "+target.name+" は ひらりと かわした！"); _advFx(st,{t:"miss",who:"team",u:target}); return out; }
-  var big=(e.kind==="power"&&Math.random()<0.2);
-  var d=_advDmg(e.atk*(big?1.8:1),0.12);
-  if(target.guard>0){target.guard--;d.v=Math.round(d.v*0.45);}
-  target.hp=Math.max(0,target.hp-d.v);
-  out.push((big?"\u2694\ufe0f てきの つよい いちげき！":"てきの こうげき！")+(d.crit?" クリティカル！":"")+" "+target.name+"に "+d.v+"ダメージ！");
-  _advFx(st,{t:"dmg",who:"team",u:target,v:d.v,crit:d.crit||big});
-  if(target.hp<=0){out.push(target.name+" は たおれてしまった…");_advFx(st,{t:"down",who:"team",u:target});}
-  if(st.team.every(function(t){return t.hp<=0;})){ st.over=true; st.win=false; out.push("ぜんめつ してしまった…"); }
+  /* ★予兆こうげき：強さに応じて 範囲(3人)・連続・予告時間が 変化。赤い四角に 必ず着弾演出。前後移動で かわす */
+  var diff=e.diff||1;
+  var big=(e.kind==="power"&&Math.random()<0.25);
+  var cells=[], label="";
+  var aoeChance=Math.min(0.55,0.10+diff*0.035);
+  if(alive.length>=2 && Math.random()<aoeChance){
+    var frontN=alive.filter(function(u){return u.pos==="front";}).length;
+    var row=(frontN>=(alive.length-frontN))?"front":"back";   /* 人数の多い列を ねらう */
+    cells=[{row:row,col:0},{row:row,col:1},{row:row,col:2}]; label="（はんい）";
+  }else{
+    var t=_advPickTarget(alive); cells=[{row:t.pos,col:st.team.indexOf(t)}];
+  }
+  var hits=1, comboChance=Math.min(0.5,0.08+diff*0.03);
+  if(Math.random()<comboChance){ hits=2+((diff>=6&&Math.random()<0.5)?1:0); }
+  var dur=Math.round(1950 - diff*90 + (Math.random()*700-250)); dur=Math.max(650,Math.min(2200,dur));
+  st.telegraph={cells:cells, big:big, hits:hits, dur:dur};
+  out.push("⚠️ てきの こうげき よこく！"+label+(hits>1?(" ×"+hits+"れんぞく"):""));
   return out;
 }
 function _advStep(st){
@@ -29141,6 +29162,7 @@ function _advBuildBattleUI(){
     _advShowPosHelp();
     try{_advBuildNumBar();}catch(_){}
     _advGauge=0;try{_advPaintGauge();}catch(_){}
+    try{clearTimeout(_advTeleTimer);}catch(_){}_advTeleState=null;try{_advClearAim();}catch(_){}
   }catch(_){}
 }
 /* ★バトル中に えらんでいる 味方（キーの 1/2/3・タップで えらぶ） */
@@ -29159,7 +29181,7 @@ function _advBuildNumBar(){
   try{ var nb=$("abNumBar"); if(!nb)return;
     nb.innerHTML=_advTeamUnits.map(function(u,i){
       return '<button class="abNumBtn'+(u.pos==="front"?" front":"")+'" data-n="'+i+'" type="button"><b>'+(i+1)+'</b><span>'+escHtml(u.name)+'</span></button>';
-    }).join("")+'<button id="abMashBtn" type="button">\u26a1 とくぎ<br>れんだ</button>';
+    }).join("");
   }catch(_){}
 }
 function _advPaintNumBar(){
@@ -29175,6 +29197,7 @@ function _advToggleUnitPos(i){
   var now=Date.now(); if(now<_advPosCd){ try{_advFloatMsg("ちょっと まってね…");}catch(_){} return; }
   _advPosCd=now+700; _advSelIdx=i; _advMoveSel(u.pos==="front"?"back":"front");
   try{_advPaintNumBar();}catch(_){}
+  if(_advTeleState){try{_advPaintAim();}catch(_){}}
 }
 /* スペース連打／れんだボタン＝ゲージをためる→満タンで とくぎ発動 */
 function _advMashSkill(){
@@ -29191,6 +29214,78 @@ function _advMashSkill(){
     _advGauge=Math.min(100,_advGauge+13); _advPaintGauge();
     try{_abTone(560+_advGauge*4.5,0,0.05,"square",0.05);}catch(_){}
   }
+}
+/* ===== てきの こうげき予兆＋前後で かわす ===== */
+var _advTeleState=null,_advTeleTimer=0;
+function _advWarnSound(dur){ try{var fast=(dur&&dur<1200); _abTone(fast?1050:900,700,0.11,"square",0.17); _abTone(fast?820:680,520,0.13,"square",0.15,fast?0.09:0.13); if(fast)_abTone(1050,760,0.10,"square",0.14,0.19); }catch(_){} }
+function _advGridCell(c){ try{var row=document.querySelector("#abGrid "+((c.row==="front")?".abGridFront":".abGridBack")); return row?row.children[c.col]:null;}catch(_){return null;} }
+function _advPaintAim(){
+  try{
+    document.querySelectorAll("#abGrid .aim").forEach(function(s){s.classList.remove("aim");});
+    document.querySelectorAll(".abUnit.aimed").forEach(function(u){u.classList.remove("aimed");});
+    if(!_advTeleState||!_advTeleState.cells)return;
+    _advTeleState.cells.forEach(function(c){
+      var cell=_advGridCell(c); if(cell)cell.classList.add("aim");
+      var u=_advTeamUnits[c.col];
+      if(u&&u.hp>0&&u.pos===c.row){ var ur=document.querySelector('.abUnit[data-i="'+c.col+'"]'); if(ur)ur.classList.add("aimed"); }
+    });
+  }catch(_){}
+}
+function _advClearAim(){ try{document.querySelectorAll("#abGrid .aim").forEach(function(s){s.classList.remove("aim");});document.querySelectorAll(".abUnit.aimed").forEach(function(u){u.classList.remove("aimed");});}catch(_){} }
+function _advBeginTelegraph(tg){
+  try{
+    try{clearInterval(_advBattleTimer);}catch(_){}
+    var st=_advState; if(!st){return;}
+    _advTeleState=tg;
+    try{_advWarnSound((tg&&tg.dur)||1800);}catch(_){}   /* 予兆の 前に 音（短いほど 急かす） */
+    _advPaintAim();
+    var help=$("abPickHelp"); if(help){ help.textContent="あぶない！ 1 2 3 で 前後に うごいて かわそう！"; help.classList.add("show"); }
+    _advTeleTimer=setTimeout(_advResolveTelegraph,(tg&&tg.dur)||1800);
+  }catch(_){ _advResolveTelegraph(); }
+}
+function _advStrikeCell(c){
+  try{ var cell=_advGridCell(c); if(cell){ cell.classList.remove("struck"); void cell.offsetWidth; cell.classList.add("struck"); setTimeout(function(){try{cell.classList.remove("struck");}catch(_){}},430); } _advAnim("enemy",0,"atk"); _advFlash("hit"); }catch(_){}
+}
+function _advResolveTelegraph(){
+  try{
+    var st=_advState,tg=_advTeleState;
+    try{clearTimeout(_advTeleTimer);}catch(_){}
+    _advTeleState=null; _advClearAim();
+    var help=$("abPickHelp"); if(help)help.classList.remove("show");
+    if(!st||!tg){ return; }
+    var e=st.enemy, cells=tg.cells||[], hits=tg.hits||1, hitNo=0;
+    function wave(){
+      st.fx=[]; var lines=[]; var missed=false;
+      cells.forEach(function(c){
+        var u=st.team[c.col];
+        var present=(u&&u.hp>0&&u.pos===c.row);
+        _advStrikeCell(c);   /* 赤い所に かならず 着弾演出 */
+        if(!present){ missed=true; return; }
+        if(_advDodge(u.spd)){ lines.push("てきの こうげき！ "+u.name+" は ひらりと かわした！"); _advFx(st,{t:"miss",who:"team",u:u}); return; }
+        var d=_advDmg(e.atk*(tg.big?1.8:1),0.12);
+        if(u.guard>0){u.guard--;d.v=Math.round(d.v*0.45);}
+        u.hp=Math.max(0,u.hp-d.v);
+        lines.push((tg.big?"⚔️ つよい いちげき！":"てきの こうげき！")+(d.crit?" クリティカル！":"")+" "+u.name+"に "+d.v+"ダメージ！");
+        _advFx(st,{t:"dmg",who:"team",u:u,v:d.v,crit:d.crit||tg.big});
+        if(u.hp<=0){lines.push(u.name+" は たおれてしまった…");_advFx(st,{t:"down",who:"team",u:u});}
+      });
+      if(missed && !lines.length)lines.push("スカッ！ 赤い所には だれも いなかった！");
+      else if(missed)lines.push("（赤い所の 何人かは かわした！）");
+      if(st.team.every(function(t){return t.hp<=0;})){ st.over=true; st.win=false; lines.push("ぜんめつ してしまった…"); }
+      if(lines.length)_advPushLog(lines,true);
+      try{(st.fx||[]).forEach(function(f){
+        if(f.t==="dmg"&&f.who==="team"){ var ti=_advTeamUnits.indexOf(f.u); _advAnim("team",ti,f.crit?"crit":"hit"); _advPop("team",f.u,"-"+f.v,f.crit?"crit":""); if(f.crit)sndCrit();else sndHit(); }
+        else if(f.t==="miss"){ _advPop("team",f.u,"かわした！","miss"); try{sndMiss();}catch(_){} }
+        else if(f.t==="down"){ try{sndDown();}catch(_){} var di=_advTeamUnits.indexOf(f.u); var de=document.querySelector('.abUnit[data-i="'+di+'"]'); if(de)de.classList.add("down"); }
+      });}catch(_){}
+      _advPaintHP();
+      hitNo++;
+      if(st.over){ try{clearInterval(_advBattleTimer);}catch(_){} setTimeout(_advFinish,900); return; }
+      if(hitNo<hits){ setTimeout(wave,430); return; }
+      _advSetSpeed(_advFast);
+    }
+    wave();
+  }catch(_){ try{_advSetSpeed(_advFast);}catch(e2){} }
 }
 /* 前後移動の 使い方ヒント（1回だけ） */
 function _advShowPosHelp(){
@@ -29264,7 +29359,6 @@ function _advBattleKey(e){
       return;
     }
     if(k==="1"||k==="2"||k==="3"){ _advToggleUnitPos(parseInt(k,10)-1); e.preventDefault(); }
-    else if(k===" "||k==="spacebar"||e.code==="Space"){ _advMashSkill(); e.preventDefault(); }
   }catch(_){}
 }
 function _advPaintHP(){
@@ -29374,6 +29468,7 @@ var ADV_SLOW=980, ADV_FAST=380, _advFast=false;
 function _advSetSpeed(fast){
   _advFast=!!fast;
   try{clearInterval(_advBattleTimer);}catch(_){}
+  if(_advPickState||_advTeleState)return;   /* えらび中／予兆中は 自動を 止めたまま */
   if(!_advState||_advState.over)return;
   _advBattleTimer=setInterval(_advTick,_advFast?ADV_FAST:ADV_SLOW);
   try{var bt=$("advBattle");if(bt)bt.classList.toggle("fast",_advFast);}catch(_){}
@@ -29462,6 +29557,7 @@ function _advTick(){
   }catch(_){}
   _advPaintHP();
   /* ★技を うつ瞬間：ターゲットを えらぶ（画面が とまって 白黒に） */
+  if(st.telegraph){ var tg=st.telegraph; st.telegraph=null; _advBeginTelegraph(tg); return; }
   if(st.pick){ var pk=st.pick; st.pick=null; _advBeginPick(pk); return; }
   if(st.over){ clearInterval(_advBattleTimer); setTimeout(_advFinish,900); }
 }
@@ -29621,6 +29717,7 @@ function _advCloseBattle(){
   var bt=$("advBattle");if(bt)bt.classList.remove("show");
   try{window.removeEventListener("keydown",_advBattleKey);}catch(_){}
   try{if(_advPickState&&_advPickState.timer)clearTimeout(_advPickState.timer);_advPickState=null;if(bt)bt.classList.remove("picking");var _ph=$("abPickHelp");if(_ph)_ph.classList.remove("show");}catch(_){}
+  try{clearTimeout(_advTeleTimer);}catch(_){}_advTeleState=null;try{_advClearAim();}catch(_){}
   clearInterval(_advBattleTimer);_advState=null;
   var wasDev=_advDevMode; _advDevMode=false;
   if(!wasDev){ _advSel=[]; try{_advRenderSetup();}catch(_){} }   /* おためしは dex を のこす */
@@ -34433,9 +34530,8 @@ function _gpStreetHTML(){
   <div id="abSkillBanner"></div>
   <div id="abLog"></div>
   <div id="abCtrl">
-    <div id="abGauge"><span id="abGaugeFill"></span><span id="abGaugeLbl">とくぎゲージ</span></div>
     <div id="abNumBar"></div>
-    <div id="abCtrlHelp">①②③ を おすと まえ／うしろ（たてれつ）を いれかえ・スペース or「とくぎ れんだ」で ゲージがたまると とくぎ！</div>
+    <div id="abCtrlHelp">1 2 3（ボタン／キー）で まえ／うしろ を いれかえ。てきの 赤い よこくが 出たら、ねらわれた子を 動かして かわそう！</div>
   </div>
   <div id="abResult" hidden><div id="abResultBig"></div><div id="abResultSub"></div><div id="abLvUp" hidden></div><div id="abResBtns"><button id="abRetry" type="button" hidden>↺ もう一度</button><button id="abClose" type="button">とじる</button></div></div>
 </div>

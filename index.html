@@ -5699,7 +5699,7 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
 <style id="ygCatchCss">
 #ygCatch{position:absolute;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(circle at 50% 38%,#c6ecff,#93d2f6 58%,#6fbaea);animation:ygCatchIn .55s ease both;}
 #ygCatch[hidden]{display:none !important;}   /* ★hidden で 確実に 消す（勝ち/逃げ で 演出へ 進む） */
-#ygCatchGrass{position:absolute;left:0;right:0;bottom:0;height:40%;background:linear-gradient(0deg,#5aa95f 0%,#6cbb66 45%,#84cd77 100%);}
+#ygCatchGrass{position:absolute;left:0;right:0;bottom:0;height:clamp(210px,42vmin,420px);background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 120' preserveAspectRatio='none'><path d='M0 120 L0 62 C 46 48 84 72 128 58 C 168 46 206 70 248 60 C 292 50 330 72 368 58 C 384 52 394 58 400 54 L400 120 Z' fill='%2366b45f'/></svg>") no-repeat top center/100% 42px,url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 120' preserveAspectRatio='none'><path d='M0 120 L0 46 C 40 30 70 54 110 40 C 150 26 180 52 220 42 C 260 32 300 54 340 40 C 370 30 388 42 400 36 L400 120 Z' fill='%2378c06f'/></svg>") no-repeat top -22px center/100% 46px,linear-gradient(0deg,#4e9c54 0%,#5fae5c 38%,#74c069 72%,#8ccd78 100%);}
 #ygCatchGrass::before{content:"";position:absolute;left:0;right:0;top:-26px;height:34px;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 60' preserveAspectRatio='none'><path d='M0 60 C 8 34 12 46 18 26 C 22 44 28 30 34 52 C 40 28 44 42 50 22 C 56 40 60 32 66 54 C 72 26 78 44 84 24 C 90 46 94 34 100 56 C 106 24 112 42 118 22 C 124 44 128 32 134 54 C 140 28 146 46 152 26 C 158 44 162 30 168 52 C 174 26 180 44 186 24 C 192 46 196 34 202 56 C 208 28 214 42 220 24 C 226 44 232 34 240 58 L240 60 Z' fill='%234f9c56'/></svg>") repeat-x;background-size:auto 100%;}
 #ygCatchGrass::after{content:"";position:absolute;left:0;right:0;top:-12px;height:30px;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 46' preserveAspectRatio='none'><path d='M0 46 C 6 26 10 36 16 18 C 20 34 26 24 32 40 C 38 20 42 32 48 16 C 54 32 58 26 64 42 C 70 20 76 34 82 18 C 88 36 92 28 98 44 C 104 18 110 32 116 16 C 122 34 126 26 132 42 C 138 20 144 36 150 18 C 156 34 160 24 166 40 C 172 20 178 34 184 18 C 190 36 194 28 200 44 L200 46 Z' fill='%237ec96f'/><g fill='%23fff'><circle cx='30' cy='34' r='1.6'/><circle cx='96' cy='30' r='1.5'/><circle cx='158' cy='33' r='1.6'/></g></svg>") repeat-x;background-size:auto 100%;z-index:4;}
 #ygCatchTip{position:relative;z-index:3;font-weight:900;color:#2f6b2f;background:rgba(255,255,255,.88);padding:6px 16px;border-radius:999px;margin-bottom:10px;box-shadow:0 3px 8px rgba(0,0,0,.15);}
@@ -5769,7 +5769,7 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
 <style id="ygSitCss">
 #ygCatchWrap{z-index:3;}
 #ygCatchGrass{z-index:2;}
-#ygCatchFront{position:absolute;left:0;right:0;bottom:0;height:30%;z-index:5;pointer-events:none;background:linear-gradient(0deg,#4e9a55 0%,#5fae5c 55%,rgba(95,174,92,0) 100%);}
+#ygCatchFront{position:absolute;left:0;right:0;bottom:0;height:clamp(120px,24vmin,260px);z-index:5;pointer-events:none;background:linear-gradient(0deg,#478f4d 0%,#57a455 55%,rgba(87,164,85,0) 100%);}
 #ygCatchFront::before{content:"";position:absolute;left:0;right:0;top:-18px;height:26px;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 60' preserveAspectRatio='none'><path d='M0 60 C 8 34 12 46 18 26 C 22 44 28 30 34 52 C 40 28 44 42 50 22 C 56 40 60 32 66 54 C 72 26 78 44 84 24 C 90 46 94 34 100 56 C 106 24 112 42 118 22 C 124 44 128 32 134 54 C 140 28 146 46 152 26 C 158 44 162 30 168 52 C 174 26 180 44 186 24 C 192 46 196 34 202 56 C 208 28 214 42 220 24 C 226 44 232 34 240 58 L240 60 Z' fill='%234f9c56'/></svg>") repeat-x;background-size:auto 100%;filter:brightness(.9);}
 #ygCatchPets{position:relative;z-index:6;margin-top:auto;margin-bottom:5%;}
 #ygCatchHearts{filter:drop-shadow(0 2px 3px rgba(70,120,150,.25));}
@@ -5782,7 +5782,7 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
 #ygCatch{justify-content:flex-end !important;padding-top:0 !important;padding-bottom:0 !important;}
 #ygCatchTip{order:1;margin-bottom:8px;}
 #ygCatchHearts{order:2;margin-bottom:2px;}
-#ygCatchWrap{order:3;width:190px;height:170px;margin-bottom:24%;}
+#ygCatchWrap{order:3;width:190px;height:170px;margin-bottom:clamp(120px,26vmin,270px);}
 #ygCatchFront{order:4;height:26% !important;}
 #ygCatchPets{order:5;margin:0 0 5% !important;}
 #ygCatchWrap::after{content:"";position:absolute;left:50%;bottom:16px;transform:translateX(-50%);width:96px;height:20px;border-radius:50%;background:radial-gradient(ellipse,rgba(30,80,40,.42),rgba(30,80,40,0) 72%);z-index:2;pointer-events:none;animation:ygShadowB 2.6s ease-in-out infinite;}
@@ -5792,7 +5792,7 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
 #ygCatchGlow{inset:auto -14% 6px -14% !important;height:150px;}
 .ygLvNum.pop{animation:ygLvPop .4s cubic-bezier(.2,1.6,.4,1);}
 @keyframes ygLvPop{0%{transform:scale(1);}45%{transform:scale(1.22);}100%{transform:scale(1);}}
-@media (min-width:900px){#ygCatchWrap{margin-bottom:19%;}}
+@media (min-width:900px){#ygCatchWrap{margin-bottom:clamp(130px,24vmin,260px);}}
 </style>
 <style id="ygDeluxeCss">
 #ygCatch.entering #ygCatchWrap,#ygCatch.entering #ygCatchHearts{opacity:0;}
@@ -5821,6 +5821,16 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
 @keyframes ygLeafF{0%{opacity:0;transform:translate(0,0) rotate(0) scale(.6);}12%{opacity:1;}100%{opacity:0;transform:translate(var(--dx,0),-90px) rotate(var(--rt,360deg)) scale(1);}}
 #ygCatchTip.warn{animation:ygWarn .5s ease 2;color:#e0553f;}
 @keyframes ygWarn{0%,100%{transform:scale(1);}45%{transform:scale(1.09);}}
+</style>
+<style id="ygMeadowCss">
+#ygCatchGrass::before{top:auto !important;bottom:calc(100% - 58px) !important;height:38px !important;opacity:.9;}
+#ygCatchGrass::after{top:auto !important;bottom:calc(100% - 76px) !important;height:34px !important;}
+#ygCatchFront::before{top:-22px !important;height:34px !important;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 60' preserveAspectRatio='none'><path d='M0 60 C 10 30 16 44 24 20 C 32 42 40 26 48 48 C 56 22 64 38 72 16 C 80 40 88 28 96 50 C 104 20 112 36 120 18 C 128 42 136 26 144 46 C 152 20 160 38 168 16 C 176 40 184 28 192 50 C 200 22 208 36 216 18 C 224 42 232 26 240 46 C 248 20 256 38 264 16 C 272 40 280 28 288 50 C 294 30 298 40 300 56 L300 60 Z' fill='%235da85a'/></svg>") repeat-x !important;background-size:auto 100% !important;}
+/* 草原らしい 手前の 草むら（タフト）と 花 */
+#ygCatchFront::after{content:"";position:absolute;left:0;right:0;bottom:0;height:100%;pointer-events:none;background:radial-gradient(ellipse 46px 16px at 12% 42%,#4b9750 60%,transparent 62%),radial-gradient(ellipse 60px 18px at 34% 62%,#539e55 60%,transparent 62%),radial-gradient(ellipse 40px 14px at 62% 38%,#4b9750 60%,transparent 62%),radial-gradient(ellipse 66px 20px at 84% 66%,#539e55 60%,transparent 62%),radial-gradient(circle at 22% 30%,#fff 1.7px,transparent 2.5px),radial-gradient(circle at 47% 52%,#fff6b0 1.9px,transparent 2.7px),radial-gradient(circle at 71% 26%,#fff 1.7px,transparent 2.5px),radial-gradient(circle at 90% 48%,#ffd9e6 1.8px,transparent 2.6px);}
+/* 地平線を やわらかく（かたい山に 見せない） */
+#ygCatchGrass{box-shadow:inset 0 26px 40px rgba(255,255,255,.28),inset 0 -30px 46px rgba(20,70,25,.22);}
+#ygCatch::after{content:"";position:absolute;left:0;right:0;bottom:calc(clamp(210px,42vmin,420px) - 26px);height:52px;z-index:2;pointer-events:none;background:linear-gradient(0deg,rgba(140,205,120,.55),rgba(198,236,255,0));}
 </style>
 </head>
 <body>

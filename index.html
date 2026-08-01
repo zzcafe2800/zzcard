@@ -5683,6 +5683,19 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
 .catY1.sil img{filter:brightness(0) saturate(0) opacity(.85) !important;}
 #hillCats .catLikeHeart{display:none !important;}
 </style>
+<style id="yumeExtraCss">
+#ygLvBar{position:relative;}
+.ygLvNum{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:900;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.55);pointer-events:none;letter-spacing:.3px;}
+.catY1.shiny::before,.catY1.shiny::after{content:"✨";position:absolute;font-size:13px;pointer-events:none;animation:catY1Spark 1.4s ease-in-out infinite;filter:drop-shadow(0 0 3px rgba(255,240,150,.9));}
+.catY1.shiny::before{top:-3px;left:-5px;}
+.catY1.shiny::after{bottom:-3px;right:-3px;animation-delay:.7s;}
+@keyframes catY1Spark{0%,100%{opacity:0;transform:scale(.5) rotate(0deg);}50%{opacity:1;transform:scale(1.15) rotate(18deg);}}
+</style>
+<style id="bigCss">
+.ygBig{position:absolute;top:6%;right:8%;z-index:5;font-weight:900;font-size:15px;letter-spacing:1px;color:#fff;padding:2px 9px;border-radius:10px;background:linear-gradient(180deg,#ff8a3d,#ff5a7a);box-shadow:0 3px 8px rgba(255,80,90,.5),0 0 0 2px #fff;transform:rotate(8deg);animation:bigPulse .8s ease-in-out infinite;}
+@keyframes bigPulse{0%,100%{transform:rotate(8deg) scale(1);}50%{transform:rotate(8deg) scale(1.12);}}
+.catY1.big{width:82px !important;height:82px !important;bottom:-8px !important;right:-16px !important;z-index:-1 !important;}
+</style>
 </head>
 <body>
 <script>(function(){try{var m=/Mobi|Android|iPhone|iPod|iPad/i.test(navigator.userAgent||"");var p=(window.innerHeight||0)>=(window.innerWidth||0);if(m||p)document.documentElement.classList.add("lite");}catch(e){}})();</script>
@@ -11688,14 +11701,14 @@ async function autoStampFlow(){
     try{_askTidy();}catch(_){}
     $("taisoScreen").classList.add("visible");
     try{if(tutStep()==="1")_tutGo2();}catch(_){}   /* ★チュートリアル：ステップ2へ */
-    try{setTimeout(function(){try{_yumeMaybeGacha();}catch(_){}},650);}catch(_){}   /* ★毎朝 仲間ゲット演出 */
+    /* ★ガチャは 気分の前（体操直後）に 出す：openAskCard の直前で よぶ */
     /* ★自動投稿は やめた：とうこうボタンを 押したときだけ 投稿する */
     try{setTimeout(()=>{try{_aiMaybeNudge();}catch(_){}},1500);}catch(_){}
   };
   var _askDone=false,_waitDone=null;
   var _onAsked=function(){_askDone=true;if(_waitDone){var f=_waitDone;_waitDone=null;f();}};
   var _wait=Math.max(0,(_zzGainUntil||0)-Date.now());
-  setTimeout(function(){try{openAskCard(_onAsked);}catch(_){_onAsked();}},_wait);
+  setTimeout(function(){ var _op=function(){try{openAskCard(_onAsked);}catch(_){_onAsked();}}; try{_yumeMaybeGacha(_op);}catch(_){_op();} },_wait);
   /* 画像づくりは カードと 同時に すすめる */
   let fullUrl="";try{fullUrl=await renderAutoCard(r.cur,r.no);}catch(_){}
   _autoCardUrl=fullUrl;
@@ -13056,10 +13069,22 @@ function _renderTodayRec(){
     /* 気分 */
     var mo=$("trMood");
     if(mo){ var mt=(typeof _todayMoodText==="function")?_todayMoodText():""; mo.textContent=mt||"–"; }
-    /* 連続早起き */
+    /* 連続早起き ⇄ 総ラジオ回数 を 5秒ごとに 切り替えループ */
     var st=(typeof calcStreak==="function")?calcStreak():{current:0,best:0};
-    var sn=$("stkNum");if(sn)sn.textContent=String(st.current||0);
-    var sb=$("stkBest");if(sb)sb.textContent="最高記録 "+(st.best||0)+"日";
+    var _tot=(typeof getDoneDates==="function")?getDoneDates().length:0;
+    (function(){ try{
+      var tEl=document.querySelector("#streakCard .stkTitle");
+      var uEl=document.querySelector("#streakCard .stkUnit");
+      var sn=$("stkNum"), sb=$("stkBest");
+      var paint=function(mode){
+        if(mode===1){ if(tEl)tEl.textContent="そうラジオ回数"; if(sn)sn.textContent=String(_tot); if(uEl)uEl.textContent="回"; if(sb)sb.textContent="これまで がんばった！"; }
+        else{ if(tEl)tEl.textContent="連続早起き"; if(sn)sn.textContent=String(st.current||0); if(uEl)uEl.textContent="日"; if(sb)sb.textContent="最高記録 "+(st.best||0)+"日"; }
+      };
+      paint(0);
+      try{clearInterval(window._stkCycle);}catch(_){}
+      var _m=0;
+      window._stkCycle=setInterval(function(){ try{ if(!document.getElementById("streakCard")){clearInterval(window._stkCycle);return;} _m=_m?0:1; paint(_m); }catch(_){} },5000);
+    }catch(_){} })();
   }catch(_){}
 }
 function refreshHome(){
@@ -28310,7 +28335,7 @@ function _yumeLv(y){var v=(y&&y.lv)|0;return v>0?v:1;}
 /* じっさいの つよさ ＝ レベルと のびしろの 小さいほう */
 function _yumeEff(y,key){var cap=(y&&y[key])||0;return Math.max(1,Math.min(_yumeLv(y),cap));}
 /* この子が 行ける 最大レベル ＝ のびしろの いちばん 大きいところ */
-function _yumeMaxLv(y){return Math.max(y&&y.hp||0,y&&y.atk||0,y&&y.spd||0)|0;}
+function _yumeMaxLv(y){var m=Math.max(y&&y.hp||0,y&&y.atk||0,y&&y.spd||0)|0; if(y&&y.big&&y.bigMul)m=Math.round(m*y.bigMul); return m;}
 /* 1試合で あがるレベル（勝ち＝満額 / 負け＝4わり）。約20勝で カンスト＝3週間くらい */
 function _yumeGainLv(diff,win){
   var g=Math.round(34+(diff||1)*2.2+Math.random()*18);
@@ -28339,9 +28364,10 @@ function _yumeMigrate(){
 function _yumeRoll(){
   var star=_yumeRollStar(), base=_yumePick(star);
   var shiny=(Math.floor(Math.random()*150)===0);   /* 色違い 1/150 */
+  var big=(Math.random()<0.10), bigMul=big?(1+Math.random()*0.5):1;   /* ★BIG＝10%・最大値1〜1.5倍 */
   return {id:"y"+Date.now()+"_"+Math.floor(Math.random()*1000),img:base.img,name:base.name,star:star,
     hp:_yumeStat(star),atk:_yumeStat(star),spd:_yumeStat(star),lv:(100+star*30),sk:(base.sk!=null?base.sk:null),
-    shiny:shiny,hue:shiny?Math.floor(Math.random()*360):0,at:Date.now()};   /* 色違いの色は 人によって ちがう */
+    big:big?1:0,bigMul:bigMul,shiny:shiny,hue:shiny?Math.floor(Math.random()*360):0,at:Date.now()};
 }
 /* ============================================================
    ★ユメっ子・敵の データを 外から 差しかえる しくみ
@@ -28621,7 +28647,7 @@ function _ygStarColor(star){return (star>=3)?"#f5b800":(star>=2)?"#5aa8e0":"#9fb
 function _ygRenderReveal(y){
   try{
     var sil=$("ygSil");
-    if(sil)sil.style.filter=y.shiny?("hue-rotate("+y.hue+"deg) saturate(1.3) drop-shadow(0 0 10px rgba(255,220,120,.75))"):"";
+    if(sil)sil.style.filter="brightness(0)";   /* ★星が でそろうまで 黒シルエット（バン中の チラ見え防止） */
     /* ---- 星（キャラの 上）---- */
     var st=$("ygStars");
     if(st){
@@ -28642,18 +28668,24 @@ function _ygRenderReveal(y){
         }, i===0?420:340);
       })(0);
     }
+    var _revF=y.shiny?("hue-rotate("+y.hue+"deg) saturate(1.3) drop-shadow(0 0 10px rgba(255,220,120,.75))"):"";
+    var _revD=420+340*Math.max(0,(y.star||1)-1)+320;
+    setTimeout(function(){try{if(sil)sil.style.filter=_revF;}catch(_){}},_revD);
     /* ---- 名前（キャラの 上）---- */
     var nm=$("ygName");if(nm)nm.innerHTML=escHtml(y.name)+(y.shiny?'<span class="ygShiny">\u2728色違い</span>':"");
     try{var tp=$("ygTop");if(tp){void tp.offsetWidth;tp.classList.add("show");}}catch(_){}
     var col=_ygStarColor(y.star);
     /* ---- のびしろレベルバー（最大1000・灰色地・星の色で満たす・数値なし）---- */
     var maxLv=_yumeMaxLv(y);
-    var pc=Math.max(3,Math.min(100,maxLv/YUME_LV_MAX*100));
+    var pc=Math.max(3,maxLv/YUME_LV_MAX*100); if(!(y&&y.big))pc=Math.min(100,pc);   /* BIGは 突き抜ける */
+    try{var _lb=$("ygLvBar");if(_lb)_lb.style.overflow=(y&&y.big)?"visible":"";}catch(_){}
+    try{var _gb=$("ygBig");if(_gb)_gb.hidden=!(y&&y.big);}catch(_){}
     var lf=$("ygLvFill");
     if(lf){
       lf.style.background="linear-gradient(90deg,"+col+","+_ygLighten(col)+")";
       lf.style.width="0%";
       setTimeout(function(){try{lf.style.width=pc.toFixed(1)+"%";}catch(_){}},380);   /* 左から すーっと たまる */
+      try{var _ln=$("ygLvNum");if(_ln)_ln.textContent=maxLv+" / "+YUME_LV_MAX;}catch(_){}
     }
     /* ---- とくいわざ ---- */
     var sk=_yumeSkill(y);
@@ -28683,19 +28715,23 @@ function _ygLighten(hex){
     return "rgb("+r+","+g+","+b+")";
   }catch(_){return hex;}
 }
+var _ygThen=null;
 function _yumeGachaClose(){
   var el=$("yumeGacha");if(!el)return;
   clearTimeout(_ygT1);clearTimeout(_ygT2);
   el.classList.remove("s-dance","s-zoom","s-reveal");
   setTimeout(function(){try{el.hidden=true;}catch(_){}},260);
+  try{if(_ygThen){var _f=_ygThen;_ygThen=null;setTimeout(_f,90);}}catch(_){}
 }
 /* 毎朝1回だけ（体操の あと _showDone から よぶ） */
-function _yumeMaybeGacha(){
+function _yumeMaybeGacha(then){
+  var _cb=(typeof then==="function")?then:null;
   try{
-    if(localStorage.getItem(YUME_GACHA_KEY)===jstKey())return;
+    if(localStorage.getItem(YUME_GACHA_KEY)===jstKey()){ if(_cb)_cb(); return; }
     localStorage.setItem(YUME_GACHA_KEY,jstKey());
-    _yumeProbeImgs().then(function(){ try{_yumeGachaStart();}catch(_){} });
-  }catch(_){}
+    _ygThen=_cb;
+    _yumeProbeImgs().then(function(){ try{_yumeGachaStart();}catch(_){ if(_ygThen){var f=_ygThen;_ygThen=null;f();} } });
+  }catch(_){ if(_cb)_cb(); }
 }
 /* きょうの ガチャが まだなら、体操中に 画像を 先読みしておく（ガチャを 待たせない） */
 try{ if(localStorage.getItem(YUME_GACHA_KEY)!==jstKey()){ setTimeout(function(){try{_yumeProbeImgs();}catch(_){}},2000); } }catch(_){}
@@ -29045,9 +29081,9 @@ var ADV_SEL_KEY="radio_adv_sel";
 var _advSel=(function(){try{var a=JSON.parse(localStorage.getItem(ADV_SEL_KEY)||"[]");return Array.isArray(a)?a.filter(function(x){return typeof x==="string";}):[];}catch(_){return [];}})();
 function _advSaveSel(){try{localStorage.setItem(ADV_SEL_KEY,JSON.stringify(_advSel));}catch(_){}}
 function _myYume1(){try{if(!_advSel.length)return null;var id=_advSel[0],dex=_yumeDex();for(var i=0;i<dex.length;i++)if(dex[i].id===id)return dex[i];return null;}catch(_){return null;}}
-function _yume1Payload(){try{var y=_myYume1();if(!y)return null;return {img:y.img||"",name:y.name||"",star:y.star||1,shiny:y.shiny?1:0,hue:y.hue||0};}catch(_){return null;}}
+function _yume1Payload(){try{var y=_myYume1();if(!y)return null;return {img:y.img||"",name:y.name||"",star:y.star||1,shiny:y.shiny?1:0,hue:y.hue||0,big:y.big?1:0};}catch(_){return null;}}
 function _yumeOwnedImgs(){try{return _yumeDex().map(function(y){return y.img;});}catch(_){return [];}}
-function _catYumeBadge(y1,isSelf){ if(!y1||!y1.img)return null; var owned=isSelf||_yumeOwnedImgs().indexOf(y1.img)>=0; var d=document.createElement("div"); d.className="catY1"+(owned?"":" sil"); d.title=owned?(y1.name||""):"？？？"; var im=document.createElement("img"); im.src=y1.img; im.alt=""; if(y1.shiny&&owned)im.style.filter="hue-rotate("+(y1.hue||0)+"deg) saturate(1.25)"; im.onerror=function(){try{d.style.display="none";}catch(_){}}; d.appendChild(im); return d; }
+function _catYumeBadge(y1,isSelf){ if(!y1||!y1.img)return null; var owned=isSelf||_yumeOwnedImgs().indexOf(y1.img)>=0; var d=document.createElement("div"); d.className="catY1"+(owned?"":" sil"); d.title=owned?(y1.name||""):"？？？"; var im=document.createElement("img"); im.src=y1.img; im.alt=""; if(y1.shiny&&owned){im.style.filter="hue-rotate("+(y1.hue||0)+"deg) saturate(1.25) drop-shadow(0 0 4px rgba(255,240,150,.95))"; d.classList.add("shiny");} if(y1.big)d.classList.add("big"); im.onerror=function(){try{d.style.display="none";}catch(_){}}; d.appendChild(im); return d; }
 function openAdventure(){
   var sc=$("advScreen");if(!sc)return;
   try{_yumeMigrate();}catch(_){}
@@ -34599,7 +34635,7 @@ function _gpStreetHTML(){
   <div id="ygStage">
     <div id="ygNotes"><span>♪</span><span>♬</span><span>♪</span><span>♬</span></div>
     <div id="ygCat"></div>
-    <div id="ygSilWrap"><div id="ygSil"></div><div id="ygSparks"></div></div>
+    <div id="ygSilWrap"><div id="ygSil"></div><div id="ygSparks"></div><div id="ygBig" class="ygBig" hidden>BIG</div></div>
   </div>
   <div id="ygHint"></div>
   <!-- ★星＋名前は キャラの 上に -->
@@ -34608,7 +34644,7 @@ function _gpStreetHTML(){
     <div id="ygName"></div>
   </div>
   <div id="ygInfo">
-    <div id="ygLvWrap"><span id="ygLvBar"><span id="ygLvFill"></span></span></div>
+    <div id="ygLvWrap"><span id="ygLvBar"><span id="ygLvFill"></span><span id="ygLvNum" class="ygLvNum"></span></span></div>
     <div id="ygSkill"></div>
     <div id="ygStats"></div>
     <div id="ygBtns"><button id="ygNo" type="button">いまは しない</button><button id="ygYes" type="button">なかまに する</button></div>

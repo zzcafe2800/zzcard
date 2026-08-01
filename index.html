@@ -5698,6 +5698,7 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
 </style>
 <style id="ygCatchCss">
 #ygCatch{position:absolute;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(120% 90% at 50% 15%,#c6eaa8 0%,#8fd07a 45%,#5fae5a 100%);overflow:hidden;}
+#ygCatch[hidden]{display:none !important;}   /* ★hidden で 確実に 消す（勝ち/逃げ で 演出へ 進む） */
 #ygCatchGrass{position:absolute;left:0;right:0;bottom:0;height:50%;background:radial-gradient(circle at 20% 62%,#fff 1.6px,transparent 2.4px),radial-gradient(circle at 54% 74%,#fff7c0 1.8px,transparent 2.6px),radial-gradient(circle at 79% 58%,#fff 1.6px,transparent 2.4px),radial-gradient(circle at 38% 82%,#fff 1.5px,transparent 2.3px),linear-gradient(0deg,#2c7a30 0%,#3c923b 55%,#59b04e 100%);}
 #ygCatchGrass::before{content:"";position:absolute;left:-2%;right:-2%;top:-30px;height:52px;background:linear-gradient(0deg,#2c7a30,#3f9a3c);clip-path:polygon(0 100%,1.5% 30%,3% 100%,5% 8%,7% 100%,9% 40%,11% 100%,13% 2%,15% 100%,17% 35%,19% 100%,21% 12%,23% 100%,25% 0,27% 100%,29% 38%,31% 100%,33% 6%,35% 100%,37% 42%,39% 100%,41% 2%,43% 100%,45% 30%,47% 100%,49% 10%,51% 100%,53% 38%,55% 100%,57% 0,59% 100%,61% 34%,63% 100%,65% 8%,67% 100%,69% 40%,71% 100%,73% 3%,75% 100%,77% 36%,79% 100%,81% 12%,83% 100%,85% 0,87% 100%,89% 38%,91% 100%,93% 6%,95% 100%,97% 40%,99% 100%,100% 20%);}
 #ygCatchGrass::after{content:"";position:absolute;left:-2%;right:-2%;top:-18px;height:40px;background:linear-gradient(0deg,#4aa544,#7fca6a);clip-path:polygon(0 100%,2% 45%,4% 100%,6.5% 20%,9% 100%,11% 50%,13.5% 100%,16% 25%,18% 100%,20.5% 48%,23% 100%,25.5% 18%,28% 100%,30% 46%,32.5% 100%,35% 22%,37% 100%,39.5% 50%,42% 100%,44% 20%,46.5% 100%,49% 46%,51.5% 100%,54% 24%,56% 100%,58.5% 48%,61% 100%,63% 20%,65.5% 100%,68% 46%,70% 100%,72.5% 24%,75% 100%,77% 48%,79.5% 100%,82% 20%,84% 100%,86.5% 46%,89% 100%,91% 24%,93.5% 100%,96% 48%,98% 100%,100% 40%);opacity:.96;}
@@ -28635,7 +28636,7 @@ function _ygCatchStart(y){
   var w=$("ygCatchWrap"); if(w&&!w._wired){w._wired=1;w.addEventListener("click",function(){_ygPet();});}
   _ygCatchPaint();
   var bub=$("ygCatchBubble"); if(bub)bub.classList.remove("show");
-  c.hidden=false; el.classList.add("catching");
+  c.hidden=false; c.style.display=""; el.classList.add("catching");
   try{_ygSasa();}catch(_){}
   try{var t=$("ygCatchTip");if(t)t.textContent="タップして なでてみよう！";}catch(_){}
 }
@@ -28667,13 +28668,13 @@ function _ygCatchWin(){
   var c=$("ygCatch"); if(c)c.classList.add("win");
   var el=$("yumeGacha"); if(el)el.classList.remove("catching");
   try{var t=$("ygCatchTip");if(t)t.textContent="ニャー！ なかよく なれた！";}catch(_){}
-  setTimeout(function(){ try{if(c)c.hidden=true;}catch(_){} try{_ygProceedReveal();}catch(_){} },600);
+  setTimeout(function(){ try{if(c){c.hidden=true;c.style.display="none";}}catch(_){} try{_ygProceedReveal();}catch(_){} },600);
 }
 function _ygCatchFlee(){
   var c=$("ygCatch"); if(c)c.classList.add("flee");
   try{var t=$("ygCatchTip");if(t)t.textContent="にげちゃった…！";}catch(_){}
   _ygCurrent=null;
-  setTimeout(function(){ try{var el=$("yumeGacha");if(el){el.classList.remove("catching");el.className="";el.hidden=true;}}catch(_){} try{if(c)c.hidden=true;}catch(_){} try{if(_ygThen){var f=_ygThen;_ygThen=null;setTimeout(f,60);}}catch(_){} },1100);
+  setTimeout(function(){ try{var el=$("yumeGacha");if(el){el.classList.remove("catching");el.className="";el.hidden=true;}}catch(_){} try{if(c){c.hidden=true;c.style.display="none";}}catch(_){} try{if(_ygThen){var f=_ygThen;_ygThen=null;setTimeout(f,60);}}catch(_){} },1100);
 }
 /* ★「バン！」演出：星が おおいほど 回数が ふえ、色は 星の色、あとになるほど 大きく 豪華に */
 function _ygBangSeq(y, done){

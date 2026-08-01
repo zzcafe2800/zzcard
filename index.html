@@ -5653,6 +5653,30 @@ html.lite #shopScreen.show #shpBody{padding-bottom:calc(78px + env(safe-area-ins
 @keyframes tutGlowPulse{0%,100%{box-shadow:0 0 0 3px rgba(77,182,255,.3),0 0 12px 2px rgba(77,182,255,.5);}50%{box-shadow:0 0 0 4px rgba(77,182,255,.6),0 0 20px 5px rgba(77,182,255,.9);}}
 body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !important;}
 </style>
+<style id="krCss">
+#askBox{padding:16px 15px 14px !important;}
+#askTtl{font-size:16px;font-weight:900;color:#5a7183;text-align:center;margin-bottom:12px;}
+.krSec{margin-bottom:12px;}
+.krSecTop{display:flex;align-items:center;justify-content:space-between;margin:0 2px 6px;}
+.krSecLbl{font-size:12px;font-weight:800;color:#8a97a5;}.krNow{font-size:11px;font-weight:800;color:#a9b6c2;}
+.krProg{display:flex;gap:5px;margin:0 2px 8px;}.krProg i{flex:1;height:5px;border-radius:99px;background:#e6eef3;}.krProg i.on{background:linear-gradient(90deg,#8ed3f2,#5fb6dc);}
+.krMoodLine{display:flex;align-items:stretch;gap:6px;}
+.krBk{flex:0 0 auto;border:none;border-radius:12px;background:#e9eef2;color:#7f8c99;font-weight:900;font-size:11px;padding:0 10px;cursor:pointer;font-family:inherit;white-space:nowrap;}.krBk:active{transform:scale(.94);}
+.krMoodRow{flex:1;min-width:0;display:flex;gap:5px;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch;}
+.krMoodRow .askChip{width:auto !important;flex:0 0 auto !important;flex-direction:column !important;text-align:center !important;padding:7px 9px !important;min-width:54px;border-radius:13px;}
+.krMoodRow .askChip .askE{font-size:18px;}.krMoodRow .askChip .askL{font-size:9.5px;font-weight:800;margin-top:1px;}
+.krTime{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff7ec;border:1.5px solid #ffe1b8;border-radius:14px;padding:8px 11px;margin-bottom:8px;}
+.krTime.bed{background:#f2effc;border-color:#ddd5f2;}
+.krTimeLeft{display:flex;flex-direction:column;align-items:flex-start;gap:3px;}
+.krTimeLbl{font-size:12.5px;font-weight:900;color:#e0913f;}.krTime.bed .krTimeLbl{color:#7a6ad0;}
+.krDunno{border:none;background:rgba(0,0,0,.05);color:#b0a48f;font-size:9.5px;font-weight:800;border-radius:8px;padding:2px 8px;cursor:pointer;font-family:inherit;}
+.krTime.bed .krDunno{color:#a99ed0;}.krDunno.on{background:#ffb3ce !important;color:#fff !important;}
+.krStepWrap{display:flex;align-items:center;gap:7px;flex:0 0 auto;}
+.krStep{width:30px;height:30px;border-radius:50%;border:none;background:#ffd9a8;color:#c9772a;font-size:16px;font-weight:900;cursor:pointer;font-family:inherit;line-height:1;}.krTime.bed .krStep{background:#e0d8f5;color:#6b5bb5;}.krStep:active{transform:scale(.9);}
+.krTimeV{min-width:56px;text-align:center;font-size:18px;font-weight:900;color:#ef8a4d;}.krTime.bed .krTimeV{color:#8a76e0;}.krTimeV.dunno{font-size:13px;color:#b06a8f;}
+#krSave{width:100%;border:none;border-radius:14px;background:linear-gradient(180deg,#7fd08a,#4bb262);color:#fff;font-weight:900;font-size:16px;padding:12px;cursor:pointer;font-family:inherit;box-shadow:0 4px 0 rgba(60,150,80,.4);margin-top:4px;}#krSave:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(60,150,80,.4);}
+#krSkip{display:block;margin:9px auto 0;border:none;background:none;color:#a9b6c2;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;}
+</style>
 </head>
 <body>
 <script>(function(){try{var m=/Mobi|Android|iPhone|iPod|iPad/i.test(navigator.userAgent||"");var p=(window.innerHeight||0)>=(window.innerWidth||0);if(m||p)document.documentElement.classList.add("lite");}catch(e){}})();</script>
@@ -6017,44 +6041,22 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
 </div>
 <div id="askCard">
   <div id="askBox">
-    <div id="askTtl">おはよう！</div>
-    <div id="askSub">えらぶだけ。あとで でも いいよ</div>
-    <div id="askProg"><i></i><i></i><i></i></div>
-
-    <div class="askSec">
-      <div class="askHead">
-        <button class="askBk" id="askMoodBk" type="button" hidden>◀</button>
-        <span class="askQ">きょうの きぶん</span>
-        <span class="askDots" id="askMoodDots"></span>
-        <span class="askPick" id="askMoodNow"></span>
-      </div>
-      <div class="askRow" id="askMoodRow"></div>
+    <div id="askTtl">きょうの きろく</div>
+    <div class="krSec">
+      <div class="krSecTop"><span class="krSecLbl">😊 きぶん</span><span class="krNow" id="krMoodNow"></span></div>
+      <div class="krProg" id="krMoodProg"></div>
+      <div class="krMoodLine"><button id="krMoodBk" class="krBk" type="button" hidden>◀ もどる</button><div class="krMoodRow" id="krMoodRow"></div></div>
     </div>
-
-    <div class="askSec">
-      <div class="askHead">
-        <button class="askBk" id="askWakeBk" type="button" hidden>◀</button>
-        <span class="askQ">なんじに おきた？</span>
-        <span class="askStep" id="askWakeStep">1/2</span>
-        <span class="askPick" id="askWakeV"></span>
-      </div>
-      <div class="askRow" id="askWakeRow"></div>
+    <div class="krTime">
+      <div class="krTimeLeft"><span class="krTimeLbl">🌅 起床</span><button class="krDunno" id="krWakeDunno" data-t="wake" type="button">わからない</button></div>
+      <div class="krStepWrap"><button class="krStep" data-t="wake" data-d="-1" type="button">−</button><span class="krTimeV" id="krWakeV">6:00</span><button class="krStep" data-t="wake" data-d="1" type="button">＋</button></div>
     </div>
-
-    <div class="askSec">
-      <div class="askHead">
-        <button class="askBk" id="askBedBk" type="button" hidden>◀</button>
-        <span class="askQ">なんじに ねた？</span>
-        <span class="askStep" id="askBedStep">1/2</span>
-        <span class="askPick" id="askBedV"></span>
-      </div>
-      <div class="askRow" id="askBedRow"></div>
+    <div class="krTime bed">
+      <div class="krTimeLeft"><span class="krTimeLbl">🌙 就寝</span><button class="krDunno" id="krBedDunno" data-t="bed" type="button">わからない</button></div>
+      <div class="krStepWrap"><button class="krStep" data-t="bed" data-d="-1" type="button">−</button><span class="krTimeV" id="krBedV">23:00</span><button class="krStep" data-t="bed" data-d="1" type="button">＋</button></div>
     </div>
-
-    <div id="askBtnRow">
-      <button id="askBack" type="button" aria-label="もどる">◀ もどる</button>
-      <button id="askSkip" type="button">スキップ</button>
-    </div>
+    <button id="krSave" type="button">きろく する</button>
+    <button id="krSkip" type="button">スキップ</button>
   </div>
 </div>
 <div id="taisoScreen">
@@ -21329,7 +21331,7 @@ var ASKDONE_KEY="radio_ask_done";
 function _askDone(){try{return JSON.parse(localStorage.getItem(ASKDONE_KEY)||"{}")||{};}catch(_){return{};}}
 function _askMark(k,v){try{const o=_askDone();o[jstKey()]=Object.assign({},o[jstKey()]||{},{[k]:v});localStorage.setItem(ASKDONE_KEY,JSON.stringify(o));}catch(_){}}
 function askedToday(k){try{const d=_askDone()[jstKey()]||{};return !!d[k];}catch(_){return false;}}
-var _askM1=null,_askM2=null,_askM3=null,_askWG=null,_askWH=null,_askBG=null,_askBH=null,_askThen=null,_askSec=0;
+var _askM1=null,_askM2=null,_askM3=null,_askWG=null,_askWH=null,_askBG=null,_askBH=null,_askThen=null,_askSec=0,_krWakeH=null,_krBedH=null;
 function _askFmt(hf){
   if(!Number.isFinite(hf))return"－";
   let h=Math.floor(hf),m=Math.round((hf-h)*60);
@@ -21362,58 +21364,25 @@ function _askMoodTint(i,n){
 }
 function _askChipStyle(t){return ' style="background:linear-gradient(180deg,'+t.a+','+t.b+');color:'+t.fg+';"';}
 function _askPaint(){
-  const chip=(e,l,on,attr,tint)=>'<button class="askChip'+(on?" on":"")+(tint?" tinted":"")+'" type="button" '+attr+(tint?_askChipStyle(tint):"")+'>'+
-    (e?'<span class="askE">'+e+'</span>':"")+'<span class="askL">'+l+'</span></button>';
+  const chip=(e,l,on,attr,tint)=>'<button class="askChip'+(on?" on":"")+(tint?" tinted":"")+'" type="button" '+attr+(tint?_askChipStyle(tint):"")+'>'+(e?'<span class="askE">'+e+'</span>':"")+'<span class="askL">'+l+'</span></button>';
   const dots=(now,max)=>{let h="";for(let i=1;i<=max;i++)h+='<i class="'+(i<=now?"on":"")+'"></i>';return h;};
-  const show=(id,on)=>{try{const e=$(id);if(e)e.hidden=!on;}catch(_){}};
-  /* ---- きぶん：5つが つぎの 5つに 入れかわる ---- */
   try{
-    const row=$("askMoodRow");
+    const row=$("krMoodRow");
     let step=1,list=MOOD3,attr="data-m1";
     if(_askM1!=null&&_askM2==null){step=2;list=MOOD3[_askM1].c;attr="data-m2";}
     else if(_askM1!=null&&_askM2!=null){step=3;list=MOOD3[_askM1].c[_askM2].c;attr="data-m3";}
-    if(row)row.innerHTML=list.map((m,i)=>chip(m.e,m.l,
-      (step===1?_askM1===i:step===2?_askM2===i:_askM3===i),attr+'="'+i+'"',_askMoodTint(i,list.length))).join("");
-    const dd=$("askMoodDots");if(dd)dd.innerHTML=dots(step,3);
-    show("askMoodBk",step>1);
-    const nw=$("askMoodNow"),pk=_mood3Pick(_askM1,_askM2,_askM3);
-    if(nw)nw.textContent=pk?(pk.e+" "+pk.l):"";
+    if(row)row.innerHTML=list.map((m,i)=>chip(m.e,m.l,(step===1?_askM1===i:step===2?_askM2===i:_askM3===i),attr+'="'+i+'"',_askMoodTint(i,list.length))).join("");
+    const dd=$("krMoodProg");if(dd)dd.innerHTML=dots(step,3);
+    const bk=$("krMoodBk");if(bk)bk.hidden=(step===1);
+    const nw=$("krMoodNow"),pk=_mood3Pick(_askM1,_askM2,_askM3);
+    if(nw)nw.textContent=pk?(pk.e+" "+pk.l):("ステップ "+step+"/3");
   }catch(_){}
-  /* ---- 時間：あさ・ひる・よる → ○じ ---- */
-  const timeRow=(rowId,stepId,vId,bkId,G,gi,hi,ga,ha)=>{
-    try{
-      const row=$(rowId),st=$(stepId),v=$(vId);
-      let h="";
-      const gTint=(g)=>{
-        if(!g.h||!g.h.length)return {a:"#ffd9e8",b:"#f7aecd",fg:"#a8447a"};   /* おぼえてない＝ピンク */
-        var mid=g.h[Math.floor(g.h.length/2)];
-        return _hourTint(mid);
-      };
-      if(gi==null){h=G.map((g,i)=>chip(g.e,g.l,false,ga+'="'+i+'"',gTint(g))).join("");}
-      else if(!G[gi].h.length){h=chip(G[gi].e,G[gi].l,true,ga+'="'+gi+'"',gTint(G[gi]));}
-      else{h=G[gi].h.map(x=>chip("",x+"じ",hi===x,ha+'="'+x+'"',_hourTint(x))).join("");}
-      if(row)row.innerHTML=h;
-      /* ★いまの時刻に いちばん近い ボタンを 色で かこう（起床の 時刻えらびだけ） */
-      try{
-        if(row && ha==="data-wh" && gi!=null && G[gi].h && G[gi].h.length){
-          var _nowH=new Date().getHours();
-          var _btn=row.querySelector('[data-wh="'+_nowH+'"]');
-          if(_btn)_btn.classList.add("nowh");
-        }
-      }catch(_){}
-      if(st)st.textContent=(gi==null?"1/2":"2/2");
-      show(bkId,gi!=null);
-      if(v)v.textContent=(gi==null)?"":(!G[gi].h.length?G[gi].l:(hi!=null?hi+"じ":""));
-    }catch(_){}
-  };
-  timeRow("askWakeRow","askWakeStep","askWakeV","askWakeBk",WAKE_G,_askWG,_askWH,"data-wg","data-wh");
-  timeRow("askBedRow","askBedStep","askBedV","askBedBk",BED_G,_askBG,_askBH,"data-bg","data-bh");
+  const fmt=(h)=>(h==null)?"わからない":(h+":00");
   try{
-    var _secs=document.querySelectorAll("#askCard .askSec");
-    for(var _i=0;_i<_secs.length;_i++)_secs[_i].style.display=(_i===_askSec)?"":"none";
-    var _segs=document.querySelectorAll("#askProg i");
-    for(var _j=0;_j<_segs.length;_j++)_segs[_j].className=(_j<_askSec?"done":(_j===_askSec?"on":""));
-    var _bk=$("askBack");if(_bk)_bk.style.visibility=(_askSec===0&&_askM1==null)?"hidden":"visible";
+    var wv=$("krWakeV");if(wv){wv.textContent=fmt(_krWakeH);wv.classList.toggle("dunno",_krWakeH==null);}
+    var bv=$("krBedV");if(bv){bv.textContent=fmt(_krBedH);bv.classList.toggle("dunno",_krBedH==null);}
+    var wd=$("krWakeDunno");if(wd)wd.classList.toggle("on",_krWakeH==null);
+    var bd=$("krBedDunno");if(bd)bd.classList.toggle("on",_krBedH==null);
   }catch(_){}
 }
 function _askAdvance(){ if(_askSec<2){_askSec++;_askPaint();} else {try{playPop();}catch(_){}_askClose(true);} }
@@ -21427,22 +21396,24 @@ function _askBackStep(){
 function openAskCard(then){
   _askThen=then||null;
   if(askedToday("all")){if(_askThen){const f=_askThen;_askThen=null;f();}return;}
-  _askM1=null;_askM2=null;_askM3=null;_askWG=null;_askWH=null;_askBG=null;_askBH=null;_askSec=0;
+  _askM1=null;_askM2=null;_askM3=null;
+  var _n=new Date();
+  _krWakeH=_n.getHours();                        /* 起床＝いまの ○時 */
+  _krBedH=((_n.getHours()-6)%24+24)%24;          /* 就寝＝いまから 6時間前 */
   _askPaint();
   const c=$("askCard");if(c)c.classList.add("show");
 }
 function _askClose(save){
   const c=$("askCard");if(c)c.classList.remove("show");
   if(save){
-    try{
-      const pk=_mood3Pick(_askM1,_askM2,_askM3);
-      if(pk){_saveMood(jstKey(),{e:pk.e,l:pk.l});_askMark("mood",1);}
-    }catch(_){}
-    try{if(_askWH!=null){setActualWake(_askWH);_askMark("wake",1);}}catch(_){}
-    try{if(_askBH!=null){setSleepHF(_askBH);_askMark("bed",1);}}catch(_){}
+    try{ const pk=_mood3Pick(_askM1,_askM2,_askM3); if(pk){_saveMood(jstKey(),{e:pk.e,l:pk.l});_askMark("mood",1);} }catch(_){}
+    try{ if(_krWakeH!=null){ var wl=getWakeLog(); wl[jstKey()]=_krWakeH; localStorage.setItem(WAKELOG_KEY,JSON.stringify(wl)); _askMark("wake",1);} }catch(_){}
+    try{ if(_krBedH!=null){ setSleepHF(_krBedH); _askMark("bed",1);} }catch(_){}
     try{_askMark("all",1);}catch(_){}
+    try{syncSoon();}catch(_){}
   }
   try{tsResetPost();}catch(_){}
+  try{if(typeof _renderTodayRec==="function")_renderTodayRec();}catch(_){}
   const f=_askThen;_askThen=null;
   if(f)setTimeout(()=>{try{f();}catch(_){}},60);
 }
@@ -26783,21 +26754,23 @@ try{
   const _ac=document.getElementById("askCard");
   if(_ac)_ac.addEventListener("click",e=>{
     const t=e.target;if(!t||!t.closest)return;
-    const pick=(nm,fn)=>{const x=t.closest("[data-"+nm+"]");if(!x)return false;
-      try{playClick();}catch(_){}fn(parseInt(x.dataset[nm],10));_askPaint();return true;};
-    if(t.closest("#askMoodBk")){try{playClick();}catch(_){}
-      if(_askM2!=null){_askM2=null;_askM3=null;}else _askM1=null;_askPaint();return;}
-    if(t.closest("#askWakeBk")){try{playClick();}catch(_){}_askWG=null;_askWH=null;_askPaint();return;}
-    if(t.closest("#askBedBk")){try{playClick();}catch(_){}_askBG=null;_askBH=null;_askPaint();return;}
+    const pick=(nm,fn)=>{const x=t.closest("[data-"+nm+"]");if(!x)return false;try{playClick();}catch(_){}fn(parseInt(x.dataset[nm],10));_askPaint();return true;};
+    if(t.closest("#krMoodBk")){try{playClick();}catch(_){}if(_askM2!=null){_askM2=null;_askM3=null;}else _askM1=null;_askPaint();return;}
     if(pick("m1",v=>{_askM1=v;_askM2=null;_askM3=null;}))return;
     if(pick("m2",v=>{_askM2=v;_askM3=null;}))return;
-    if(pick("m3",v=>{_askM3=v;})){_askSecDone();return;}
-    if(pick("wg",v=>{_askWG=v;_askWH=(WAKE_G[v].h[0]!=null?WAKE_G[v].h[0]:null);})){if(!WAKE_G[_askWG].h.length)_askSecDone();return;}
-    if(pick("wh",v=>{_askWH=v;})){_askSecDone();return;}
-    if(pick("bg",v=>{_askBG=v;_askBH=(BED_G[v].h[0]!=null?BED_G[v].h[0]:null);})){if(!BED_G[_askBG].h.length)_askSecDone();return;}
-    if(pick("bh",v=>{_askBH=v;})){_askSecDone();return;}
-    if(t.closest("#askBack")){try{playClick();}catch(_){}_askBackStep();return;}
-    if(t.closest("#askSkip")){try{playClick();}catch(_){}_askAdvance();return;}
+    if(pick("m3",v=>{_askM3=v;}))return;
+    var stp=t.closest(".krStep");
+    if(stp){try{playClick();}catch(_){}var tp=stp.dataset.t,dd=parseInt(stp.dataset.d,10);
+      if(tp==="wake"){ if(_krWakeH==null)_krWakeH=new Date().getHours(); _krWakeH=((_krWakeH+dd)%24+24)%24; }
+      else{ if(_krBedH==null)_krBedH=((new Date().getHours()-6)%24+24)%24; _krBedH=((_krBedH+dd)%24+24)%24; }
+      _askPaint();return;}
+    var dn=t.closest(".krDunno");
+    if(dn){try{playClick();}catch(_){}var tp2=dn.dataset.t;
+      if(tp2==="wake")_krWakeH=(_krWakeH==null)?new Date().getHours():null;
+      else _krBedH=(_krBedH==null)?(((new Date().getHours()-6)%24+24)%24):null;
+      _askPaint();return;}
+    if(t.closest("#krSave")){try{playClick();}catch(_){}_askClose(true);return;}
+    if(t.closest("#krSkip")){try{playClick();}catch(_){}_askClose(false);return;}
   });
 }catch(_){}
 try{

@@ -25539,6 +25539,7 @@ function _tvMapSVG(){
   /* 家 */
   const _drawHome=(hm,r2,col,label,lcol)=>{
     const hx=_jpX(hm.lng),hy=_jpY(hm.lat);
+    if(hx<vx-w*0.12||hx>vx+w*1.12||hy<vy-hh*0.12||hy>vy+hh*1.12)return;   /* 画面外の家は 描かない（軽量化） */
     s+='<g><path d="M'+(hx-r2*1.3).toFixed(2)+' '+(hy+r2*0.2).toFixed(2)+' L'+hx.toFixed(2)+' '+(hy-r2*1.2).toFixed(2)+
        ' L'+(hx+r2*1.3).toFixed(2)+' '+(hy+r2*0.2).toFixed(2)+' Z" fill="'+col+'" stroke="#fff" stroke-width="'+(U*1.4).toFixed(4)+'"/>'+
        '<rect x="'+(hx-r2*0.85).toFixed(2)+'" y="'+(hy+r2*0.1).toFixed(2)+'" width="'+(r2*1.7).toFixed(2)+'" height="'+(r2*1.15).toFixed(2)+
@@ -25585,7 +25586,7 @@ function _tvDraw(){
   const html=_tvMapSVG();
   if(old)old.outerHTML=html;else wrap.insertAdjacentHTML("afterbegin",html);
   const ov=$("tvOverlay");
-  if(ov)ov.innerHTML=_tvOverlayHTML();
+  if(ov){ov.innerHTML=_tvOverlayHTML();try{_tvOthEls=ov.querySelectorAll(".tvOth");}catch(_){_tvOthEls=null;}}
   _tvBind();
   requestAnimationFrame(()=>{try{_tvPlaceOverlay();}catch(_){}});
 }
@@ -28159,7 +28160,7 @@ function _tvBlinkStart(){
       _tvBlinkOn=!_tvBlinkOn;
       _tvOverlapCheck();
     }catch(_){}
-  },900);
+  },1500);
 }
 function _tvOverlapCheck(){
   try{
@@ -30686,7 +30687,7 @@ function closeSt(){const sc=$("stShop");if(sc){sc.classList.remove("show");sc.cl
 /* ===== 地図の ほかのプレイヤー ===== */
 const TVHIDE_KEY="radio_tv_hidep",TVSHARE_KEY="radio_tv_noshare";
 function tvHideP(){try{return localStorage.getItem(TVHIDE_KEY)==="1";}catch(_){return false;}}
-let _tvOthers=[],_tvOthersLoaded=false;
+let _tvOthers=[],_tvOthersLoaded=false,_tvOthEls=null;
 function tvNoShare(){try{return localStorage.getItem(TVSHARE_KEY)==="1";}catch(_){return false;}}
 /* この端末の設定を チェックボックスに もどす */
 function _tvSyncToggles(){
@@ -30744,7 +30745,7 @@ async function _tvLoadOthers(){
       if(Date.now()-(o.at||0)>3*24*3600*1000)return;   /* 3日いないの人だけ */
       out.push(o);
     });
-    _tvOthers=out.slice(0,80);
+    _tvOthers=out.slice(0,40);   /* 重さ対策：表示する ほかの人を へらす */
   }catch(e){console.warn("others",e);}
   return _tvOthers;
 }
@@ -30764,7 +30765,7 @@ function _tvPlaceOthers(){
   const svg=wrap.querySelector(".tvMapSvg");if(!svg)return;
   const r=svg.getBoundingClientRect();if(!r.width)return;
   const w=_tvView.w,hh=_tvView.h||w,vx=_tvView.cx-w/2,vy=_tvView.cy-hh/2;
-  document.querySelectorAll("#tvOverlay .tvOth").forEach(el=>{
+  (_tvOthEls||document.querySelectorAll("#tvOverlay .tvOth")).forEach(el=>{
     const o=_tvOthers[parseInt(el.dataset.oi,10)];if(!o)return;
     const x=(_jpX(o.lng)-vx)/w*r.width,y=(_jpY(o.lat)-vy)/hh*r.height;
     const out=(x<-30||y<-30||x>r.width+30||y>r.height+30);

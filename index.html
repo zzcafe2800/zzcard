@@ -5697,9 +5697,9 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
 .catY1.big{width:82px !important;height:82px !important;bottom:-8px !important;right:-16px !important;z-index:-1 !important;}
 </style>
 <style id="ygCatchCss">
-#ygCatch{position:absolute;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(120% 90% at 50% 15%,#c6eaa8 0%,#8fd07a 45%,#5fae5a 100%);overflow:hidden;}
+#ygCatch{position:absolute;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(circle at 50% 38%,#c6ecff,#93d2f6 58%,#6fbaea);animation:ygCatchIn .55s ease both;}
 #ygCatch[hidden]{display:none !important;}   /* ★hidden で 確実に 消す（勝ち/逃げ で 演出へ 進む） */
-#ygCatchGrass{position:absolute;left:0;right:0;bottom:0;height:50%;background:radial-gradient(circle at 20% 62%,#fff 1.6px,transparent 2.4px),radial-gradient(circle at 54% 74%,#fff7c0 1.8px,transparent 2.6px),radial-gradient(circle at 79% 58%,#fff 1.6px,transparent 2.4px),radial-gradient(circle at 38% 82%,#fff 1.5px,transparent 2.3px),linear-gradient(0deg,#2c7a30 0%,#3c923b 55%,#59b04e 100%);}
+#ygCatchGrass{position:absolute;left:0;right:0;bottom:0;height:34%;background:radial-gradient(circle at 22% 66%,#fff 1.5px,transparent 2.3px),radial-gradient(circle at 58% 76%,#fff7c0 1.7px,transparent 2.5px),radial-gradient(circle at 81% 62%,#fff 1.5px,transparent 2.3px),linear-gradient(0deg,#4f9e57 0%,#63b566 60%,#7ac974 100%);}
 #ygCatchGrass::before{content:"";position:absolute;left:-2%;right:-2%;top:-30px;height:52px;background:linear-gradient(0deg,#2c7a30,#3f9a3c);clip-path:polygon(0 100%,1.5% 30%,3% 100%,5% 8%,7% 100%,9% 40%,11% 100%,13% 2%,15% 100%,17% 35%,19% 100%,21% 12%,23% 100%,25% 0,27% 100%,29% 38%,31% 100%,33% 6%,35% 100%,37% 42%,39% 100%,41% 2%,43% 100%,45% 30%,47% 100%,49% 10%,51% 100%,53% 38%,55% 100%,57% 0,59% 100%,61% 34%,63% 100%,65% 8%,67% 100%,69% 40%,71% 100%,73% 3%,75% 100%,77% 36%,79% 100%,81% 12%,83% 100%,85% 0,87% 100%,89% 38%,91% 100%,93% 6%,95% 100%,97% 40%,99% 100%,100% 20%);}
 #ygCatchGrass::after{content:"";position:absolute;left:-2%;right:-2%;top:-18px;height:40px;background:linear-gradient(0deg,#4aa544,#7fca6a);clip-path:polygon(0 100%,2% 45%,4% 100%,6.5% 20%,9% 100%,11% 50%,13.5% 100%,16% 25%,18% 100%,20.5% 48%,23% 100%,25.5% 18%,28% 100%,30% 46%,32.5% 100%,35% 22%,37% 100%,39.5% 50%,42% 100%,44% 20%,46.5% 100%,49% 46%,51.5% 100%,54% 24%,56% 100%,58.5% 48%,61% 100%,63% 20%,65.5% 100%,68% 46%,70% 100%,72.5% 24%,75% 100%,77% 48%,79.5% 100%,82% 20%,84% 100%,86.5% 46%,89% 100%,91% 24%,93.5% 100%,96% 48%,98% 100%,100% 40%);opacity:.96;}
 #ygCatchTip{position:relative;z-index:3;font-weight:900;color:#2f6b2f;background:rgba(255,255,255,.88);padding:6px 16px;border-radius:999px;margin-bottom:10px;box-shadow:0 3px 8px rgba(0,0,0,.15);}
@@ -5747,6 +5747,24 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
 @keyframes ygCwin2{0%{filter:brightness(1) saturate(1);}35%{filter:brightness(1.7) saturate(1.3);}100%{filter:brightness(1) saturate(1);}}
 #ygCatchHearts .ygH{filter:drop-shadow(0 2px 3px rgba(0,0,0,.28));transition:transform .2s;}
 #ygCatchTip{animation:ygTipIn .5s ease;}@keyframes ygTipIn{0%{opacity:0;transform:translateY(-10px) scale(.9);}100%{opacity:1;transform:none;}}
+</style>
+<style id="ygCuteCss">
+@keyframes ygCatchIn{0%{opacity:0;transform:scale(1.06);}100%{opacity:1;transform:none;}}
+#ygCatch.toReveal{animation:ygCatchOut .85s ease both;}
+@keyframes ygCatchOut{0%{opacity:1;filter:brightness(1);}45%{opacity:1;filter:brightness(1.6);}100%{opacity:0;filter:brightness(2.2);}}
+#ygCatchGlow{position:absolute;inset:-26%;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.9) 0%,rgba(255,240,180,.5) 38%,transparent 68%);opacity:.55;z-index:1;pointer-events:none;animation:ygGlowB 2.8s ease-in-out infinite;}
+@keyframes ygGlowB{0%,100%{transform:scale(1);opacity:.45;}50%{transform:scale(1.1);opacity:.7;}}
+#ygCatchGlow.go{animation:ygGlowPop .5s ease;}@keyframes ygGlowPop{0%{transform:scale(1);opacity:.5;}40%{transform:scale(1.35);opacity:1;}100%{transform:scale(1);opacity:.5;}}
+#ygCatchChar{z-index:3;}
+#ygCatchPaw{position:absolute;right:6%;bottom:16%;font-size:30px;z-index:5;opacity:0;pointer-events:none;filter:drop-shadow(0 2px 4px rgba(0,0,0,.25));}
+#ygCatchPaw.go{animation:ygPaw .45s ease;}@keyframes ygPaw{0%{opacity:0;transform:translate(14px,14px) rotate(18deg) scale(.8);}35%{opacity:1;transform:translate(-4px,-6px) rotate(-6deg) scale(1.1);}100%{opacity:0;transform:translate(-10px,-14px) rotate(-12deg) scale(1);}}
+#ygCatchTip{color:#3f6a86;background:rgba(255,255,255,.92);font-size:15px;padding:7px 18px;box-shadow:0 4px 12px rgba(80,140,190,.28);}
+#ygCatchPets{color:#3f6a86;background:rgba(255,255,255,.9);box-shadow:0 3px 10px rgba(80,140,190,.22);}
+#ygCatchHearts{gap:14px;font-size:28px;}
+#ygCatchHearts .ygH{transition:transform .25s ease;}
+#ygCatchHearts .ygH.on{animation:ygHpop2 .5s cubic-bezier(.2,1.6,.4,1);}
+@keyframes ygHpop2{0%{transform:scale(.4) rotate(-12deg);}55%{transform:scale(1.5) rotate(6deg);}100%{transform:scale(1);}}
+#ygCatchBubble{border-radius:16px 16px 16px 4px;font-size:15px;padding:5px 14px;}
 </style>
 </head>
 <body>
@@ -28668,6 +28686,8 @@ function _ygPet(){
   var row=(_YGCATCH_P[star]&&_YGCATCH_P[star][_ygCatch.hearts])||_YGCATCH_P[1][0];
   var p=row[Math.min(5,_ygCatch.petIdx)]||30; p=Math.min(97,Math.max(82,p+_YGCATCH_BOOST)); _ygCatch.petIdx++;   /* ★成功率アップ＋下限82% */
   var ch=$("ygCatchChar"); if(ch){ch.classList.remove("pet");void ch.offsetWidth;ch.classList.add("pet");}
+  try{var pw=$("ygCatchPaw"); if(pw){pw.classList.remove("go");void pw.offsetWidth;pw.classList.add("go");}}catch(_){}
+  try{var gl=$("ygCatchGlow"); if(gl){gl.classList.remove("go");void gl.offsetWidth;gl.classList.add("go");}}catch(_){}
   if(Math.random()*100<p){
     _ygCatch.hearts++; try{_ygHeartPop();}catch(_){} try{playPop();}catch(_){} _ygCatchPaint();
   }else{
@@ -28688,7 +28708,8 @@ function _ygCatchWin(){
   try{var t=$("ygCatchTip");if(t)t.textContent="ニャー！ なかよく なれた！";}catch(_){}
   try{_ygPurr();}catch(_){} try{setTimeout(_ygFanfare,260);}catch(_){}
   try{for(var _i=0;_i<14;_i++){(function(n){setTimeout(function(){try{_ygConfetti();}catch(_){}},n*45);})(_i);}}catch(_){}
-  setTimeout(function(){ try{if(c){c.hidden=true;c.style.display="none";}}catch(_){} try{_ygProceedReveal();}catch(_){} },600);
+  try{if(c)c.classList.add("toReveal");}catch(_){}
+  setTimeout(function(){ try{if(c){c.classList.remove("toReveal");c.hidden=true;c.style.display="none";}}catch(_){} try{_ygProceedReveal();}catch(_){} },900);
 }
 function _ygCatchFlee(){
   var c=$("ygCatch"); if(c)c.classList.add("flee");
@@ -34775,7 +34796,7 @@ function _gpStreetHTML(){
 <div id="ygCatchGrass"></div>
 <div id="ygCatchTip">タップして なでてみよう！</div>
 <div id="ygCatchHearts"></div>
-<div id="ygCatchWrap"><div id="ygCatchBubble">イヤ！</div><div id="ygCatchChar"></div></div>
+<div id="ygCatchWrap"><div id="ygCatchGlow"></div><div id="ygCatchBubble">イヤ！</div><div id="ygCatchChar"></div><div id="ygCatchPaw" aria-hidden="true">✋</div></div>
 <div id="ygCatchPets"></div>
 </div>
 <div id="ygBang"></div>

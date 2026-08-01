@@ -5677,6 +5677,12 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
 #krSave{width:100%;border:none;border-radius:14px;background:linear-gradient(180deg,#7fd08a,#4bb262);color:#fff;font-weight:900;font-size:16px;padding:12px;cursor:pointer;font-family:inherit;box-shadow:0 4px 0 rgba(60,150,80,.4);margin-top:4px;}#krSave:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(60,150,80,.4);}
 #krSkip{display:block;margin:9px auto 0;border:none;background:none;color:#a9b6c2;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;}
 </style>
+<style id="catY1Css">
+.catY1{position:absolute;bottom:4px;right:-2px;width:36px;height:36px;z-index:8;pointer-events:none;display:flex;align-items:center;justify-content:center;}
+.catY1 img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(0,0,0,.35));}
+.catY1.sil img{filter:brightness(0) saturate(0) opacity(.85) !important;}
+#hillCats .catLikeHeart{display:none !important;}
+</style>
 </head>
 <body>
 <script>(function(){try{var m=/Mobi|Android|iPhone|iPod|iPad/i.test(navigator.userAgent||"");var p=(window.innerHeight||0)>=(window.innerWidth||0);if(m||p)document.documentElement.classList.add("lite");}catch(e){}})();</script>
@@ -8678,7 +8684,7 @@ async function postToday(anon,comment,showArg){
     let _cAt=Date.now();   /* 同じ日の編集なら最初の投稿時刻を保つ（起床時刻がズレないように） */
     try{const _ed=JSON.parse(localStorage.getItem("radio_post_edit")||"null");if(_ed&&_ed.date===date&&Number.isFinite(_ed.createdAt))_cAt=_ed.createdAt;}catch(_){}
     const _cm=(comment||"").slice(0,30);
-    await set(ref(db,"posts/"+getUid()+"_"+date),{   /* キーが uid_date なので上書き＝二重投稿にならない */
+    await set(ref(db,"posts/"+getUid()+"_"+date),{   /* キーが uid_date なので上書き＝二重投稿にならない */ y1:_yume1Payload(),
       uid:getUid(),gold:((typeof _aiNormaGoldToday==="function")&&_aiNormaGoldToday())||false,name:anon?"匿名さん":(p.name||"匿名さん"),color:p.color||"#8fdcff",catBody:p.catBody||"#1c1c1c",acos:acosPayload(),cos:(getEquippedCostume()||null),date,stamp,createdAt:_cAt,wakeHour:Number.isFinite(p.wakeHour)?p.wakeHour:null,wakeMin:Number.isFinite(p.wakeMin)?p.wakeMin:0,streak:calcStreak().current,total:getDoneDates().length,goume:_weekDoneCount(),comment:_cm,pose:getEquippedPose(),cos:getEquippedCostume()||null,thanks:getThanksWord(),showTime:_show,wakeHF:getActualWake(),storyJoin:(function(){try{const v=localStorage.getItem("radio_story_join");return v===null?true:v==="1";}catch(_){return true;}})()
     });
     try{localStorage.setItem("radio_post_edit",JSON.stringify({date,createdAt:_cAt,comment:_cm,anon:!!anon,show:_show}));}catch(_){}
@@ -10351,13 +10357,13 @@ function _applyHillFromVal(val){
     if($("recentPostCount"))$("recentPostCount").innerHTML=posters>0?(`<span class="hsTop"><b>${posters}</b><i class="hsUnit">人</i></span><span class="hsLbl">とうこう</span>`):"";
     let self;
     if(selfPost){
-      self={uid:me,isSelf:true,name:p.name||"あなた",catBody:profileBody(),color:profileColor(),
+      self={uid:me,isSelf:true,y1:_yume1Payload(),name:p.name||"あなた",catBody:profileBody(),color:profileColor(),
         wakeHour:selfPost.wakeHour,wakeMin:selfPost.wakeMin,
         createdAt:selfPost.createdAt||Date.now(),
         streak:Number.isFinite(selfPost.streak)?selfPost.streak:calcStreak().current,total:getDoneDates().length,
         comment:selfPost.comment||"",thanks:getThanksWord()};
     }else{
-      self={uid:me,isSelf:true,needsPost:true,name:p.name||"あなた",catBody:profileBody(),color:profileColor(),
+      self={uid:me,isSelf:true,needsPost:true,y1:_yume1Payload(),name:p.name||"あなた",catBody:profileBody(),color:profileColor(),
         createdAt:0,comment:"",streak:calcStreak().current,total:getDoneDates().length};
     }
     renderCats([self,...cats]);   /* 自分の猫は常に表示（未投稿なら投稿ボタン／投稿済みなら実データ・いいねは付かない） */
@@ -10495,15 +10501,12 @@ function renderHillPage(){
         });
         el.appendChild(lab);el.appendChild(pb);el.appendChild(fig);
       }else{
-        const me=document.createElement("div");me.className="catLike catSelfTag catPosted";me.textContent="投稿済み";
-        el.appendChild(lab);el.appendChild(me);el.appendChild(fig);
+        el.appendChild(lab);el.appendChild(fig);
+        try{var _y1s=_catYumeBadge(_yume1Payload(),true);if(_y1s)el.appendChild(_y1s);}catch(_){}
       }
     }else{
-      const btn=document.createElement("button");btn.className="catLike catLikeHeart";btn.type="button";
-      btn.dataset.pid=po.pid||"";btn.dataset.uid=po.uid||"";
-      if(likedPost(po.uid,po.pid)){btn.classList.add("done");btn.textContent="♥";}
-      else{btn.textContent="♡";btn.addEventListener("click",e=>{e.stopPropagation();likePost(po,btn);});}
-      el.appendChild(lab);el.appendChild(fig);el.appendChild(btn);
+      el.appendChild(lab);el.appendChild(fig);
+      try{var _y1=_catYumeBadge(po.y1,false);if(_y1)el.appendChild(_y1);}catch(_){}
     }
     try{
       const rnd=_sRand(_hashStr((po.uid||po.name||"")+"|deco"));
@@ -28839,7 +28842,7 @@ function _advPickTarget(alive){
 function _advUnit(y){
   var friend=_yumeIsFriend(y.id);
   var eA=_yumeEff(y,"atk"),eH=_yumeEff(y,"hp"),eS=_yumeEff(y,"spd");
-  var pos=_advPosGet(y.id)||"back";
+  var pos="front";   /* ★開始時は 全員 前衛（バトル中に 1/2/3 で 下げる） */
   var atkBase=(12+eA*0.30)*(friend?1.05:1);
   var atk=atkBase*((pos==="front")?1.15:1);   /* ★前衛は 攻撃+15% */
   var maxhp=Math.round(260 + eH*2.2);
@@ -29038,7 +29041,13 @@ function _advBtnHTML(){
 }
 
 /* --- 冒険 セットアップ画面 --- */
-var _advSel=[];
+var ADV_SEL_KEY="radio_adv_sel";
+var _advSel=(function(){try{var a=JSON.parse(localStorage.getItem(ADV_SEL_KEY)||"[]");return Array.isArray(a)?a.filter(function(x){return typeof x==="string";}):[];}catch(_){return [];}})();
+function _advSaveSel(){try{localStorage.setItem(ADV_SEL_KEY,JSON.stringify(_advSel));}catch(_){}}
+function _myYume1(){try{if(!_advSel.length)return null;var id=_advSel[0],dex=_yumeDex();for(var i=0;i<dex.length;i++)if(dex[i].id===id)return dex[i];return null;}catch(_){return null;}}
+function _yume1Payload(){try{var y=_myYume1();if(!y)return null;return {img:y.img||"",name:y.name||"",star:y.star||1,shiny:y.shiny?1:0,hue:y.hue||0};}catch(_){return null;}}
+function _yumeOwnedImgs(){try{return _yumeDex().map(function(y){return y.img;});}catch(_){return [];}}
+function _catYumeBadge(y1,isSelf){ if(!y1||!y1.img)return null; var owned=isSelf||_yumeOwnedImgs().indexOf(y1.img)>=0; var d=document.createElement("div"); d.className="catY1"+(owned?"":" sil"); d.title=owned?(y1.name||""):"？？？"; var im=document.createElement("img"); im.src=y1.img; im.alt=""; if(y1.shiny&&owned)im.style.filter="hue-rotate("+(y1.hue||0)+"deg) saturate(1.25)"; im.onerror=function(){try{d.style.display="none";}catch(_){}}; d.appendChild(im); return d; }
 function openAdventure(){
   var sc=$("advScreen");if(!sc)return;
   try{_yumeMigrate();}catch(_){}
@@ -29082,20 +29091,18 @@ function _advRenderSetup(){
   }catch(_){}
   try{
     var dex=_yumeDex(), g=$("advTeam");
+    _advSel=_advSel.filter(function(id){return dex.some(function(y){return y.id===id;});});
     if(g){
       if(!dex.length){ g.innerHTML='<div class="advEmpty">まだ ユメっ子が いないよ。<br>あさの 体操の あとに 出会えるよ！</div>'; }
       else g.innerHTML=dex.map(function(y){
         var friend=_yumeIsFriend(y.id), pos=_advSel.indexOf(y.id), sel=pos>=0;
-        var fpos=_advPosGet(y.id)||"back", isFront=(fpos==="front");
-        return '<button class="advCard'+(sel?" sel":"")+(sel&&isFront?" front":"")+'" data-yid="'+y.id+'" type="button">'+
+        return '<button class="advCard'+(sel?" sel":"")+'" data-yid="'+y.id+'" type="button">'+
           (sel?'<span class="advCardNo">'+(pos+1)+'</span>':"")+
-          (sel&&isFront?'<span class="advShield" title="前衛（ねらわれやすい／攻撃+）">\ud83d\udee1\ufe0f</span>':"")+
           '<div class="advCardPic">'+_yumeMiniInner(y)+'</div>'+
           '<div class="advCardName">'+escHtml(y.name)+(y.shiny?' <span class="advMini">\u2728</span>':"")+'</div>'+
           '<div class="advCardStars r'+y.star+'">'+_yumeStarStr(y.star)+'</div>'+
           '<div class="advCardNums"><span>'+_yumeEff(y,"hp")+'</span><span>'+_yumeEff(y,"atk")+'</span><span>'+_yumeEff(y,"spd")+'</span></div>'+
           '<div class="advCardLv">Lv'+_yumeLv(y)+' / '+_yumeMaxLv(y)+'</div>'+
-          (sel?'<span class="advPosBtn '+(isFront?"front":"back")+'" data-pos="'+y.id+'">'+(isFront?"\ud83d\udee1\ufe0f まえ":"うしろ")+'</span>':"")+
           '<div class="advCardBadges">'+_advPersLabel(_yumePers(y))+(friend?'<span class="advFriend">親友</span>':"")+'</div>'+
           '</button>';
       }).join("");
@@ -29707,7 +29714,7 @@ function _advCloseBattle(){
   try{clearTimeout(_advTeleTimer);}catch(_){}_advTeleState=null;try{_advClearAim();}catch(_){}
   clearInterval(_advBattleTimer);_advState=null;
   var wasDev=_advDevMode; _advDevMode=false;
-  if(!wasDev){ _advSel=[]; try{_advRenderSetup();}catch(_){} }   /* おためしは dex を のこす */
+  if(!wasDev){ _advSel=[]; try{_advSaveSel();}catch(_){} try{_advRenderSetup();}catch(_){} }   /* おためしは dex を のこす */
 }
 
 /* --- 配線（module deferで DOM有） --- */
@@ -30152,9 +30159,7 @@ function _advDexBattle(chIdx){
 (function _advWire(){try{
   var cl=$("advClose");if(cl)cl.addEventListener("click",function(){try{playClick();}catch(_){}closeAdventure();});
   var team=$("advTeam");if(team)team.addEventListener("click",function(e){
-    var pb=e.target&&e.target.closest?e.target.closest(".advPosBtn"):null;
-    if(pb){ e.stopPropagation(); try{playClick();}catch(_){} _advPosToggle(pb.getAttribute("data-pos")); _advRenderSetup(); return; }
-    var b=e.target&&e.target.closest?e.target.closest(".advCard"):null;if(!b)return;try{playClick();}catch(_){}_advToggleSel(b.getAttribute("data-yid"));
+    var b=e.target&&e.target.closest?e.target.closest(".advCard"):null;if(!b)return;try{playClick();}catch(_){}_advToggleSel(b.getAttribute("data-yid"));try{_advSaveSel();}catch(_){}
   });
   var _apath=$("advPath");if(_apath)_apath.addEventListener("click",function(e){var n=e.target&&e.target.closest?e.target.closest(".advNode"):null;if(!n)return;var st=n.getAttribute("data-stg");if(st==null)return;try{playClick();}catch(_){}_advSetPick(parseInt(st,10));_advRenderSetup();});
   var st=$("advStart");if(st)st.addEventListener("click",function(){if(st.disabled)return;try{playClick();}catch(_){}_advStartBattle();});

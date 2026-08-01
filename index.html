@@ -12632,7 +12632,7 @@ function markTodayDone(){
   const before=getCollected();
   dates.push(today);
   localStorage.setItem(DONE_KEY,JSON.stringify(dates));
-  try{const wl=getWakeLog();wl[today]=nowHourFloat();localStorage.setItem(WAKELOG_KEY,JSON.stringify(wl));localStorage.setItem("radio_done_time",JSON.stringify({date:today,hf:nowHourFloat()}));}catch(_){}
+  try{const wl=getWakeLog();var _manual=false;try{_manual=(localStorage.getItem("radio_wake_manual")===today);}catch(_){}if(!_manual)wl[today]=nowHourFloat();localStorage.setItem(WAKELOG_KEY,JSON.stringify(wl));localStorage.setItem("radio_done_time",JSON.stringify({date:today,hf:nowHourFloat()}));}catch(_){}
   try{_pushPartyClimb();}catch(_){}
   try{recordCheckin();}catch(_){}
   const st=stampForDate(today);
@@ -21573,13 +21573,14 @@ function _askClose(save){
   const c=$("askCard");if(c)c.classList.remove("show");
   if(save){
     try{ const pk=_mood3Pick(_askM1,_askM2,_askM3); if(pk){_saveMood(jstKey(),{e:pk.e,l:pk.l});_askMark("mood",1);} }catch(_){}
-    try{ if(_krWakeH!=null){ var wl=getWakeLog(); wl[jstKey()]=_krWakeH; localStorage.setItem(WAKELOG_KEY,JSON.stringify(wl)); _askMark("wake",1);} }catch(_){}
+    try{ if(_krWakeH!=null){ var wl=getWakeLog(); wl[jstKey()]=_krWakeH; localStorage.setItem(WAKELOG_KEY,JSON.stringify(wl)); try{localStorage.setItem("radio_wake_manual",jstKey());}catch(_){} _askMark("wake",1);} }catch(_){}
     try{ if(_krBedH!=null){ setSleepHF(_krBedH); _askMark("bed",1);} }catch(_){}
     try{_askMark("all",1);}catch(_){}
     try{syncSoon();}catch(_){}
   }
   try{tsResetPost();}catch(_){}
   try{if(typeof _renderTodayRec==="function")_renderTodayRec();}catch(_){}
+  try{if(typeof buildRecord==="function"&&$("recordScreen"))buildRecord();}catch(_){}   /* ★きろくの グラフも すぐ 作りなおす */
   const f=_askThen;_askThen=null;
   if(f)setTimeout(()=>{try{f();}catch(_){}},60);
 }

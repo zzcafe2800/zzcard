@@ -5696,6 +5696,25 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
 @keyframes bigPulse{0%,100%{transform:rotate(8deg) scale(1);}50%{transform:rotate(8deg) scale(1.12);}}
 .catY1.big{width:82px !important;height:82px !important;bottom:-8px !important;right:-16px !important;z-index:-1 !important;}
 </style>
+<style id="ygCatchCss">
+#ygCatch{position:absolute;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(120% 90% at 50% 15%,#c6eaa8 0%,#8fd07a 45%,#5fae5a 100%);overflow:hidden;}
+#ygCatchGrass{position:absolute;left:0;right:0;bottom:0;height:40%;background:linear-gradient(0deg,#4a9e4a,#63b95f);opacity:.9;}
+#ygCatchGrass::before{content:"";position:absolute;left:0;right:0;top:-14px;height:20px;background:repeating-linear-gradient(78deg,transparent 0 10px,#4a9e4a 10px 12px);}
+#ygCatchTip{position:relative;z-index:3;font-weight:900;color:#2f6b2f;background:rgba(255,255,255,.88);padding:6px 16px;border-radius:999px;margin-bottom:10px;box-shadow:0 3px 8px rgba(0,0,0,.15);}
+#ygCatchHearts{position:relative;z-index:3;display:flex;gap:12px;font-size:26px;margin-bottom:4px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.2));}
+#ygCatchHearts .ygH.on{animation:ygHpop .4s ease;}@keyframes ygHpop{0%{transform:scale(.3);}60%{transform:scale(1.4);}100%{transform:scale(1);}}
+#ygCatchWrap{position:relative;z-index:3;width:170px;height:170px;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;}
+#ygCatchChar{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
+#ygCatchChar img,#ygCatchChar svg,#ygCatchChar .ygImg{width:140px;height:140px;object-fit:contain;filter:drop-shadow(0 8px 12px rgba(0,0,0,.3));}
+#ygCatchChar.sil img,#ygCatchChar.sil .ygImg{filter:brightness(0) saturate(0) opacity(.92) !important;}
+#ygCatchChar.pet{animation:ygPetB .22s ease;}@keyframes ygPetB{0%{transform:scale(1);}40%{transform:scale(1.13) rotate(-4deg);}100%{transform:scale(1);}}
+.ygHeartFly{position:absolute;bottom:42%;font-size:22px;pointer-events:none;z-index:6;animation:ygHeartFly .9s ease-out forwards;}@keyframes ygHeartFly{0%{opacity:0;transform:translateY(0) scale(.5);}20%{opacity:1;}100%{opacity:0;transform:translateY(-72px) scale(1.3);}}
+#ygCatchBubble{position:absolute;top:-4px;right:-10px;z-index:7;background:#fff;color:#e0588f;font-weight:900;padding:4px 12px;border-radius:14px 14px 14px 3px;box-shadow:0 3px 8px rgba(0,0,0,.2);opacity:0;transform:scale(.6);pointer-events:none;}
+#ygCatchBubble.show{animation:ygBub .9s ease;}@keyframes ygBub{0%{opacity:0;transform:scale(.4) translateY(6px);}20%{opacity:1;transform:scale(1.1);}80%{opacity:1;transform:scale(1);}100%{opacity:0;}}
+#ygCatchPets{position:relative;z-index:3;margin-top:14px;font-weight:800;color:#2f6b2f;background:rgba(255,255,255,.85);padding:5px 16px;border-radius:999px;}#ygCatchPets b{color:#e08a2a;font-size:17px;}#ygCatchPets .pb{color:#3f9e4a;font-size:12px;}
+#ygCatch.win{animation:ygCwin .6s ease;}@keyframes ygCwin{0%{filter:brightness(1);}50%{filter:brightness(1.5);}100%{filter:brightness(1);}}
+#ygCatch.flee #ygCatchChar{animation:ygFlee 1s ease-in forwards;}@keyframes ygFlee{0%{transform:translateX(0) scale(1);opacity:1;}100%{transform:translateX(190px) scale(.35);opacity:0;}}
+</style>
 </head>
 <body>
 <script>(function(){try{var m=/Mobi|Android|iPhone|iPod|iPad/i.test(navigator.userAgent||"");var p=(window.innerHeight||0)>=(window.innerWidth||0);if(m||p)document.documentElement.classList.add("lite");}catch(e){}})();</script>
@@ -28559,24 +28578,80 @@ function _ygStarSound(i){
 function _yumeGachaStart(){
   var el=$("yumeGacha");if(!el)return;
   var y=_yumeRoll();_ygCurrent=y;
+  el.className="";el.hidden=false;
+  _ygCatchStart(y);   /* ★まず ゲットチャンス（なでてゲット）から */
+}
+function _ygProceedReveal(){
+  var el=$("yumeGacha");if(!el)return; var y=_ygCurrent; if(!y)return;
   try{$("ygCat").innerHTML=_aiCatAvatar("happy");}catch(_){}
   try{var sil=$("ygSil");if(sil){sil.innerHTML=_yumeSilInner(y);sil.style.filter="";sil.style.animation="";}}catch(_){}
   try{$("ygInfo").classList.remove("show");}catch(_){}
   try{var h=$("ygHint");if(h)h.textContent="むむっ…？ だれか 来たみたい";}catch(_){}
-  el.className="";el.hidden=false;
-  void el.offsetWidth;
+  el.className="";void el.offsetWidth;
   el.classList.add("s-dance");
   try{playPop();}catch(_){}
   clearTimeout(_ygT1);clearTimeout(_ygT2);
-  /* ためる音は ズームに 入るタイミングから（1.4秒ぶん） */
   _ygT1=setTimeout(function(){try{el.classList.remove("s-dance");el.classList.add("s-zoom");var h=$("ygHint");if(h)h.textContent="";_ygChargeSound(1.4);}catch(_){}},2300);
   _ygT2=setTimeout(function(){try{
     el.classList.remove("s-zoom");
-    /* ★キャラを 出す前に「バン！バン！バン！」＝星の数ぶん・だんだん 豪華に */
-    _ygBangSeq(y, function(){
-      try{el.classList.add("s-reveal");_ygReleaseSound();_ygBurst();_ygRenderReveal(y);}catch(_){}
-    });
+    _ygBangSeq(y, function(){ try{el.classList.add("s-reveal");_ygReleaseSound();_ygBurst();_ygRenderReveal(y);}catch(_){} });
   }catch(_){ try{el.classList.add("s-reveal");_ygReleaseSound();_ygBurst();_ygRenderReveal(y);}catch(__){} }},3700);
+}
+/* ===== ゲットチャンス（なでて ゲット）===== */
+var _YGCATCH_P={1:{0:[65,55,45,38,32,28],1:[80,72,64,58,52,48],2:[92,88,84,80,76,72]},2:{0:[60,50,42,35,30,26],1:[76,68,60,54,49,45],2:[90,85,80,76,72,68]},3:{0:[55,46,38,32,27,24],1:[72,64,56,50,45,41],2:[88,82,77,73,69,65]}};
+var _ygCatch={hearts:0,petsLeft:0,petIdx:0,busy:false,over:false,bonus:0};
+function _ygPetCount(){ try{ var w=(typeof getActualWake==="function")?getActualWake():null; var b=0; if(Number.isFinite(w)){ b=w<5?3:w<6?2:w<7?1:0; } return {base:3,bonus:b,total:3+b}; }catch(_){ return {base:3,bonus:0,total:3}; } }
+function _ygSasa(){ try{_abTone(2000,3200,0.09,"sawtooth",0.045);_abTone(1600,2600,0.09,"sawtooth",0.04,0.07);}catch(_){} }
+function _ygNya(){ try{_abTone(720,900,0.09,"square",0.13);_abTone(520,380,0.10,"square",0.11,0.08);}catch(_){} }
+function _ygCatchStart(y){
+  var el=$("yumeGacha");if(!el)return;
+  var owned=(_yumeOwnedImgs().indexOf(y.img)>=0);
+  var pc=_ygPetCount();
+  _ygCatch={hearts:0,petsLeft:pc.total,petIdx:0,busy:false,over:false,bonus:pc.bonus};
+  var c=$("ygCatch");if(!c)return;
+  c.classList.remove("flee","win");
+  var ch=$("ygCatchChar"); if(ch){ ch.innerHTML=_yumeSilInner(y); ch.classList.toggle("sil",!owned); ch.style.filter=(y.shiny&&owned)?("hue-rotate("+(y.hue||0)+"deg) saturate(1.2)"):""; }
+  var w=$("ygCatchWrap"); if(w&&!w._wired){w._wired=1;w.addEventListener("click",function(){_ygPet();});}
+  _ygCatchPaint();
+  var bub=$("ygCatchBubble"); if(bub)bub.classList.remove("show");
+  c.hidden=false; el.classList.add("catching");
+  try{_ygSasa();}catch(_){}
+  try{var t=$("ygCatchTip");if(t)t.textContent="タップして なでてみよう！";}catch(_){}
+}
+function _ygCatchPaint(){ try{
+  var hs=$("ygCatchHearts"); if(hs){ var h=""; for(var i=0;i<3;i++)h+="<span class=\"ygH"+(i<_ygCatch.hearts?" on":"")+"\">"+(i<_ygCatch.hearts?"\u2764\ufe0f":"\ud83e\udd0d")+"</span>"; hs.innerHTML=h; }
+  var pv=$("ygCatchPets"); if(pv){ pv.innerHTML="なでられる：<b>"+_ygCatch.petsLeft+"</b> かい"+(_ygCatch.bonus?" <span class=\"pb\">（3 +"+_ygCatch.bonus+"）</span>":" <span class=\"pb\">（3）</span>"); }
+}catch(_){} }
+function _ygPet(){
+  if(_ygCatch.busy||_ygCatch.over)return; if(_ygCatch.petsLeft<=0)return;
+  _ygCatch.busy=true; _ygCatch.petsLeft--;
+  var star=(_ygCurrent&&_ygCurrent.star)||1; if(star<1)star=1; if(star>3)star=3;
+  var row=(_YGCATCH_P[star]&&_YGCATCH_P[star][_ygCatch.hearts])||_YGCATCH_P[1][0];
+  var p=row[Math.min(5,_ygCatch.petIdx)]||30; _ygCatch.petIdx++;
+  var ch=$("ygCatchChar"); if(ch){ch.classList.remove("pet");void ch.offsetWidth;ch.classList.add("pet");}
+  if(Math.random()*100<p){
+    _ygCatch.hearts++; try{_ygHeartPop();}catch(_){} try{playPop();}catch(_){} _ygCatchPaint();
+    if(_ygCatch.hearts>=3){ _ygCatch.over=true; setTimeout(_ygCatchWin,520); _ygCatch.busy=false; return; }
+  }else{
+    try{_ygNya();}catch(_){}
+    var bub=$("ygCatchBubble"); if(bub){bub.textContent="イヤ！";bub.classList.remove("show");void bub.offsetWidth;bub.classList.add("show");setTimeout(function(){try{bub.classList.remove("show");}catch(_){}},900);}
+    _ygCatchPaint();
+    if(_ygCatch.petsLeft<=0){ _ygCatch.over=true; setTimeout(_ygCatchFlee,700); _ygCatch.busy=false; return; }
+  }
+  setTimeout(function(){_ygCatch.busy=false;},200);
+}
+function _ygHeartPop(){ try{ var lay=$("ygCatchChar"); if(!lay)return; var s=document.createElement("span"); s.className="ygHeartFly"; s.textContent="\u2764\ufe0f"; s.style.left=(30+Math.random()*40)+"%"; lay.appendChild(s); setTimeout(function(){try{s.remove();}catch(_){}},900); }catch(_){} }
+function _ygCatchWin(){
+  var c=$("ygCatch"); if(c)c.classList.add("win");
+  var el=$("yumeGacha"); if(el)el.classList.remove("catching");
+  try{var t=$("ygCatchTip");if(t)t.textContent="ニャー！ なかよく なれた！";}catch(_){}
+  setTimeout(function(){ try{if(c)c.hidden=true;}catch(_){} try{_ygProceedReveal();}catch(_){} },600);
+}
+function _ygCatchFlee(){
+  var c=$("ygCatch"); if(c)c.classList.add("flee");
+  try{var t=$("ygCatchTip");if(t)t.textContent="にげちゃった…！";}catch(_){}
+  _ygCurrent=null;
+  setTimeout(function(){ try{var el=$("yumeGacha");if(el){el.classList.remove("catching");el.className="";el.hidden=true;}}catch(_){} try{if(c)c.hidden=true;}catch(_){} try{if(_ygThen){var f=_ygThen;_ygThen=null;setTimeout(f,60);}}catch(_){} },1100);
 }
 /* ★「バン！」演出：星が おおいほど 回数が ふえ、色は 星の色、あとになるほど 大きく 豪華に */
 function _ygBangSeq(y, done){
@@ -34650,7 +34725,14 @@ function _gpStreetHTML(){
     <div id="ygBtns"><button id="ygNo" type="button">いまは しない</button><button id="ygYes" type="button">なかまに する</button></div>
   </div>
   <!-- ★キャラ登場前の「バン！バン！」演出 -->
-  <div id="ygBang"></div>
+  <div id="ygCatch" hidden>
+<div id="ygCatchGrass"></div>
+<div id="ygCatchTip">タップして なでてみよう！</div>
+<div id="ygCatchHearts"></div>
+<div id="ygCatchWrap"><div id="ygCatchBubble">イヤ！</div><div id="ygCatchChar"></div></div>
+<div id="ygCatchPets"></div>
+</div>
+<div id="ygBang"></div>
 </div>
 <!-- ===================== きょうの まとめ（1枚に あつめる） ===================== -->
 <div id="todaySum">

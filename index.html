@@ -5750,7 +5750,7 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
 </style>
 <style id="ygCuteCss">
 @keyframes ygCatchIn{0%{opacity:0;transform:scale(1.06);}100%{opacity:1;transform:none;}}
-#ygCatch.toReveal{animation:ygCatchOut .85s ease both;}
+#ygCatch.toReveal{animation:ygCatchOut .38s ease both;}
 @keyframes ygCatchOut{0%{opacity:1;filter:brightness(1);}45%{opacity:1;filter:brightness(1.6);}100%{opacity:0;filter:brightness(2.2);}}
 #ygCatchGlow{position:absolute;inset:-26%;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.9) 0%,rgba(255,240,180,.5) 38%,transparent 68%);opacity:.55;z-index:1;pointer-events:none;animation:ygGlowB 2.8s ease-in-out infinite;}
 @keyframes ygGlowB{0%,100%{transform:scale(1);opacity:.45;}50%{transform:scale(1.1);opacity:.7;}}
@@ -5856,6 +5856,11 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
 .notifRow{position:relative;padding-right:46px !important;}
 .notifRow .nfTxt{display:block;}
 .notifRow .nfCnt{position:absolute;top:6px;right:8px;background:linear-gradient(180deg,#ff8fb0,#ff5f8a);color:#fff;font-weight:900;font-size:11px;padding:2px 8px;border-radius:999px;box-shadow:0 2px 5px rgba(255,95,138,.4);white-space:nowrap;}
+</style>
+<style id="tsFixCss">
+#taisoScreen{overflow-y:auto !important;-webkit-overflow-scrolling:touch;}
+#yumeGacha[hidden]{display:none !important;}
+#taisoScreen::before{position:fixed !important;}
 </style>
 </head>
 <body>
@@ -9032,20 +9037,19 @@ async function likeAllVisible(){
   const{ref,set}=await import(FB_DB);
   const me=getProfile()||{};
   const fromName=me.isPublic?(me.name||"匿名"):"匿名";
+  /* ★連打対応：演出は すぐ／通信は 並列（軽い） */
   let n=0;
-  for(const c of todo){
-    try{
-      var _pv2=0;
-      try{ var _m2=await import(FB_DB); var _s2=await _m2.get(_m2.ref(db,"likes/"+c.pid+"/"+getUid())); var _v2=_s2&&_s2.val&&_s2.val(); _pv2=(_v2&&_v2.n)||(_v2?1:0); }catch(_){}
-      var _ok2=false;
-      try{ await set(ref(db,"likes/"+c.pid+"/"+getUid()),{name:fromName,at:Date.now(),n:(_pv2+1)}); _ok2=true; }catch(_x1){}
-      if(!_ok2){ try{ await set(ref(db,"likes/"+c.pid+"/"+getUid()),{name:fromName,at:Date.now()}); _ok2=true; }catch(_x2){} }
-      if(!_ok2){ try{ var _tp=(c.uid||"")+"_"+jstKey(); await set(ref(db,"likes/"+_tp+"/"+getUid()),{name:fromName,at:Date.now()}); _ok2=true; }catch(_x3){} }
-      if(!_ok2)continue;
-      markLiked(c.uid,c.pid);n++;
-      try{var _el=document.querySelector('#hillCats .hillCat[data-uid="'+c.uid+'"]'); if(_el)_likeHeartFx({closest:function(){return _el;},parentElement:_el});}catch(_){}
-    }catch(_){}
-  }
+  try{ todo.forEach(function(c){ try{ var el=document.querySelector('#hillCats .hillCat[data-uid="'+c.uid+'"]'); if(el)_likeHeartFx({closest:function(){return el;},parentElement:el}); }catch(_){} }); }catch(_){}
+  try{playPop();}catch(_){}
+  window._likeCnt=window._likeCnt||{};
+  const jobs=todo.map(function(c){
+    var key=c.pid+"/"+getUid();
+    var nx=(window._likeCnt[key]||0)+1; window._likeCnt[key]=nx;
+    return set(ref(db,"likes/"+key),{name:fromName,at:Date.now(),n:nx})
+      .then(function(){ n++; try{markLiked(c.uid,c.pid);}catch(_){} })
+      .catch(function(){ return set(ref(db,"likes/"+key),{name:fromName,at:Date.now()}).then(function(){ n++; try{markLiked(c.uid,c.pid);}catch(_){} }).catch(function(){}); });
+  });
+  await Promise.all(jobs);
   try{[...document.querySelectorAll("#hillCats .catLikeHeart")].forEach(b=>{if(b.dataset&&b.dataset.uid&&likedPost(b.dataset.uid,b.dataset.pid)){b.classList.add("done");b.textContent="♥";}});}catch(_){}
   if(n>0){try{playPop();}catch(_){}}
   toast(n>0?("💗 "+n+"人に♡したよ"):"おくれなかったみたい。もう一度おしてね");
@@ -11004,7 +11008,7 @@ function recomputeNotifs(){
   list.sort((a,b)=>(b.at||0)-(a.at||0));   /* 最近のいいねが一番上 */
   _notifList=list;
   try{_payLikes(list);}catch(_){}   /* いいね 1つ 10zz */
-  const unread=list.filter(n=>!_notifSeenSet.has(n.id)).length;
+  const unread=list.filter(n=>!_notifSeenSet.has(n.id)).reduce(function(s,x){return s+((x.cnt&&x.cnt>0)?x.cnt:1);},0);   /* ★いいねの 個数で かぞえる */
   const c=$("tpbCount");const _tot=unread+(_hasPartyInvite?1:0)+(_hasPartyApply?1:0);if(c){c.textContent=_tot;c.classList.toggle("show",_tot>0);}
   try{const _nb=(_tot>0);if(window._favBadgeOn!==_nb){window._favBadgeOn=_nb;if(window._setFavBadge)window._setFavBadge(_nb);}}catch(_){}
   if(_prevLikeTotal>=0&&total>_prevLikeTotal){playNotifSound();flashBell();}   /* 開いてる最中に新しいいいねが来たら音 */
@@ -28833,11 +28837,11 @@ function _ygProceedReveal(){
   el.classList.add("s-dance");
   try{playPop();}catch(_){}
   clearTimeout(_ygT1);clearTimeout(_ygT2);
-  _ygT1=setTimeout(function(){try{el.classList.remove("s-dance");el.classList.add("s-zoom");var h=$("ygHint");if(h)h.textContent="";_ygChargeSound(1.4);}catch(_){}},2300);
+  _ygT1=setTimeout(function(){try{el.classList.remove("s-dance");el.classList.add("s-zoom");var h=$("ygHint");if(h)h.textContent="";_ygChargeSound(1.0);}catch(_){}},1100);
   _ygT2=setTimeout(function(){try{
     el.classList.remove("s-zoom");
     _ygBangSeq(y, function(){ try{el.classList.add("s-reveal");_ygReleaseSound();_ygBurst();_ygRenderReveal(y);}catch(_){} });
-  }catch(_){ try{el.classList.add("s-reveal");_ygReleaseSound();_ygBurst();_ygRenderReveal(y);}catch(__){} }},3700);
+  }catch(_){ try{el.classList.add("s-reveal");_ygReleaseSound();_ygBurst();_ygRenderReveal(y);}catch(__){} }},2200);
 }
 /* ===== ゲットチャンス（なでて ゲット）===== */
 var _YGCATCH_BOOST=22;   /* ★成功率ブースト */
@@ -28906,7 +28910,7 @@ function _ygPet(){
     _ygCatchPaint();
   }
   /* ★毎回 まとめて 判定：3つで ゲット／回数0で 逃げ（♡1・2でも 逃げる） */
-  if(_ygCatch.hearts>=3){ _ygCatch.over=true; setTimeout(_ygCatchWin,520); _ygCatch.busy=false; return; }
+  if(_ygCatch.hearts>=3){ _ygCatch.over=true; setTimeout(_ygCatchWin,240); _ygCatch.busy=false; return; }
   if(_ygCatch.petsLeft<=0){ _ygCatch.over=true; setTimeout(_ygCatchFlee,700); _ygCatch.busy=false; return; }
   setTimeout(function(){_ygCatch.busy=false;},200);
 }
@@ -28920,7 +28924,7 @@ function _ygCatchWin(){
   try{_ygPurr();}catch(_){} try{setTimeout(_ygFanfare,260);}catch(_){}
   try{for(var _i=0;_i<14;_i++){(function(n){setTimeout(function(){try{_ygConfetti();}catch(_){}},n*45);})(_i);}}catch(_){}
   try{if(c)c.classList.add("toReveal");}catch(_){}
-  setTimeout(function(){ try{if(c){c.classList.remove("toReveal");c.hidden=true;c.style.display="none";}}catch(_){} try{_ygProceedReveal();}catch(_){} },900);
+  setTimeout(function(){ try{if(c){c.classList.remove("toReveal");c.hidden=true;c.style.display="none";}}catch(_){} try{_ygProceedReveal();}catch(_){} },380);
 }
 function _ygCatchFlee(){
   var c=$("ygCatch"); if(c)c.classList.add("flee");

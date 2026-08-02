@@ -9000,8 +9000,8 @@ async function likePost(po,btn){
 }
 async function likeAllVisible(){
   const cats=(_hillAllCats||[]).filter(c=>c&&!c.isSelf&&!c.needsPost&&c.pid&&c.uid);
-  const todo=cats.filter(c=>!likedPost(c.uid,c.pid));
-  if(!todo.length){toast("もう みんなに♡してるよ");return;}
+  const todo=cats;   /* ★何回でも おくれる */
+  if(!todo.length){toast("いま ♡できる人が いないみたい");return;}
   const db=await getDB();
   if(!db){toast("つながらなかったみたい。もう一度おしてね");return;}
   const{ref,set}=await import(FB_DB);
@@ -9010,13 +9010,16 @@ async function likeAllVisible(){
   let n=0;
   for(const c of todo){
     try{
-      await set(ref(db,"likes/"+c.pid+"/"+getUid()),{name:fromName,at:Date.now()});
+      var _pv2=0;
+      try{ var _m2=await import(FB_DB); var _s2=await _m2.get(_m2.ref(db,"likes/"+c.pid+"/"+getUid())); var _v2=_s2&&_s2.val&&_s2.val(); _pv2=(_v2&&_v2.n)||(_v2?1:0); }catch(_){}
+      await set(ref(db,"likes/"+c.pid+"/"+getUid()),{name:fromName,at:Date.now(),n:(_pv2+1)});
       markLiked(c.uid,c.pid);n++;
+      try{var _el=document.querySelector('#hillCats .hillCat[data-uid="'+c.uid+'"]'); if(_el)_likeHeartFx({closest:function(){return _el;},parentElement:_el});}catch(_){}
     }catch(_){}
   }
   try{[...document.querySelectorAll("#hillCats .catLikeHeart")].forEach(b=>{if(b.dataset&&b.dataset.uid&&likedPost(b.dataset.uid,b.dataset.pid)){b.classList.add("done");b.textContent="♥";}});}catch(_){}
   if(n>0){try{playPop();}catch(_){}}
-  toast(n>0?("💗 "+n+"人に♡したよ"):"みんなに♡済みだよ");
+  toast(n>0?("💗 "+n+"人に♡したよ"):"おくれなかったみたい。もう一度おしてね");
 }
 let _allPosts={},_allLikes={},_notifList=[],_notifSeenSet=null,_prevLikeTotal=-1,_hasPartyInvite=false,_hasPartyApply=false;
 const NOTIF_SEEN_KEY="radio_notif_seen";
@@ -10569,7 +10572,7 @@ function _applyHillFromVal(val){
     if($("recentPostCount"))$("recentPostCount").innerHTML=posters>0?(`<span class="hsTop"><b>${posters}</b><i class="hsUnit">人</i></span><span class="hsLbl">とうこう</span>`):"";
     let self;
     if(selfPost){
-      self={uid:me,isSelf:true,y1:_yume1Payload(),name:p.name||"あなた",catBody:profileBody(),color:profileColor(),
+      self={uid:me,isSelf:true,catOnly:(selfPost.catOnly?1:0),pid:(me+"_"+jstKey()),y1:_yume1Payload(),name:p.name||"あなた",catBody:profileBody(),color:profileColor(),
         wakeHour:selfPost.wakeHour,wakeMin:selfPost.wakeMin,
         createdAt:selfPost.createdAt||Date.now(),
         streak:Number.isFinite(selfPost.streak)?selfPost.streak:calcStreak().current,total:getDoneDates().length,
@@ -10687,7 +10690,7 @@ function renderHillPage(){
   const n=cats.length,center=(n-1)/2;
   const figs=[];
   cats.forEach((po,i)=>{
-    const el=document.createElement("div");el.className="hillCat";
+    const el=document.createElement("div");el.className="hillCat";try{if(po.uid)el.dataset.uid=po.uid;}catch(_){}
     let _dayCls="";
     if(!po.isSelf&&Number.isFinite(po.createdAt)){const _pd=_localDayKey(po.createdAt),_td=jstKey();if(_pd&&_pd===addDays(_td,-1))_dayCls=" catDayY1";else if(_pd&&_pd<=addDays(_td,-2))_dayCls=" catDayY2";}
     const _bt=_hashStr(po.uid||po.name||i)%4;
@@ -17129,9 +17132,7 @@ $("catShutter").addEventListener("click",()=>{playClick();nyanCapture();exitPhot
 $("recentLabel").addEventListener("click",()=>{
   if(_photoMode)return;
   playClick();
-  _recentMode=(_recentMode+1)%3;
-  try{var _lt2=$("recentLabelText");if(_lt2)_lt2.textContent=(typeof _catNumMode!=="undefined"&&_catNumMode)?"連続日数":"総日数";}catch(_){}
-  if(_lastPostsVal)_applyHillFromVal(_lastPostsVal); else loadHillCats();
+  try{_catNumSetMode(_catNumMode?0:1);}catch(_){}   /* ★総日数 ⇄ 連続日数 */
 });
 try{$("likeAllBtn").addEventListener("click",e=>{e.stopPropagation();if(_photoMode)return;likeAllVisible();});}catch(_){}
 try{$("ssRange").addEventListener("click",()=>{try{playClick();}catch(_){}try{$("storyStats").classList.remove("show");}catch(_){}openRange();});}catch(_){}

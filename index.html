@@ -10477,13 +10477,13 @@ function riseTextSelf(){
   const r=riseLabelInfo(p.h,p.m,tgt);
   return`${r.time}起床(${r.lbl})`;
 }
-let _recentMode=0;   /* 0:直近3日 1:今日(全員) 2:今日(同じ所) */
+let _recentMode=0;   /* 0:直近3日 のみ（今日(全員)/同じパーティは 廃止） */
 function _withTimeout(p,ms){return Promise.race([p,new Promise((_,rej)=>setTimeout(()=>rej(new Error("timeout")),ms))]);}
 let _lastPostsVal=null,_recentCycleTimer=null;
 function _applyHillFromVal(val){
   try{
     val=val||{};
-    if(_recentMode===2 && !_partyId())_recentMode=0;   /* ソロは「同じパーティ」モードなし */
+    _recentMode=0;   /* ★モードは 直近3日 のみ */
     const me=getUid();
     const dayMs=24*3600*1000,now=Date.now();
     const minDate=addDays(jstKey(),-2);
@@ -10528,7 +10528,7 @@ function _startRecentCycle(){
       if(_exerciseActive)return;   /* 体操中は切替しない */
       if(typeof _photoMode!=="undefined"&&_photoMode)return;
       if(!$("selectScreen")||$("selectScreen").classList.contains("hidden")){_stopRecentCycle();return;}
-      _recentMode=(_recentMode+1)%(_partyId()?3:2);   /* ソロは 直近3日→今日(全員) のみ、パーティは 同じパーティ も */
+      _recentMode=0;   /* ★「今日(全員)」「同じパーティ」は 廃止＝直近3日 だけ */
       const lt=$("recentLabelText");if(lt)lt.textContent=_RECENT_LABELS[_recentMode];
       if(_lastPostsVal)_applyHillFromVal(_lastPostsVal); else loadHillCats();
       const c=$("hillCats");if(c){c.classList.remove("pageIn");void c.offsetWidth;c.classList.add("pageIn");}
@@ -29725,7 +29725,7 @@ function _advFlash(kind){
 }
 /* ★ダメージなどの 数字を ぽんっと 出す */
 /* ふだんは ゆっくり、画面を さわっている あいだは 速く */
-var ADV_SLOW=980, ADV_FAST=380, _advFast=false;
+var ADV_SLOW=420, ADV_FAST=240, _advFast=false;   /* ★通常も クリック中くらい 速く */
 function _advSetSpeed(fast){
   _advFast=!!fast;
   try{clearInterval(_advBattleTimer);}catch(_){}

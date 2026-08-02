@@ -5023,7 +5023,7 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 #tutAsk .tutAskBtn.main{background:linear-gradient(135deg,#8fd3f0,#4ea8d8);color:#fff;box-shadow:0 4px 12px rgba(78,168,216,.34);}
 #tutAsk .tutAskBtn.sub{background:#eef4f8;color:#7a94a6;}
 #tutAsk .tutAskBtn:active{transform:scale(.97);}
-#tutOv{position:fixed;inset:0;z-index:3200;pointer-events:none;}
+#tutOv{position:fixed;inset:0;z-index:4400;pointer-events:none;}   /* ★ガチャ画面(4200)より 上 */
 #tutOv[hidden]{display:none;}
 .tutBlk{position:fixed;background:rgba(18,38,58,.62);pointer-events:auto;backdrop-filter:blur(1.5px);-webkit-backdrop-filter:blur(1.5px);}
 #tutRing{position:fixed;border-radius:20px;pointer-events:none;box-sizing:border-box;
@@ -12463,7 +12463,7 @@ async function autoStampFlow(){
   const _showDone=()=>{
     try{_askTidy();}catch(_){}
     $("taisoScreen").classList.add("visible");
-    try{if(tutStep()==="1")_tutGoYume();}catch(_){}   /* ★チュートリアル：ステップ2へ */
+    try{ if(tutStep()==="1"){ setTimeout(function(){ try{ var _g=$("yumeGacha"); if(tutStep()==="1"&&(!_g||_g.hidden))_tutGo2(); }catch(_){} },9000); } }catch(_){}   /* ★ユメっ子が 出ない日だけ 先へ */   /* ★チュートリアル：ステップ2へ */
     try{setTimeout(function(){try{_catOnlyPost();}catch(_){}},900);}catch(_){}
   try{setTimeout(function(){try{_catOnlyPost();}catch(_){}},4000);}catch(_){}   /* 念のため もう一度 */
   /* ★ガチャは 気分の前（体操直後）に 出す：openAskCard の直前で よぶ */
@@ -14268,7 +14268,7 @@ function _askTutorial(){
   if(!ov){
     ov=document.createElement("div");ov.id="tutAsk";
     ov.innerHTML='<div class="tutAskBox">'+
-      '<div class="tutAskTtl">あそびかた、やってみる？</div>'+
+      '<div class="tutAskTtl">チュートリアル</div>'+
       '<div class="tutAskMsg">実さいに あさ おきて ラジオ体操を する<br>ながれを たいけんして もらいます（1分）。</div>'+
       '<button id="tutAskYes" type="button" class="tutAskBtn main">体験する</button>'+
       '<button id="tutAskNo" type="button" class="tutAskBtn sub">やめる</button>'+
@@ -29396,6 +29396,7 @@ function _ygCatchStart(y){
     c.classList.remove("entering"); c.classList.add("appear");
     _ygSasa(); _ygLeafBurst();
     var t2=$("ygCatchTip"); if(t2)t2.textContent="タップして なでてみよう！";
+    try{ if(typeof tutStep==="function"&&tutStep()==="1")_tutGoYume(); }catch(_){}   /* ★チュートリアル：ステップ2 */
     setTimeout(function(){try{c.classList.remove("appear");}catch(_){}},900);
   }catch(_){} },1150);
 }
@@ -29594,6 +29595,7 @@ function _yumeGachaClose(){
   el.classList.remove("s-dance","s-zoom","s-reveal");
   setTimeout(function(){try{el.hidden=true;}catch(_){}},260);
   try{if(_ygThen){var _f=_ygThen;_ygThen=null;setTimeout(_f,90);}}catch(_){}
+  try{ if(typeof tutStep==="function"&&(tutStep()==="1"||tutStep()==="1a"))setTimeout(function(){try{_tutGo2();}catch(_){}},700); }catch(_){}
 }
 /* 毎朝1回だけ（体操の あと _showDone から よぶ） */
 function _yumeMaybeGacha(then){
@@ -31488,8 +31490,8 @@ function _tutResume(){
   try{
     var v=tutStep();
     if(v==="1"){setTimeout(function(){var el=$("randomModeBtn");if(el)_tutSpot(el,"ステップ 1","あさ おきたら この サイトを ひらいてね。<br>まずは <b>ラジオ体操</b>を おしてみよう！");},900);}
-    else if(v==="1a"){setTimeout(function(){var el=$("tsPostPreviewWrap")||$("tsPostPreview")||$("taisoScreen");_tutSpot(el,"ステップ 2","ラジオ体操に つられて <b>ユメっ子</b>が やってくるよ。<br>あつめて たのしもう！",{okBtn:true,okText:"つぎへ"});},900);}
-    else if(v==="2"){setTimeout(function(){var el=$("tsComment")||$("tsPostBtn");if(el){try{var c=$("tsComment");if(c)c.classList.add("tutGlowField");}catch(_){}_tutSpot(el,"ステップ 3","きょうの ひとことを かいてみよう！<br>かかなくても だいじょうぶ。<br><b>かいたり まわりを さわると つぎへ。</b>");}},900);}
+    else if(v==="1a"){setTimeout(function(){var g=$("ygCatch");if(g&&!g.hidden)_tutSpot($("ygCatchWrap")||$("ygCatchChar"),"ステップ 2","ラジオ体操に つられて <b>ユメっ子</b>が やってくるよ。<br>あつめて たのしもう！",{okBtn:true,okText:"つぎへ"});else _tutGo2();},900);}
+    else if(v==="2"){setTimeout(function(){var el=$("tsComment")||$("tsPostBtn");if(el){try{var c=$("tsComment");if(c)c.classList.add("tutGlowField");}catch(_){}_tutSpot(el,"ステップ 3","きょうの ひとことを かいてみよう！<br>かかなくても だいじょうぶだよ。",{okBtn:true,okText:"つぎへ"});}},900);}
     else if(v==="2a"){setTimeout(function(){var el=$("tsAdvBtn");if(el&&el.offsetParent)_tutSpot(el,"ステップ 4","あつめた ユメっ子と <b>冒険</b>に 行ってみよう！",{okBtn:true,okText:"つぎへ"});else _tutGo3();},900);}
     else if(v==="3"){setTimeout(function(){var el=$("ground")||$("randomModeBtn");_tutSpot(el,"","ホームに あなたの 猫が でてきたよ！<br>みんなも おなじように あつまるんだ。",{okBtn:true});},900);}
   }catch(_){}
@@ -31510,18 +31512,16 @@ function _tutGoYume(){
   if(tutStep()!=="1")return;
   tutSet("1a");
   _tutClear();
-  var tries=0;
-  (function wait(){
+  var n=0;
+  (function go(){
     try{
-      var g=$("yumeGacha");
-      if(g&&!g.hidden&&tries<160){tries++;setTimeout(wait,300);return;}   /* ガチャが おわるまで まつ */
-      setTimeout(function(){
-        if(tutStep()!=="1a")return;
-        var el=$("tsPostPreviewWrap")||$("tsPostPreview")||$("taisoScreen");
-        _tutSpot(el,"ステップ 2",
-          "ラジオ体操に つられて <b>ユメっ子</b>が やってくるよ。<br>あつめて たのしもう！",
-          {okBtn:true,okText:"つぎへ"});
-      },600);
+      if(tutStep()!=="1a")return;
+      var el=$("ygCatchWrap")||$("ygCatchChar");   /* ★草むらから 出てきた その子 */
+      var r=el?el.getBoundingClientRect():null;
+      if((!r||(!r.width&&!r.height))&&n<20){ n++; setTimeout(go,220); return; }   /* 出そろうまで まつ */
+      _tutSpot(el||$("yumeGacha"),"ステップ 2",
+        "ラジオ体操に つられて <b>ユメっ子</b>が やってくるよ。<br>あつめて たのしもう！",
+        {okBtn:true,okText:"つぎへ"});
     }catch(_){}
   })();
 }
@@ -31535,7 +31535,8 @@ function _tutGo2(){
     setTimeout(function(){
       try{var c=$("tsComment");if(c)c.classList.add("tutGlowField");}catch(_){}
       _tutSpot($("tsComment")||$("tsPostBtn"),"ステップ 3",
-        "きょうの ひとことを かいてみよう！<br>かかなくても だいじょうぶ。<br><b>かいたり まわりを さわると つぎへ すすむよ。</b>");
+        "きょうの ひとことを かいてみよう！<br>かかなくても だいじょうぶだよ。",
+        {okBtn:true,okText:"つぎへ"});
     },420);
   },1400);
 }
@@ -31547,8 +31548,10 @@ function _tutGoAdv(){
     var el=$("tsAdvBtn");
     try{if(el&&el.scrollIntoView)el.scrollIntoView({block:"center",behavior:"smooth"});}catch(_){}
     setTimeout(function(){
-      _tutSpot($("tsAdvBtn"),"ステップ 4",
-        "たいそうが おわると <b>ユメっ子</b>に 会えるよ。<br>あつめた子と <b>冒険</b>に 行ってみよう！<br><span class=\"tutSm\">（あとで いつでも 行けるよ）</span>",
+      var _ab=$("tsAdvBtn");
+      if(!_ab||!_ab.offsetParent){ _tutGo3(); return; }   /* ★見つからない時は 止まらずに つぎへ */
+      _tutSpot(_ab,"ステップ 4",
+        "あつめた子と <b>冒険</b>に 行ってみよう！<br><span class=\"tutSm\">（あとで いつでも 行けるよ）</span>",
         {okBtn:true,okText:"つぎへ"});
     },420);
   },900);
@@ -31583,7 +31586,8 @@ try{
   var _tok=document.getElementById("tutOk");
   if(_tok)_tok.addEventListener("click",function(){
     try{playClick();}catch(_){}
-    if(tutStep()==="1a"){_tutGo2();return;}
+    if(tutStep()==="1a"){_tutClear();return;}   /* なでるのを つづける */
+    if(tutStep()==="2"){_tutGoAdv();return;}
     if(tutStep()==="2a"){_tutGo3();return;}   /* 冒険の しょうかい → ホームへ */
     _tutFinish();
   });

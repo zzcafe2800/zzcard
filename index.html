@@ -5833,8 +5833,8 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
 #ygCatch::after{content:"";position:absolute;left:0;right:0;bottom:calc(clamp(210px,42vmin,420px) - 26px);height:52px;z-index:2;pointer-events:none;background:linear-gradient(0deg,rgba(140,205,120,.55),rgba(198,236,255,0));}
 </style>
 <style id="batch3Css">
-#taisoScreen{position:relative;}
-#taisoScreen::before{content:"";position:absolute;inset:0;background:rgba(255,255,255,.5);pointer-events:none;z-index:0;}
+/* #taisoScreen の position は 元の fixed のまま（relative にすると 画面が こわれる） */
+#taisoScreen::before{content:"";position:fixed;inset:0;background:rgba(255,255,255,.5);pointer-events:none;z-index:0;}
 #taisoScreen>*{position:relative;z-index:1;}
 .catLabel.preHidden .catNameRow,.catLabel.preHidden .catRise,.catLabel.preHidden .catCmtWrap{visibility:hidden;}
 .catLabel.preHidden{background:transparent !important;box-shadow:none !important;}
@@ -5860,7 +5860,13 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
 <style id="tsFixCss">
 #taisoScreen{overflow-y:auto !important;-webkit-overflow-scrolling:touch;}
 #yumeGacha[hidden]{display:none !important;}
-#taisoScreen::before{position:fixed !important;}
+
+</style>
+<style id="tsFix2Css">
+#askCard:not(.show){display:none !important;}
+#yumeGacha[hidden],#ygCatch[hidden]{display:none !important;pointer-events:none !important;}
+#taisoScreen{overscroll-behavior:contain;}
+#taisoScreen>*{position:relative;z-index:1;}
 </style>
 </head>
 <body>

@@ -8938,10 +8938,27 @@ function postDateLabel(ts){
   return `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,"0")}`;
 }
 /* ★猫だけの とうこう：ひとことも 起床も 出さない 最小の 投稿を サーバーに 出す */
+/* ★完了画面の 3つのボタンを キーに：とうこうを していなければ 猫だけ とうこう */
+function _catOnlyOnLeave(){
+  try{
+    var chk=document.getElementById("catOnlyChk");
+    if(chk && !chk.checked)return;
+    if(localStorage.getItem("radio_cat_only")==="0")return;
+    var date=jstKey();
+    try{var ed=JSON.parse(localStorage.getItem("radio_post_edit")||"null"); if(ed&&ed.date===date)return;}catch(_){}
+    try{localStorage.removeItem("radio_catonly_done");}catch(_){}
+    _catOnlyPost();
+  }catch(_){}
+}
+try{ document.addEventListener("click",function(e){
+  try{ var t=e.target&&e.target.closest?e.target.closest("#tsNextBtn,#tsCatBtn,#tsAdvBtn,#postDoneHome"):null; if(t)_catOnlyOnLeave(); }catch(_){}
+},true); }catch(_){}
 async function _catOnlyPost(){
   try{
     if(localStorage.getItem("radio_cat_only")==="0")return false;
-    if(typeof todayStamp==="function" && !todayStamp())return false;
+    var _doneToday=false;
+    try{ _doneToday=(typeof todayStamp==="function"&&!!todayStamp()) || ((typeof getDoneDates==="function")&&getDoneDates().indexOf(jstKey())>=0); }catch(_){}
+    if(!_doneToday)return false;
     var date=jstKey(), me=getUid(); if(!me)return false;
     try{var ed=JSON.parse(localStorage.getItem("radio_post_edit")||"null"); if(ed&&ed.date===date)return false;}catch(_){}
     var db=await getDB(); if(!db)return false;
@@ -8987,8 +9004,13 @@ async function likePost(po,btn){
        通知は各自が likes を読んで自前で生成する。 */
     var _lm=await import(FB_DB); var _pv=0;
     try{ var _sn=await _lm.get(_lm.ref(db,"likes/"+po.pid+"/"+getUid())); var _v=_sn&&_sn.val&&_sn.val(); _pv=(_v&&_v.n)||(_v?1:0); }catch(_){}
-    try{ await set(ref(db,"likes/"+po.pid+"/"+getUid()),{name:fromName,at:Date.now(),n:(_pv+1)}); }
-    catch(_e1){ await set(ref(db,"likes/"+po.pid+"/"+getUid()),{name:fromName,at:Date.now()}); }   /* ルールで n が だめなら なしで */
+    var _okSent=false;
+    try{ await set(ref(db,"likes/"+po.pid+"/"+getUid()),{name:fromName,at:Date.now(),n:(_pv+1)}); _okSent=true; }catch(_e1){}
+    if(!_okSent){ try{ await set(ref(db,"likes/"+po.pid+"/"+getUid()),{name:fromName,at:Date.now()}); _okSent=true; }catch(_e2){} }
+    if(!_okSent){ /* きょうの投稿しか 書けないルールの ことがある → 相手の きょうの投稿に おくる */
+      try{ var _todayPid=(po.uid||"")+"_"+jstKey(); await set(ref(db,"likes/"+_todayPid+"/"+getUid()),{name:fromName,at:Date.now()}); _okSent=true; }catch(_e3){}
+    }
+    if(!_okSent)throw new Error("like blocked");
     /* ここまで来て初めて成功扱い */
     playPop();
     if(po.uid)markLiked(po.uid,po.pid);
@@ -9015,8 +9037,11 @@ async function likeAllVisible(){
     try{
       var _pv2=0;
       try{ var _m2=await import(FB_DB); var _s2=await _m2.get(_m2.ref(db,"likes/"+c.pid+"/"+getUid())); var _v2=_s2&&_s2.val&&_s2.val(); _pv2=(_v2&&_v2.n)||(_v2?1:0); }catch(_){}
-      try{ await set(ref(db,"likes/"+c.pid+"/"+getUid()),{name:fromName,at:Date.now(),n:(_pv2+1)}); }
-      catch(_e2){ await set(ref(db,"likes/"+c.pid+"/"+getUid()),{name:fromName,at:Date.now()}); }
+      var _ok2=false;
+      try{ await set(ref(db,"likes/"+c.pid+"/"+getUid()),{name:fromName,at:Date.now(),n:(_pv2+1)}); _ok2=true; }catch(_x1){}
+      if(!_ok2){ try{ await set(ref(db,"likes/"+c.pid+"/"+getUid()),{name:fromName,at:Date.now()}); _ok2=true; }catch(_x2){} }
+      if(!_ok2){ try{ var _tp=(c.uid||"")+"_"+jstKey(); await set(ref(db,"likes/"+_tp+"/"+getUid()),{name:fromName,at:Date.now()}); _ok2=true; }catch(_x3){} }
+      if(!_ok2)continue;
       markLiked(c.uid,c.pid);n++;
       try{var _el=document.querySelector('#hillCats .hillCat[data-uid="'+c.uid+'"]'); if(_el)_likeHeartFx({closest:function(){return _el;},parentElement:_el});}catch(_){}
     }catch(_){}

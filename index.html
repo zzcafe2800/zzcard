@@ -5832,6 +5832,19 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
 #ygCatchGrass{box-shadow:inset 0 26px 40px rgba(255,255,255,.28),inset 0 -30px 46px rgba(20,70,25,.22);}
 #ygCatch::after{content:"";position:absolute;left:0;right:0;bottom:calc(clamp(210px,42vmin,420px) - 26px);height:52px;z-index:2;pointer-events:none;background:linear-gradient(0deg,rgba(140,205,120,.55),rgba(198,236,255,0));}
 </style>
+<style id="batch3Css">
+#taisoScreen{position:relative;}
+#taisoScreen::before{content:"";position:absolute;inset:0;background:rgba(255,255,255,.5);pointer-events:none;z-index:0;}
+#taisoScreen>*{position:relative;z-index:1;}
+.catLabel.preHidden .catNameRow,.catLabel.preHidden .catRise,.catLabel.preHidden .catCmtWrap{visibility:hidden;}
+.catLabel.preHidden{background:transparent !important;box-shadow:none !important;}
+.catLabel.preHidden svg{display:none !important;}
+.catStreakNum.catNumSwap{color:#3d9be0;transition:color .4s ease,transform .3s ease;}
+.catStreakNum.catNumSwap.isStk{color:#ff8a3d;}
+.syncLockNote{background:#fff3d6;border:1px solid #ffd98a;color:#8a6a20;font-size:11.5px;font-weight:800;padding:7px 10px;border-radius:10px;margin-bottom:8px;line-height:1.5;}
+#wNewBtn[disabled],#wLoginBtn[disabled]{opacity:.45;cursor:not-allowed;filter:grayscale(.6);}
+#wNewName,#wNewPw,#wLoginName,#wLoginPw{pointer-events:none;opacity:.5;background:#eee;}
+</style>
 </head>
 <body>
 <script>(function(){try{var m=/Mobi|Android|iPhone|iPod|iPad/i.test(navigator.userAgent||"");var p=(window.innerHeight||0)>=(window.innerWidth||0);if(m||p)document.documentElement.classList.add("lite");}catch(e){}})();</script>
@@ -6289,7 +6302,7 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
         <button class="tsRangeMore" id="tsRangeMore" type="button">詳細 ▸</button>
       </div>
     </div>
-    <div id="taisoFooter"><label id="storyJoinChkRow"><input type="checkbox" id="storyJoinChk" checked/> ストーリーに参加(明日)</label><button class="tsCat" id="tsCatBtn" type="button">🐱 ねこと はなす</button><button class="tsAdv" id="tsAdvBtn" type="button">⚔️ 冒険</button><button class="tsNext" id="tsNextBtn" type="button">ホームへ →</button></div>
+    <div id="taisoFooter"><label id="storyJoinChkRow"><input type="checkbox" id="catOnlyChk" checked/> 猫のみのとうこう</label><button class="tsCat" id="tsCatBtn" type="button">🐱 ねこと はなす</button><button class="tsAdv" id="tsAdvBtn" type="button">⚔️ 冒険</button><button class="tsNext" id="tsNextBtn" type="button">ホームへ →</button></div>
   </div>
 </div>
 
@@ -10481,6 +10494,7 @@ let _recentMode=0;   /* 0:直近3日 のみ（今日(全員)/同じパーティ�
 function _withTimeout(p,ms){return Promise.race([p,new Promise((_,rej)=>setTimeout(()=>rej(new Error("timeout")),ms))]);}
 let _lastPostsVal=null,_recentCycleTimer=null;
 function _applyHillFromVal(val){
+  var _catOnlyOff=false;try{_catOnlyOff=(localStorage.getItem("radio_cat_only")==="0");}catch(_){}
   try{
     val=val||{};
     _recentMode=0;   /* ★モードは 直近3日 のみ */
@@ -10519,6 +10533,18 @@ function _applyHillFromVal(val){
   }catch(e){console.warn("hill filter:",e&&e.message);}
 }
 function _refilterHill(){ if(_lastPostsVal)_applyHillFromVal(_lastPostsVal); }
+/* ★名前の横：総ラジオ回数(青) ⇄ 連続(オレンジ) を ゆっくり 交互に */
+var _catNumMode=0;
+function _catNumSwapTick(){ try{
+  _catNumMode=_catNumMode?0:1;
+  document.querySelectorAll(".catNumSwap").forEach(function(e){
+    var t=parseInt(e.getAttribute("data-tot"),10)||0, s=parseInt(e.getAttribute("data-stk"),10)||0;
+    var showStk=(_catNumMode===1&&s>=1);
+    e.textContent=showStk?s:t; e.classList.toggle("isStk",showStk);
+    e.title=showStk?("連続 "+s+"日"):("これまで "+t+"回");
+  });
+}catch(_){} }
+try{ if(!window._catNumTimer)window._catNumTimer=setInterval(_catNumSwapTick,4000); }catch(_){}
 const _RECENT_LABELS=["直近3日","今日(全員)","同じパーティ"];
 function _stopRecentCycle(){ if(_recentCycleTimer){clearInterval(_recentCycleTimer);_recentCycleTimer=null;} }
 function _startRecentCycle(){
@@ -10611,10 +10637,12 @@ function renderHillPage(){
     let _dayCls="";
     if(!po.isSelf&&Number.isFinite(po.createdAt)){const _pd=_localDayKey(po.createdAt),_td=jstKey();if(_pd&&_pd===addDays(_td,-1))_dayCls=" catDayY1";else if(_pd&&_pd<=addDays(_td,-2))_dayCls=" catDayY2";}
     const _bt=_hashStr(po.uid||po.name||i)%4;
-    const lab=document.createElement("div");lab.className="catLabel bub bub"+_bt+((po.isSelf&&po.needsPost)?" catLabelSelf":"")+_dayCls;
+    if(po.isSelf&&po.needsPost){var _off=false;try{_off=(localStorage.getItem("radio_cat_only")==="0");}catch(_){}if(_off)return;}   /* ★猫のみのとうこう OFF＝自分の猫を 出さない */
+  const lab=document.createElement("div");lab.className="catLabel bub bub"+_bt+((po.isSelf&&po.needsPost)?" catLabelSelf":"")+_dayCls;
     const _fireSvg='<svg viewBox="0 0 20 22"><path d="M10 1.5 C12.4 5.5 16.5 7 16.5 12.5 C16.5 16.6 13.6 19.5 10 19.5 C6.4 19.5 3.5 16.6 3.5 12.5 C3.5 8.5 6.8 7.6 7.3 3.8 C8.6 5.2 9.4 7.4 9.4 9.8 C10.2 8.4 10.6 6 10 1.5 Z" fill="#ff7a2f"/><path d="M10 8.5 C11.4 11 13 12 13 15 C13 17 11.6 18.6 10 18.6 C8.4 18.6 7 17 7 15 C7 12.6 8.6 12.4 9 10 C9.6 11.2 10 12.6 10 13.8 C10.6 12.6 10.8 10.4 10 8.5 Z" fill="#ffc24d"/></svg>';
     const _totDays=(po.total!=null?po.total:(po.streak||0));
-    const fireBadge=(_totDays>=1)?`<span class="catStreakNum" aria-label="これまで ${_totDays}日">${_totDays}</span>`:"";
+    const _stk=(po.streak!=null?po.streak:0);
+    const fireBadge=(_totDays>=1||_stk>=1)?`<span class="catStreakNum catNumSwap" data-tot="${_totDays}" data-stk="${_stk}">${_totDays}</span>`:"";
     const riseTxt=riseTextFromPost(po);
     const comment=po.comment||"";
     const _isGold=po.isSelf?((typeof _aiNormaGoldToday==="function")&&_aiNormaGoldToday()):!!po.gold;
@@ -10642,13 +10670,15 @@ function renderHillPage(){
       }
       if(po.needsPost){
         /* まだ今日の投稿をしていない：タップで投稿画面へ */
-        const pb=document.createElement("button");pb.className="catLike catSelfPost";pb.type="button";pb.textContent="投稿する";
+        lab.classList.add("preHidden");   /* ★投稿前は 吹き出しの中身を かくす（ねことユメっ子だけ 出す） */
+      const pb=document.createElement("button");pb.className="catLike catSelfPost";pb.type="button";pb.textContent="投稿する";
         pb.addEventListener("click",e=>{
           e.stopPropagation();try{playClick();}catch(_){}
           if(!todayStamp()){toast("先に今日のラジオ体操をしてね");return;}
           showPostConfirm(false);
         });
         el.appendChild(lab);el.appendChild(pb);el.appendChild(fig);
+      try{var _y1p=_catYumeBadge(_yume1Payload(),true);if(_y1p)el.appendChild(_y1p);}catch(_){}
       }else{
         el.appendChild(lab);el.appendChild(fig);
         try{var _y1s=_catYumeBadge(_yume1Payload(),true);if(_y1s)el.appendChild(_y1s);}catch(_){}
@@ -22919,7 +22949,8 @@ try{
   function isStoryJoined(){try{const v=localStorage.getItem("radio_story_join");return v===null?true:v==="1";}catch(_){return true;}}   /* 初期は参加ON */
   function refreshStoryJoinBtn(){const b=$("storyJoinChk");if(!b)return;b.checked=isStoryJoined();}
   const sjb0=$("storyJoinChk");if(sjb0){try{const v=localStorage.getItem("radio_story_join");sjb0.checked=(v===null)?true:(v==="1");}catch(_){sjb0.checked=true;}}
-  const sjb=$("storyJoinChk");if(sjb)sjb.addEventListener("change",()=>{try{playClick();}catch(_){}const nv=!!sjb.checked;try{localStorage.setItem("radio_story_join",nv?"1":"0");}catch(_){}try{toast(nv?"あすのストーリーに参加するよ":"参加をやめたよ");}catch(_){}});
+  const sjb=$("catOnlyChk");if(sjb){try{sjb.checked=(localStorage.getItem("radio_cat_only")!=="0");}catch(_){}sjb.addEventListener("change",()=>{try{playClick();}catch(_){}try{localStorage.setItem("radio_cat_only",sjb.checked?"1":"0");}catch(_){}try{if(typeof _refilterHill==="function")_refilterHill();}catch(_){}});}
+const _sjbOld=null;if(_sjbOld)_sjbOld.addEventListener("change",()=>{const nv=false;try{localStorage.setItem("radio_story_join",nv?"1":"0");}catch(_){}try{toast(nv?"あすのストーリーに参加するよ":"参加をやめたよ");}catch(_){}});
   const svb=$("storyViewBtn");if(svb)svb.addEventListener("click",e=>{e.stopPropagation();try{playClick();}catch(_){}try{const c=$("homeTopRight");if(c)c.classList.remove("htrOpen");}catch(_){}try{dockGo("dex");}catch(_){}});
   const stus=$("storyTutStart");if(stus)stus.addEventListener("click",e=>{e.stopPropagation();try{playClick();}catch(_){}try{localStorage.setItem("radio_story_tut","1");}catch(_){}const t=$("storyTutorial");if(t)t.classList.remove("show");try{playDailyStory();}catch(_){}});
   const stusk=$("storyTutSkip");if(stusk)stusk.addEventListener("click",e=>{e.stopPropagation();try{playClick();}catch(_){}try{localStorage.setItem("radio_story_tut","1");}catch(_){}const t=$("storyTutorial");if(t)t.classList.remove("show");});   /* 読まない：説明を閉じてホームへ（NEWは残る） */
@@ -34357,6 +34388,7 @@ function _gpStreetHTML(){
           <div id="wAcctNow" hidden></div>
           <!-- ログインしていない時：作る／ログイン -->
           <div id="wLoggedOut">
+            <div class="syncLockNote">⚠ なまえ＋パスワードの同期は いま ちょうせい中です。しばらく まってね。</div>
             <div id="wTabs">
               <button id="wTabNew" type="button" class="acctTab on">はじめて（作る）</button>
               <button id="wTabLogin" type="button" class="acctTab">ログイン</button>
@@ -34364,13 +34396,13 @@ function _gpStreetHTML(){
             <div id="wPaneNew" class="acctPane">
               <label class="wField"><span>なまえ</span><input id="wNewName" type="text" autocomplete="off" placeholder="すきに きめてOK"></label>
               <label class="wField"><span>パスワード</span><input id="wNewPw" type="password" autocomplete="new-password" placeholder="メモしてね"></label>
-              <button id="wNewBtn" type="button" class="gBtn">この なまえで はじめる</button>
+              <button id="wNewBtn" type="button" class="gBtn" disabled>いま つかえません</button>
               <div class="wHint">今の記録が この なまえのものに なるよ</div>
             </div>
             <div id="wPaneLogin" class="acctPane" hidden>
               <label class="wField"><span>なまえ</span><input id="wLoginName" type="text" autocomplete="off" placeholder="前に つくった なまえ"></label>
               <label class="wField"><span>パスワード</span><input id="wLoginPw" type="password" autocomplete="current-password" placeholder="パスワード"></label>
-              <button id="wLoginBtn" type="button" class="gBtn">ログイン</button>
+              <button id="wLoginBtn" type="button" class="gBtn" disabled>いま つかえません</button>
             </div>
           </div>
           <div id="wList"></div>

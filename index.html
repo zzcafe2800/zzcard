@@ -6036,7 +6036,7 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
   #bossOneRow{margin:0 12px 10px;}
   #bossFightBtn{margin:0 12px calc(14px + env(safe-area-inset-bottom));width:calc(100% - 24px);}
   /* 左も 端まで つかう（カーソルで 上下に 動かす） */
-  #bossStage img{object-position:center 40% !important;transition:object-position .22s ease-out;}
+  #bossStage img{object-position:center 40% !important;transition:object-position .75s cubic-bezier(.22,.75,.3,1);}
 }
 </style>
 <style id="bossCss7">
@@ -30422,15 +30422,21 @@ function _bossCryStart(){
 }
 function _bossCryStop(){ try{clearInterval(_bossCryT);}catch(_){} _bossCryT=0; }
 /* ===== PC：カーソルの 高さで 左の絵が 上下に 動く ===== */
-var _bossPanY=40, BOSS_PAN_MIN=14, BOSS_PAN_MAX=78;
+var _bossPanY=40, BOSS_PAN_MIN=20, BOSS_PAN_MAX=68;
 function _bossPanWire(){
   try{
     var st=$("bossStage"); if(!st||st._panWired)return; st._panWired=1;
-    /* ★3枚を まったく おなじだけ 動かす（ズレると うしろの mori が 見えてしまう） */
-    var set=function(y){
+    /* ★遠くほど ゆっくり 動く＝遠近感。ただし はみ出さないよう 差は 小さめに */
+    var LAYER=[["bossBgMori",0.60],["bossImg",0.85],["bossFgMiti",1.15]];
+    var set=function(y,slow){
       _bossPanY=y;
-      ["bossBgMori","bossImg","bossFgMiti"].forEach(function(id){
-        var e=$(id); if(e)e.style.setProperty("object-position","center "+y+"%","important");
+      LAYER.forEach(function(a){
+        var e=$(a[0]); if(!e)return;
+        var v=(40+(y-40)*a[1]);
+        v=Math.max(4,Math.min(96,v));
+        if(slow)e.style.setProperty("transition","object-position 1.6s cubic-bezier(.25,.8,.3,1)","important");
+        else e.style.removeProperty("transition");
+        e.style.setProperty("object-position","center "+v.toFixed(1)+"%","important");
       });
     };
     st.addEventListener("pointermove",function(e){
@@ -30443,7 +30449,7 @@ function _bossPanWire(){
         set(y);
       }catch(_){}
     },{passive:true});
-    st.addEventListener("pointerleave",function(){ try{ if(_bfIsPC())set(40); }catch(_){} },{passive:true});
+    st.addEventListener("pointerleave",function(){ try{ if(_bfIsPC())set(40,true); }catch(_){} },{passive:true});
   }catch(_){}
 }
 /* ===== ホームの ボスボタン：まだ 開いたことが ない人は 文字化け ===== */
@@ -30532,14 +30538,13 @@ function _bossHauntPaint(){
   try{
     var el=$("bossHaunt"); if(!el)return;
     if(!_bossHauntOn()){ el.hidden=true; el.innerHTML=""; _bossHauntImg=""; return; }
-    if(el.hidden||!el.innerHTML){
+    var want=""; try{want=_bossPickImg()||"";}catch(_){}
+    if(el.hidden||!el.innerHTML||(want&&_bossHauntImg&&want!==_bossHauntImg)){
       _bossProbeImgs().then(function(list){
         try{
           var el2=$("bossHaunt"); if(!el2||!_bossHauntOn())return;
-          var arr=(list&&list.length)?list:["bosu1.png"];
-          /* だれが 出るかは 30分ごとに かわる */
-          var slot=Math.floor(Date.now()/1800000);
-          if(slot!==_bossHauntSlot||!_bossHauntImg){ _bossHauntSlot=slot; _bossHauntImg=arr[Math.floor(Math.random()*arr.length)]; }
+          /* ★ボス画面に 出ている子と おなじ（その日の ボス） */
+          _bossHauntImg=_bossPickImg()||(list&&list[0])||"bosu1.png";
           el2.innerHTML='<img src="'+_bossHauntImg+'" alt="" onerror="this.style.display=\'none\'"/>';
           el2.style.animationDelay=(-Math.random()*8).toFixed(1)+"s";
           el2.hidden=false;

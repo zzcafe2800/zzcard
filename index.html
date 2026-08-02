@@ -8941,7 +8941,7 @@ function postDateLabel(ts){
 async function _catOnlyPost(){
   try{
     if(localStorage.getItem("radio_cat_only")==="0")return false;
-    if(!todayStamp())return false;
+    if(typeof todayStamp==="function" && !todayStamp())return false;
     var date=jstKey(), me=getUid(); if(!me)return false;
     try{var ed=JSON.parse(localStorage.getItem("radio_post_edit")||"null"); if(ed&&ed.date===date)return false;}catch(_){}
     var db=await getDB(); if(!db)return false;
@@ -8953,6 +8953,8 @@ async function _catOnlyPost(){
       total:(typeof getDoneDates==="function"?getDoneDates().length:0),
       streak:((typeof calcStreak==="function")?(calcStreak().current||0):0)
     });
+    try{localStorage.setItem("radio_catonly_done",date);}catch(_){}
+    try{if(typeof loadHillCats==="function")loadHillCats();}catch(_){}   /* すぐ 反映 */
     return true;
   }catch(e){ console.warn("catOnly post failed",e); return false; }
 }
@@ -8985,7 +8987,8 @@ async function likePost(po,btn){
        通知は各自が likes を読んで自前で生成する。 */
     var _lm=await import(FB_DB); var _pv=0;
     try{ var _sn=await _lm.get(_lm.ref(db,"likes/"+po.pid+"/"+getUid())); var _v=_sn&&_sn.val&&_sn.val(); _pv=(_v&&_v.n)||(_v?1:0); }catch(_){}
-    await set(ref(db,"likes/"+po.pid+"/"+getUid()),{name:fromName,at:Date.now(),n:(_pv+1)});   /* まとめる用に 回数を 持つ */
+    try{ await set(ref(db,"likes/"+po.pid+"/"+getUid()),{name:fromName,at:Date.now(),n:(_pv+1)}); }
+    catch(_e1){ await set(ref(db,"likes/"+po.pid+"/"+getUid()),{name:fromName,at:Date.now()}); }   /* ルールで n が だめなら なしで */
     /* ここまで来て初めて成功扱い */
     playPop();
     if(po.uid)markLiked(po.uid,po.pid);
@@ -9012,7 +9015,8 @@ async function likeAllVisible(){
     try{
       var _pv2=0;
       try{ var _m2=await import(FB_DB); var _s2=await _m2.get(_m2.ref(db,"likes/"+c.pid+"/"+getUid())); var _v2=_s2&&_s2.val&&_s2.val(); _pv2=(_v2&&_v2.n)||(_v2?1:0); }catch(_){}
-      await set(ref(db,"likes/"+c.pid+"/"+getUid()),{name:fromName,at:Date.now(),n:(_pv2+1)});
+      try{ await set(ref(db,"likes/"+c.pid+"/"+getUid()),{name:fromName,at:Date.now(),n:(_pv2+1)}); }
+      catch(_e2){ await set(ref(db,"likes/"+c.pid+"/"+getUid()),{name:fromName,at:Date.now()}); }
       markLiked(c.uid,c.pid);n++;
       try{var _el=document.querySelector('#hillCats .hillCat[data-uid="'+c.uid+'"]'); if(_el)_likeHeartFx({closest:function(){return _el;},parentElement:_el});}catch(_){}
     }catch(_){}
@@ -10592,7 +10596,7 @@ function _catNumSwapTick(){ try{
   _catNumApply();
 }catch(_){} }
 try{ _catNumMode=(localStorage.getItem("radio_catnum_mode")==="1")?1:0; }catch(_){}
-try{ var _rl=document.getElementById("recentLabel"); if(_rl){ _rl.style.cursor="pointer"; _rl.addEventListener("click",function(){try{playClick();}catch(_){} _catNumSetMode(_catNumMode?0:1);}); } }catch(_){}
+/* （切替の配線は 下の recentLabel クリックに 一本化） */
 try{ setTimeout(function(){ try{var lt=document.getElementById("recentLabelText"); if(lt)lt.textContent=_catNumMode?"連続日数":"総日数";}catch(_){} },600); }catch(_){}
 const _RECENT_LABELS=["直近3日"];
 /* ★名前の横の数字を 手動で 切替（初期＝総数） */
@@ -11927,7 +11931,8 @@ async function autoStampFlow(){
     try{_askTidy();}catch(_){}
     $("taisoScreen").classList.add("visible");
     try{if(tutStep()==="1")_tutGo2();}catch(_){}   /* ★チュートリアル：ステップ2へ */
-    try{setTimeout(function(){try{_catOnlyPost();}catch(_){}},900);}catch(_){}   /* ★猫だけ とうこう */
+    try{setTimeout(function(){try{_catOnlyPost();}catch(_){}},900);}catch(_){}
+  try{setTimeout(function(){try{_catOnlyPost();}catch(_){}},4000);}catch(_){}   /* 念のため もう一度 */
   /* ★ガチャは 気分の前（体操直後）に 出す：openAskCard の直前で よぶ */
     /* ★自動投稿は やめた：とうこうボタンを 押したときだけ 投稿する */
     try{setTimeout(()=>{try{_aiMaybeNudge();}catch(_){}},1500);}catch(_){}
@@ -13316,6 +13321,8 @@ function _renderTodayRec(){
   }catch(_){}
 }
 function refreshHome(){
+  try{ if(localStorage.getItem("radio_cat_only")!=="0" && localStorage.getItem("radio_catonly_done")!==jstKey() && typeof todayStamp==="function" && todayStamp()){ _catOnlyPost(); } }catch(_){}   /* ★体操ずみなら 自動で 猫だけ とうこう */
+
   try{_aiRefreshBadge();}catch(_){}
   try{_renderTodayRec();}catch(_){}
   refreshHomeGate();
@@ -23008,7 +23015,7 @@ try{
   function isStoryJoined(){try{const v=localStorage.getItem("radio_story_join");return v===null?true:v==="1";}catch(_){return true;}}   /* 初期は参加ON */
   function refreshStoryJoinBtn(){const b=$("storyJoinChk");if(!b)return;b.checked=isStoryJoined();}
   const sjb0=$("storyJoinChk");if(sjb0){try{const v=localStorage.getItem("radio_story_join");sjb0.checked=(v===null)?true:(v==="1");}catch(_){sjb0.checked=true;}}
-  const sjb=$("catOnlyChk");if(sjb){try{sjb.checked=(localStorage.getItem("radio_cat_only")!=="0");}catch(_){}sjb.addEventListener("change",()=>{try{playClick();}catch(_){}try{localStorage.setItem("radio_cat_only",sjb.checked?"1":"0");}catch(_){}if(sjb.checked){try{_catOnlyPost();}catch(_){}}else{try{_catOnlyRemove();}catch(_){}}try{if(typeof _refilterHill==="function")_refilterHill();}catch(_){}});}
+  const sjb=$("catOnlyChk");if(sjb){try{sjb.checked=(localStorage.getItem("radio_cat_only")!=="0");}catch(_){}sjb.addEventListener("change",()=>{try{playClick();}catch(_){}try{localStorage.setItem("radio_cat_only",sjb.checked?"1":"0");}catch(_){}if(sjb.checked){try{localStorage.removeItem("radio_catonly_done");}catch(_){}try{_catOnlyPost();}catch(_){}}else{try{localStorage.removeItem("radio_catonly_done");}catch(_){}try{_catOnlyRemove();}catch(_){}}try{if(typeof _refilterHill==="function")_refilterHill();}catch(_){}});}
 const _sjbOld=null;if(_sjbOld)_sjbOld.addEventListener("change",()=>{const nv=false;try{localStorage.setItem("radio_story_join",nv?"1":"0");}catch(_){}try{toast(nv?"あすのストーリーに参加するよ":"参加をやめたよ");}catch(_){}});
   const svb=$("storyViewBtn");if(svb)svb.addEventListener("click",e=>{e.stopPropagation();try{playClick();}catch(_){}try{const c=$("homeTopRight");if(c)c.classList.remove("htrOpen");}catch(_){}try{dockGo("dex");}catch(_){}});
   const stus=$("storyTutStart");if(stus)stus.addEventListener("click",e=>{e.stopPropagation();try{playClick();}catch(_){}try{localStorage.setItem("radio_story_tut","1");}catch(_){}const t=$("storyTutorial");if(t)t.classList.remove("show");try{playDailyStory();}catch(_){}});
@@ -29401,7 +29408,13 @@ function _advBtnHTML(){
 var ADV_SEL_KEY="radio_adv_sel";
 var _advSel=(function(){try{var a=JSON.parse(localStorage.getItem(ADV_SEL_KEY)||"[]");return Array.isArray(a)?a.filter(function(x){return typeof x==="string";}):[];}catch(_){return [];}})();
 function _advSaveSel(){try{localStorage.setItem(ADV_SEL_KEY,JSON.stringify(_advSel));}catch(_){}}
-function _myYume1(){try{if(!_advSel.length)return null;var id=_advSel[0],dex=_yumeDex();for(var i=0;i<dex.length;i++)if(dex[i].id===id)return dex[i];return null;}catch(_){return null;}}
+function _myYume1(){try{
+  var dex=_yumeDex()||[]; if(!dex.length)return null;
+  if(_advSel&&_advSel.length){ var id=_advSel[0]; for(var i=0;i<dex.length;i++) if(dex[i].id===id) return dex[i]; }
+  /* ★1の子が いなければ いちばん つよい子を 自動で 出す */
+  var best=null,bv=-1; dex.forEach(function(y){ var v=(typeof _yumeMaxLv==="function")?_yumeMaxLv(y):0; if(v>bv){bv=v;best=y;} });
+  return best||dex[0]||null;
+}catch(_){return null;}}
 function _yume1Payload(){try{var y=_myYume1();if(!y)return null;return {img:y.img||"",name:y.name||"",star:y.star||1,shiny:y.shiny?1:0,hue:y.hue||0,big:y.big?1:0};}catch(_){return null;}}
 function _yumeOwnedImgs(){try{return _yumeDex().map(function(y){return y.img;});}catch(_){return [];}}
 function _catYumeBadge(y1,isSelf){ if(!y1||!y1.img)return null; var owned=isSelf||_yumeOwnedImgs().indexOf(y1.img)>=0; var d=document.createElement("div"); d.className="catY1"+(owned?"":" sil"); d.title=owned?(y1.name||""):"？？？"; var im=document.createElement("img"); im.src=y1.img; im.alt=""; if(y1.shiny&&owned){im.style.filter="hue-rotate("+(y1.hue||0)+"deg) saturate(1.25) drop-shadow(0 0 4px rgba(255,240,150,.95))"; d.classList.add("shiny");} if(y1.big)d.classList.add("big"); im.onerror=function(){try{d.style.display="none";}catch(_){}}; d.appendChild(im); return d; }

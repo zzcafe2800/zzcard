@@ -5736,6 +5736,36 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 #taisoScreen.recLock #krSkip{opacity:1 !important;text-decoration:underline;text-underline-offset:3px;}
 @media (prefers-reduced-motion:reduce){#taisoScreen.recLock #askBox{animation:none;}}
 </style>
+<style id="exCatchCss">
+/* ===== ラジオ体操ちゅう：猫たちの 上に ユメっ子が でる ===== */
+#exCatch{position:fixed;left:50%;bottom:190px;transform:translateX(-50%);z-index:2400;
+  pointer-events:none;text-align:center;opacity:0;transition:opacity .45s ease;
+  font-family:"Yomogi","Kosugi Maru",sans-serif;}
+#exCatch[hidden]{display:none;}
+#exCatch.on{opacity:1;}
+#exCatchChar{position:relative;width:96px;height:96px;margin:0 auto;
+  filter:brightness(0) drop-shadow(0 4px 10px rgba(0,0,0,.35));transition:filter .5s ease;}
+#exCatch.got #exCatchChar{filter:drop-shadow(0 6px 14px rgba(0,0,0,.32));}
+#exCatchChar .ygImg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;}
+#exCatchChar.pet{animation:exPet .45s cubic-bezier(.3,1.5,.4,1);}
+#exCatchChar.joy{animation:exJoy .6s ease;}
+#exCatchChar.away{animation:exAway .8s ease forwards;}
+@keyframes exPet{0%,100%{transform:scale(1);}40%{transform:scale(1.14) translateY(-8px);}}
+@keyframes exJoy{0%,100%{transform:scale(1) rotate(0);}25%{transform:scale(1.16) rotate(-7deg);}60%{transform:scale(1.12) rotate(6deg);}}
+@keyframes exAway{0%{opacity:1;transform:translateY(0) scale(1);}100%{opacity:0;transform:translateY(-26px) scale(.7);}}
+#exCatchHearts{display:flex;gap:7px;justify-content:center;margin-top:6px;}
+#exCatchHearts i{width:17px;height:17px;display:block;background:no-repeat center/contain;
+  background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 21s-8-5.3-8-10.6A4.6 4.6 0 0 1 12 7a4.6 4.6 0 0 1 8 3.4C20 15.7 12 21 12 21z' fill='%23ffffff' opacity='.55'/%3E%3C/svg%3E");
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.35));transition:transform .2s;}
+#exCatchHearts i.on{background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 21s-8-5.3-8-10.6A4.6 4.6 0 0 1 12 7a4.6 4.6 0 0 1 8 3.4C20 15.7 12 21 12 21z' fill='%23ff7ba6'/%3E%3C/svg%3E");
+  animation:exHeart .5s cubic-bezier(.2,1.6,.4,1);}
+@keyframes exHeart{0%{transform:scale(.4);}60%{transform:scale(1.4);}100%{transform:scale(1);}}
+#exCatchTip{margin-top:5px;font-size:12px;font-weight:900;color:#fff;letter-spacing:.06em;
+  text-shadow:0 2px 6px rgba(0,0,0,.6),0 0 12px rgba(0,0,0,.5);min-height:16px;}
+#exCatch.got #exCatchTip{color:#ffe6f0;}
+@media (max-width:400px){#exCatch{bottom:170px;}#exCatchChar{width:82px;height:82px;}}
+@media (prefers-reduced-motion:reduce){#exCatchChar,#exCatchHearts i{animation:none !important;}}
+</style>
 <style id="zzFlowCss">
 /* ===== A) おつかれさま スプラッシュ ===== */
 #zzSplash{position:fixed;inset:0;z-index:4600;display:flex;align-items:center;justify-content:center;
@@ -6908,6 +6938,11 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
   </div>
 </div>
 <div id="askCard"></div>
+<div id="exCatch" hidden aria-hidden="true">
+  <div id="exCatchChar"></div>
+  <div id="exCatchHearts"><i></i><i></i><i></i></div>
+  <div id="exCatchTip"></div>
+</div>
 <div id="zzSplash" hidden aria-hidden="true">
   <div class="zsBox">
     <div class="zsIco">🌞</div>
@@ -13948,6 +13983,7 @@ function startMorningExercise(opts){
     /* ラジオ体操ちゅうは「にゃー」も「読み上げ」も出さない（削除） */
     try{bgmAudio.pause();}catch(_){}   /* ホームBGM(bgm11)は止めて ラジオ体操の曲だけに */
     try{ if(!window._exAud){window._exAud=new Audio("radiobgm.mp3");window._exAud.preload="auto";} _exerciseAudio=window._exAud; try{_exerciseAudio.currentTime=0;}catch(_){} _exerciseAudio.volume=bgmMuted?0:bgmVol;   /* ホームBGMと 同じ音量に（爆音ぼうし） */ _exerciseAudio.play().catch(()=>{}); }catch(_){}
+    try{_exCatchStart();}catch(_){}   /* ★猫たちの上に ユメっ子が でる */
     _exStopTimer=setTimeout(()=>stopMorningExercise(),6000);   /* 6秒で自動的に次の画面へ */
   };
   if(morning)setTimeout(begin,400);else begin();   /* ラグ短縮：1500→400ms */
@@ -14033,6 +14069,7 @@ function _exFastFinish(){
 }
 function stopMorningExercise(){
   if(!_exerciseActive)return;_exerciseActive=false;
+  try{_exCatchFinish();}catch(_){}   /* ★ゲット判定を ここで しめる */
   try{ if(!(typeof tutOn==="function"&&tutOn())){ var _st=(typeof calcStreak==="function")?calcStreak():null;
     _zzSplash({ico:"\u2600\ufe0f",title:"おつかれさま！",sub:_st?("れんぞく "+(_st.current||1)+"日目"):"",ms:1500}); } }catch(_){}
   try{clearInterval(_exNoteTimer);}catch(_){}_exNoteTimer=null;
@@ -29699,8 +29736,108 @@ function _ygStarSound(i){
     o.connect(g);g.connect(sfxOut(ctx));o.start(now);o.stop(now+0.45);
   }catch(e){}
 }
+/* ===== ラジオ体操ちゅうに ユメっ子が でて、そのまま ゲット判定 ===== */
+var _exCatchT=0;
+function _exCatchStart(){
+  try{
+    window._exCatchDone=false; window._exCatchWon=false;
+    if(typeof tutOn==="function"&&tutOn()&&false)return;
+    if(localStorage.getItem(YUME_GACHA_KEY)===jstKey())return;   /* きょうは もう 会った */
+    _yumeProbeImgs().then(function(){
+      try{
+        if(!_exerciseActive)return;
+        var y=_yumeRoll(); _ygCurrent=y;
+        var owned=(_yumeOwnedImgs().indexOf(y.img)>=0);
+        _ygIsNew=!owned; _ygAdded=false; _ygDexShown=false;
+        _ygShort=(_ygSeen()>=1); try{_ygSeenInc();}catch(_){}
+        var quick=(_ygSeen()>=14);
+        var pc=_ygPetCount();
+        _ygCatch={hearts:0,petsLeft:quick?1:pc.total,petIdx:0,busy:false,over:false,bonus:pc.bonus,quick:quick};
+        var el=$("exCatch"); if(!el)return;
+        var ch=$("exCatchChar"); if(ch)ch.innerHTML='<img class="ygImg" src="'+y.img+'" alt="" onerror="this.style.display=\'none\'"/>';
+        _exCatchPaint();
+        try{$("exCatchTip").textContent="…だれか いる？";}catch(_){}
+        el.className=""; el.hidden=false; void el.offsetWidth; el.classList.add("on");
+        try{_ygSasa();}catch(_){}
+        /* 体操(6秒)の うちに ぜんぶ なでおわる */
+        var pets=_ygCatch.petsLeft, step=quick?1000:Math.max(700,Math.floor(3900/Math.max(1,pets)));
+        var i=0;
+        try{clearInterval(_exCatchT);}catch(_){}
+        _exCatchT=setInterval(function(){
+          try{
+            if(!_exerciseActive||_ygCatch.over){ _exCatchStop(); return; }
+            _exPet();
+            i++;
+            if(_ygCatch.over||_ygCatch.petsLeft<=0)_exCatchStop();
+          }catch(_){ _exCatchStop(); }
+        },step);
+        setTimeout(function(){ try{ if(_exerciseActive&&!_ygCatch.over)_exPet(); }catch(_){} },900);
+      }catch(_){}
+    });
+  }catch(_){}
+}
+function _exCatchStop(){ try{clearInterval(_exCatchT);}catch(_){} _exCatchT=0; }
+function _exCatchPaint(){
+  try{ var hs=document.querySelectorAll("#exCatchHearts i");
+    for(var k=0;k<hs.length;k++)hs[k].classList.toggle("on",k<_ygCatch.hearts);
+  }catch(_){}
+}
+function _exPet(){
+  try{
+    if(!_ygCatch||_ygCatch.over||_ygCatch.petsLeft<=0)return;
+    _ygCatch.petsLeft--;
+    var ch=$("exCatchChar"); if(ch){ch.classList.remove("pet");void ch.offsetWidth;ch.classList.add("pet");}
+    var ok;
+    if(_ygCatch.quick){ ok=true; _ygCatch.hearts=3; }
+    else{
+      var star=(_ygCurrent&&_ygCurrent.star)||1; if(star<1)star=1; if(star>3)star=3;
+      var row=(_YGCATCH_P[star]&&_YGCATCH_P[star][_ygCatch.hearts])||_YGCATCH_P[1][0];
+      var pp=row[Math.min(5,_ygCatch.petIdx)]||30; pp=Math.min(97,Math.max(82,pp+_YGCATCH_BOOST)); _ygCatch.petIdx++;
+      ok=(Math.random()*100<pp);
+      if(ok)_ygCatch.hearts++;
+    }
+    _exCatchPaint();
+    if(ok){ try{_ygDing(_ygCatch.hearts);}catch(_){} try{$("exCatchTip").textContent="なでなで…";}catch(_){} }
+    else{ try{_ygNya();}catch(_){} try{$("exCatchTip").textContent=["イヤ！","んっ…","にゃっ！"][Math.floor(Math.random()*3)];}catch(_){} }
+    if(_ygCatch.hearts>=3){ _ygCatch.over=true; _exCatchWin(); return; }
+    if(_ygCatch.petsLeft<=0){ _ygCatch.over=true; _exCatchFlee(); return; }
+  }catch(_){}
+}
+function _exCatchWin(){
+  _exCatchStop(); window._exCatchWon=true; window._exCatchDone=true;
+  try{ var el=$("exCatch"); if(el)el.classList.add("got"); }catch(_){}
+  try{ var ch=$("exCatchChar"); if(ch){ch.classList.remove("joy");void ch.offsetWidth;ch.classList.add("joy");} }catch(_){}
+  try{$("exCatchTip").textContent="なついた！";}catch(_){}
+  try{_ygFanfare();}catch(_){}
+}
+function _exCatchFlee(){
+  _exCatchStop(); window._exCatchWon=false; window._exCatchDone=true;
+  try{ var ch=$("exCatchChar"); if(ch)ch.classList.add("away"); }catch(_){}
+  try{$("exCatchTip").textContent="にげちゃった…";}catch(_){}
+  try{_ygSad();}catch(_){}
+}
+/* 体操が おわる時：まだ 決まっていなければ その場で 決着 */
+function _exCatchFinish(){
+  try{
+    _exCatchStop();
+    if(_ygCatch&&!_ygCatch.over&&$("exCatch")&&!$("exCatch").hidden){
+      var guard=0;
+      while(!_ygCatch.over&&_ygCatch.petsLeft>0&&guard++<9)_exPet();
+      if(!_ygCatch.over){ _ygCatch.over=true; if(_ygCatch.hearts>=3)_exCatchWin(); else _exCatchFlee(); }
+    }
+    setTimeout(function(){ try{var el=$("exCatch"); if(el){el.classList.remove("on"); setTimeout(function(){try{el.hidden=true;el.className="";}catch(_){}},500);} }catch(_){} },700);
+  }catch(_){}
+}
 function _yumeGachaStart(){
   var el=$("yumeGacha");if(!el)return;
+  if(window._exCatchDone){                      /* ★体操ちゅうに 決着ずみ */
+    window._exCatchDone=false;
+    if(!window._exCatchWon){ _yumeGachaClose(); return; }   /* にげられた＝演出なし */
+    try{var c=$("ygCatch"); if(c)c.hidden=true;}catch(_){}
+    el.className="";el.hidden=false;
+    try{_ygProceedReveal();}catch(_){ _yumeGachaClose(); }
+    return;
+  }
   var y=_yumeRoll();_ygCurrent=y;
   el.className="";el.hidden=false;
   _ygCatchStart(y);   /* ★まず ゲットチャンス（なでてゲット）から */
@@ -30009,6 +30146,8 @@ function _ygRenderReveal(y,instant){
           try{var yy=$("ygYes"); if(yy)yy.hidden=true;}catch(_){}
           try{var nn=$("ygNo"); if(nn)nn.textContent="にがす";}catch(_){}
           try{var hh=$("ygHint"); if(hh)hh.textContent=y.name+" が なかまに なった！";}catch(_){}
+          var _tut1=false; try{_tut1=(typeof tutStep==="function"&&tutStep()==="1");}catch(_){}
+          if(_tut1){ try{_tutGoYume();}catch(_){} return; }   /* チュートリアル中は 手動で つぎへ */
           if(_ygIsNew){ _ygDexReveal(y,function(){ _ygScheduleClose(); }); }
           else { _ygScheduleClose(); }
         }catch(_){ _ygScheduleClose(); }
@@ -31932,7 +32071,7 @@ function _tutResume(){
   try{
     var v=tutStep();
     if(v==="1"){setTimeout(function(){var el=$("randomModeBtn");if(el)_tutSpot(el,"ステップ 1","あさ おきたら この サイトを ひらいてね。<br>まずは <b>ラジオ体操</b>を おしてみよう！");},900);}
-    else if(v==="1a"){setTimeout(function(){var g=$("ygCatch");if(g&&!g.hidden)_tutSpot($("ygCatchWrap")||$("ygCatchChar"),"ステップ 2","ラジオ体操に つられて <b>ユメっ子</b>が やってくるよ。<br>あつめて たのしもう！",{okBtn:true,okText:"つぎへ"});else _tutGo2();},900);}
+    else if(v==="1a"){setTimeout(function(){var g=$("yumeGacha");if(g&&!g.hidden)_tutSpot($("ygSil")||$("ygInfo"),"ステップ 2","ラジオ体操に つられて <b>ユメっ子</b>が やってくるよ。<br>あつめて たのしもう！",{okBtn:true,okText:"つぎへ"});else _tutGo2();},900);}
     else if(v==="2"){_tutWaitTaiso(function(){if(tutStep()!=="2")return;var el=$("tsComment")||$("tsPostBtn");if(el){try{var c=$("tsComment");if(c)c.classList.add("tutGlowField");}catch(_){}_tutSpot(el,"ステップ 3","きょうの ひとことを かいてみよう！<br>かかなくても だいじょうぶだよ。",{okBtn:true,okText:"つぎへ"});}});}
     else if(v==="2a"){_tutWaitTaiso(function(){if(tutStep()!=="2a")return;var el=$("tsAdvBtn");if(el&&el.offsetParent)_tutSpot(el,"ステップ 4","あつめた ユメっ子と <b>冒険</b>に 行ってみよう！",{okBtn:true,okText:"つぎへ"});else _tutGo3();});}
     else if(v==="3"){setTimeout(function(){var el=$("ground")||$("randomModeBtn");_tutSpot(el,"","ホームに あなたの 猫が でてきたよ！<br>みんなも おなじように あつまるんだ。",{okBtn:true});},900);}
@@ -31958,7 +32097,7 @@ function _tutGoYume(){
   (function go(){
     try{
       if(tutStep()!=="1a")return;
-      var el=$("ygCatchWrap")||$("ygCatchChar");   /* ★草むらから 出てきた その子 */
+      var el=$("ygSil")||$("ygInfo")||$("yumeGacha");   /* ★出てきた その子 */
       var r=el?el.getBoundingClientRect():null;
       if((!r||(!r.width&&!r.height))&&n<20){ n++; setTimeout(go,220); return; }   /* 出そろうまで まつ */
       _tutSpot(el||$("yumeGacha"),"ステップ 2",
@@ -32054,7 +32193,7 @@ try{
   var _tok=document.getElementById("tutOk");
   if(_tok)_tok.addEventListener("click",function(){
     try{playClick();}catch(_){}
-    if(tutStep()==="1a"){_tutClear();return;}   /* なでるのを つづける */
+    if(tutStep()==="1a"){_tutClear();try{_ygScheduleClose();}catch(_){}return;}   /* つづきへ */
     if(tutStep()==="2"){_tutGoAdv();return;}
     if(tutStep()==="2a"){_tutGo3();return;}   /* 冒険の しょうかい → ホームへ */
     _tutFinish();

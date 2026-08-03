@@ -5649,7 +5649,100 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 .tsMtArw{min-width:30px;min-height:44px;}
 .tsMtArw:active{transform:translateY(-50%) scale(.85);color:#6fa2bd;}
 </style>
+<style id="homeCycleCss">
+/* ===== ホーム左上：今日の記録 ⇄ 登山① ⇄ 登山② ===== */
+/* ★2まいとも おなじ 見た目・おなじ 大きさで 固定 */
+#topLeftStack #todayRecCard,#topLeftStack #tsRangeCard{
+  width:186px;height:168px;box-sizing:border-box;margin:0;overflow:hidden;
+  background:rgba(255,255,255,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.7);border-radius:16px;padding:11px 13px 9px;
+  box-shadow:0 6px 18px rgba(90,140,180,.18);
+  display:flex;flex-direction:column;gap:0 !important;flex:0 0 auto !important;
+  cursor:default;position:relative;}
+#topLeftStack #todayRecCard{padding:11px 13px;}
+#topLeftStack #tsRangeCard{display:none;}
+#topLeftStack.hc1 #tsRangeCard,#topLeftStack.hc2 #tsRangeCard{display:flex;}
+#topLeftStack.hc1 #todayRecCard,#topLeftStack.hc2 #todayRecCard{display:none;}
+#selectScreen.sky-night #topLeftStack #tsRangeCard,
+#selectScreen.sky-evening #topLeftStack #tsRangeCard{background:rgba(38,52,78,.62);border-color:rgba(255,255,255,.22);}
+/* 登山カードの 見出し（今日の記録の 見出しと そろえる） */
+#topLeftStack #tsMtTitle{display:block !important;font-family:"Yomogi","Kosugi Maru",sans-serif;
+  font-size:12px;font-weight:900;color:#6f8ba0;margin:0 0 6px;text-align:left;flex:0 0 auto;}
+#selectScreen.sky-night #topLeftStack #tsMtTitle,
+#selectScreen.sky-evening #topLeftStack #tsMtTitle{color:#b9cadb;}
+/* カードの中の 元のナビは ホームでは 消す（外の ‹ › に 一本化） */
+#topLeftStack #tsMtL,#topLeftStack #tsMtR,#topLeftStack #tsMtNav,
+#topLeftStack #tsMtName,#topLeftStack #tsRangeStat,
+#topLeftStack #tsMtPrev,#topLeftStack #tsMtNext{display:none !important;}
+/* 絵の 場所＝のこりぜんぶ。はみ出さないように おさめる */
+#topLeftStack #tsMtWrap{flex:1 1 auto;min-height:0;overflow:hidden;border-radius:11px;}
+#topLeftStack #tsMtPager{height:100%;align-items:stretch;}
+#topLeftStack .tsMtPage{height:100%;padding:2px !important;display:flex;align-items:center;justify-content:center;overflow:hidden;box-sizing:border-box;}
+#topLeftStack #tsRangeMini,#topLeftStack #tsClimbBox{width:100% !important;height:100% !important;
+  min-height:0 !important;margin:0 !important;padding:0 !important;
+  display:flex !important;align-items:center;justify-content:center;overflow:hidden !important;border-radius:11px;
+  background:none !important;text-align:center;}
+#topLeftStack #tsRangeMini svg,#topLeftStack #tsClimbBox svg{width:100% !important;height:100% !important;
+  max-height:100%;object-fit:contain;display:block;}
+/* 小さな テキストの「詳細」 */
+#topLeftStack #tsRangeMore{flex:0 0 auto;align-self:center;margin:5px 0 0;background:none;border:none;padding:1px 6px;
+  font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:10.5px;font-weight:800;color:#6f9ec0;
+  cursor:pointer;text-decoration:underline;text-underline-offset:2px;line-height:1.2;}
+#topLeftStack #tsRangeMore:active{transform:scale(.95);}
+#selectScreen.sky-night #topLeftStack #tsRangeMore,
+#selectScreen.sky-evening #topLeftStack #tsRangeMore{color:#a9cbe4;}
+/* ‹ ●●● › */
+#hcNav{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px;width:186px;}
+#hcNav button{border:none;background:rgba(255,255,255,.78);border-radius:999px;width:24px;height:24px;
+  line-height:22px;padding:0;cursor:pointer;font-family:inherit;font-size:15px;font-weight:900;color:#7fa8c4;
+  box-shadow:0 3px 8px rgba(90,140,180,.18);border:1px solid rgba(255,255,255,.7);}
+#hcNav button:active{transform:scale(.9);}
+#hcDots{display:flex;gap:5px;align-items:center;}
+#hcDots i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.8);
+  box-shadow:0 1px 3px rgba(90,140,180,.25);transition:background .2s,transform .2s;}
+#hcDots i.on{background:#7fc9e8;transform:scale(1.3);}
+#selectScreen.sky-night #hcNav button,#selectScreen.sky-evening #hcNav button{background:rgba(38,52,78,.7);color:#cfe2f2;border-color:rgba(255,255,255,.22);}
+#selectScreen.sky-night #hcDots i,#selectScreen.sky-evening #hcDots i{background:rgba(255,255,255,.35);}
+#selectScreen.sky-night #hcDots i.on,#selectScreen.sky-evening #hcDots i.on{background:#8fd3f0;}
+/* ===== 完了画面：登山の あった場所に「きょうの きろく」カードを 直に置く ===== */
+#askCard{display:none !important;}
+/* ★PC（よこなら）では ほかの カードと おなじ「1れつぶん」の 幅にする
+   （width:100% のままだと 横ならびの ときに 全部を おしつぶしてしまう）   */
+#taisoScreen #askBox{flex:1 1 0 !important;min-width:0;width:auto;max-width:none;
+  max-height:none;overflow:visible;margin:0;order:-1;   /* ★いちばん さいしょに 出す */
+  box-shadow:0 10px 28px rgba(120,160,190,.18);}
+@media (max-width:720px){
+  #taisoScreen #askBox{flex:0 0 auto !important;width:100%;max-width:460px;}
+}
+#taisoScreen #askBox.done .krSec,#taisoScreen #askBox.done .krTime,
+#taisoScreen #askBox.done #krSave,#taisoScreen #askBox.done #krSkip{display:none;}
+#taisoScreen #askBox.done::after{content:"きろく できたよ！";display:block;text-align:center;
+  font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:14px;font-weight:900;color:#5ea87c;padding:10px 0 4px;}
+#taisoScreen #askBox #krSkip{opacity:.55;}
+/* ★まずは きろく：すむまで ほかは さわれない */
+#taisoScreen.recLock #taisoCards>*:not(#askBox),
+#taisoScreen.recLock #taisoFooter{opacity:.34;filter:grayscale(.5);pointer-events:none;
+  transition:opacity .35s ease,filter .35s ease;}
+#taisoScreen #taisoCards>*,#taisoScreen #taisoFooter{transition:opacity .35s ease,filter .35s ease;}
+#taisoScreen.recLock #askBox{box-shadow:0 0 0 4px rgba(120,205,155,.55),0 16px 38px rgba(80,160,110,.3) !important;
+  animation:recLockGlow 2.4s ease-in-out infinite;}
+@keyframes recLockGlow{0%,100%{box-shadow:0 0 0 4px rgba(120,205,155,.5),0 16px 38px rgba(80,160,110,.26);}
+  50%{box-shadow:0 0 0 7px rgba(120,205,155,.32),0 18px 42px rgba(80,160,110,.34);}}
+#taisoScreen.recLock #askBox::before{content:"\26a1 まずは ここから！きろくを つけると つぎに すすめるよ";
+  display:block;margin:-4px -4px 10px;padding:8px 10px;border-radius:14px;
+  background:linear-gradient(135deg,#8fdcb0,#57bd7a);color:#fff;
+  font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:12px;font-weight:900;line-height:1.5;
+  box-shadow:0 4px 12px rgba(87,189,122,.35);}
+#taisoScreen.recLock #krSkip{opacity:1 !important;text-decoration:underline;text-underline-offset:3px;}
+@media (prefers-reduced-motion:reduce){#taisoScreen.recLock #askBox{animation:none;}}
+</style>
 <style id="tsPostSwapCss">
+/* ★まだ とうこうしてない あいだは カードの ふちを 緑に（とうこうずみで 消える） */
+#tsPostCard.needPost{border:2.5px solid #57bd7a !important;box-shadow:0 0 0 4px rgba(87,189,122,.13),0 6px 18px rgba(70,150,100,.16) !important;
+  animation:tsNeedPulse 2.4s ease-in-out infinite;}
+@keyframes tsNeedPulse{0%,100%{box-shadow:0 0 0 4px rgba(87,189,122,.13),0 6px 18px rgba(70,150,100,.16);}
+  50%{box-shadow:0 0 0 7px rgba(87,189,122,.20),0 6px 20px rgba(70,150,100,.22);}}
+@media (prefers-reduced-motion:reduce){#tsPostCard.needPost{animation:none;}}
 /* ★ひとことの 文字を 読みやすく */
 #tsPostCard #tsComment{font-size:15.5px !important;line-height:1.65 !important;font-weight:700 !important;
   color:#25506b !important;padding:10px 12px !important;border:1.5px solid #cfe4f0 !important;
@@ -6737,26 +6830,7 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
     <div class="crWeBtns"><button id="crWordsCancel" type="button">とじる</button><button id="crWordsSave" type="button">ほぞん</button></div>
   </div>
 </div>
-<div id="askCard">
-  <div id="askBox">
-    <div id="askTtl">きょうの きろく</div>
-    <div class="krSec">
-      <div class="krSecTop"><span class="krSecLbl">😊 きぶん</span><button id="krMoodBk" class="krBk" type="button" hidden>← もどる</button><span class="krNow" id="krMoodNow"></span></div>
-      <div class="krProg" id="krMoodProg"></div>
-      <div class="krMoodLine"><div class="krMoodRow" id="krMoodRow"></div></div>
-    </div>
-    <div class="krTime">
-      <div class="krTimeLeft"><span class="krTimeLbl">🌅 起床</span><button class="krDunno" id="krWakeDunno" data-t="wake" type="button">わからない</button></div>
-      <div class="krStepWrap"><button class="krStep" data-t="wake" data-d="-1" type="button">−</button><span class="krTimeV" id="krWakeV">6:00</span><button class="krStep" data-t="wake" data-d="1" type="button">＋</button></div>
-    </div>
-    <div class="krTime bed">
-      <div class="krTimeLeft"><span class="krTimeLbl">🌙 就寝</span><button class="krDunno" id="krBedDunno" data-t="bed" type="button">わからない</button></div>
-      <div class="krStepWrap"><button class="krStep" data-t="bed" data-d="-1" type="button">−</button><span class="krTimeV" id="krBedV">23:00</span><button class="krStep" data-t="bed" data-d="1" type="button">＋</button></div>
-    </div>
-    <button id="krSave" type="button">きろく する</button>
-    <button id="krSkip" type="button">スキップ</button>
-  </div>
-</div>
+<div id="askCard"></div>
 <div id="taisoScreen">
   <button id="taisoBack" type="button" aria-label="もどる">‹ もどる</button>
   <div id="taisoInner">
@@ -6792,7 +6866,7 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
             <div id="wakeAdjRow"><span class="waLabel">おきた<br>じかん</span><div class="waCtrl"><button id="wakeAdjMinus" type="button" aria-label="はやく">◀</button><span id="wakeAdjTime">–</span><button id="wakeAdjPlus" type="button" aria-label="おそく">▶</button></div></div>
             <div id="tsAutoNote" hidden>とうこう ずみ</div>
             <div id="tsInputWrap">
-              <textarea id="tsComment" maxlength="20" rows="2" placeholder="ひとこと（ひらがな）" inputmode="kana"></textarea>
+              <textarea id="tsComment" maxlength="30" rows="2" placeholder="ひとこと（じゆうに どうぞ）"></textarea>
             </div>
             <div class="tsChkRow">
               <label class="tsAnonRow"><input type="checkbox" id="tsAnon"/> 匿名で投稿</label>
@@ -6808,30 +6882,23 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
           </div>
         </div>
       </div>
-      <div class="taisoCard" id="tsRangeCard">
-        <div class="tsCardTitle" id="tsMtTitle">これまでの山脈</div>
-        <button id="tsMtL" class="tsMtArw" type="button" aria-label="まえ">‹</button>
-        <button id="tsMtR" class="tsMtArw" type="button" aria-label="つぎ">›</button>
-        <div id="tsMtWrap">
-          <div id="tsMtPager">
-            <div class="tsMtPage">
-              <div id="tsRangeMini"></div>
-              <button id="tsMtPrev" type="button" aria-label="ひだり">◀</button>
-              <button id="tsMtNext" type="button" aria-label="みぎ">▶</button>
-            </div>
-            <div class="tsMtPage">
-              <div id="tsClimbBox"></div>
-            </div>
-          </div>
-        </div>
-        <div id="tsMtName"></div>
-        <div id="tsMtNav">
-          <button id="tsMtPgPrev" type="button" aria-label="まえ">‹</button>
-          <div id="tsMtDots"><i data-p="0" class="on"></i><i data-p="1"></i></div>
-          <button id="tsMtPgNext" type="button" aria-label="つぎ">›</button>
-        </div>
-        <div id="tsRangeStat"></div>
-        <button class="tsRangeMore" id="tsRangeMore" type="button">詳細 ▸</button>
+      <div id="askBox">
+      <div id="askTtl">きょうの きろく</div>
+      <div class="krSec">
+      <div class="krSecTop"><span class="krSecLbl">😊 きぶん</span><button id="krMoodBk" class="krBk" type="button" hidden>← もどる</button><span class="krNow" id="krMoodNow"></span></div>
+      <div class="krProg" id="krMoodProg"></div>
+      <div class="krMoodLine"><div class="krMoodRow" id="krMoodRow"></div></div>
+      </div>
+      <div class="krTime">
+      <div class="krTimeLeft"><span class="krTimeLbl">🌅 起床</span><button class="krDunno" id="krWakeDunno" data-t="wake" type="button">わからない</button></div>
+      <div class="krStepWrap"><button class="krStep" data-t="wake" data-d="-1" type="button">−</button><span class="krTimeV" id="krWakeV">6:00</span><button class="krStep" data-t="wake" data-d="1" type="button">＋</button></div>
+      </div>
+      <div class="krTime bed">
+      <div class="krTimeLeft"><span class="krTimeLbl">🌙 就寝</span><button class="krDunno" id="krBedDunno" data-t="bed" type="button">わからない</button></div>
+      <div class="krStepWrap"><button class="krStep" data-t="bed" data-d="-1" type="button">−</button><span class="krTimeV" id="krBedV">23:00</span><button class="krStep" data-t="bed" data-d="1" type="button">＋</button></div>
+      </div>
+      <button id="krSave" type="button">きろく する</button>
+      <button id="krSkip" type="button">スキップ</button>
       </div>
     </div>
     <div id="taisoFooter"><label id="storyJoinChkRow"><input type="checkbox" id="catOnlyChk" checked/> 猫のみのとうこう</label><button class="tsCat" id="tsCatBtn" type="button">🐱 ねこと はなす</button><button class="tsAdv" id="tsAdvBtn" type="button">⚔️ 冒険</button><button class="tsNext" id="tsNextBtn" type="button">ホームへ →</button></div>
@@ -6861,6 +6928,36 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
     <div class="trRow"><span class="trIco">😊</span><span class="trLbl">気分</span><b class="trVal" id="trMood">–</b></div>
     <div class="trRow"><span class="trIco">📻</span><span class="trLbl">総日数</span><b class="trVal" id="trTotal">–</b></div>
     <div class="trRow"><span class="trIco">🔥</span><span class="trLbl">連続日数</span><b class="trVal" id="trStreak">–</b></div>
+  </div>
+  <div class="taisoCard" id="tsRangeCard">
+        <div class="tsCardTitle" id="tsMtTitle">これまでの山脈</div>
+        <button id="tsMtL" class="tsMtArw" type="button" aria-label="まえ">‹</button>
+        <button id="tsMtR" class="tsMtArw" type="button" aria-label="つぎ">›</button>
+        <div id="tsMtWrap">
+          <div id="tsMtPager">
+            <div class="tsMtPage">
+              <div id="tsRangeMini"></div>
+              <button id="tsMtPrev" type="button" aria-label="ひだり">◀</button>
+              <button id="tsMtNext" type="button" aria-label="みぎ">▶</button>
+            </div>
+            <div class="tsMtPage">
+              <div id="tsClimbBox"></div>
+            </div>
+          </div>
+        </div>
+        <div id="tsMtName"></div>
+        <div id="tsMtNav">
+          <button id="tsMtPgPrev" type="button" aria-label="まえ">‹</button>
+          <div id="tsMtDots"><i data-p="0" class="on"></i><i data-p="1"></i></div>
+          <button id="tsMtPgNext" type="button" aria-label="つぎ">›</button>
+        </div>
+        <div id="tsRangeStat"></div>
+        <button class="tsRangeMore" id="tsRangeMore" type="button">詳細 ▸</button>
+      </div>
+  <div id="hcNav">
+    <button id="hcPrev" type="button" aria-label="まえ">‹</button>
+    <span id="hcDots"><i class="on"></i><i></i><i></i></span>
+    <button id="hcNext" type="button" aria-label="つぎ">›</button>
   </div>
 </div>
 
@@ -12500,7 +12597,8 @@ async function autoStampFlow(){
   var _askDone=false,_waitDone=null;
   var _onAsked=function(){_askDone=true;if(_waitDone){var f=_waitDone;_waitDone=null;f();}};
   var _wait=Math.max(0,(_zzGainUntil||0)-Date.now());
-  setTimeout(function(){ var _op=function(){try{openAskCard(_onAsked);}catch(_){_onAsked();}}; try{_yumeMaybeGacha(_op);}catch(_){_op();} },_wait);
+  /* ★ユメっ子が おわったら すぐ 完了画面へ（きろくは 完了画面の カードから つける） */
+  setTimeout(function(){ var _op=function(){try{_onAsked();}catch(_){}}; try{_yumeMaybeGacha(_op);}catch(_){_op();} },_wait);
   /* 画像づくりは カードと 同時に すすめる */
   let fullUrl="";try{fullUrl=await renderAutoCard(r.cur,r.no);}catch(_){}
   _autoCardUrl=fullUrl;
@@ -12713,6 +12811,9 @@ function refreshWakeAdj(){
 }
 function tsUpdatePreview(){
   try{_tsPaintPostBtns();}catch(_){}
+  try{_askSyncInline();}catch(_){}
+  try{_tsLockPaint();}catch(_){}
+  try{_renderTodayRec();}catch(_){}   /* 完了画面の「今日の記録」も 最新に */
   const c=(($("tsComment").value||"").trim())||_todayMoodText(),anon=!!($("tsAnon")&&$("tsAnon").checked);
   const show=!!($("tsShowTime")&&$("tsShowTime").checked);
   const el=$("tsPostPreview");if(!el)return;
@@ -12760,6 +12861,7 @@ function tsResetPost(){
 function _tsPaintPostBtns(){
   try{
     var done=false; try{done=postedToday();}catch(_){}
+    try{ var card=$("tsPostCard"); if(card)card.classList.toggle("needPost",!done); }catch(_){}   /* ★まだの時だけ 緑のふち */
     var q=$("tsPostQuick"), b=$("tsPostBtn");
     if(q){ q.textContent=done?"とうこう こうしん":"とうこうする"; q.classList.toggle("posted",done); }
     if(b){ b.textContent=done?"とうこう こうしん":"投稿する"; b.classList.toggle("posted",done); }
@@ -12770,7 +12872,7 @@ async function tsDoPost(){
   const wasEdit=postedToday();
   const b=$("tsPostBtn"),q=$("tsPostQuick");
   if(b)b.disabled=true; if(q){q.disabled=true;q.textContent="とうこう中…";}
-  const c=hiraOnly(($("tsComment").value||"").trim())||_todayMoodText();
+  const c=(($("tsComment")&&$("tsComment").value)||"").trim()||_todayMoodText();
   let ok=false;
   /* ★チュートリアル中は「仮想空間」＝みんなには 送らない */
   if(tutOn()){
@@ -12801,7 +12903,7 @@ async function tsDoPost(){
 async function _autoPostToday(){
   try{
     if(postedToday())return;
-    const c=hiraOnly((($("tsComment")&&$("tsComment").value)||"").trim())||_todayMoodText();
+    const c=(($("tsComment")&&$("tsComment").value)||"").trim()||_todayMoodText();
     let ok=false;
     try{ ok=await postToday(!!($("tsAnon")&&$("tsAnon").checked),c, !!($("tsShowTime")&&$("tsShowTime").checked)); }catch(_){ ok=false; }
     if(!ok)return;
@@ -13854,7 +13956,45 @@ function stopMorningExercise(){
   };
   if(_fin){setTimeout(finish,750);}else{finish();}
 }
+/* 完了画面がわの「今日の記録」に 中身を うつす */
+function _tsRecMirror(){
+  try{
+    var src=$("todayRecCard"), dst=$("tsRecBody"); if(!src||!dst)return;
+    var c=src.cloneNode(true); c.removeAttribute("id");
+    var ids=c.querySelectorAll("[id]"); for(var i=0;i<ids.length;i++)ids[i].removeAttribute("id");
+    dst.innerHTML=""; dst.appendChild(c);
+  }catch(_){}
+}
+/* ===== ホーム左上の きりかえ（0:今日の記録 / 1:登山 / 2:登山） ===== */
+var _hcIdx=0,_hcT=0,_hcHold=0;
+function _hcSet(i,manual){
+  try{
+    _hcIdx=((i%3)+3)%3;
+    var st=$("topLeftStack"); if(!st)return;
+    st.classList.toggle("hc1",_hcIdx===1);
+    st.classList.toggle("hc2",_hcIdx===2);
+    if(_hcIdx>0){ try{_renderTsRange();}catch(_){} try{_tsMtGo(_hcIdx-1);}catch(_){} }
+    var ds=document.querySelectorAll("#hcDots i");
+    for(var k=0;k<ds.length;k++)ds[k].classList.toggle("on",k===_hcIdx);
+    if(manual)_hcHold=Date.now()+25000;   /* 手で かえたら しばらく そこで 止まる */
+  }catch(_){}
+}
+function _hcTick(){
+  try{
+    if(Date.now()<_hcHold)return;
+    var st=$("topLeftStack"); if(!st||!st.offsetParent)return;
+    _hcSet(_hcIdx+1);
+  }catch(_){}
+}
+try{ _hcT=setInterval(_hcTick,6500); }catch(_){}
+try{ document.addEventListener("click",function(e){
+  var t=e.target; if(!t||!t.closest)return;
+  if(t.closest("#hcPrev")){ try{playClick();}catch(_){} _hcSet(_hcIdx-1,true); return; }
+  if(t.closest("#hcNext")){ try{playClick();}catch(_){} _hcSet(_hcIdx+1,true); return; }
+  if(t.closest("#tsRecEdit")){ try{playClick();}catch(_){} try{openAskCard();}catch(_){} return; }
+}); }catch(_){}
 function _renderTodayRec(){
+  try{ setTimeout(function(){try{_tsRecMirror();}catch(_){}},0); }catch(_){}
   try{
     var done=getDoneDates().indexOf(jstKey())>=0;
     /* 就寝（寝た時刻・記録があれば表示） */
@@ -17660,7 +17800,8 @@ try{
     st.addEventListener("touchend",e=>{if(e.changedTouches&&e.changedTouches[0])up(e.changedTouches[0].clientX,e.changedTouches[0].clientY);},{passive:true});
   })();
 }catch(_){}
-_wireHiraInput($("tsComment"),tsUpdatePreview);
+/* ★ひとことは 文字せいげん なし（漢字・記号・…など なんでもOK） */
+try{ var _tc=$("tsComment"); if(_tc)_tc.addEventListener("input",function(){try{tsUpdatePreview();}catch(_){}}); }catch(_){}
 $("tsAnon").addEventListener("change",tsUpdatePreview);
 function _wireWakeRepeat(btn,dir){
   if(!btn)return;
@@ -17689,7 +17830,7 @@ try{var _tcb=$("tsCatBtn");if(_tcb)_tcb.addEventListener("click",()=>{try{taisoG
 try{var _tab=$("tsAdvBtn");if(_tab)_tab.addEventListener("click",()=>{try{playClick();}catch(_){}try{openAdventure();}catch(_){}});}catch(_){}
 try{const _sb=$("tsSumBtn");if(_sb)_sb.addEventListener("click",()=>{try{openTodaySum();}catch(_){}});}catch(_){}
 try{const _rc=$("tsRangeCard");if(_rc)_rc.addEventListener("click",(e)=>{try{if(!(e.target&&e.target.closest&&e.target.closest("#tsRangeMore")))return;}catch(_){}try{playClick();}catch(_){}try{openRange();}catch(_){}});}catch(_){}
-try{ if(!window._tsMtAuto){ window._tsMtAuto=setInterval(function(){ try{ var rc=document.getElementById("tsRangeCard"); if(rc&&rc.offsetParent&&typeof _tsMtGo==="function"){ _tsMtGo(_tsMtPage?0:1); } }catch(_){} },5000); } }catch(_){}
+/* ホーム左上の きりかえに 一本化したので 旧・自動ページ送りは 停止 */
 $("taisoBack").addEventListener("click",()=>{try{playClick();}catch(_){}$("taisoScreen").classList.remove("visible");try{showSelect();}catch(_){}try{updateTop();}catch(_){}});
 /* 横幅が変わったら丘の猫を並べ直す（PCでウィンドウをリサイズしたとき） */
 let _hillResizeT=null;
@@ -22242,18 +22383,48 @@ function _askBackStep(){
   else { if(_askBG!=null){_askBG=null;_askBH=null;} else {_askSec=1;} }
   _askPaint();
 }
+/* ★「きょうの きろく」は 完了画面の 中に 置いてある（モーダルは やめた） */
 function openAskCard(then){
   _askThen=then||null;
-  if(askedToday("all")){if(_askThen){const f=_askThen;_askThen=null;f();}return;}
+  if(askedToday("all")){ _askPaintDone(); if(_askThen){const f=_askThen;_askThen=null;f();} return; }
   _askM1=null;_askM2=null;_askM3=null;
   var _n=new Date();
   _krWakeH=_n.getHours();                        /* 起床＝いまの ○時 */
   _krBedH=((_n.getHours()-6)%24+24)%24;          /* 就寝＝いまから 6時間前 */
   _askPaint();
-  const c=$("askCard");if(c)c.classList.add("show");
+  try{ var bx=$("askBox"); if(bx){ bx.classList.remove("done"); if(bx.scrollIntoView)bx.scrollIntoView({block:"center",behavior:"smooth"}); } }catch(_){}
+}
+/* きろくずみの 見た目（カードは 消さずに 「きろく できたよ」に） */
+function _askPaintDone(){
+  try{ var bx=$("askBox"); if(bx)bx.classList.add("done"); }catch(_){}
+  try{_tsLockPaint();}catch(_){}
+}
+/* ★きろく（or スキップ）が すむまで ほかは さわれない */
+var _askSkipped=false;
+function _tsLockPaint(){
+  try{
+    var sc=$("taisoScreen"); if(!sc)return;
+    var done=false; try{done=askedToday("all");}catch(_){}
+    sc.classList.toggle("recLock", !(done||_askSkipped));
+  }catch(_){}
+}
+/* 完了画面を ひらいた時に 状態を そろえる */
+function _askSyncInline(){
+  try{
+    if(askedToday("all")){ _askPaintDone(); return; }
+    var bx=$("askBox"); if(!bx){ try{_tsLockPaint();}catch(_){} return; }
+    bx.classList.remove("done");
+    _tsLockPaint();
+    if(!bx._inited){ bx._inited=1;
+      _askM1=null;_askM2=null;_askM3=null;
+      var n=new Date(); _krWakeH=n.getHours(); _krBedH=((n.getHours()-6)%24+24)%24;
+      _askPaint();
+    }
+  }catch(_){}
 }
 function _askClose(save){
-  const c=$("askCard");if(c)c.classList.remove("show");
+  try{ if(save)_askPaintDone(); else _askSkipped=true; }catch(_){}
+  try{_tsLockPaint();}catch(_){}
   if(save){
     try{ const pk=_mood3Pick(_askM1,_askM2,_askM3); if(pk){_saveMood(jstKey(),{e:pk.e,l:pk.l});_askMark("mood",1);} }catch(_){}
     try{ if(_krWakeH!=null){ var wl=getWakeLog(); wl[jstKey()]=_krWakeH; localStorage.setItem(WAKELOG_KEY,JSON.stringify(wl)); try{localStorage.setItem("radio_wake_manual",jstKey());}catch(_){} _askMark("wake",1);} }catch(_){}
@@ -22261,6 +22432,7 @@ function _askClose(save){
     try{_askMark("all",1);}catch(_){}
     try{syncSoon();}catch(_){}
   }
+  try{ if(save)toast("きろく できたよ！"); }catch(_){}
   try{tsResetPost();}catch(_){}
   try{if(typeof _renderTodayRec==="function")_renderTodayRec();}catch(_){}
   try{if(typeof buildRecord==="function"&&$("recordScreen"))buildRecord();}catch(_){}   /* ★きろくの グラフも すぐ 作りなおす */

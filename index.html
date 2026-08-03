@@ -12624,6 +12624,7 @@ async function autoStampFlow(){
   var _askDone=false,_waitDone=null;
   var _onAsked=function(){_askDone=true;if(_waitDone){var f=_waitDone;_waitDone=null;f();}};
   var _wait=Math.max(0,(_zzGainUntil||0)-Date.now());
+  try{ if(window._exSkipped){_wait=Math.min(_wait,120);window._exSkipped=false;} }catch(_){}   /* ★タップで とばした時は すぐ */
   /* ★ユメっ子が おわったら すぐ 完了画面へ（きろくは 完了画面の カードから つける） */
   setTimeout(function(){ var _op=function(){try{_onAsked();}catch(_){}}; try{_yumeMaybeGacha(_op);}catch(_){_op();} },_wait);
   /* 画像づくりは カードと 同時に すすめる */
@@ -13959,11 +13960,12 @@ function _exFinaleMeow(){
 }
 function _exFastFinish(){
   if(!_exerciseActive)return;
-  if(window._exFasted){try{stopMorningExercise();}catch(_){}return;}
+  /* ★1回の タップで すぐ おわり＝ゲットチャンスまで ひとっとび */
   window._exFasted=true;
+  window._exSkipped=true;
   try{document.body.classList.add("exFast");}catch(_){}
   try{clearTimeout(_exStopTimer);}catch(_){}
-  _exStopTimer=setTimeout(function(){try{stopMorningExercise();}catch(_){}},1000);
+  try{stopMorningExercise();}catch(_){}
 }
 function stopMorningExercise(){
   if(!_exerciseActive)return;_exerciseActive=false;
@@ -29585,21 +29587,43 @@ function _yumeGachaStart(){
   el.className="";el.hidden=false;
   _ygCatchStart(y);   /* ★まず ゲットチャンス（なでてゲット）から */
 }
+/* ★演出を タップで とばせる（なかまにする画面まで ひとっとび） */
+var _ygSkipArmed=false,_ygBangStop=false;
+function _ygSkipToEnd(){
+  try{
+    if(!_ygSkipArmed)return; _ygSkipArmed=false;
+    var el=$("yumeGacha"), y=_ygCurrent; if(!el||!y)return;
+    try{clearTimeout(_ygT1);}catch(_){} try{clearTimeout(_ygT2);}catch(_){} try{clearTimeout(_ygStarT);}catch(_){}
+    _ygBangStop=true;
+    try{var bg=$("ygBang"); if(bg)bg.className="";}catch(_){}
+    el.className=""; void el.offsetWidth; el.classList.add("s-reveal");
+    try{_ygReleaseSound();}catch(_){} try{_ygBurst();}catch(_){}
+    _ygRenderReveal(y,true);
+  }catch(_){}
+}
+try{ document.addEventListener("pointerdown",function(e){
+  try{ if(!_ygSkipArmed)return; var t=e.target; if(!t||!t.closest)return;
+    if(!t.closest("#yumeGacha"))return;
+    if(t.closest("#ygBtns")||t.closest("#ygCatch"))return;
+    _ygSkipToEnd();
+  }catch(_){}
+},true); }catch(_){}
 function _ygProceedReveal(){
   var el=$("yumeGacha");if(!el)return; var y=_ygCurrent; if(!y)return;
+  _ygSkipArmed=true; _ygBangStop=false;
   try{$("ygCat").innerHTML=_aiCatAvatar("happy");}catch(_){}
   try{var sil=$("ygSil");if(sil){sil.innerHTML=_yumeSilInner(y);sil.style.filter="";sil.style.animation="";}}catch(_){}
   try{$("ygInfo").classList.remove("show");}catch(_){}
-  try{var h=$("ygHint");if(h)h.textContent="むむっ…？ だれか 来たみたい";}catch(_){}
+  try{var h=$("ygHint");if(h)h.textContent="むむっ…？ だれか 来たみたい　（タップで スキップ）";}catch(_){}
   el.className="";void el.offsetWidth;
   el.classList.add("s-dance");
   try{playPop();}catch(_){}
   clearTimeout(_ygT1);clearTimeout(_ygT2);
-  _ygT1=setTimeout(function(){try{el.classList.remove("s-dance");el.classList.add("s-zoom");var h=$("ygHint");if(h)h.textContent="";_ygChargeSound(1.0);}catch(_){}},1100);
+  _ygT1=setTimeout(function(){try{el.classList.remove("s-dance");el.classList.add("s-zoom");var h=$("ygHint");if(h)h.textContent="";_ygChargeSound(0.38);}catch(_){}},380);
   _ygT2=setTimeout(function(){try{
     el.classList.remove("s-zoom");
     _ygBangSeq(y, function(){ try{el.classList.add("s-reveal");_ygReleaseSound();_ygBurst();_ygRenderReveal(y);}catch(_){} });
-  }catch(_){ try{el.classList.add("s-reveal");_ygReleaseSound();_ygBurst();_ygRenderReveal(y);}catch(__){} }},2200);
+  }catch(_){ try{el.classList.add("s-reveal");_ygReleaseSound();_ygBurst();_ygRenderReveal(y);}catch(__){} }},720);
 }
 /* ===== ゲットチャンス（なでて ゲット）===== */
 var _YGCATCH_BOOST=22;   /* ★成功率ブースト */
@@ -29703,9 +29727,10 @@ function _ygBangSeq(y, done){
     var n=star+1;
     var i=0;
     /* 星が おおいほど 1発ずつが ながく のこる（余韻） */
-    var gap=170+star*55;
+    var gap=80+star*22;
     function one(){
-      if(i>=n){ if(done)setTimeout(done,star>=3?260:160); return; }
+      if(_ygBangStop)return;
+      if(i>=n){ if(done)setTimeout(done,star>=3?150:90); return; }
       var last=(i===n-1);
       var scale=(0.7+i*0.42).toFixed(2);                 /* だんだん 大きく */
       var alpha=Math.min(0.95,0.5+i*0.16).toFixed(2);
@@ -29718,7 +29743,7 @@ function _ygBangSeq(y, done){
       if(last)bang.classList.add("big");
       try{_ygBangSound(i,n,star);}catch(_){}
       i++;
-      setTimeout(one, last?gap+120:gap);
+      setTimeout(one, last?gap+70:gap);
     }
     one();
   }catch(_){ if(done)done(); }
@@ -29759,8 +29784,9 @@ function _ygBurst(){
 }
 /* 星の色（1つの ところで きめる。バー・グレードにも つかう） */
 function _ygStarColor(star){return (star>=3)?"#f5b800":(star>=2)?"#5aa8e0":"#9ed96f";}
-function _ygRenderReveal(y){
+function _ygRenderReveal(y,instant){
   try{
+    _ygSkipArmed=false;
     var sil=$("ygSil");
     if(sil)sil.style.filter="brightness(0)";   /* ★星が でそろうまで 黒シルエット（バン中の チラ見え防止） */
     /* ---- 星（キャラの 上）---- */
@@ -29771,20 +29797,28 @@ function _ygRenderReveal(y){
       var tot=3,got=y.star||1;
       for(var si=0;si<tot;si++)st.innerHTML+='<span class="ygStar" data-si="'+si+'">\u2606</span>';
       clearTimeout(_ygStarT);
-      (function fill(i){
-        if(i>=got)return;
-        _ygStarT=setTimeout(function(){
-          try{
-            var sp=st.querySelector('.ygStar[data-si="'+i+'"]');
-            if(sp){sp.textContent="\u2605";sp.classList.add("pop");}
-            _ygStarSound(i);
-          }catch(_){}
-          fill(i+1);
-        }, i===0?420:340);
-      })(0);
+      if(instant){
+        for(var gi=0;gi<got;gi++){
+          var sp0=st.querySelector('.ygStar[data-si="'+gi+'"]');
+          if(sp0){sp0.textContent="\u2605";sp0.classList.add("pop");}
+        }
+        try{_ygStarSound(Math.max(0,got-1));}catch(_){}
+      }else{
+        (function fill(i){
+          if(i>=got)return;
+          _ygStarT=setTimeout(function(){
+            try{
+              var sp=st.querySelector('.ygStar[data-si="'+i+'"]');
+              if(sp){sp.textContent="\u2605";sp.classList.add("pop");}
+              _ygStarSound(i);
+            }catch(_){}
+            fill(i+1);
+          }, i===0?140:110);
+        })(0);
+      }
     }
     var _revF=y.shiny?("hue-rotate("+y.hue+"deg) saturate(1.3) drop-shadow(0 0 10px rgba(255,220,120,.75))"):"";
-    var _revD=420+340*Math.max(0,(y.star||1)-1)+320;
+    var _revD=instant?60:(140+110*Math.max(0,(y.star||1)-1)+120);
     setTimeout(function(){try{if(sil)sil.style.filter=_revF;}catch(_){}},_revD);
     /* ---- 名前（キャラの 上）---- */
     var nm=$("ygName");if(nm)nm.innerHTML=escHtml(y.name)+(y.shiny?'<span class="ygShiny">\u2728色違い</span>':"");
@@ -29800,7 +29834,7 @@ function _ygRenderReveal(y){
     if(lf){
       lf.style.background="linear-gradient(90deg,"+col+","+_ygLighten(col)+")";
       lf.style.width="0%";
-      setTimeout(function(){try{lf.style.width=pc.toFixed(1)+"%";}catch(_){}},380);   /* 左から すーっと たまる */
+      setTimeout(function(){try{lf.style.width=pc.toFixed(1)+"%";}catch(_){}},instant?40:180);   /* 左から すーっと たまる */
       try{var _ln=$("ygLvNum");if(_ln){var _t0=Date.now(),_dur=1100;_ln.textContent="0 / "+YUME_LV_MAX;try{clearInterval(window._ygLvTm);}catch(_){}window._ygLvTm=setInterval(function(){try{var k=Math.min(1,(Date.now()-_t0)/_dur);var e=1-Math.pow(1-k,3);var v=Math.round(maxLv*e);_ln.textContent=v+" / "+YUME_LV_MAX;if(k>=1){clearInterval(window._ygLvTm);_ln.classList.remove("pop");void _ln.offsetWidth;_ln.classList.add("pop");}}catch(_){clearInterval(window._ygLvTm);}},32);}}catch(_){}
     }
     /* ---- とくいわざ ---- */

@@ -5721,11 +5721,7 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
   #taisoScreen #askBox{flex:0 0 auto !important;width:100%;max-width:460px;}
 }
 /* ★きろくずみでも カードは そのまま（あとから 直せる）。上に しるしだけ 出す */
-#taisoScreen #askBox.done::before{content:"\u2713 きろく できました（あとからでも 直せるよ）";
-  display:block;margin:-4px -4px 10px;padding:8px 10px;border-radius:14px;
-  background:linear-gradient(135deg,#a5e2bd,#5ea87c);color:#fff;text-align:center;
-  font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:12px;font-weight:900;line-height:1.5;
-  box-shadow:0 4px 12px rgba(94,168,124,.32);}
+/* きろくずみの 帯は 出さない（ボタンが「こうしん」に かわるので わかる） */
 #taisoScreen #askBox.done #krSkip{display:none;}
 #taisoScreen #askBox #krSkip{opacity:.55;}
 /* ★まずは きろく：すむまで ほかは さわれない */
@@ -6058,8 +6054,13 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
 </style>
 <style id="postCss">
 #wakeAdjRow{display:none !important;}
-.tsChkRow{display:flex !important;flex-wrap:nowrap !important;gap:12px;align-items:center;margin:7px 0 4px;overflow-x:auto;}
-.tsChkRow .tsAnonRow{white-space:nowrap !important;font-size:11.5px;display:flex;align-items:center;gap:4px;flex:0 0 auto;}
+.tsChkRow{display:flex !important;flex-wrap:nowrap !important;gap:8px;align-items:center;
+  justify-content:center;margin:7px 0 4px;overflow:visible !important;padding:6px 4px !important;}
+.tsChkRow .tsAnonRow{white-space:nowrap !important;font-size:10.5px;display:flex;align-items:center;gap:3px;
+  flex:0 1 auto;min-width:0;letter-spacing:-.01em;}
+.tsChkRow .tsAnonRow input{width:14px !important;height:14px !important;flex:0 0 auto;margin:0;}
+@media (max-width:420px){.tsChkRow .tsAnonRow{font-size:9.5px;gap:2px;}
+  .tsChkRow .tsAnonRow input{width:13px !important;height:13px !important;}.tsChkRow{gap:6px;}}
 .ppCatWrap{position:relative;}
 .catY1.ppY1{width:42px !important;height:42px !important;bottom:2px !important;right:2px !important;z-index:6 !important;}
 </style>
@@ -7006,7 +7007,7 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
             <div id="wakeAdjRow"><span class="waLabel">おきた<br>じかん</span><div class="waCtrl"><button id="wakeAdjMinus" type="button" aria-label="はやく">◀</button><span id="wakeAdjTime">–</span><button id="wakeAdjPlus" type="button" aria-label="おそく">▶</button></div></div>
             <div id="tsAutoNote" hidden>とうこう ずみ</div>
             <div id="tsInputWrap">
-              <textarea id="tsComment" maxlength="30" rows="2" placeholder="ひとこと（じゆうに どうぞ）"></textarea>
+              <textarea id="tsComment" maxlength="30" rows="2" placeholder=""></textarea>
             </div>
             <div class="tsChkRow">
               <label class="tsAnonRow"><input type="checkbox" id="tsAnon"/> 匿名で投稿</label>
@@ -14091,8 +14092,7 @@ function _exFastFinish(){
 function stopMorningExercise(){
   if(!_exerciseActive)return;_exerciseActive=false;
   try{_exCatchFinish();}catch(_){}   /* ★ゲット判定を ここで しめる */
-  try{ if(!(typeof tutOn==="function"&&tutOn())){ var _st=(typeof calcStreak==="function")?calcStreak():null;
-    _zzSplash({ico:"\u2600\ufe0f",title:"おつかれさま！",sub:_st?("れんぞく "+(_st.current||1)+"日目"):"",ms:1500}); } }catch(_){}
+  /* 体操ちょくごの おつかれさま画面は 出さない（すぐ ユメっ子へ） */
   try{clearInterval(_exNoteTimer);}catch(_){}_exNoteTimer=null;
   try{clearInterval(_exMeowTimer);}catch(_){}_exMeowTimer=null;
   try{clearTimeout(_exStopTimer);}catch(_){}_exStopTimer=null;

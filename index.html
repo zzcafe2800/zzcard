@@ -5736,8 +5736,55 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 #taisoScreen.recLock #krSkip{opacity:1 !important;text-decoration:underline;text-underline-offset:3px;}
 @media (prefers-reduced-motion:reduce){#taisoScreen.recLock #askBox{animation:none;}}
 </style>
+<style id="zzFlowCss">
+/* ===== A) おつかれさま スプラッシュ ===== */
+#zzSplash{position:fixed;inset:0;z-index:4600;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 50% 42%,rgba(255,252,240,.97),rgba(206,238,255,.96) 62%,rgba(178,225,252,.96));
+  font-family:"Yomogi","Kosugi Maru",sans-serif;opacity:0;transition:opacity .3s ease;}
+#zzSplash[hidden]{display:none;}
+#zzSplash.go{opacity:1;}
+#zzSplash .zsBox{text-align:center;padding:20px;}
+#zzSplash .zsIco{font-size:52px;line-height:1;animation:zsPop .7s cubic-bezier(.2,1.5,.4,1);}
+#zzSplash .zsTtl{display:block;margin-top:10px;font-size:32px;font-weight:900;color:#3f7a95;letter-spacing:.05em;
+  text-shadow:0 3px 0 rgba(255,255,255,.9);animation:zsPop .7s cubic-bezier(.2,1.4,.4,1) .08s both;}
+#zzSplash .zsSub{display:block;margin-top:8px;font-size:15px;font-weight:800;color:#6f9ab0;
+  animation:zsPop .6s ease .22s both;}
+#zzSplash #zsStay{margin-top:20px;border:none;border-radius:999px;padding:11px 26px;cursor:pointer;
+  font-family:inherit;font-size:14px;font-weight:900;color:#4f88a6;background:rgba(255,255,255,.92);
+  box-shadow:0 5px 14px rgba(90,140,180,.24);animation:zsPop .6s ease .34s both;}
+#zzSplash #zsStay[hidden]{display:none;}
+@keyframes zsPop{0%{opacity:0;transform:scale(.7) translateY(10px);}60%{opacity:1;transform:scale(1.06);}100%{opacity:1;transform:none;}}
+@media (prefers-reduced-motion:reduce){#zzSplash *{animation:none !important;}}
+/* ===== D) きろくは「気分ひとつ」だけ（くわしくは たたむ） ===== */
+#askBox.kr1 #krMoodProg,#askBox.kr1 #krMoodBk,#askBox.kr1 #krMoodNow,
+#askBox.kr1 .krTime,#askBox.kr1 #krSave{display:none !important;}
+#askBox.kr1 #krMoodRow{gap:7px;}
+#askBox #krMore{display:none;width:100%;margin-top:10px;background:none;border:none;padding:5px;
+  font-family:inherit;font-size:12px;font-weight:800;color:#7fa8c4;cursor:pointer;
+  text-decoration:underline;text-underline-offset:3px;}
+#askBox.kr1 #krMore{display:block;}
+#askBox #krShare{display:none;align-items:center;justify-content:center;gap:6px;margin-top:8px;
+  font-size:11.5px;font-weight:800;color:#9ab4c4;cursor:pointer;}
+#askBox.kr1 #krShare{display:flex;}
+#askBox #krShare input{width:14px;height:14px;accent-color:#8fd3f0;margin:0;cursor:pointer;}
+#askBox.kr1 #krSkip{margin-top:6px;}
+#askBox.done #krMore,#askBox.done #krShare{display:none !important;}
+/* ===== F) 完了画面は 1画面1アクション ===== */
+#tsMoreCards{order:2;display:block;width:100%;max-width:460px;margin:2px auto 0;background:rgba(255,255,255,.72);
+  border:1px solid rgba(255,255,255,.8);border-radius:14px;padding:10px;cursor:pointer;
+  font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:12.5px;font-weight:800;color:#6f9ec0;}
+#tsMoreCards:active{transform:scale(.98);}
+#taisoScreen.tsSimple #tsStampCard,#taisoScreen.tsSimple #tsPostCard{display:none !important;}
+#taisoScreen:not(.tsSimple) #tsMoreCards{display:none;}
+#taisoScreen.recLock #tsMoreCards{opacity:.34;filter:grayscale(.5);pointer-events:none;}
+@media (min-width:721px){#tsMoreCards{max-width:280px;align-self:center;}}
+</style>
 <style id="ybTopCss">
 #yumeBook.ygTop{z-index:4500 !important;}
+.ybFree{display:block;width:100%;margin-top:6px;border:1px solid rgba(190,160,170,.5);background:rgba(255,255,255,.7);
+  border-radius:9px;padding:3px;cursor:pointer;font-family:inherit;font-size:9.5px;font-weight:800;color:#b28a9a;}
+.ybFree:active{transform:scale(.95);}
+.ybCard.justgot .ybFree,.ybCard.locked .ybFree{display:none;}
 </style>
 <style id="krRowFixCss">
 /* ★起床・就寝の 行：絵文字と 文字を 横一列に そろえる（おりかえさない） */
@@ -6861,11 +6908,20 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
   </div>
 </div>
 <div id="askCard"></div>
+<div id="zzSplash" hidden aria-hidden="true">
+  <div class="zsBox">
+    <div class="zsIco">🌞</div>
+    <b class="zsTtl" id="zsTtl">おつかれさま！</b>
+    <span class="zsSub" id="zsSub"></span>
+    <button id="zsStay" type="button" hidden>まだ 見る</button>
+  </div>
+</div>
 <div id="taisoScreen">
   <button id="taisoBack" type="button" aria-label="もどる">‹ もどる</button>
   <div id="taisoInner">
     <div id="taisoHead">ラジオ体操完了</div>
     <div id="taisoCards">
+    <button id="tsMoreCards" type="button">▾ ほかも 見る（とうこう・スタンプ）</button>
       <div class="taisoCard" id="tsStampCard">
         <div class="tsCardTitle">スタンプラリー</div>
         <div id="autoPreviewStage">
@@ -6928,6 +6984,8 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
       <div class="krStepWrap"><button class="krStep" data-t="bed" data-d="-1" type="button">−</button><span class="krTimeV" id="krBedV">23:00</span><button class="krStep" data-t="bed" data-d="1" type="button">＋</button></div>
       </div>
       <button id="krSave" type="button">きろく する</button>
+      <button id="krMore" type="button">くわしく きろくする ▸</button>
+      <label id="krShare"><input id="krNoShare" type="checkbox"/><span>みんなに 見せない</span></label>
       <button id="krSkip" type="button">スキップ</button>
       </div>
     </div>
@@ -12842,6 +12900,9 @@ function refreshWakeAdj(){
 }
 function tsUpdatePreview(){
   try{_tsPaintPostBtns();}catch(_){}
+  try{ var _bx=$("askBox"); if(_bx&&!_bx.classList.contains("done")&&!_bx._moreOpen)_bx.classList.add("kr1"); }catch(_){}
+  try{ var _ts=$("taisoScreen"); if(_ts&&!_ts._moreOpen)_ts.classList.add("tsSimple"); }catch(_){}
+  try{ var _ns=$("krNoShare"); if(_ns)_ns.checked=_noShare(); }catch(_){}
   try{_askSyncInline();}catch(_){}
   try{_tsLockPaint();}catch(_){}
   try{_renderTodayRec();}catch(_){}   /* 完了画面の「今日の記録」も 最新に */
@@ -13972,6 +14033,8 @@ function _exFastFinish(){
 }
 function stopMorningExercise(){
   if(!_exerciseActive)return;_exerciseActive=false;
+  try{ if(!(typeof tutOn==="function"&&tutOn())){ var _st=(typeof calcStreak==="function")?calcStreak():null;
+    _zzSplash({ico:"\u2600\ufe0f",title:"おつかれさま！",sub:_st?("れんぞく "+(_st.current||1)+"日目"):"",ms:1500}); } }catch(_){}
   try{clearInterval(_exNoteTimer);}catch(_){}_exNoteTimer=null;
   try{clearInterval(_exMeowTimer);}catch(_){}_exMeowTimer=null;
   try{clearTimeout(_exStopTimer);}catch(_){}_exStopTimer=null;
@@ -22433,6 +22496,33 @@ function _askPaintDone(){
 }
 /* ★きろく（or スキップ）が すむまで ほかは さわれない */
 var _askSkipped=false;
+/* ===== A) おつかれさま！を さきに 出す ===== */
+var _zsT=0;
+function _zzSplash(opt){
+  try{
+    var el=$("zzSplash"); if(!el)return;
+    opt=opt||{};
+    try{$("zsTtl").textContent=opt.title||"おつかれさま！";}catch(_){}
+    try{$("zsSub").textContent=opt.sub||"";}catch(_){}
+    try{var ic=el.querySelector(".zsIco"); if(ic)ic.textContent=opt.ico||"\u2600\ufe0f";}catch(_){}
+    var stay=$("zsStay");
+    if(stay){ stay.hidden=!opt.stay; stay._fn=opt.onStay||null; }
+    el.hidden=false; el.classList.remove("go"); void el.offsetWidth; el.classList.add("go");
+    try{clearTimeout(_zsT);}catch(_){}
+    _zsT=setTimeout(function(){ _zzSplashHide(); if(opt.then)try{opt.then();}catch(_){} }, opt.ms||1700);
+  }catch(_){ if(opt&&opt.then)try{opt.then();}catch(_){} }
+}
+function _zzSplashHide(){
+  try{clearTimeout(_zsT);}catch(_){}
+  try{var el=$("zzSplash"); if(el){el.classList.remove("go"); setTimeout(function(){try{el.hidden=true;}catch(_){}},320);} }catch(_){}
+}
+try{ document.addEventListener("click",function(e){
+  var t=e.target; if(!t||!t.closest)return;
+  if(t.closest("#zsStay")){ try{playClick();}catch(_){} try{clearTimeout(_zsT);}catch(_){} var f=$("zsStay")._fn; _zzSplashHide(); if(f)try{f();}catch(_){} return; }
+  if(t.closest("#tsMoreCards")){ try{playClick();}catch(_){} try{$("taisoScreen").classList.remove("tsSimple");}catch(_){} return; }
+  if(t.closest("#krMore")){ try{playClick();}catch(_){} try{$("askBox").classList.remove("kr1");}catch(_){} return; }
+  if(t.closest("#krNoShare")){ try{localStorage.setItem("radio_no_share",$("krNoShare").checked?"1":"0");}catch(_){} return; }
+}); }catch(_){}
 function _tsLockPaint(){
   try{
     var sc=$("taisoScreen"); if(!sc)return;
@@ -22470,6 +22560,24 @@ function _askClose(save){
   try{if(typeof buildRecord==="function"&&$("recordScreen"))buildRecord();}catch(_){}   /* ★きろくの グラフも すぐ 作りなおす */
   const f=_askThen;_askThen=null;
   if(f)setTimeout(()=>{try{f();}catch(_){}},60);
+  if(save)try{_afterRecord();}catch(_){}
+}
+/* ★きろくの あと：じどう とうこう → おつかれさま → ホームへ */
+function _noShare(){ try{return localStorage.getItem("radio_no_share")==="1";}catch(_){return false;} }
+function _afterRecord(){
+  try{
+    if(typeof tutOn==="function"&&tutOn())return;
+    var simple=false; try{simple=$("askBox")&&$("askBox").classList.contains("kr1");}catch(_){}
+    if(!simple)return;                       /* くわしくモードの時は これまでどおり */
+    if(!_noShare()){ setTimeout(function(){ try{tsDoPost();}catch(_){} },260); }
+    setTimeout(function(){
+      try{
+        _zzSplash({ico:"\ud83d\udc3e",title:"おつかれさま！",sub:_noShare()?"きろく できたよ":"きろく して みんなに とどけたよ",
+          ms:2200,stay:true,onStay:function(){ try{$("taisoScreen").classList.remove("tsSimple");}catch(_){} },
+          then:function(){ try{ if(typeof taisoNext==="function")taisoNext(); else showSelect(); }catch(_){} }});
+      }catch(_){}
+    },1100);
+  }catch(_){}
 }
 function _todayMoodText(){try{var mm=_moodMap(),m=mm[jstKey()];return m?(m.l+" "+m.e):"";}catch(_){return "";}}
 function selectMood(m){
@@ -27811,6 +27919,13 @@ try{
     const t=e.target;if(!t||!t.closest)return;
     const pick=(nm,fn)=>{const x=t.closest("[data-"+nm+"]");if(!x)return false;try{playClick();}catch(_){}fn(parseInt(x.dataset[nm],10));_askPaint();return true;};
     if(t.closest("#krMoodBk")){try{playClick();}catch(_){}if(_askM2!=null){_askM2=null;_askM3=null;}else _askM1=null;_askPaint();return;}
+    var q1=t.closest("[data-m1]");
+    if(q1&&$("askBox")&&$("askBox").classList.contains("kr1")){   /* ★かんたんモード＝1タップで きろく完了 */
+      try{playClick();}catch(_){}
+      _askM1=parseInt(q1.dataset.m1,10); _askM2=0; _askM3=0;
+      _askPaint(); setTimeout(function(){try{_askClose(true);}catch(_){}},220);
+      return;
+    }
     if(pick("m1",v=>{_askM1=v;_askM2=null;_askM3=null;}))return;
     if(pick("m2",v=>{_askM2=v;_askM3=null;}))return;
     if(pick("m3",v=>{_askM3=v;}))return;
@@ -29613,7 +29728,7 @@ try{ document.addEventListener("pointerdown",function(e){
 },true); }catch(_){}
 function _ygProceedReveal(){
   var el=$("yumeGacha");if(!el)return; var y=_ygCurrent; if(!y)return;
-  _ygSkipArmed=true; _ygBangStop=false; _ygDexShown=false;
+  _ygSkipArmed=true; _ygBangStop=false; _ygDexShown=false; _ygAdded=false; try{clearTimeout(_ygCloseT);}catch(_){}
   try{$("ygCat").innerHTML=_aiCatAvatar("happy");}catch(_){}
   try{var sil=$("ygSil");if(sil){sil.innerHTML=_yumeSilInner(y);sil.style.filter="";sil.style.animation="";}}catch(_){}
   try{$("ygInfo").classList.remove("show");}catch(_){}
@@ -29622,11 +29737,11 @@ function _ygProceedReveal(){
   el.classList.add("s-dance");
   try{playPop();}catch(_){}
   clearTimeout(_ygT1);clearTimeout(_ygT2);
-  _ygT1=setTimeout(function(){try{el.classList.remove("s-dance");el.classList.add("s-zoom");var h=$("ygHint");if(h)h.textContent="";_ygChargeSound(0.62);}catch(_){}},620);
+  _ygT1=setTimeout(function(){try{el.classList.remove("s-dance");el.classList.add("s-zoom");var h=$("ygHint");if(h)h.textContent="";_ygChargeSound(_ygShort?0.22:0.62);}catch(_){}},_ygShort?220:620);
   _ygT2=setTimeout(function(){try{
     el.classList.remove("s-zoom");
     _ygBangSeq(y, function(){ try{el.classList.add("s-reveal");_ygReleaseSound();_ygBurst();_ygRenderReveal(y);}catch(_){} });
-  }catch(_){ try{el.classList.add("s-reveal");_ygReleaseSound();_ygBurst();_ygRenderReveal(y);}catch(__){} }},1350);
+  }catch(_){ try{el.classList.add("s-reveal");_ygReleaseSound();_ygBurst();_ygRenderReveal(y);}catch(__){} }},_ygShort?430:1350);
 }
 /* ===== ゲットチャンス（なでて ゲット）===== */
 var _YGCATCH_BOOST=22;   /* ★成功率ブースト */
@@ -29650,7 +29765,11 @@ function _ygCatchStart(y){
   var owned=(_yumeOwnedImgs().indexOf(y.img)>=0);
   _ygIsNew=!owned; _ygDexShown=false;   /* ★はじめて 会う子か */
   var pc=_ygPetCount();
-  _ygCatch={hearts:0,petsLeft:pc.total,petIdx:0,busy:false,over:false,bonus:pc.bonus};
+  var _q=(_ygSeen()>=14);   /* ★2週目から かんたんモード */
+  _ygCatch={hearts:0,petsLeft:_q?1:pc.total,petIdx:0,busy:false,over:false,bonus:pc.bonus,quick:_q};
+  _ygShort=(_ygSeen()>=1);  /* ★2回目からは 演出みじかく */
+  _ygAdded=false; _ygDexShown=false; try{clearTimeout(_ygCloseT);}catch(_){}
+  try{_ygSeenInc();}catch(_){}
   var c=$("ygCatch");if(!c)return;
   c.classList.remove("flee","win");
   var ch=$("ygCatchChar"); if(ch){ ch.innerHTML=_yumeSilInner(y); ch.classList.toggle("sil",!owned); ch.style.filter=(y.shiny&&owned)?("hue-rotate("+(y.hue||0)+"deg) saturate(1.2)"):""; }
@@ -29677,7 +29796,9 @@ function _ygCatchPaint(){ try{
   var pv=$("ygCatchPets"); if(pv){ pv.innerHTML="なでられる：<b>"+_ygCatch.petsLeft+"</b> かい"+(_ygCatch.bonus?" <span class=\"pb\">（3 +"+_ygCatch.bonus+"）</span>":" <span class=\"pb\">（3）</span>"); }
 }catch(_){} }
 /* ★1.5秒ごとに ひとりでに なでる（手ぶらでも 先へ すすむ） */
-var _ygAutoT=0;
+var _ygAutoT=0,_ygShort=false;
+function _ygSeen(){ try{return parseInt(localStorage.getItem("radio_yg_seen")||"0",10)||0;}catch(_){return 0;} }
+function _ygSeenInc(){ try{localStorage.setItem("radio_yg_seen",String(_ygSeen()+1));}catch(_){} }
 function _ygAutoStop(){ try{clearInterval(_ygAutoT);}catch(_){} _ygAutoT=0; }
 function _ygAutoStart(){
   _ygAutoStop();
@@ -29690,11 +29811,16 @@ function _ygAutoStart(){
       if(_ygCatch.busy)return;
       _ygPet();
     }catch(_){ _ygAutoStop(); }
-  },1500);
+  },(_ygCatch&&_ygCatch.quick)?700:1500);
 }
 function _ygPet(){
   if(_ygCatch.busy||_ygCatch.over)return; if(_ygCatch.petsLeft<=0)return;
   _ygCatch.busy=true; _ygCatch.petsLeft--;
+  if(_ygCatch.quick){                    /* ★2週目からは 1なでで 即ゲット */
+    var chQ=$("ygCatchChar"); if(chQ){chQ.classList.remove("pet");void chQ.offsetWidth;chQ.classList.add("pet");}
+    _ygCatch.hearts=3; try{_ygHeartPop();}catch(_){} try{_ygDing(3);}catch(_){} _ygCatchPaint();
+    _ygCatch.over=true; try{_ygAutoStop();}catch(_){} setTimeout(_ygCatchWin,240); _ygCatch.busy=false; return;
+  }
   var star=(_ygCurrent&&_ygCurrent.star)||1; if(star<1)star=1; if(star>3)star=3;
   var row=(_YGCATCH_P[star]&&_YGCATCH_P[star][_ygCatch.hearts])||_YGCATCH_P[1][0];
   var p=row[Math.min(5,_ygCatch.petIdx)]||30; p=Math.min(97,Math.max(82,p+_YGCATCH_BOOST)); _ygCatch.petIdx++;   /* ★成功率アップ＋下限82% */
@@ -29748,7 +29874,7 @@ function _ygBangSeq(y, done){
     var n=star+1;
     var i=0;
     /* 星が おおいほど 1発ずつが ながく のこる（余韻） */
-    var gap=110+star*34;
+    var gap=_ygShort?(45+star*10):(110+star*34);
     function one(){
       if(_ygBangStop)return;
       if(i>=n){ if(done)setTimeout(done,star>=3?150:90); return; }
@@ -29834,12 +29960,12 @@ function _ygRenderReveal(y,instant){
               _ygStarSound(i);
             }catch(_){}
             fill(i+1);
-          }, i===0?210:170);
+          }, i===0?(_ygShort?70:210):(_ygShort?55:170));
         })(0);
       }
     }
     var _revF=y.shiny?("hue-rotate("+y.hue+"deg) saturate(1.3) drop-shadow(0 0 10px rgba(255,220,120,.75))"):"";
-    var _revD=instant?60:(210+170*Math.max(0,(y.star||1)-1)+150);
+    var _revD=instant?60:(_ygShort?(70+55*Math.max(0,(y.star||1)-1)+60):(210+170*Math.max(0,(y.star||1)-1)+150));
     setTimeout(function(){try{if(sil)sil.style.filter=_revF;}catch(_){}},_revD);
     /* ---- 名前（キャラの 上）---- */
     var nm=$("ygName");if(nm)nm.innerHTML=escHtml(y.name)+(y.shiny?'<span class="ygShiny">\u2728色違い</span>':"");
@@ -29873,11 +29999,20 @@ function _ygRenderReveal(y,instant){
     }
   }catch(_){}
   try{var inf=$("ygInfo");if(inf){void inf.offsetWidth;inf.classList.add("show");}}catch(_){}
-  /* ★はじめての子だけ：図鑑で シルエットが はずれる 演出 → なかまにする画面へ もどる */
+  /* ★じどうで なかまに なる（はじめての子は 図鑑の 演出も はさむ）→ ひとりでに とじる */
   try{
-    if(_ygIsNew && !_ygDexShown && !_ybPreview){
+    if(!_ygDexShown){
       _ygDexShown=true;
-      setTimeout(function(){ try{_ygDexReveal(y);}catch(_){} }, instant?280:(_revD+560));
+      setTimeout(function(){
+        try{
+          if(!_ygAdded){ _ygAdded=true; try{_yumeAdd(y);}catch(_){} }
+          try{var yy=$("ygYes"); if(yy)yy.hidden=true;}catch(_){}
+          try{var nn=$("ygNo"); if(nn)nn.textContent="にがす";}catch(_){}
+          try{var hh=$("ygHint"); if(hh)hh.textContent=y.name+" が なかまに なった！";}catch(_){}
+          if(_ygIsNew){ _ygDexReveal(y,function(){ _ygScheduleClose(); }); }
+          else { _ygScheduleClose(); }
+        }catch(_){ _ygScheduleClose(); }
+      }, instant?240:(_revD+420));
     }
   }catch(_){}
 }
@@ -29896,6 +30031,7 @@ function _ygLighten(hex){
 var _ygThen=null;
 function _yumeGachaClose(){
   try{_ygAutoStop();}catch(_){}
+  try{clearTimeout(_ygCloseT);}catch(_){}
   var el=$("yumeGacha");if(!el)return;
   clearTimeout(_ygT1);clearTimeout(_ygT2);
   el.classList.remove("s-dance","s-zoom","s-reveal");
@@ -29919,12 +30055,12 @@ try{ if(localStorage.getItem(YUME_GACHA_KEY)!==jstKey()){ setTimeout(function(){
 (function _ygWire(){try{
   var yes=$("ygYes");if(yes)yes.addEventListener("click",function(){
     try{playClick();}catch(_){}
-    if(_ygCurrent){try{_yumeAdd(_ygCurrent);}catch(_){}try{toast(_ygCurrent.name+" が なかまに なった！");}catch(_){}}
+    if(_ygCurrent&&!_ygAdded){_ygAdded=true;try{_yumeAdd(_ygCurrent);}catch(_){}}
     _yumeGachaClose();
   });
-  var no=$("ygNo");if(no)no.addEventListener("click",function(){
+  var no=$("ygNo");if(no)no.addEventListener("click",function(){   /* ★いまは「にがす」 */
     try{playClick();}catch(_){}
-    try{if(_ygCurrent)toast(_ygCurrent.name+"は また いつか…");}catch(_){}
+    try{ if(_ygCurrent&&_ygAdded){ _yumeReleaseLast(_ygCurrent); _ygAdded=false; toast(_ygCurrent.name+"を にがしたよ"); } }catch(_){}
     _yumeGachaClose();
   });
 }catch(_){}})();
@@ -32094,6 +32230,7 @@ function _ybRender(){
       '<div class="ybNm">'+(have?escHtml(m.name):"？？？")+'</div>'+
       '<div class="advCardStars r'+m.star+'">'+_yumeStarStr(m.star)+'</div>'+
       info+
+      (have?'<button class="ybFree" type="button" data-nm="'+escHtml(m.name)+'">にがす</button>':"")+
     '</div>';
   }).join("");
   g.innerHTML=html;
@@ -32114,7 +32251,12 @@ function _ybRender(){
   }
 }
 /* ★はじめての子：演出の あと 図鑑を ひらいて シルエットを はずす → もどる */
-var _ygIsNew=false,_ygDexShown=false;
+var _ygIsNew=false,_ygDexShown=false,_ygAdded=false,_ygCloseT=0;
+function _ygScheduleClose(){ try{clearTimeout(_ygCloseT);}catch(_){} _ygCloseT=setTimeout(function(){ try{_yumeGachaClose();}catch(_){} },1300); }
+/* 直前に なかまにした子を にがす */
+function _yumeReleaseLast(y){
+  try{ var a=_yumeDex(); for(var i=a.length-1;i>=0;i--){ if(a[i]&&a[i].name===y.name){ a.splice(i,1); break; } } _yumeSaveDex(a); }catch(_){}
+}
 function _ygDexReveal(y,done){
   try{
     var b=$("yumeBook");
@@ -32128,12 +32270,29 @@ function _ygDexReveal(y,done){
       try{ _ybClose(); b.classList.remove("ygTop"); if(t)t.textContent=oldT; }catch(_){}
       _ybPreview=null; _yumeNewName=null;
       if(done)setTimeout(done,260);
-    },2900);
+    },2200);
   }catch(_){ _ybPreview=null; if(done)done(); }
 }
 function _ybOpen(){ try{_yumeMigrate();}catch(_){} _ybRender(); var b=$("yumeBook"); if(b)b.classList.add("show"); }
 function _ybClose(){ var b=$("yumeBook"); if(b)b.classList.remove("show"); }
 try{var _bb=document.getElementById("advBookBtn");if(_bb)_bb.addEventListener("click",function(){try{playClick();}catch(_){}_ybOpen();});}catch(_){}
+try{ var _bg=document.getElementById("ybGrid");
+  if(_bg)_bg.addEventListener("click",function(e){
+    try{
+      var b=e.target&&e.target.closest?e.target.closest(".ybFree"):null; if(!b)return;
+      e.stopPropagation();
+      var nm=b.dataset.nm; if(!nm)return;
+      var a=_yumeDex(), have=a.filter(function(y){return y&&y.name===nm;});
+      if(!have.length)return;
+      if(!confirm(nm+" を にがしますか？\n（"+have.length+"匹 ぜんぶ・もどせません）"))return;
+      var left=a.filter(function(y){return !(y&&y.name===nm);});
+      _yumeSaveDex(left);
+      try{playClick();}catch(_){}
+      try{toast(nm+" を にがしたよ");}catch(_){}
+      _ybRender();
+    }catch(_){}
+  });
+}catch(_){}
 try{var _bc=document.getElementById("ybClose");if(_bc)_bc.addEventListener("click",function(){try{playClick();}catch(_){}_ybClose();});}catch(_){}
 /* もっている子の 名前（図鑑の うめ具合） */
 function _yumeOwnedNames(){

@@ -29666,7 +29666,8 @@ function _ygCatchStart(y){
   setTimeout(function(){ try{
     c.classList.remove("entering"); c.classList.add("appear");
     _ygSasa(); _ygLeafBurst();
-    var t2=$("ygCatchTip"); if(t2)t2.textContent="タップして なでてみよう！";
+    var t2=$("ygCatchTip"); if(t2)t2.textContent="そっと なでているよ…（タップでも なでられる）";
+    try{_ygAutoStart();}catch(_){}   /* ★ここから 自動で なでる */
     try{ if(typeof tutStep==="function"&&tutStep()==="1")_tutGoYume(); }catch(_){}   /* ★チュートリアル：ステップ2 */
     setTimeout(function(){try{c.classList.remove("appear");}catch(_){}},900);
   }catch(_){} },1150);
@@ -29675,6 +29676,22 @@ function _ygCatchPaint(){ try{
   var hs=$("ygCatchHearts"); if(hs){ var h=""; for(var i=0;i<3;i++){ var on=(i<_ygCatch.hearts); h+="<span class=\"ygH"+(on?" on":"")+"\">"+_ygHeartSVG(on)+"</span>"; } hs.innerHTML=h; }
   var pv=$("ygCatchPets"); if(pv){ pv.innerHTML="なでられる：<b>"+_ygCatch.petsLeft+"</b> かい"+(_ygCatch.bonus?" <span class=\"pb\">（3 +"+_ygCatch.bonus+"）</span>":" <span class=\"pb\">（3）</span>"); }
 }catch(_){} }
+/* ★1.5秒ごとに ひとりでに なでる（手ぶらでも 先へ すすむ） */
+var _ygAutoT=0;
+function _ygAutoStop(){ try{clearInterval(_ygAutoT);}catch(_){} _ygAutoT=0; }
+function _ygAutoStart(){
+  _ygAutoStop();
+  _ygAutoT=setInterval(function(){
+    try{
+      if(_ygCatch.over||_ygCatch.petsLeft<=0){ _ygAutoStop(); return; }
+      var g=$("yumeGacha"); if(!g||g.hidden){ _ygAutoStop(); return; }
+      var c=$("ygCatch"); if(!c||c.hidden)return;
+      var ov=$("tutOv"); if(ov&&!ov.hidden)return;   /* チュートリアルの ふきだし中は まつ */
+      if(_ygCatch.busy)return;
+      _ygPet();
+    }catch(_){ _ygAutoStop(); }
+  },1500);
+}
 function _ygPet(){
   if(_ygCatch.busy||_ygCatch.over)return; if(_ygCatch.petsLeft<=0)return;
   _ygCatch.busy=true; _ygCatch.petsLeft--;
@@ -29697,8 +29714,8 @@ function _ygPet(){
     _ygCatchPaint();
   }
   /* ★毎回 まとめて 判定：3つで ゲット／回数0で 逃げ（♡1・2でも 逃げる） */
-  if(_ygCatch.hearts>=3){ _ygCatch.over=true; setTimeout(_ygCatchWin,240); _ygCatch.busy=false; return; }
-  if(_ygCatch.petsLeft<=0){ _ygCatch.over=true; setTimeout(_ygCatchFlee,700); _ygCatch.busy=false; return; }
+  if(_ygCatch.hearts>=3){ _ygCatch.over=true; try{_ygAutoStop();}catch(_){} setTimeout(_ygCatchWin,240); _ygCatch.busy=false; return; }
+  if(_ygCatch.petsLeft<=0){ _ygCatch.over=true; try{_ygAutoStop();}catch(_){} setTimeout(_ygCatchFlee,700); _ygCatch.busy=false; return; }
   setTimeout(function(){_ygCatch.busy=false;},200);
 }
 function _ygConfetti(){ try{ var c=$("ygCatch"); if(!c)return; var s=document.createElement("i"); s.className="ygConf"; s.style.left=(6+Math.random()*88)+"%"; s.style.background=["#ffd45e","#ff8fb0","#7fd0ff","#b6f28a","#ffffff"][Math.floor(Math.random()*5)]; s.style.animationDuration=(1.0+Math.random()*0.7)+"s"; s.style.transform="rotate("+Math.floor(Math.random()*360)+"deg)"; c.appendChild(s); setTimeout(function(){try{s.remove();}catch(_){}},1800); }catch(_){} }
@@ -29878,6 +29895,7 @@ function _ygLighten(hex){
 }
 var _ygThen=null;
 function _yumeGachaClose(){
+  try{_ygAutoStop();}catch(_){}
   var el=$("yumeGacha");if(!el)return;
   clearTimeout(_ygT1);clearTimeout(_ygT2);
   el.classList.remove("s-dance","s-zoom","s-reveal");

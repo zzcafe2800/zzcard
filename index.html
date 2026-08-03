@@ -5649,6 +5649,29 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 .tsMtArw{min-width:30px;min-height:44px;}
 .tsMtArw:active{transform:translateY(-50%) scale(.85);color:#6fa2bd;}
 </style>
+<style id="tsPostSwapCss">
+/* ★ひとことの 文字を 読みやすく */
+#tsPostCard #tsComment{font-size:15.5px !important;line-height:1.65 !important;font-weight:700 !important;
+  color:#25506b !important;padding:10px 12px !important;border:1.5px solid #cfe4f0 !important;
+  background:#fff !important;caret-color:#4ea8d8;-webkit-text-fill-color:#25506b;}
+#tsPostCard #tsComment::placeholder{color:#a9c3d1;font-weight:700;}
+/* テンプレ帯の 白いグラデは 文字に かぶるので 消す（チップは 詳細の中に 移動ずみ） */
+#tsPostCard #tsInputWrap::after{display:none !important;}
+#tsPostCard #tsComment:focus{border-color:#8fd3f0 !important;box-shadow:0 0 0 3px rgba(143,211,240,.28);outline:none;}
+/* ★「とうこうする」＝右がわの 下（もとは 詳細が あった ところ） */
+#tsPostRight #tsPostQuick{width:100%;margin-top:2px;padding:12px 14px;font-size:15px;border-radius:14px;}
+#tsPostRight #tsPostQuick.posted{background:linear-gradient(135deg,#bfe0f2,#8fbfd8);box-shadow:0 4px 12px rgba(120,170,200,.32);}
+/* ★「詳細」＝猫の 下（もとは ボタンが あった ところ）。ひらいたら カード全体に ひろがる */
+#tsPostPreviewWrap{min-width:98px;}
+#tsPostPreviewWrap #tsMore{width:100%;margin-top:2px;}
+#tsPostPreviewWrap #tsMoreSum{text-align:center;white-space:nowrap;border:1.5px solid #dbe9f2;border-radius:12px;
+  background:#f6fbff;padding:7px 4px;font-size:11.5px;font-weight:800;color:#7fa3b8;}
+#tsPostPreviewWrap #tsMore[open]>summary{display:none;}
+#tsPostCard.tsMoreOpen #tsMoreBody{position:absolute;left:0;right:0;top:100%;z-index:6;
+  background:#fff;border:1.5px solid #dbe9f2;border-radius:14px;padding:10px;margin-top:6px;
+  box-shadow:0 10px 26px rgba(60,110,140,.18);}
+#tsPostCard.tsMoreOpen{padding-bottom:118px;}
+</style>
 <style id="tsPostFixCss">
 #tsSub2{margin-top:3px;}
 .tsSub.isComment{color:#4f88a4;font-weight:800;}
@@ -6756,7 +6779,15 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
       <div class="taisoCard" id="tsPostCard">
         <div class="tsCardTitle">とうこう</div>
         <div id="tsPostHead">
-          <div id="tsPostPreviewWrap"><div id="tsPostPreview"></div><button id="tsPostQuick" type="button">とうこうする</button></div>
+          <div id="tsPostPreviewWrap"><div id="tsPostPreview"></div>
+            <details id="tsMore">
+              <summary id="tsMoreSum">詳細</summary>
+              <div id="tsMoreBody">
+                <div class="cmtChips" id="tsCmtChips"></div>
+                <button id="tsMoodBtn" type="button"><span>😊</span> 気分</button>
+              </div>
+            </details>
+          </div>
           <div id="tsPostRight">
             <div id="wakeAdjRow"><span class="waLabel">おきた<br>じかん</span><div class="waCtrl"><button id="wakeAdjMinus" type="button" aria-label="はやく">◀</button><span id="wakeAdjTime">–</span><button id="wakeAdjPlus" type="button" aria-label="おそく">▶</button></div></div>
             <div id="tsAutoNote" hidden>とうこう ずみ</div>
@@ -6767,13 +6798,7 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
               <label class="tsAnonRow"><input type="checkbox" id="tsAnon"/> 匿名で投稿</label>
               <label class="tsAnonRow"><input type="checkbox" id="tsShowTime"/> 起床時間を表示</label>
             </div>
-            <details id="tsMore">
-              <summary id="tsMoreSum">詳細</summary>
-              <div id="tsMoreBody">
-                <div class="cmtChips" id="tsCmtChips"></div>
-                <button id="tsMoodBtn" type="button"><span>😊</span> 気分</button>
-              </div>
-            </details>
+            <button id="tsPostQuick" type="button">とうこうする</button>
           </div>
           <button id="tsMoreClose" type="button" aria-label="とじる">✕ とじる</button>
         </div>
@@ -9339,7 +9364,9 @@ async function postToday(anon,comment,showArg){
   try{ if(typeof tutOn==="function"&&tutOn()){console.warn("チュートリアル中：投稿スキップ");return false;} }catch(_){}
   if(_devNoPost){console.warn("【テスト】投稿スキップ（_devNoPost）");return false;}
   const p=getProfile()||{};
-  const stamp=todayStamp();if(!stamp){console.warn("投稿中止：きょうのスタンプが見つからない");return false;}
+  let stamp=todayStamp();
+  if(!stamp){ try{ stamp=assignTodayStamp(pickStampIdx()); }catch(_){} }   /* ★まだ 無ければ その場で わりあて（1回目が 失敗する原因） */
+  if(!stamp){console.warn("投稿中止：きょうのスタンプが見つからない");return false;}
   const db=await getDB();if(!db){console.warn("投稿中止：Firebaseに接続できない");return false;}
   try{
     const{ref,set}=await import(FB_DB);
@@ -12685,6 +12712,7 @@ function refreshWakeAdj(){
   if(mb)mb.style.opacity=mb.disabled?"0.35":"1";if(pb)pb.style.opacity=pb.disabled?"0.35":"1";
 }
 function tsUpdatePreview(){
+  try{_tsPaintPostBtns();}catch(_){}
   const c=(($("tsComment").value||"").trim())||_todayMoodText(),anon=!!($("tsAnon")&&$("tsAnon").checked);
   const show=!!($("tsShowTime")&&$("tsShowTime").checked);
   const el=$("tsPostPreview");if(!el)return;
@@ -12728,27 +12756,43 @@ function tsResetPost(){
   try{_renderTsRange();}catch(_){}         /* これまでの山脈ミニを 最新に */
   tsUpdatePreview();
 }
+/* ★とうこう ボタンの 見た目を いまの じょうたいに あわせる（2つとも） */
+function _tsPaintPostBtns(){
+  try{
+    var done=false; try{done=postedToday();}catch(_){}
+    var q=$("tsPostQuick"), b=$("tsPostBtn");
+    if(q){ q.textContent=done?"とうこう こうしん":"とうこうする"; q.classList.toggle("posted",done); }
+    if(b){ b.textContent=done?"とうこう こうしん":"投稿する"; b.classList.toggle("posted",done); }
+    var an=$("tsAutoNote"); if(an)an.hidden=!done;
+  }catch(_){}
+}
 async function tsDoPost(){
   const wasEdit=postedToday();
-  const b=$("tsPostBtn");if(b)b.disabled=true;
+  const b=$("tsPostBtn"),q=$("tsPostQuick");
+  if(b)b.disabled=true; if(q){q.disabled=true;q.textContent="とうこう中…";}
   const c=hiraOnly(($("tsComment").value||"").trim())||_todayMoodText();
   let ok=false;
   /* ★チュートリアル中は「仮想空間」＝みんなには 送らない */
   if(tutOn()){
     ok=true;
     try{markPosted();refreshSaveBtn();refreshGroundPost();}catch(_){}
-    if(b){b.textContent="とうこう ずみ";b.classList.add("posted");b.disabled=false;}
+    if(b)b.disabled=false; if(q)q.disabled=false;
+    _tsPaintPostBtns();
     try{toast("とうこう できたよ！");}catch(_){}
     try{_tutGoAdv();}catch(_){}
     return;
   }
   try{ ok=await postToday($("tsAnon").checked,c); }   /* 同じ日は上書き＝差し替え（二重にならない） */
   catch(_){ ok=false; }
-  if(!ok){ if(b)b.disabled=false; try{toast("投稿できなかったみたい");}catch(__){} return; }
+  if(!ok){                                            /* ★1回目が しっぱいしても もう一度 ためす */
+    await new Promise(function(r){setTimeout(r,800);});
+    try{ ok=await postToday($("tsAnon").checked,c); }catch(_){ ok=false; }
+  }
+  if(!ok){ if(b)b.disabled=false; if(q){q.disabled=false;_tsPaintPostBtns();} try{toast("とうこう できなかったみたい。もう一度 おしてね");}catch(__){} return; }
   markPosted();refreshSaveBtn();refreshGroundPost();
   try{ loadHillCats(); }catch(_){}   /* 投稿できたら丘を即こうしん（自分の猫に反映） */
-  if(b){b.textContent="コメントを こうしん";b.classList.add("posted");b.disabled=false;}
-  try{const an=$("tsAutoNote");if(an)an.hidden=false;}catch(_){}
+  if(b)b.disabled=false; if(q)q.disabled=false;
+  _tsPaintPostBtns();
   try{tsUpdatePreview();}catch(_){}   /* ★公開/非公開の きりかえが すぐ 見た目に でる */
   try{toast(wasEdit?"とうこうを こうしんしたよ":"とうこうしたよ！");}catch(_){}
 }
@@ -17636,7 +17680,7 @@ try{_wireWakeRepeat($("wakeAdjMinus"),-1);}catch(_){}
 try{_wireWakeRepeat($("wakeAdjPlus"),1);}catch(_){}
 try{const _h=$("tsShowTime");if(_h)_h.addEventListener("change",tsUpdatePreview);}catch(_){}
 $("tsPostBtn").addEventListener("click",()=>{playClick();tsDoPost();});
-try{var _tpq=$("tsPostQuick");if(_tpq)_tpq.addEventListener("click",function(){playClick();tsDoPost();});}catch(_){}
+try{ document.addEventListener("click",function(e){ var t=e.target; if(t&&t.closest&&t.closest("#tsPostQuick")){ try{playClick();}catch(_){} tsDoPost(); } }); }catch(_){}
 try{var _tm=$("tsMore"),_tpc=$("tsPostCard");
   if(_tm&&_tpc){_tm.addEventListener("toggle",function(){_tpc.classList.toggle("detailOpen",_tm.open);});}
 }catch(_){}
@@ -31491,8 +31535,8 @@ function _tutResume(){
     var v=tutStep();
     if(v==="1"){setTimeout(function(){var el=$("randomModeBtn");if(el)_tutSpot(el,"ステップ 1","あさ おきたら この サイトを ひらいてね。<br>まずは <b>ラジオ体操</b>を おしてみよう！");},900);}
     else if(v==="1a"){setTimeout(function(){var g=$("ygCatch");if(g&&!g.hidden)_tutSpot($("ygCatchWrap")||$("ygCatchChar"),"ステップ 2","ラジオ体操に つられて <b>ユメっ子</b>が やってくるよ。<br>あつめて たのしもう！",{okBtn:true,okText:"つぎへ"});else _tutGo2();},900);}
-    else if(v==="2"){setTimeout(function(){var el=$("tsComment")||$("tsPostBtn");if(el){try{var c=$("tsComment");if(c)c.classList.add("tutGlowField");}catch(_){}_tutSpot(el,"ステップ 3","きょうの ひとことを かいてみよう！<br>かかなくても だいじょうぶだよ。",{okBtn:true,okText:"つぎへ"});}},900);}
-    else if(v==="2a"){setTimeout(function(){var el=$("tsAdvBtn");if(el&&el.offsetParent)_tutSpot(el,"ステップ 4","あつめた ユメっ子と <b>冒険</b>に 行ってみよう！",{okBtn:true,okText:"つぎへ"});else _tutGo3();},900);}
+    else if(v==="2"){_tutWaitTaiso(function(){if(tutStep()!=="2")return;var el=$("tsComment")||$("tsPostBtn");if(el){try{var c=$("tsComment");if(c)c.classList.add("tutGlowField");}catch(_){}_tutSpot(el,"ステップ 3","きょうの ひとことを かいてみよう！<br>かかなくても だいじょうぶだよ。",{okBtn:true,okText:"つぎへ"});}});}
+    else if(v==="2a"){_tutWaitTaiso(function(){if(tutStep()!=="2a")return;var el=$("tsAdvBtn");if(el&&el.offsetParent)_tutSpot(el,"ステップ 4","あつめた ユメっ子と <b>冒険</b>に 行ってみよう！",{okBtn:true,okText:"つぎへ"});else _tutGo3();});}
     else if(v==="3"){setTimeout(function(){var el=$("ground")||$("randomModeBtn");_tutSpot(el,"","ホームに あなたの 猫が でてきたよ！<br>みんなも おなじように あつまるんだ。",{okBtn:true});},900);}
   }catch(_){}
 }
@@ -31526,25 +31570,46 @@ function _tutGoYume(){
   })();
 }
 /* ---- ステップ3：完了画面で ひとこと ---- */
+/* ★いま「ラジオ体操 完了画面」が ちゃんと 前に 出ているか？
+   （ガチャ／ゲットチャンス／きょうの きろく が 開いている間は まだ 出さない）  */
+function _tutReadyTaiso(){
+  try{
+    var g=$("yumeGacha"); if(g&&!g.hidden)return false;              /* ガチャ・ゲットチャンス */
+    var a=$("askCard"); if(a&&a.classList.contains("show"))return false;   /* きょうの きろく */
+    var t=$("taisoScreen"); if(!t||!t.classList.contains("visible"))return false;
+    return true;
+  }catch(_){ return true; }
+}
+function _tutWaitTaiso(cb,maxTry){
+  var n=0,m=(maxTry||300);
+  (function go(){ try{
+    if(!_tutReadyTaiso()&&n<m){ n++; setTimeout(go,300); return; }
+    cb();
+  }catch(_){} })();
+}
 function _tutGo2(){
   if(tutStep()!=="1"&&tutStep()!=="1a")return;
   tutSet("2");
-  setTimeout(function(){
+  _tutClear();
+  _tutWaitTaiso(function(){
+    if(tutStep()!=="2")return;
     var el=$("tsComment")||$("tsPostBtn");
     try{if(el&&el.scrollIntoView)el.scrollIntoView({block:"center",behavior:"smooth"});}catch(_){}
     setTimeout(function(){
+      if(tutStep()!=="2"||!_tutReadyTaiso())return;
       try{var c=$("tsComment");if(c)c.classList.add("tutGlowField");}catch(_){}
       _tutSpot($("tsComment")||$("tsPostBtn"),"ステップ 3",
         "きょうの ひとことを かいてみよう！<br>かかなくても だいじょうぶだよ。",
         {okBtn:true,okText:"つぎへ"});
-    },420);
-  },1400);
+    },560);
+  });
 }
 /* ---- ステップ2.5：完了画面から 冒険へ さそう ---- */
 function _tutGoAdv(){
   tutSet("2a");
   _tutClear();
-  setTimeout(function(){
+  _tutWaitTaiso(function(){
+    if(tutStep()!=="2a")return;
     var el=$("tsAdvBtn");
     try{if(el&&el.scrollIntoView)el.scrollIntoView({block:"center",behavior:"smooth"});}catch(_){}
     setTimeout(function(){
@@ -31553,8 +31618,8 @@ function _tutGoAdv(){
       _tutSpot(_ab,"ステップ 4",
         "あつめた子と <b>冒険</b>に 行ってみよう！<br><span class=\"tutSm\">（あとで いつでも 行けるよ）</span>",
         {okBtn:true,okText:"つぎへ"});
-    },420);
-  },900);
+    },520);
+  });
 }
 /* ---- ステップ3：ホームに 猫が でる ---- */
 function _tutGo3(){
@@ -31563,11 +31628,16 @@ function _tutGo3(){
   try{toast("ホームに もどるよ");}catch(_){}
   setTimeout(function(){
     try{if(typeof taisoNext==="function")taisoNext();else showSelect();}catch(_){try{showSelect();}catch(__){}}
-    setTimeout(function(){
+    var n=0;
+    (function go(){ try{
+      var t=$("taisoScreen"), a=$("askCard"), g=$("yumeGacha");
+      var busy=(t&&t.classList.contains("visible"))||(a&&a.classList.contains("show"))||(g&&!g.hidden);
+      if(busy&&n<200){ n++; setTimeout(go,300); return; }
+      if(tutStep()!=="3")return;
       var el=$("ground")||$("hillCats")||$("randomModeBtn");
       _tutSpot(el,"",
         "ホームに あなたの 猫が でてきたよ！<br>みんなも おなじように あつまるんだ。",{okBtn:true});
-    },900);
+    }catch(_){} })();
   },700);
 }
 /* ---- おしまい ---- */

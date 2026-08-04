@@ -7040,7 +7040,6 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
       </div>
       <button id="krSave" type="button">きろく する</button>
       
-      <label id="krShare"><input id="krNoShare" type="checkbox"/><span>みんなに 見せない</span></label>
       <button id="krSkip" type="button">スキップ</button>
       </div>
     </div>
@@ -8567,6 +8566,18 @@ function buildRecGraph(){
   s+='</svg>';
   box.innerHTML=s;
 }
+/* 起床グラフの めもりの ひろさ（就寝グラフも これに そろえる） */
+function _wakeSpanHours(){
+  try{
+    const wl=getWakeLog();
+    const vals=Object.values(wl).filter(v=>Number.isFinite(v)).slice(-14);
+    const target=profileWake();
+    if(!vals.length)return 8;
+    let lo=Math.min(target,...vals)-0.35,hi=Math.max(target,...vals)+0.35;
+    if(hi-lo<1.2){const mid=(hi+lo)/2;lo=mid-0.6;hi=mid+0.6;}
+    return Math.max(4,hi-lo);
+  }catch(_){ return 8; }
+}
 function _buildWakeGraph(box){
   const wl=getWakeLog();
   const data=Object.entries(wl).filter(([k,v])=>Number.isFinite(v)).sort((a,b)=>a[0]<b[0]?-1:1).slice(-14);
@@ -8622,8 +8633,10 @@ function _buildBedGraph(box){
   if(!raw.length){box.innerHTML='<div class="recEmpty">ねた時間の 記録が たまると<br>ここに グラフが 出るよ</div>';return;}
   const data=raw.map(([k,v])=>[k,(v<14?v+24:v)]);   /* 深夜(0〜14時)は +24 して 夜ふかしを つなげて 見せる */
   const vals=data.map(d=>d[1]);
-  let lo=Math.min(...vals)-0.4,hi=Math.max(...vals)+0.4;
-  if(hi-lo<1.2){const mid=(hi+lo)/2;lo=mid-0.6;hi=mid+0.6;}
+  /* ★めもりの ひろさは 起床グラフと おなじに（0時〜3時だけ…に ならないように） */
+  const _span=Math.max(_wakeSpanHours(), (Math.max(...vals)-Math.min(...vals))+0.8, 4);
+  const _mid=(Math.min(...vals)+Math.max(...vals))/2;
+  let lo=_mid-_span/2,hi=_mid+_span/2;
   const W=340,H=168,pL=38,pR=8,pT=16,pB=40;
   const X=i=>(data.length<=1)?(pL+(W-pL-pR)/2):(pL+i*(W-pL-pR)/(data.length-1)), Y=v=>pT+(hi-v)/(hi-lo)*(H-pT-pB);
   let s='<svg viewBox="0 0 340 150" style="width:100%;height:auto;display:block;">';
@@ -13030,7 +13043,7 @@ async function tsDoPost(){
     if(b)b.disabled=false; if(q)q.disabled=false;
     _tsPaintPostBtns();
     try{toast("とうこう できたよ！");}catch(_){}
-    try{_tutGoAdv();}catch(_){}
+    try{ if(tutStep()==="2a")_tutGo3(); else if(tutStep()==="2")_tutGoAdv(); }catch(_){}
     return;
   }
   try{ ok=await postToday($("tsAnon").checked,c); }   /* 同じ日は上書き＝差し替え（二重にならない） */
@@ -14142,7 +14155,7 @@ function _hcTick(){
     _hcSet(_hcIdx+1);
   }catch(_){}
 }
-try{ _hcT=setInterval(_hcTick,6500); }catch(_){}
+try{ _hcT=setInterval(_hcTick,6000); }catch(_){}
 try{ document.addEventListener("click",function(e){
   var t=e.target; if(!t||!t.closest)return;
   if(t.closest("#hcPrev")||t.closest("#hcNext")){
@@ -22631,6 +22644,7 @@ function _askClose(save){
   const f=_askThen;_askThen=null;
   if(f)setTimeout(()=>{try{f();}catch(_){}},60);
   if(save)try{_afterRecord();}catch(_){}
+  try{ if(tutStep()==="2")setTimeout(function(){try{_tutGoAdv();}catch(_){}},900); }catch(_){}
 }
 /* ★きろくの あと：じどう とうこう → おつかれさま → ホームへ */
 function _noShare(){ try{return localStorage.getItem("radio_no_share")==="1";}catch(_){return false;} }
@@ -22638,14 +22652,11 @@ function _afterRecord(){
   try{
     if(typeof tutOn==="function"&&tutOn())return;
     var simple=false; try{simple=$("askBox")&&$("askBox").classList.contains("kr1");}catch(_){}
-    if(!simple)return;                       /* くわしくモードの時は これまでどおり */
-    if(!_noShare()){ setTimeout(function(){ try{tsDoPost();}catch(_){} },260); }
+    if(!simple)return;
+    /* ★じどう とうこうは しない。とうこうは「とうこうする」を おした時だけ */
     setTimeout(function(){
-      try{
-        _zzSplash({ico:"\ud83d\udc3e",title:"おつかれさま！",
-          sub:_noShare()?"きろく できたよ":"きろく して みんなに とどけたよ",ms:1500});
-      }catch(_){}
-    },900);
+      try{ _zzSplash({ico:"\ud83d\udc3e",title:"おつかれさま！",sub:"きろく できたよ",ms:1400}); }catch(_){}
+    },800);
   }catch(_){}
 }
 function _todayMoodText(){try{var mm=_moodMap(),m=mm[jstKey()];return m?(m.l+" "+m.e):"";}catch(_){return "";}}
@@ -29786,13 +29797,14 @@ function _exCatchStart(){
         var quick=false;   /* ★体操ちゅうは いつも ♡を ひとつずつ ためて 見せる */
         var pc=_ygPetCount();
         _ygCatch={hearts:0,petsLeft:3,petIdx:0,busy:false,over:false,bonus:pc.bonus,quick:false,
-                  willGet:(Math.random()<0.70)};   /* ★7わりで なかまに なる */
+                  willGet:((typeof tutOn==="function"&&tutOn())?true:(Math.random()<0.70))};   /* ★7わりで なかまに なる（チュートリアル中は かならず） */
         var el=$("exCatch"); if(!el)return;
         var ch=$("exCatchChar"); if(ch)ch.innerHTML='<img class="ygImg" src="'+y.img+'" alt="" onerror="this.style.display=\'none\'"/>';
         _exCatchPaint();
         try{$("exCatchTip").textContent="なにか いる…？";}catch(_){}
         el.className=""; el.hidden=false; void el.offsetWidth; el.classList.add("on");
         try{_ygSasa();}catch(_){}
+        try{ if(typeof tutStep==="function"&&tutStep()==="1")_tutGoYume(); }catch(_){}   /* ★チュートリアル：ステップ2 */
         /* 体操(6秒)の うちに ぜんぶ なでおわる */
         var pets=_ygCatch.petsLeft, step=quick?1400:Math.max(1100,Math.floor(4300/Math.max(1,pets)));
         var i=0;
@@ -30177,8 +30189,7 @@ function _ygRenderReveal(y,instant){
           try{var yy=$("ygYes"); if(yy){yy.hidden=false;yy.textContent="なかまに する";}}catch(_){}
           try{var nn=$("ygNo"); if(nn)nn.hidden=true;}catch(_){}
           try{var hh=$("ygHint"); if(hh)hh.textContent="ステータスを 見てね";}catch(_){}
-          var _tut1=false; try{_tut1=(typeof tutStep==="function"&&tutStep()==="1");}catch(_){}
-          if(_tut1){ try{_tutGoYume();}catch(_){} }
+          try{ var _v=(typeof tutStep==="function")?tutStep():""; if(_v==="1"||_v==="1a")_tutGoJoin(); }catch(_){}
         }catch(_){}
       }, instant?240:(_revD+420));
     }
@@ -30227,6 +30238,7 @@ try{ if(localStorage.getItem(YUME_GACHA_KEY)!==jstKey()){ setTimeout(function(){
     var y=_ygCurrent;
     if(y&&!_ygAdded){_ygAdded=true;try{_yumeAdd(y);}catch(_){}}
     try{var hh=$("ygHint"); if(hh&&y)hh.textContent=y.name+" が なかまに なった！";}catch(_){}
+    try{ if(tutStep()==="1b"){ _tutClear(); setTimeout(function(){try{_tutGo2();}catch(_){}},900); } }catch(_){}
     if(y&&_ygIsNew){ try{_ygDexReveal(y,function(){ yes.disabled=false; _yumeGachaClose(); });}catch(_){ yes.disabled=false; _yumeGachaClose(); } }
     else { setTimeout(function(){ yes.disabled=false; _yumeGachaClose(); },500); }
   });
@@ -32013,7 +32025,7 @@ function _advDexRender(){
 var TUT_KEY="radio_tut2", TUT_SNAP="radio_tut2_snap";
 function tutStep(){try{return localStorage.getItem(TUT_KEY)||"";}catch(_){return"";}}
 function tutSet(v){try{localStorage.setItem(TUT_KEY,v);}catch(_){}}
-function tutOn(){var v=tutStep();return v==="1"||v==="1a"||v==="2"||v==="2a"||v==="3";}
+function tutOn(){var v=tutStep();return v==="1"||v==="1a"||v==="1b"||v==="2"||v==="2a"||v==="3";}
 /* いまの ようすを まるごと おぼえておく（あとで もどす） */
 function _tutSnapshot(){
   try{
@@ -32104,14 +32116,14 @@ function _tutResume(){
   try{
     var v=tutStep();
     if(v==="1"){setTimeout(function(){var el=$("randomModeBtn");if(el)_tutSpot(el,"ステップ 1","あさ おきたら この サイトを ひらいてね。<br>まずは <b>ラジオ体操</b>を おしてみよう！");},900);}
-    else if(v==="1a"){setTimeout(function(){var g=$("yumeGacha");if(g&&!g.hidden)_tutSpot($("ygSil")||$("ygInfo"),"ステップ 2","ラジオ体操に つられて <b>ユメっ子</b>が やってくるよ。<br>あつめて たのしもう！",{okBtn:true,okText:"つぎへ"});else _tutGo2();},900);}
+    else if(v==="1a"||v==="1b"){setTimeout(function(){var e=$("ygYes");if(e&&!e.hidden&&e.offsetParent){tutSet("1b");_tutSpot(e,"ステップ 3","ステータスを 見て、きに いったら<br><b>なかまに する</b>を おそう！");}else _tutGo2();},900);}
     else if(v==="2"){_tutWaitTaiso(function(){if(tutStep()!=="2")return;var el=$("tsComment")||$("tsPostBtn");if(el){try{var c=$("tsComment");if(c)c.classList.add("tutGlowField");}catch(_){}_tutSpot(el,"ステップ 3","きょうの ひとことを かいてみよう！<br>かかなくても だいじょうぶだよ。",{okBtn:true,okText:"つぎへ"});}});}
     else if(v==="2a"){_tutWaitTaiso(function(){if(tutStep()!=="2a")return;var el=$("tsAdvBtn");if(el&&el.offsetParent)_tutSpot(el,"ステップ 4","あつめた ユメっ子と <b>冒険</b>に 行ってみよう！",{okBtn:true,okText:"つぎへ"});else _tutGo3();});}
     else if(v==="3"){setTimeout(function(){var el=$("ground")||$("randomModeBtn");_tutSpot(el,"","ホームに あなたの 猫が でてきたよ！<br>みんなも おなじように あつまるんだ。",{okBtn:true});},900);}
   }catch(_){}
 }
 try{setTimeout(function(){try{if(tutOn())_tutResume();}catch(_){}},1600);}catch(_){}
-try{ var _tutOvEl=document.getElementById("tutOv"); if(_tutOvEl)_tutOvEl.addEventListener("click",function(){try{if(tutStep()==="2")_tutGoAdv();}catch(_){}}); var _tutCmtEl=document.getElementById("tsComment"); if(_tutCmtEl)_tutCmtEl.addEventListener("input",function(){try{if(tutStep()==="2")_tutGoAdv();}catch(_){}}); }catch(_){}
+/* きろく／とうこうは それぞれの ボタンを おした時に すすむ（旧トリガーは 撤去） */
 function _tutGo1(){
   tutSet("1");
   try{if(typeof showSelect==="function")showSelect();}catch(_){}
@@ -32127,17 +32139,27 @@ function _tutGoYume(){
   tutSet("1a");
   _tutClear();
   var n=0;
-  (function go(){
-    try{
-      if(tutStep()!=="1a")return;
-      var el=$("ygSil")||$("ygInfo")||$("yumeGacha");   /* ★出てきた その子 */
-      var r=el?el.getBoundingClientRect():null;
-      if((!r||(!r.width&&!r.height))&&n<20){ n++; setTimeout(go,220); return; }   /* 出そろうまで まつ */
-      _tutSpot(el||$("yumeGacha"),"ステップ 2",
-        "ラジオ体操に つられて <b>ユメっ子</b>が やってくるよ。<br>あつめて たのしもう！",
-        {okBtn:true,okText:"つぎへ"});
-    }catch(_){}
-  })();
+  (function go(){ try{
+    if(tutStep()!=="1a")return;
+    var el=$("exCatch");
+    var r=el?el.getBoundingClientRect():null;
+    if((!el||el.hidden||!r||(!r.width&&!r.height))&&n<25){ n++; setTimeout(go,200); return; }
+    _tutSpot(el,"ステップ 2",
+      "ラジオ体操に つられて <b>ユメっ子</b>が やってきたよ！<br>そのまま なでて なかよく なろう。");
+    setTimeout(function(){ try{ if(tutStep()==="1a")_tutClear(); }catch(_){} },2800);   /* 体操の じゃまを しない */
+  }catch(_){} })();
+}
+/* ---- ステップ3：なかまに する ---- */
+function _tutGoJoin(){
+  var v=tutStep(); if(v!=="1"&&v!=="1a")return;
+  tutSet("1b");
+  _tutClear();
+  setTimeout(function(){ try{
+    if(tutStep()!=="1b")return;
+    var el=$("ygYes"); if(!el||el.hidden){ _tutGo2(); return; }
+    _tutSpot(el,"ステップ 3",
+      "ステータスを 見て、きに いったら<br><b>なかまに する</b>を おそう！");
+  }catch(_){} },520);
 }
 /* ---- ステップ3：完了画面で ひとこと ---- */
 /* ★いま「ラジオ体操 完了画面」が ちゃんと 前に 出ているか？
@@ -32158,19 +32180,17 @@ function _tutWaitTaiso(cb,maxTry){
   }catch(_){} })();
 }
 function _tutGo2(){
-  if(tutStep()!=="1"&&tutStep()!=="1a")return;
+  {var _v=tutStep(); if(_v!=="1"&&_v!=="1a"&&_v!=="1b")return;}
   tutSet("2");
   _tutClear();
   _tutWaitTaiso(function(){
     if(tutStep()!=="2")return;
-    var el=$("tsComment")||$("tsPostBtn");
+    var el=$("askBox");
     try{if(el&&el.scrollIntoView)el.scrollIntoView({block:"center",behavior:"smooth"});}catch(_){}
     setTimeout(function(){
       if(tutStep()!=="2"||!_tutReadyTaiso())return;
-      try{var c=$("tsComment");if(c)c.classList.add("tutGlowField");}catch(_){}
-      _tutSpot($("tsComment")||$("tsPostBtn"),"ステップ 3",
-        "きょうの ひとことを かいてみよう！<br>かかなくても だいじょうぶだよ。",
-        {okBtn:true,okText:"つぎへ"});
+      _tutSpot($("askBox"),"ステップ 4",
+        "きょうの <b>きぶん</b>を えらんで、<br>おきた時間・ねた時間を あわせたら<br><b>きろく する</b>を おそう！");
     },560);
   });
 }
@@ -32183,11 +32203,11 @@ function _tutGoAdv(){
     var el=$("tsAdvBtn");
     try{if(el&&el.scrollIntoView)el.scrollIntoView({block:"center",behavior:"smooth"});}catch(_){}
     setTimeout(function(){
-      var _ab=$("tsAdvBtn");
+      var _ab=$("tsPostQuick")||$("tsPostBtn");
       if(!_ab||!_ab.offsetParent){ _tutGo3(); return; }   /* ★見つからない時は 止まらずに つぎへ */
-      _tutSpot(_ab,"ステップ 4",
-        "あつめた子と <b>冒険</b>に 行ってみよう！<br><span class=\"tutSm\">（あとで いつでも 行けるよ）</span>",
-        {okBtn:true,okText:"つぎへ"});
+      try{if(_ab.scrollIntoView)_ab.scrollIntoView({block:"center",behavior:"smooth"});}catch(_){}
+      _tutSpot(_ab,"ステップ 5",
+        "きょうの ようすを みんなに <b>とうこう</b>して みよう！");
     },520);
   });
 }
@@ -32226,9 +32246,8 @@ try{
   var _tok=document.getElementById("tutOk");
   if(_tok)_tok.addEventListener("click",function(){
     try{playClick();}catch(_){}
-    if(tutStep()==="1a"){_tutClear();return;}   /* 「なかまに する」は 自分で おす */
-    if(tutStep()==="2"){_tutGoAdv();return;}
-    if(tutStep()==="2a"){_tutGo3();return;}   /* 冒険の しょうかい → ホームへ */
+    if(tutStep()==="1a"||tutStep()==="1b"){_tutClear();return;}
+    if(tutStep()==="2"||tutStep()==="2a"){_tutClear();return;}
     _tutFinish();
   });
   var _teb=document.getElementById("tutEndBtn");

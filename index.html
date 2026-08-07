@@ -219,6 +219,12 @@ body.exercising #hillCats .catLike,body.exercising #hillCats .catStreak,body.exe
   text-shadow:0 1px 3px rgba(255,255,255,.6);}
 .catZ b{font-size:14px;}.catZ .z2{font-size:10px;}.catZ .note{font-size:12px;color:#9ec9e0;margin-left:1px;}
 .sky-night .catName{color:#4d7790;}
+.catCmtWrap{position:relative;}
+.cmtLike{position:absolute;right:-6px;bottom:-6px;z-index:8;border:none;background:none;box-shadow:none;
+  padding:5px 6px;margin:0;cursor:pointer;font-size:15px;line-height:1;color:#f0a8c4;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;filter:drop-shadow(0 1px 1px rgba(255,255,255,.9));}
+.cmtLike.done{color:#e0407c;}
+.cmtLike:active{transform:scale(.86);}
 .catBubble{background:#fff;border:1.5px solid rgba(143,220,255,.45);border-radius:14px;padding:7px 13px;
   font-size:12px;font-weight:700;color:#5c93ad;box-shadow:0 6px 16px rgba(111,205,255,.2);position:relative;white-space:nowrap;}
 .catBubble::after{content:"";position:absolute;left:50%;bottom:-7px;transform:translateX(-50%);
@@ -5707,7 +5713,7 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 #selectScreen.sky-night #hcDots i,#selectScreen.sky-evening #hcDots i{background:rgba(255,255,255,.28);}
 #selectScreen.sky-night #hcDots i.on,#selectScreen.sky-evening #hcDots i.on{background:#8fd3f0;}
 /* 黒い おびが 出ないように 念のため */
-#topLeftStack{background:none !important;}
+#topLeftStack{background:none !important;flex-direction:column !important;align-items:flex-start !important;}
 #topLeftStack::before,#topLeftStack::after{display:none !important;content:none !important;}
 #topLeftStack #tsRangeCard::before,#topLeftStack #tsRangeCard::after{display:none !important;content:none !important;}
 /* ===== 完了画面：登山の あった場所に「きょうの きろく」カードを 直に置く ===== */
@@ -5736,6 +5742,37 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 /* 緑の 帯は 出さない（枠の ひかりだけで じゅうぶん） */
 #taisoScreen.recLock #krSkip{opacity:1 !important;text-decoration:underline;text-underline-offset:3px;}
 @media (prefers-reduced-motion:reduce){#taisoScreen.recLock #askBox{animation:none;}}
+</style>
+<style id="ygOddsCss">
+/* ===== なかまにする画面の すみ：かくりつ一覧（目には入るけど 目立たない） ===== */
+#ygOdds{position:absolute;left:12px;top:calc(12px + env(safe-area-inset-top));z-index:6;
+  display:none;flex-direction:column;gap:1px;pointer-events:none;
+  font-family:"Kosugi Maru","Yomogi",sans-serif;opacity:.5;}
+#yumeGacha.s-reveal #ygOdds{display:flex;animation:ygOddsIn .8s ease .4s both;}
+@keyframes ygOddsIn{from{opacity:0;transform:translateX(-6px);}to{opacity:.5;transform:none;}}
+#ygOdds i{display:grid;grid-template-columns:66px 52px 12px;align-items:center;gap:5px;font-style:normal;}
+#ygOdds b{font-size:9px;font-weight:800;color:#dfe8f5;letter-spacing:0;white-space:nowrap;
+  text-shadow:0 1px 3px rgba(0,0,0,.85);}
+#ygOdds u{font-size:9px;font-weight:800;color:#bcd0e6;text-decoration:none;text-align:right;
+  font-variant-numeric:tabular-nums;text-shadow:0 1px 3px rgba(0,0,0,.85);}
+#ygOdds s{font-size:9px;font-weight:800;color:#9fd8b6;text-decoration:none;text-align:center;
+  text-shadow:0 1px 3px rgba(0,0,0,.85);}
+#ygOdds i.up b,#ygOdds i.up u{color:#ffd98f;}
+@media (max-width:400px){#ygOdds i{grid-template-columns:58px 46px 11px;gap:4px;}#ygOdds b,#ygOdds u,#ygOdds s{font-size:8px;}}
+/* ===== ホーム：つぎの ユメっ子の アップ表示 ===== */
+#randomModeBtn{position:relative;overflow:visible;}
+#ybBadge{position:absolute;top:-9px;right:-6px;z-index:5;pointer-events:none;
+  border-radius:999px;padding:3px 9px;font-family:"Yomogi","Kosugi Maru",sans-serif;
+  font-size:10.5px;font-weight:900;color:#6b3d00;letter-spacing:.02em;white-space:nowrap;
+  background:linear-gradient(135deg,#ffe9a8,#ffc44d);box-shadow:0 3px 10px rgba(230,170,40,.45);
+  animation:ybPulse 2s ease-in-out infinite;}
+#ybBadge[hidden]{display:none;}
+.ybGain{margin-top:6px;font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:13px;font-weight:900;
+  color:#ffd98f;text-shadow:0 2px 6px rgba(0,0,0,.7);text-align:center;
+  animation:ybGainIn .6s cubic-bezier(.2,1.3,.4,1) both;}
+@keyframes ybGainIn{from{opacity:0;transform:translateY(8px) scale(.9);}to{opacity:1;transform:none;}}
+@keyframes ybPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.07);}}
+@media (prefers-reduced-motion:reduce){#ybBadge{animation:none;}}
 </style>
 <style id="exCatchCss">
 /* ===== ラジオ体操ちゅう：猫たちの 上に ユメっ子が でる ===== */
@@ -8566,38 +8603,45 @@ function buildRecGraph(){
   s+='</svg>';
   box.innerHTML=s;
 }
-/* 起床グラフの めもりの ひろさ（就寝グラフも これに そろえる） */
-function _wakeSpanHours(){
-  try{
-    const wl=getWakeLog();
-    const vals=Object.values(wl).filter(v=>Number.isFinite(v)).slice(-14);
-    const target=profileWake();
-    if(!vals.length)return 8;
-    let lo=Math.min(target,...vals)-0.35,hi=Math.max(target,...vals)+0.35;
-    if(hi-lo<1.2){const mid=(hi+lo)/2;lo=mid-0.6;hi=mid+0.6;}
-    return Math.max(4,hi-lo);
-  }catch(_){ return 8; }
+/* ★起床・就寝で まったく おなじ めもり（24時間ぶん）
+   目標時間が 下から 1/4 の ところに 来るように 上下を きめる
+   （目標6時なら 上が24時・下が0時）                              */
+function _graphRange(){
+  var t=6; try{t=profileWake();}catch(_){}
+  if(!Number.isFinite(t))t=6;
+  return {lo:t-6, hi:t+18, target:t};
 }
+function _graphWrap(v,lo,hi){
+  v=((v%24)+24)%24;
+  while(v<lo)v+=24;
+  while(v>=hi)v-=24;
+  return v;
+}
+function _graphHourLines(lo,hi,Y,W,pL,pR,gridCol,txtCol){
+  var s="",step=3,h0=Math.ceil(lo/step)*step;
+  for(var h=h0;h<=hi;h+=step){
+    s+='<line x1="'+pL+'" y1="'+Y(h).toFixed(1)+'" x2="'+(W-pR)+'" y2="'+Y(h).toFixed(1)+'" stroke="'+gridCol+'" stroke-width="1"/>';
+    s+='<text x="4" y="'+(Y(h)+3).toFixed(1)+'" font-size="9" font-weight="800" fill="'+txtCol+'">'+(((h%24)+24)%24)+':00</text>';
+  }
+  return s;
+}
+function _wakeSpanHours(){ return 24; }
 function _buildWakeGraph(box){
   const wl=getWakeLog();
   const data=Object.entries(wl).filter(([k,v])=>Number.isFinite(v)).sort((a,b)=>a[0]<b[0]?-1:1).slice(-14);
   if(data.length<2){box.innerHTML='<div class="recEmpty">記録がたまると<br>ここにグラフが出るよ</div>';return;}
-  const target=profileWake(),vals=data.map(d=>d[1]);
-  let lo=Math.min(target,...vals)-0.35,hi=Math.max(target,...vals)+0.35;
-  if(hi-lo<1.2){const mid=(hi+lo)/2;lo=mid-0.6;hi=mid+0.6;}
+  const _R=_graphRange(), target=_R.target, lo=_R.lo, hi=_R.hi;
+  const vals=data.map(d=>_graphWrap(d[1],lo,hi));
   const W=340,H=150,pL=34,pR=8,pT=16,pB=22;
   const X=i=>pL+i*(W-pL-pR)/(data.length-1), Y=v=>pT+(hi-v)/(hi-lo)*(H-pT-pB);
   let s='<svg viewBox="0 0 340 150" style="width:100%;height:auto;display:block;">';
-  for(let h=Math.ceil(lo);h<=Math.floor(hi);h++){
-    s+='<line x1="'+pL+'" y1="'+Y(h).toFixed(1)+'" x2="'+(W-pR)+'" y2="'+Y(h).toFixed(1)+'" stroke="#eef3f7" stroke-width="1"/>';
-    s+='<text x="4" y="'+(Y(h)+3).toFixed(1)+'" font-size="9" font-weight="800" fill="#c4d0d9">'+h+':00</text>';
-  }
+  s+=_graphHourLines(lo,hi,Y,W,pL,pR,"#eef3f7","#c4d0d9");
   s+='<line x1="'+pL+'" y1="'+Y(target).toFixed(1)+'" x2="'+(W-pR)+'" y2="'+Y(target).toFixed(1)+'" stroke="#ffb37a" stroke-width="2" stroke-dasharray="4 5"/>';
   s+='<text x="'+(W-pR)+'" y="'+(Y(target)-4).toFixed(1)+'" text-anchor="end" font-size="9" font-weight="800" fill="#e8a25a">目標 '+_floatHM(target)+'</text>';
   /* ★「起床だけ」を えらんだ時は 起床だけを 出す（気分の線は かさねない）。
      気分を 見たい時は チェックで 気分を えらぶと 出るよ。 */
-  s+='<polyline points="'+data.map((d,i)=>X(i).toFixed(1)+","+Y(d[1]).toFixed(1)).join(" ")+'" fill="none" stroke="#7fd0f0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>';
-  data.forEach((d,i)=>{ s+='<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(d[1]).toFixed(1)+'" r="3.6" fill="'+_recDot(Math.round((d[1]-target)*60))+'"/>'; });
+  s+='<polyline points="'+vals.map((v,i)=>X(i).toFixed(1)+","+Y(v).toFixed(1)).join(" ")+'" fill="none" stroke="#7fd0f0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>';
+  vals.forEach((v,i)=>{ s+='<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(v).toFixed(1)+'" r="3.6" fill="'+_recDot(Math.round((data[i][1]-target)*60))+'"/>'; });
   s+='</svg>';
   box.innerHTML=s;
 }
@@ -8631,19 +8675,16 @@ function _buildBedGraph(box){
   const sl=(typeof getSleepLog==="function")?getSleepLog():{};
   const raw=Object.entries(sl).filter(([k,v])=>Number.isFinite(v)).sort((a,b)=>a[0]<b[0]?-1:1).slice(-14);
   if(!raw.length){box.innerHTML='<div class="recEmpty">ねた時間の 記録が たまると<br>ここに グラフが 出るよ</div>';return;}
-  const data=raw.map(([k,v])=>[k,(v<14?v+24:v)]);   /* 深夜(0〜14時)は +24 して 夜ふかしを つなげて 見せる */
+  /* ★起床グラフと まったく おなじ めもり（24時間・目標いちも 同じ） */
+  const _R=_graphRange(), lo=_R.lo, hi=_R.hi, target=_R.target;
+  const data=raw.map(([k,v])=>[k,_graphWrap(v,lo,hi)]);
   const vals=data.map(d=>d[1]);
-  /* ★めもりの ひろさは 起床グラフと おなじに（0時〜3時だけ…に ならないように） */
-  const _span=Math.max(_wakeSpanHours(), (Math.max(...vals)-Math.min(...vals))+0.8, 4);
-  const _mid=(Math.min(...vals)+Math.max(...vals))/2;
-  let lo=_mid-_span/2,hi=_mid+_span/2;
   const W=340,H=168,pL=38,pR=8,pT=16,pB=40;
   const X=i=>(data.length<=1)?(pL+(W-pL-pR)/2):(pL+i*(W-pL-pR)/(data.length-1)), Y=v=>pT+(hi-v)/(hi-lo)*(H-pT-pB);
   let s='<svg viewBox="0 0 340 150" style="width:100%;height:auto;display:block;">';
-  for(let h=Math.ceil(lo);h<=Math.floor(hi);h++){
-    s+='<line x1="'+pL+'" y1="'+Y(h).toFixed(1)+'" x2="'+(W-pR)+'" y2="'+Y(h).toFixed(1)+'" stroke="#f0edf7" stroke-width="1"/>';
-    s+='<text x="4" y="'+(Y(h)+3).toFixed(1)+'" font-size="9" font-weight="800" fill="#c9c0dc">'+(h%24)+':00</text>';
-  }
+  s+=_graphHourLines(lo,hi,Y,W,pL,pR,"#f0edf7","#c9c0dc");
+  s+='<line x1="'+pL+'" y1="'+Y(target).toFixed(1)+'" x2="'+(W-pR)+'" y2="'+Y(target).toFixed(1)+'" stroke="#ffb37a" stroke-width="2" stroke-dasharray="4 5"/>';
+  s+='<text x="'+(W-pR)+'" y="'+(Y(target)-4).toFixed(1)+'" text-anchor="end" font-size="9" font-weight="800" fill="#e8a25a">目標 '+_floatHM(target)+'</text>';
   /* ●の ある日どうしを つないで 1本の線に（記録が ない日は とばす） */
   if(data.length>=2)s+='<polyline points="'+data.map((d,i)=>X(i).toFixed(1)+","+Y(d[1]).toFixed(1)).join(" ")+'" fill="none" stroke="#b6a8ef" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>';
   /* ●＝就寝が 記録された日だけ。色は その日の ねむった時間 */
@@ -9699,8 +9740,28 @@ function refreshGroundPost(){
 const LIKED_KEY="radio_liked";
 function likedMap(){try{const v=JSON.parse(localStorage.getItem(LIKED_KEY)||"{}");return(v&&typeof v==="object")?v:{};}catch(e){return{};}}
 function likedPost(uid,pid){if(!uid||!pid)return false;return likedMap()[uid]===pid;}
-function _afterLikePaint(){try{_paintLikeAllBtn();}catch(_){}}
-function markLiked(uid,pid){if(!uid||!pid)return;const m=likedMap();m[uid]=pid;localStorage.setItem(LIKED_KEY,JSON.stringify(m));try{syncSoon();}catch(_){}try{_paintLikeAllBtn();}catch(_){}}
+function _afterLikePaint(){try{_paintLikeAllBtn();}catch(_){}try{_paintCmtLikes();}catch(_){}}
+/* 吹き出しの中の ♡ を いまの じょうたいに */
+function _paintCmtLikes(){
+  try{ document.querySelectorAll("#hillCats .cmtLike").forEach(function(b){
+    var on=likedPost(b.dataset.uid,b.dataset.pid);
+    b.classList.toggle("done",on); b.textContent=on?"\u2764":"\u2661";
+  }); }catch(_){}
+}
+try{ document.addEventListener("click",function(e){
+  var t=e.target; if(!t||!t.closest)return;
+  var b=t.closest(".cmtLike"); if(!b)return;
+  e.stopPropagation(); e.preventDefault();
+  try{
+    var uid=b.dataset.uid,pid=b.dataset.pid;
+    var po=(_hillAllCats||[]).filter(function(c){return c&&c.uid===uid&&c.pid===pid;})[0]||{uid:uid,pid:pid};
+    b.classList.add("done"); b.textContent="\u2764";
+    try{playPop();}catch(_){}
+    try{_likeHeartFx(b);}catch(_){}
+    likePost(po,b);
+  }catch(_){}
+},true); }catch(_){}
+function markLiked(uid,pid){if(!uid||!pid)return;const m=likedMap();m[uid]=pid;localStorage.setItem(LIKED_KEY,JSON.stringify(m));try{syncSoon();}catch(_){}try{_paintLikeAllBtn();}catch(_){}try{_paintCmtLikes();}catch(_){}}
 /* ★いいねの ハート エフェクト（だれに おくったか わかる） */
 function _likeHeartFx(btn){ try{ var host=btn.closest(".hillCat")||btn.parentElement; if(!host)return;
   for(var i=0;i<6;i++){ var s=document.createElement("i"); s.className="likeFx"; s.style.left=(38+Math.random()*26)+"%"; s.style.setProperty("--dx",((Math.random()*2-1)*46).toFixed(0)+"px"); s.style.animationDelay=(i*0.06)+"s"; host.appendChild(s); (function(el){setTimeout(function(){try{el.remove();}catch(_){}},1200);})(s); }
@@ -9821,6 +9882,7 @@ async function likeAllVisible(){
   });
   await Promise.all(jobs);
   try{[...document.querySelectorAll("#hillCats .catLikeHeart")].forEach(b=>{if(b.dataset&&b.dataset.uid&&likedPost(b.dataset.uid,b.dataset.pid)){b.classList.add("done");b.textContent="♥";}});}catch(_){}
+  try{_paintCmtLikes();}catch(_){}
   if(n>0){try{playPop();}catch(_){}}
   try{_paintLikeAllBtn();}catch(_){}
   toast(n>0?("💗 "+n+"人に♡したよ"):"おくれなかったみたい。もう一度おしてね");
@@ -11524,7 +11586,7 @@ function renderHillPage(){
     lab.innerHTML=_BUBS[_bt]+
       `<span class="catNameRow"><span class="catName${_isGold?" catNameGold":""}">${escHtml(po.name||"匿名さん")}</span>${fireBadge}</span>`+   /* なまえ＋🔥連続（名前の右・③風火色） */
       `<span class="catRise" data-cat="${_riseCat(po)}"${riseTxt?"":' style="visibility:hidden"'}>（${riseTxt?escHtml(riseTxt):"・"}）</span>`+   /* カテゴリ（色＋形で区別） */
-      `<div class="catCmtWrap">${comment?`<span class="catCmt">${(typeof emoHTML==="function"?emoHTML(comment,15):escHtml(comment))}</span>`:""}</div>`;   /* コメント枠：高さを最長に揃える */
+      `<div class="catCmtWrap">${comment?`<span class="catCmt">${(typeof emoHTML==="function"?emoHTML(comment,15):escHtml(comment))}</span>`+((!po.isSelf&&po.uid&&po.pid)?`<button class="cmtLike${likedPost(po.uid,po.pid)?" done":""}" type="button" data-uid="${escHtml(po.uid)}" data-pid="${escHtml(po.pid)}" aria-label="いいね">${likedPost(po.uid,po.pid)?"\u2764":"\u2661"}</button>`:""):""}</div>`;   /* コメント枠：高さを最長に揃える */
     const riseEl=lab.querySelector(".catRise")||null;
     if(comment){   /* クリックで全文表示 */
       lab.title="コメントを見る";
@@ -14151,7 +14213,11 @@ function _hcSet(i,manual){
 function _hcTick(){
   try{
     if(Date.now()<_hcHold)return;
-    var st=$("topLeftStack"); if(!st||!st.offsetParent)return;
+    var st=$("topLeftStack"); if(!st)return;
+    /* ★position:fixed だと offsetParent が null になるので 見えているかは 大きさで しらべる */
+    var cs=getComputedStyle(st);
+    if(cs.display==="none"||cs.visibility==="hidden"||parseFloat(cs.opacity||"1")<0.05)return;
+    var r=st.getBoundingClientRect(); if(!r.width||!r.height)return;
     _hcSet(_hcIdx+1);
   }catch(_){}
 }
@@ -29531,7 +29597,8 @@ function _yumeMasterValid(){
 }
 function _yumeDex(){try{var a=JSON.parse(localStorage.getItem(YUME_KEY)||"[]");return Array.isArray(a)?a:[];}catch(_){return [];}}
 function _yumeSaveDex(a){try{localStorage.setItem(YUME_KEY,JSON.stringify(a));}catch(_){}}
-function _yumeAdd(y){var a=_yumeDex();
+function _yumeAdd(y){
+  try{_ytMark(y);}catch(_){}var a=_yumeDex();
   try{var had=false;for(var i=0;i<a.length;i++)if(a[i]&&a[i].name===y.name){had=true;break;}
     if(!had&&typeof _yumeNewName!=="undefined")_yumeNewName=y.name;}catch(_){}
   a.push(y);_yumeSaveDex(a);return a.length;}
@@ -29585,10 +29652,101 @@ function _yumeMigrate(){
     localStorage.setItem(YUME_MIGRATE_KEY,"1");
   }catch(_){}
 }
+/* ===== かくりつ（ちゃんと 計算した もの）と「つぎだけ アップ」 ===== */
+var YB_KEY="radio_yume_boost", YT_KEY="radio_yume_tiers";
+var YB_BASE={shiny:1/150, big:0.10, star3:0.05, star2:0.25};
+var YB_NAME={shiny:{ico:"\ud83c\udf08",n:"色違い"},big:{ico:"\ud83d\udc51",n:"BIG"},star3:{ico:"\u2605",n:"\u2605\u2605\u2605"}};
+function _ybGet(){ try{var v=JSON.parse(localStorage.getItem(YB_KEY)||"null"); return (v&&v.k&&v.mul>1.001)?v:null;}catch(_){ return null; } }
+function _ybSave(v){ try{ if(v)localStorage.setItem(YB_KEY,JSON.stringify(v)); else localStorage.removeItem(YB_KEY); }catch(_){} try{_ybPaintHome();}catch(_){} }
+function _ybClear(){ _ybSave(null); }
+/* 敵を たおすと つぎの1回だけ アップ（強い敵ほど 大きく・上限つき） */
+function _ybAdd(diff,isBoss){
+  try{
+    var cur=_ybGet();
+    var k=(cur&&cur.k)||["shiny","big","star3"][Math.floor(Math.random()*3)];
+    var cap=isBoss?3:2;
+    var gain=Math.min(0.42,0.05+(Math.max(1,diff||1))*0.028)*(isBoss?1.5:1);
+    var mul=Math.min(cap,((cur&&cur.mul)||1)+gain);
+    _ybSave({k:k,mul:mul});
+    return {k:k,mul:mul,name:(YB_NAME[k]||{}).n||k,ico:(YB_NAME[k]||{}).ico||""};
+  }catch(_){ return null; }
+}
+/* いまの かくりつ（アップぶんも 入れる） */
+function _yumeOddsNow(){
+  var b=_ybGet(), sh=YB_BASE.shiny, bg=YB_BASE.big, s3=YB_BASE.star3, s2=YB_BASE.star2;
+  if(b){ if(b.k==="shiny")sh*=b.mul; else if(b.k==="big")bg*=b.mul; else if(b.k==="star3")s3*=b.mul; }
+  sh=Math.min(.9,sh); bg=Math.min(.9,bg); s3=Math.min(.9,s3); s2=Math.min(1-s3,s2);
+  var up=b?b.k:null;
+  return [
+    {k:"SSS",  ico:"\ud83c\udfc6", n:"SSS",   p:sh*bg,  up:(up==="shiny"||up==="big")},
+    {k:"shiny",ico:"\ud83c\udf08", n:"色違い", p:sh,     up:(up==="shiny")},
+    {k:"BIG",  ico:"\ud83d\udc51", n:"BIG",   p:bg,     up:(up==="big")},
+    {k:"S3",   ico:"\u2b50",        n:"\u2605\u2605\u2605", p:s3, up:(up==="star3")},
+    {k:"SS",   ico:"",               n:"SS",    p:s3*bg,  up:(up==="star3"||up==="big")},
+    {k:"S",    ico:"",               n:"S",     p:s2*bg,  up:(up==="big")},
+    {k:"A",    ico:"",               n:"A",     p:s2,     up:false}
+  ];
+}
+function _yumeTiersOf(y){
+  var t=[],st=(y&&y.star)||1;
+  if(y&&y.shiny&&y.big)t.push("SSS");
+  if(y&&y.shiny)t.push("shiny");
+  if(y&&y.big)t.push("BIG");
+  if(st>=3)t.push("S3");
+  if(st>=3&&y&&y.big)t.push("SS");
+  if(st===2&&y&&y.big)t.push("S");
+  if(st===2)t.push("A");
+  return t;
+}
+function _ytGot(){ try{var v=JSON.parse(localStorage.getItem(YT_KEY)||"{}");return (v&&typeof v==="object")?v:{};}catch(_){ return {}; } }
+function _ytMark(y){ try{var m=_ytGot(); _yumeTiersOf(y).forEach(function(k){m[k]=1;}); localStorage.setItem(YT_KEY,JSON.stringify(m)); }catch(_){} }
+function _ybFmt(p){ var v=p*100; return (v<0.01?v.toFixed(3):(v<1?v.toFixed(2):v.toFixed(1)))+"%"; }
+/* なかまにする画面の すみに 出す かくりつ一覧 */
+function _ybPaintHome(){
+  try{
+    var btn=$("randomModeBtn"); if(!btn)return;
+    var el=document.getElementById("ybBadge");
+    var b=_ybGet();
+    if(!b){ if(el)el.hidden=true; return; }
+    if(!el){ el=document.createElement("span"); el.id="ybBadge"; btn.appendChild(el); }
+    var nm=(YB_NAME[b.k]||{});
+    el.textContent=(nm.ico||"")+" "+(nm.n||"")+"率アップ！";
+    el.hidden=false;
+  }catch(_){}
+}
+try{ setTimeout(function(){try{_ybPaintHome();}catch(_){}} ,3000); }catch(_){}
+/* 「つぎの ユメっ子の ○○ を あげました」を 軽く 出す */
+function _ybShowGain(r,elId){
+  try{
+    if(!r)return;
+    var txt=(r.ico||"")+" つぎの ユメっ子の "+r.name+"率アップ！";
+    var el=elId?document.getElementById(elId):null;
+    if(el){ var d=document.createElement("div"); d.className="ybGain"; d.textContent=txt;
+      el.parentNode.insertBefore(d,el.nextSibling); }
+    else { try{toast(txt);}catch(_){} }
+    try{_ybPaintHome();}catch(_){}
+  }catch(_){}
+}
+function _ygPaintOdds(){
+  try{
+    var box=$("ygOdds"); if(!box)return;
+    try{ var g=$("yumeGacha"); if(g&&box.parentElement!==g)g.appendChild(box); }catch(_){}   /* すみに 出すため 直下へ */
+    var got=_ytGot();
+    box.innerHTML=_yumeOddsNow().map(function(o){
+      return '<i'+(o.up?' class="up"':'')+'><b>'+(o.ico?o.ico+" ":"")+o.n+'</b><u>'+_ybFmt(o.p)+(o.up?" \u25b2":"")+'</u><s>'+(got[o.k]?"\u2714":"\u25a1")+'</s></i>';
+    }).join("");
+  }catch(_){}
+}
 function _yumeRoll(){
-  var star=_yumeRollStar(), base=_yumePick(star);
-  var shiny=(Math.floor(Math.random()*150)===0);   /* 色違い 1/150 */
-  var big=(Math.random()<0.10), bigMul=big?(1+Math.random()*0.5):1;   /* ★BIG＝10%・最大値1〜1.5倍 */
+  var _b=_ybGet();
+  var _sh=YB_BASE.shiny,_bg=YB_BASE.big,_s3=YB_BASE.star3;
+  if(_b){ if(_b.k==="shiny")_sh*=_b.mul; else if(_b.k==="big")_bg*=_b.mul; else if(_b.k==="star3")_s3*=_b.mul; }
+  _sh=Math.min(.9,_sh); _bg=Math.min(.9,_bg); _s3=Math.min(.9,_s3);
+  var _r=Math.random(), star=(_r<_s3)?3:((_r<_s3+0.25)?2:1);
+  var base=_yumePick(star);
+  var shiny=(Math.random()<_sh);
+  var big=(Math.random()<_bg), bigMul=big?(1+Math.random()*0.5):1;
+  try{_ybClear();}catch(_){}   /* ★つぎの1回かぎり＝つかったら リセット */
   return {id:"y"+Date.now()+"_"+Math.floor(Math.random()*1000),img:base.img,name:base.name,star:star,
     hp:_yumeStat(star),atk:_yumeStat(star),spd:_yumeStat(star),lv:(100+star*30),sk:(base.sk!=null?base.sk:null),
     big:big?1:0,bigMul:bigMul,shiny:shiny,hue:shiny?Math.floor(Math.random()*360):0,at:Date.now()};
@@ -30179,6 +30337,7 @@ function _ygRenderReveal(y,instant){
     }
   }catch(_){}
   try{var inf=$("ygInfo");if(inf){void inf.offsetWidth;inf.classList.add("show");}}catch(_){}
+  try{_ygPaintOdds();}catch(_){}
   /* ★じどうで なかまに なる（はじめての子は 図鑑の 演出も はさむ）→ ひとりでに とじる */
   try{
     if(!_ygDexShown){
@@ -30589,7 +30748,7 @@ function _bossBtnHTML(){
   return '<span class="hlIco'+(seen?"":" moji")+'">'+_oniIconSVG()+'</span>'
     +tx+'<span id="homeLocBadge" hidden></span>';
 }
-/* いまは ボスの 時間？（18時〜5時。全衣装モード中は いつでも） */
+/* いまは ボスの 時間？（23時〜4時。全衣装モード中は いつでも） */
 function _homeLocMode(){ try{ return _bossInWindow()?"boss":"adv"; }catch(_){ return "adv"; } }
 /* ホームの ボタンを いまの じかんに 合わせて ぬりなおす */
 var _homeLocCur="";
@@ -30995,7 +31154,7 @@ function _bossPickImg(){
   return list[Math.floor((r/233280)*list.length)%list.length];
 }
 function _bossInWindow(){ try{ if(typeof _devUnlockAll!=="undefined" && _devUnlockAll)return true; }catch(_){}   /* ★全衣装モード中は テスト用に いつでも */
-  var h=new Date().getHours(); return (h>=18||h<5); }
+  var h=new Date().getHours(); return (h>=23||h<4); }
 function _bossLoadTeam(){ try{var v=JSON.parse(localStorage.getItem(BOSS_TEAM_KEY)||"null"); if(v&&v.mine)_bossTeam=v;}catch(_){} }
 function _bossSaveTeam(){ try{localStorage.setItem(BOSS_TEAM_KEY,JSON.stringify(_bossTeam));}catch(_){} }
 function _bossHelperPool(){ var out=[]; try{ var owned={}; (_yumeDex()||[]).forEach(function(y){owned[y.img]=1;});
@@ -31017,7 +31176,7 @@ function _bossEnter(){ try{$("bossWarn").hidden=true;}catch(_){} var mn=$("bossM
     var bi=$("bossImg"); if(bi){ bi.src=f; bi.style.display=_bossInWindow()?"":"none"; }
     var bw=$("bossWholeImg"); if(bw){ bw.src=f; bw.style.display=_bossInWindow()?"":"none"; }
   }catch(_){} });
-  try{var tn=$("bossTimeNote"); if(tn)tn.textContent=_bossInWindow()?"いま たたかえる（18時〜5時）":"よる 18時〜あさ 5時 だけ あらわれる…";}catch(_){}
+  try{var tn=$("bossTimeNote"); if(tn)tn.textContent=_bossInWindow()?"いま たたかえる（23時〜4時）":"よる 23時〜あさ 4時 だけ あらわれる…";}catch(_){}
   try{var fb=$("bossFightBtn"); if(fb)fb.disabled=!_bossInWindow();}catch(_){}
   _bossPaintSlots();
   try{_bossPanWire();}catch(_){}
@@ -31218,8 +31377,8 @@ var BOSS_HAUNT_MS=40*60*1000, _bossHauntT=0, _bossHauntImg="", _bossHauntSlot=-1
 function _bossWarned(){ try{return localStorage.getItem(BOSS_WARN_KEY)==="1";}catch(_){return false;} }
 function _bossWindowStart(){
   try{ if(typeof _devUnlockAll!=="undefined" && _devUnlockAll)return Date.now()-BOSS_HAUNT_MS-60000; }catch(_){}
-  var d=new Date(), st=new Date(d.getFullYear(),d.getMonth(),d.getDate(),18,0,0,0);
-  if(d.getHours()<5)st.setDate(st.getDate()-1);
+  var d=new Date(), st=new Date(d.getFullYear(),d.getMonth(),d.getDate(),23,0,0,0);
+  if(d.getHours()<4)st.setDate(st.getDate()-1);
   return st.getTime();
 }
 /* あと どれくらいで ホームに 来るか（0=まだ とおい／1=もう 来ている） */
@@ -31399,7 +31558,7 @@ function _bossEnemy(n){ var base=([0,1.0,1.25,1.5][_bossNo]||1.0)*_bossLvMul();
 var _bfState=null,_bfTimer=0,_bfUnits=null;
 var BF_TICK=640;
 
-function _bossFight(){ if(!_bossInWindow()){ try{toast("よる 18時〜あさ 5時 だけだよ");}catch(_){} return; }
+function _bossFight(){ if(!_bossInWindow()){ try{toast("よる 23時〜あさ 4時 だけだよ");}catch(_){} return; }
   if(_bfState)return;
   var dex=_yumeDex()||[], team=[];
   (_bossTeam.mine||[]).forEach(function(id){ var y=dex.filter(function(d){return d.id===id;})[0]; if(y)team.push(_advUnit(y)); });
@@ -31600,6 +31759,11 @@ function _bfEnd(win){
   if(_bfState)_bfState.over=true;
   _bfLogPush([win?"★ ボスを おいはらった！":"… にげかえった …"],!win);
   try{_bmResult(!!win);}catch(_){}
+  if(win){ try{ var _r2=_ybAdd(4+Math.round(_bossLvEff()),true); if(_r2){
+    var _rs=document.getElementById("bfResult");
+    if(_rs){ var _sp=document.createElement("span"); _sp.className="ybGain"; _sp.textContent=(_r2.ico||"")+" つぎの ユメっ子の "+_r2.name+"率アップ！"; _rs.appendChild(_sp); }
+    else { try{toast((_r2.ico||"")+" つぎの ユメっ子の "+_r2.name+"率アップ！");}catch(_){} }
+  } }catch(_){} }
   try{ if(win){ BOSS_METER.beat=Date.now(); _bmSaveCache(); _bossHauntPaint(); } }catch(_){}
   try{ if(win){sndCrit();}else{sndDown();} }catch(_){}
   try{ _bossVoice(win?"wail":"laugh",0.15,1); }catch(_){}
@@ -31926,6 +32090,11 @@ function _advFinish(){
     /* 過去ステージの リプレイ勝ちは 進行に えいきょう しない（ごほうび・レベルだけ） */
   }
   _advShowResult(win,advanced,false,lvTxt);
+  if(win){ try{
+    var _bd=(_advCh&&_advCh.diff)||1;
+    var _r=_ybAdd(_bd,false);
+    if(_r)_ybShowGain(_r,"abResultSub");
+  }catch(_){} }
 }
 function _advShowResult(win,advanced,dev,lvTxt){
   try{
@@ -37001,6 +37170,7 @@ function _gpStreetHTML(){
     <div id="ygLvWrap"><div id="ygLvNum" class="ygLvNum"></div><span id="ygLvBar"><span id="ygLvFill"></span><span id="ygLvCap" class="ygLvCap" hidden></span></span></div>
     <div id="ygSkill"></div>
     <div id="ygStats"></div>
+    <div id="ygOdds" aria-hidden="true"></div>
     <div id="ygBtns"><button id="ygNo" type="button">いまは しない</button><button id="ygYes" type="button">なかまに する</button></div>
   </div>
   <!-- ★キャラ登場前の「バン！バン！」演出 -->

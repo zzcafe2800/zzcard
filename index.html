@@ -6125,7 +6125,13 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
   font-family:"Yomogi","Kosugi Maru",sans-serif;opacity:0;transform:scale(.86) translateY(6px);
   transition:opacity .18s ease,transform .18s cubic-bezier(.2,1.4,.4,1);cursor:pointer;}
 #catY1Pop.on{opacity:1;transform:none;}
-#catY1Pop .cypPic{width:66px;height:66px;margin:0 auto 4px;position:relative;}
+#catY1Pop .cypCat{width:78px;height:80px;margin:0 auto 2px;}
+#catY1Pop .cypCat svg{width:100%;height:100%;display:block;}
+#catY1Pop .cypSub{font-size:9.5px;font-weight:800;color:#9ab4c4;margin-top:1px;}
+#catY1Pop .cypSep{height:1px;background:rgba(150,190,215,.35);margin:7px 2px;}
+#catY1Pop .cypNone{font-size:10px;font-weight:800;color:#a9bccb;padding:2px 0;}
+#catY1Pop .cypYName{font-size:12px;font-weight:900;color:#3f6f8a;line-height:1.2;}
+#catY1Pop .cypPic{width:58px;height:58px;margin:0 auto 3px;position:relative;}
 #catY1Pop .cypPic img{width:100%;height:100%;object-fit:contain;display:block;}
 #catY1Pop .cypPic.sil img{filter:brightness(0) opacity(.35);}
 #catY1Pop .cypName{font-size:13px;font-weight:900;color:#3f6f8a;line-height:1.2;}
@@ -31154,22 +31160,39 @@ function _yume1Payload(){try{var y=_myYume1();if(!y)return null;return {img:y.im
 function _yumeOwnedImgs(){try{return _yumeDex().map(function(y){return y.img;});}catch(_){return [];}}
 /* ★猫を タップ＝その人の ユメっ子の ステータスを 見る */
 function _catY1PopClose(){ try{var p=document.getElementById("catY1Pop"); if(p)p.remove();}catch(_){} }
-function _catY1PopOpen(y1,isSelf,anchor){
+function _catY1PopOpen(po,anchor){
   try{
     _catY1PopClose();
-    if(!y1||!y1.img)return;
-    var owned=isSelf||_yumeOwnedImgs().indexOf(y1.img)>=0;
+    if(!po)return;
+    var isSelf=!!po.isSelf, y1=po.y1||null;
     var g=function(v){ return (Number(v)>0)?_yumeGrade(Number(v)):"?"; };
     var pop=document.createElement("div"); pop.id="catY1Pop";
-    pop.innerHTML=
-      '<div class="cypPic'+(owned?"":" sil")+'"><img src="'+escHtml(y1.img)+'" alt=""/></div>'+
-      '<div class="cypName">'+(owned?escHtml(y1.name||""):"？？？")+'</div>'+
-      '<div class="cypStars">'+_yumeStarStr(y1.star||1)+'</div>'+
-      '<div class="cypRow"><span><i>たいりょく</i><b>'+g(y1.hp)+'</b></span>'+
-      '<span><i>ちから</i><b>'+g(y1.atk)+'</b></span>'+
-      '<span><i>すばやさ</i><b>'+g(y1.spd)+'</b></span></div>'+
-      (y1.big?'<div class="cypTag">\ud83d\udc51 BIG</div>':"")+
-      (y1.shiny&&owned?'<div class="cypTag sh">\ud83c\udf08 色ちがい</div>':"");
+    /* その人の 猫（衣装・ポーズ つき） */
+    var catHTML="";
+    try{ catHTML='<div class="cypCat">'+catFigureHTML(po.catBody||"#1c1c1c",po.color||"#8fdcff",po.pose||"sit","front","normal",po.cos||null)+'</div>'; }catch(_){}
+    var yh="";
+    if(y1&&y1.img){
+      var owned=isSelf||_yumeOwnedImgs().indexOf(y1.img)>=0;
+      yh='<div class="cypSep"></div>'+
+        '<div class="cypY1">'+
+        '<div class="cypPic'+(owned?"":" sil")+'"><img src="'+escHtml(y1.img)+'" alt=""/></div>'+
+        '<div class="cypYName">'+(owned?escHtml(y1.name||""):"？？？")+'</div>'+
+        '<div class="cypStars">'+_yumeStarStr(y1.star||1)+'</div>'+
+        '<div class="cypRow"><span><i>たいりょく</i><b>'+g(y1.hp)+'</b></span>'+
+        '<span><i>ちから</i><b>'+g(y1.atk)+'</b></span>'+
+        '<span><i>すばやさ</i><b>'+g(y1.spd)+'</b></span></div>'+
+        (y1.big?'<div class="cypTag">\ud83d\udc51 BIG</div>':"")+
+        (y1.shiny&&owned?'<div class="cypTag sh">\ud83c\udf08 色ちがい</div>':"")+
+        '</div>';
+    }else{
+      yh='<div class="cypSep"></div><div class="cypNone">ユメっ子は まだ いないみたい</div>';
+    }
+    var sub=[];
+    if(Number.isFinite(po.total))sub.push("そう "+po.total+"日");
+    if(Number.isFinite(po.streak))sub.push("れんぞく "+po.streak+"日");
+    pop.innerHTML=catHTML+
+      '<div class="cypName">'+escHtml(po.name||"匿名さん")+'</div>'+
+      (sub.length?'<div class="cypSub">'+sub.join(" ・ ")+'</div>':"")+ yh;
     document.body.appendChild(pop);
     try{
       var r=anchor?anchor.getBoundingClientRect():null;
@@ -31192,11 +31215,9 @@ try{ document.addEventListener("click",function(e){
   try{
     var pid=c.getAttribute("data-pid")||"", uid=c.getAttribute("data-uid")||"";
     var po=(_hillAllCats||[]).filter(function(x){return x&&((pid&&x.pid===pid)||(uid&&x.uid===uid));})[0];
-    if(!po){ var b=c.querySelector(".catY1"); if(!b)return; }
-    var y1=po?po.y1:null;
-    if(!y1&&po&&po.isSelf){ try{y1=_yume1Payload();}catch(_){} }
-    if(!y1)return;
-    _catY1PopOpen(y1,!!(po&&po.isSelf),c);
+    if(!po)return;
+    if(!po.y1&&po.isSelf){ try{po=Object.assign({},po,{y1:_yume1Payload()});}catch(_){} }
+    _catY1PopOpen(po,c);
   }catch(_){}
 }); }catch(_){}
 function _catYumeBadge(y1,isSelf){ if(!y1||!y1.img)return null; var owned=isSelf||_yumeOwnedImgs().indexOf(y1.img)>=0; var d=document.createElement("div"); d.className="catY1"+(owned?"":" sil"); d.title=owned?(y1.name||""):"？？？"; var im=document.createElement("img"); im.src=y1.img; im.alt=""; if(y1.shiny&&owned){im.style.filter="hue-rotate("+(y1.hue||0)+"deg) saturate(1.25) drop-shadow(0 0 4px rgba(255,240,150,.95))"; d.classList.add("shiny");} if(y1.big)d.classList.add("big"); im.onerror=function(){try{d.style.display="none";}catch(_){}}; d.appendChild(im); return d; }

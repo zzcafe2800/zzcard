@@ -8691,9 +8691,44 @@ function buildRecGraph(){
    → 23時に ねる／1時に ねる が となりどうしに なるので 日を またいでも 線が とばない。
    → 就寝が 上・起床が 下 に くる。                                            */
 var GRAPH_ANCHOR=14;
+/* ★境目は その人の きろくから 自動で きめる。
+   1日を まるい 時計と 見て、記録が いちばん あいている ところの まんなかを 境目に する。
+   → だれの リズムでも 点が はしっこに 来ないので 線が とばない。            */
+/* 円（24時間）の へいきん時こく */
+function _circMean(a){
+  if(!a||!a.length)return null;
+  var x=0,y=0;
+  a.forEach(function(v){ var r=v/24*2*Math.PI; x+=Math.cos(r); y+=Math.sin(r); });
+  if(Math.abs(x)<1e-9&&Math.abs(y)<1e-9)return a[0];
+  var m=Math.atan2(y,x)/(2*Math.PI)*24;
+  return ((m%24)+24)%24;
+}
+/* ★境目は その人の きろくから 自動で きめる。
+   「起きた時間 → 日中 → ねた時間」の あいだ（＝ひるま）の まんなかを 境目に する。
+   こうすると 上から 境目→就寝→起床→境目 の じゅんに ならぶので
+   **就寝は かならず 起床より 上**に 来て、日を またいでも 線が とばない。   */
+function _graphAnchorCalc(){
+  try{
+    var wv=[],bv=[];
+    var wl=(typeof getWakeLog==="function")?getWakeLog():{};
+    var sl=(typeof getSleepLog==="function")?getSleepLog():{};
+    Object.keys(wl).forEach(function(k){ var v=wl[k]; if(Number.isFinite(v))wv.push(((v%24)+24)%24); });
+    Object.keys(sl).forEach(function(k){ var v=sl[k]; if(Number.isFinite(v))bv.push(((v%24)+24)%24); });
+    try{ var t=profileWake(); if(Number.isFinite(t))wv.push(((t%24)+24)%24); }catch(_){}
+    var Wm=_circMean(wv), Bm=_circMean(bv);
+    if(Wm==null&&Bm==null)return 14;
+    if(Bm==null)return ((Math.round(Wm+12)%24)+24)%24;   /* 起床だけ＝まん中に 来るように */
+    if(Wm==null)return ((Math.round(Bm+12)%24)+24)%24;   /* 就寝だけ＝まん中に 来るように */
+    var d=(((Bm-Wm)%24)+24)%24;                          /* 起きてから ねるまで（ひるま）の 長さ */
+    if(d<1)d=24;                                          /* おかしな データの ほけん */
+    var mid=(Wm+d/2)%24;
+    return ((Math.round(mid)%24)+24)%24;
+  }catch(_){ return 14; }
+}
 function _graphRange(){
   var t=6; try{t=profileWake();}catch(_){}
   if(!Number.isFinite(t))t=6;
+  try{ GRAPH_ANCHOR=_graphAnchorCalc(); }catch(_){ GRAPH_ANCHOR=14; }
   return {lo:0, hi:24, target:t, anchor:GRAPH_ANCHOR};
 }
 /* 時刻 → めもりの 位置（0＝14時・24＝つぎの日の14時） */

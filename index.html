@@ -5923,6 +5923,31 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 .ybFree:active{transform:scale(.95);}
 .ybCard.justgot .ybFree,.ybCard.locked .ybFree{display:none;}
 </style>
+<style id="shareCardCss">
+#shareCard{position:fixed;inset:0;z-index:3800;display:flex;align-items:center;justify-content:center;
+  background:rgba(12,28,40,.72);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  padding:16px;font-family:"Yomogi","Kosugi Maru",sans-serif;animation:scIn .25s ease both;}
+#shareCard[hidden]{display:none;}
+@keyframes scIn{from{opacity:0;}to{opacity:1;}}
+#scBox{display:flex;flex-direction:column;gap:12px;max-width:min(420px,92vw);max-height:92vh;}
+#scPrev{position:relative;flex:1 1 auto;min-height:0;border-radius:16px;overflow:hidden;
+  background:rgba(255,255,255,.1);box-shadow:0 16px 40px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;}
+#scImg{max-width:100%;max-height:min(72vh,760px);display:block;object-fit:contain;}
+#scImg[hidden]{display:none;}
+#scLoad{position:absolute;color:#dff2ff;font-size:14px;font-weight:800;}
+#scLoad[hidden]{display:none;}
+#scBtns{display:flex;gap:10px;justify-content:center;}
+#scBtns button{border:none;border-radius:999px;padding:13px 24px;cursor:pointer;
+  font-family:inherit;font-size:14px;font-weight:900;}
+#scDl{background:linear-gradient(135deg,#7fd6f5,#3f9fd8);color:#fff;box-shadow:0 6px 18px rgba(63,159,216,.45);}
+#scClose{background:rgba(255,255,255,.9);color:#5b8098;}
+#scBtns button:active{transform:scale(.95);}
+.tsShare{background:linear-gradient(135deg,#ffe1a8,#ffc46b) !important;color:#8a5a10 !important;
+  border:none;border-radius:999px;padding:10px 16px;cursor:pointer;
+  font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:13px;font-weight:900;
+  box-shadow:0 4px 12px rgba(230,170,60,.4);}
+.tsShare:active{transform:scale(.95);}
+</style>
 <style id="homeYumeBtnCss">
 /* ★ホームの「ユメっ子」ボタンを 押せると わかる 見た目に */
 #homeZZ{background:linear-gradient(135deg,#9fe8dd,#4fc4bb) !important;color:#0d4c48 !important;
@@ -7325,7 +7350,7 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
       <button id="krSkip" type="button">スキップ</button>
       </div>
     </div>
-    <div id="taisoFooter"><label id="storyJoinChkRow"><input type="checkbox" id="catOnlyChk" checked/> 猫のみのとうこう</label><button class="tsCat" id="tsCatBtn" type="button">🐱 ねこと はなす</button><button class="tsAdv" id="tsAdvBtn" type="button">⚔️ 冒険</button><button class="tsNext" id="tsNextBtn" type="button">ホームへ →</button></div>
+    <div id="taisoFooter"><label id="storyJoinChkRow"><input type="checkbox" id="catOnlyChk" checked/> 猫のみのとうこう</label><button class="tsShare" id="tsShareBtn" type="button">📸 きろくカード</button><button class="tsCat" id="tsCatBtn" type="button">🐱 ねこと はなす</button><button class="tsAdv" id="tsAdvBtn" type="button">⚔️ 冒険</button><button class="tsNext" id="tsNextBtn" type="button">ホームへ →</button></div>
   </div>
 </div>
 
@@ -33289,6 +33314,208 @@ function _ylList(){
     return a.slice().sort(function(x,y){return pw(y)-pw(x);});
   }catch(_){ return []; }
 }
+
+/* =========================================================
+   きろくカード（Xなどに あげやすい 1枚絵）
+   ========================================================= */
+var SC_W=1080, SC_H=1350, _scUrl="";
+function _scSky(h){
+  if(h>=5&&h<8)  return [["#ffd9a8",0],["#ffc7c0",.34],["#a9d9f2",.72],["#cfeaf8",1]];
+  if(h>=8&&h<16) return [["#7cc9f0",0],["#a9dcf6",.45],["#dff2fd",1]];
+  if(h>=16&&h<19)return [["#ff9f7a",0],["#ffbf8f",.3],["#8fb3dd",.72],["#6f8fc4",1]];
+  return [["#12203f",0],["#1e3157",.42],["#3a5486",.8],["#4a6699",1]];
+}
+function _scRR(x,c,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
+function _scPanel(c,x,y,w,h,r,a){_scRR(x,c,y,w,h,r||28);c.fillStyle="rgba(255,255,255,"+(a==null?.88:a)+")";
+  c.shadowColor="rgba(40,90,130,.28)";c.shadowBlur=26;c.shadowOffsetY=8;c.fill();
+  c.shadowColor="transparent";c.shadowBlur=0;c.shadowOffsetY=0;}
+function _scSpark(c,x,y,r,col){
+  c.save();c.translate(x,y);c.fillStyle=col||"#fff";c.beginPath();
+  for(var i=0;i<4;i++){var a=i*Math.PI/2;c.moveTo(0,0);
+    c.quadraticCurveTo(Math.cos(a+.4)*r*.28,Math.sin(a+.4)*r*.28,Math.cos(a)*r,Math.sin(a)*r);
+    c.quadraticCurveTo(Math.cos(a-.4)*r*.28,Math.sin(a-.4)*r*.28,0,0);}
+  c.fill();c.restore();
+}
+function _scSvgImg(svg){
+  return new Promise(function(res){
+    try{var i=new Image();i.onload=function(){res(i);};i.onerror=function(){res(null);};
+      i.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg);}catch(_){res(null);}
+  });
+}
+function _scHM(v){var h=Math.floor(v),m=Math.round((v-h)*60);if(m>=60){h++;m-=60;}return h+":"+String(m).padStart(2,"0");}
+async function _scBuild(){
+  var cv=document.createElement("canvas");cv.width=SC_W;cv.height=SC_H;
+  var c=cv.getContext("2d");
+  var now=new Date(), hr=now.getHours();
+  /* 空 */
+  var g=c.createLinearGradient(0,0,0,SC_H);
+  _scSky(hr).forEach(function(p){g.addColorStop(p[1],p[0]);});
+  c.fillStyle=g;c.fillRect(0,0,SC_W,SC_H);
+  /* 雲・光 */
+  c.save();c.globalAlpha=(hr>=19||hr<5)?.10:.22;c.fillStyle="#fff";
+  [[180,210,150],[880,150,120],[300,980,170],[820,1100,140],[560,420,110]].forEach(function(q){
+    c.beginPath();c.arc(q[0],q[1],q[2],0,Math.PI*2);c.arc(q[0]+q[2]*.8,q[1]+10,q[2]*.72,0,Math.PI*2);
+    c.arc(q[0]-q[2]*.8,q[1]+14,q[2]*.6,0,Math.PI*2);c.fill();});
+  c.restore();
+  /* データ */
+  var wl={},sl={},done=[];
+  try{wl=getWakeLog()||{};}catch(_){}
+  try{done=getDoneDates()||[];}catch(_){}
+  var target=6; try{target=profileWake();}catch(_){}
+  var st={current:0,total:done.length}; try{st=calcStreak()||st;}catch(_){}
+  var useStreak=((st.current||0)>=10);
+  var bigN=useStreak?(st.current||0):(st.total||done.length||0);
+  var todayKey=jstKey();
+  var wakeToday=Number.isFinite(wl[todayKey])?wl[todayKey]:null;
+  if(wakeToday==null)wakeToday=now.getHours()+now.getMinutes()/60;
+  /* ---- 上：大きな数字 ---- */
+  _scPanel(c,54,58,610,168,34,.9);
+  c.textAlign="left";c.textBaseline="middle";
+  c.fillStyle="#3f8fc0";c.font="900 44px 'Yomogi','Kosugi Maru',sans-serif";
+  c.fillText(useStreak?"連続記録":"そう日数",84,112);
+  c.fillStyle="#ff8a3d";c.font="900 118px 'Yomogi','Kosugi Maru',sans-serif";
+  var nx=c.measureText(String(bigN)).width;
+  c.fillText(String(bigN),84,176);
+  c.fillStyle="#ff8a3d";c.font="900 52px 'Yomogi','Kosugi Maru',sans-serif";
+  c.fillText("日!",84+nx+12,190);
+  /* ---- 左：今週の 起きた時間 ---- */
+  _scPanel(c,54,258,600,330,30,.9);
+  c.fillStyle="#3f7f9f";c.font="900 34px 'Yomogi','Kosugi Maru',sans-serif";
+  c.fillText("今週の 起きた時間",84,300);
+  var days=[],lab=["日","月","火","水","木","金","土"];
+  for(var i=6;i>=0;i--){var d=new Date(now.getTime()-i*86400000);
+    var k=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+    days.push({k:k,l:lab[d.getDay()],v:Number.isFinite(wl[k])?wl[k]:null,t:(k===todayKey)});}
+  var vals=days.map(function(d){return d.v;}).filter(function(v){return v!=null;});
+  if(wakeToday!=null)vals.push(wakeToday);
+  var lo=Math.max(0,Math.min.apply(null,vals.concat([target]))-1), hi=Math.max.apply(null,vals.concat([target]))+1;
+  if(hi-lo<3){var mid=(hi+lo)/2;lo=mid-1.5;hi=mid+1.5;}
+  var gx=126,gy=336,gw=490,gh=190;
+  c.strokeStyle="rgba(120,170,200,.3)";c.lineWidth=2;
+  for(var q=0;q<=3;q++){var yy=gy+gh*q/3;c.beginPath();c.moveTo(gx,yy);c.lineTo(gx+gw,yy);c.stroke();
+    c.fillStyle="#9ab8ca";c.font="800 22px 'Kosugi Maru',sans-serif";c.textAlign="right";
+    c.fillText(_scHM(hi-(hi-lo)*q/3),gx-10,yy);}
+  c.textAlign="center";
+  var bw=gw/7*.52;
+  days.forEach(function(d,i2){
+    var cx=gx+gw*(i2+.5)/7;
+    var v=(d.t&&d.v==null)?wakeToday:d.v;
+    if(v!=null){
+      var hgt=Math.max(6,gh*(1-(v-lo)/(hi-lo)));
+      var bg2=c.createLinearGradient(0,gy+gh-hgt,0,gy+gh);
+      if(d.t){bg2.addColorStop(0,"#ffb168");bg2.addColorStop(1,"#ff8a3d");}
+      else{bg2.addColorStop(0,"#8ecff2");bg2.addColorStop(1,"#5fb0dd");}
+      _scRR(cx-bw/2,c,gy+gh-hgt,bw,hgt,10);c.fillStyle=bg2;c.fill();
+    }
+    c.fillStyle=d.t?"#ff8a3d":"#7fa3ba";c.font="900 24px 'Yomogi','Kosugi Maru',sans-serif";
+    c.fillText(d.t?"今日":d.l,cx,gy+gh+30);
+  });
+  var ty=gy+gh*(1-(target-lo)/(hi-lo));
+  c.setLineDash([10,8]);c.strokeStyle="#ff9f4d";c.lineWidth=3;
+  c.beginPath();c.moveTo(gx,ty);c.lineTo(gx+gw,ty);c.stroke();c.setLineDash([]);
+  var tl="目標 "+_scHM(target);
+  c.font="900 22px 'Yomogi','Kosugi Maru',sans-serif";
+  var tw=c.measureText(tl).width+22;
+  _scRR(gx+gw-tw,c,ty-32,tw,26,13);c.fillStyle="rgba(255,255,255,.92)";c.fill();
+  c.textAlign="left";c.fillStyle="#ff9f4d";c.fillText(tl,gx+gw-tw+11,ty-19);
+  /* ---- 左下：スタンプ ---- */
+  _scPanel(c,54,614,600,300,30,.9);
+  c.textAlign="left";c.fillStyle="#3f7f9f";c.font="900 34px 'Yomogi','Kosugi Maru',sans-serif";
+  c.fillText("スタンプ",84,656);
+  var sr=42,scol=5,sx0=124,sy0=726;
+  var mdone={};done.forEach(function(k){mdone[k]=1;});
+  var mn=new Date(now.getFullYear(),now.getMonth(),1), dim=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+  var shown=0;
+  for(var dd=1;dd<=dim&&shown<12;dd++){
+    var kk=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0")+"-"+String(dd).padStart(2,"0");
+    if(!mdone[kk]&&kk!==todayKey)continue;
+    var col=shown%scol, row=Math.floor(shown/scol);
+    var cx2=sx0+col*100, cy2=sy0+row*94;
+    var isT=(kk===todayKey);
+    c.beginPath();c.arc(cx2,cy2,sr,0,Math.PI*2);
+    c.fillStyle=isT?"#fff3e0":"#eaf6fd";c.fill();
+    c.lineWidth=isT?7:4;c.strokeStyle=isT?"#ff9f4d":"#a8d5ee";c.stroke();
+    c.textAlign="center";c.textBaseline="middle";
+    c.fillStyle=isT?"#ff8a3d":"#6fb2d8";c.font="900 34px 'Yomogi','Kosugi Maru',sans-serif";
+    c.fillText(isT?"\u2600":String(dd),cx2,cy2+2);
+    shown++;
+  }
+  /* ---- まん中：じぶんの猫（上半身を 大きく） ---- */
+  try{
+    var pr=(typeof getProfile==="function"&&getProfile())||{};
+    var svg=catFigureHTML(pr.catBody||"#1c1c1c",pr.color||"#8fdcff","sit","front","happy",pr.cos||null);
+    var im=await _scSvgImg(svg);
+    if(im){
+      var CW=620, CH=CW*(124/120);
+      var dx=SC_W-CW+70, dy=500;
+      c.save();
+      c.beginPath();c.rect(0,dy,SC_W,CH*0.66);c.clip();   /* 上半身だけ */
+      c.shadowColor="rgba(30,80,120,.35)";c.shadowBlur=34;c.shadowOffsetY=10;
+      c.drawImage(im,dx,dy,CW,CH);
+      c.restore();
+    }
+  }catch(_){}
+  /* ---- 右：きょうの ユメっ子 ---- */
+  try{
+    var y1=null; try{y1=_myYume1();}catch(_){}
+    if(y1&&y1.img){
+      var yi=await new Promise(function(res){var im2=new Image();im2.onload=function(){res(im2);};im2.onerror=function(){res(null);};im2.src=y1.img;});
+      if(yi){
+        var YS=y1.big?330:270;
+        var yx=SC_W-YS-24, yy2=920;
+        c.save();c.shadowColor="rgba(255,255,255,.7)";c.shadowBlur=40;
+        if(y1.shiny)c.filter="hue-rotate("+(y1.hue||0)+"deg) saturate(1.25)";
+        c.drawImage(yi,yx,yy2,YS,YS);c.restore();c.filter="none";
+      }
+    }
+  }catch(_){}
+  /* ---- 下：きょうの 起きた時間 ---- */
+  _scPanel(c,54,1148,SC_W-108,148,32,.94);
+  c.textAlign="left";c.textBaseline="middle";
+  c.fillStyle="#5fa8d8";c.font="900 34px 'Yomogi','Kosugi Maru',sans-serif";
+  c.fillText("起きた時間",100,1222);
+  c.fillStyle="#ff8a3d";c.font="900 96px 'Yomogi','Kosugi Maru',sans-serif";
+  c.fillText(_scHM(wakeToday),330,1226);
+  c.textAlign="right";c.fillStyle="#7fb6d4";c.font="900 30px 'Yomogi','Kosugi Maru',sans-serif";
+  c.fillText("ズズラジオ体操部",SC_W-100,1230);
+  /* ---- きらきら ---- */
+  [[690,300,26],[960,470,20],[120,1080,22],[740,700,16],[1010,940,24],[440,150,18]].forEach(function(q){
+    _scSpark(c,q[0],q[1],q[2],"rgba(255,255,255,.9)");});
+  return cv.toDataURL("image/png");
+}
+function openShareCard(){
+  try{
+    var el=$("shareCard"); if(!el)return;
+    el.hidden=false;
+    var im=$("scImg"), ld=$("scLoad");
+    if(im){im.hidden=true;im.removeAttribute("src");}
+    if(ld)ld.hidden=false;
+    try{playClick();}catch(_){}
+    setTimeout(function(){
+      _scBuild().then(function(url){
+        _scUrl=url||"";
+        if(im&&url){im.src=url;im.hidden=false;}
+        if(ld)ld.hidden=true;
+      }).catch(function(){ if(ld)ld.textContent="つくれなかった…"; });
+    },60);
+  }catch(_){}
+}
+function closeShareCard(){ try{var el=$("shareCard"); if(el)el.hidden=true;}catch(_){} }
+try{ document.addEventListener("click",function(e){
+  var t=e.target; if(!t||!t.closest)return;
+  if(t.closest("#tsShareBtn")){ openShareCard(); return; }
+  if(t.closest("#scClose")){ try{playClick();}catch(_){} closeShareCard(); return; }
+  if(t.closest("#scDl")){
+    try{playClick();}catch(_){}
+    if(!_scUrl){try{toast("まだ できてないよ");}catch(_){}return;}
+    try{ var a=document.createElement("a"); a.href=_scUrl;
+      a.download="zzradio_"+jstKey()+".png"; document.body.appendChild(a); a.click(); a.remove();
+      toast("ほぞん したよ！");
+    }catch(_){ try{toast("ほぞんできなかった…長おしで 保存してね");}catch(__){} }
+    return;
+  }
+  if(t.closest("#shareCard")&&!t.closest("#scBox")){ closeShareCard(); return; }
+}); }catch(_){}
 function openYumeLab(){
   try{
     var el=$("yumeLab"); if(!el)return;
@@ -37944,6 +38171,15 @@ function _gpStreetHTML(){
     <button id="tvUp" type="button" aria-label="てっぺんへ">↑ てっぺん</button>
   </div>
   <div id="tvFoot"><span id="tvTotal"></span></div>
+</div>
+<div id="shareCard" hidden aria-hidden="true">
+  <div id="scBox">
+    <div id="scPrev"><div id="scLoad">つくってるよ…</div><img id="scImg" alt=""/></div>
+    <div id="scBtns">
+      <button id="scDl" type="button">⬇️ ダウンロード</button>
+      <button id="scClose" type="button">とじる</button>
+    </div>
+  </div>
 </div>
 <div id="yumeLab" hidden aria-hidden="true">
   <div id="ylBg"><i></i><i></i><i></i></div>

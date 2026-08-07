@@ -5813,11 +5813,15 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
   #ygOdds i{grid-template-columns:70px 52px 13px;gap:6px;}#ygOdds b,#ygOdds u,#ygOdds s{font-size:10.5px;}}
 /* ===== ホーム：つぎの ユメっ子の アップ表示 ===== */
 #randomModeBtn{position:relative;overflow:visible;}
-#ybBadge{position:absolute;top:-9px;right:-6px;z-index:5;pointer-events:none;
-  border-radius:999px;padding:3px 9px;font-family:"Yomogi","Kosugi Maru",sans-serif;
-  font-size:10.5px;font-weight:900;color:#6b3d00;letter-spacing:.02em;white-space:nowrap;
-  background:linear-gradient(135deg,#ffe9a8,#ffc44d);box-shadow:0 3px 10px rgba(230,170,40,.45);
-  animation:ybPulse 2s ease-in-out infinite;}
+#ybBadge{position:absolute;top:-14px;right:8px;z-index:5;pointer-events:none;
+  display:flex;flex-direction:column;align-items:flex-end;gap:4px;
+  animation:ybPulse 2s ease-in-out infinite;transform-origin:100% 0;}
+#ybBadge i{display:block;border-radius:999px;padding:5px 13px;font-style:normal;
+  font-family:"Yomogi","Kosugi Maru",sans-serif;
+  font-size:13px;font-weight:900;color:#6b3d00;letter-spacing:.02em;white-space:nowrap;
+  background:linear-gradient(135deg,#ffe9a8,#ffc44d);box-shadow:0 4px 12px rgba(230,170,40,.5);
+  border:1.5px solid rgba(255,255,255,.7);}
+@media (max-width:400px){#ybBadge{right:2px;top:-13px;}#ybBadge i{font-size:12.5px;padding:5px 12px;}}
 #ybBadge[hidden]{display:none;}
 .ybGain{margin-top:6px;font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:13px;font-weight:900;
   color:#ffd98f;text-shadow:0 2px 6px rgba(0,0,0,.7);text-align:center;
@@ -6115,7 +6119,27 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
 <style id="bigCss">
 .ygBig{position:absolute;top:6%;right:8%;z-index:5;font-weight:900;font-size:15px;letter-spacing:1px;color:#fff;padding:2px 9px;border-radius:10px;background:linear-gradient(180deg,#ff8a3d,#ff5a7a);box-shadow:0 3px 8px rgba(255,80,90,.5),0 0 0 2px #fff;transform:rotate(8deg);animation:bigPulse .8s ease-in-out infinite;}
 @keyframes bigPulse{0%,100%{transform:rotate(8deg) scale(1);}50%{transform:rotate(8deg) scale(1.12);}}
-.catY1.big{width:82px !important;height:82px !important;bottom:-8px !important;right:-16px !important;z-index:-1 !important;}
+#catY1Pop{position:fixed;z-index:3600;min-width:132px;padding:10px 12px;border-radius:16px;
+  background:rgba(255,255,255,.96);border:1.5px solid rgba(160,200,225,.6);
+  box-shadow:0 10px 28px rgba(70,120,160,.28);text-align:center;
+  font-family:"Yomogi","Kosugi Maru",sans-serif;opacity:0;transform:scale(.86) translateY(6px);
+  transition:opacity .18s ease,transform .18s cubic-bezier(.2,1.4,.4,1);cursor:pointer;}
+#catY1Pop.on{opacity:1;transform:none;}
+#catY1Pop .cypPic{width:66px;height:66px;margin:0 auto 4px;position:relative;}
+#catY1Pop .cypPic img{width:100%;height:100%;object-fit:contain;display:block;}
+#catY1Pop .cypPic.sil img{filter:brightness(0) opacity(.35);}
+#catY1Pop .cypName{font-size:13px;font-weight:900;color:#3f6f8a;line-height:1.2;}
+#catY1Pop .cypStars{font-size:11px;color:#f0b429;letter-spacing:1px;margin-bottom:5px;}
+#catY1Pop .cypRow{display:flex;gap:6px;justify-content:center;}
+#catY1Pop .cypRow span{display:flex;flex-direction:column;align-items:center;gap:1px;
+  background:#f2f8fc;border-radius:9px;padding:4px 6px;min-width:40px;}
+#catY1Pop .cypRow i{font-style:normal;font-size:8px;font-weight:800;color:#8fa9bd;}
+#catY1Pop .cypRow b{font-size:15px;font-weight:900;color:#4e8fb5;line-height:1;}
+#catY1Pop .cypTag{margin-top:5px;display:inline-block;font-size:10px;font-weight:900;color:#b3720e;
+  background:linear-gradient(135deg,#ffe9a8,#ffc44d);border-radius:999px;padding:2px 9px;}
+#catY1Pop .cypTag.sh{color:#8a5bb8;background:linear-gradient(135deg,#e8dcff,#c9b0f5);}
+.catY1.big{width:164px !important;height:164px !important;bottom:-18px !important;right:-46px !important;z-index:-1 !important;}
+
 </style>
 <style id="ygCatchCss">
 #ygCatch{position:absolute;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(circle at 50% 38%,#c6ecff,#93d2f6 58%,#6fbaea);animation:ygCatchIn .55s ease both;}
@@ -11712,7 +11736,7 @@ function renderHillPage(){
   const n=cats.length,center=(n-1)/2;
   const figs=[];
   cats.forEach((po,i)=>{
-    const el=document.createElement("div");el.className="hillCat";try{if(po.uid)el.dataset.uid=po.uid;}catch(_){}
+    const el=document.createElement("div");el.className="hillCat";try{if(po.uid)el.dataset.uid=po.uid;if(po.pid)el.dataset.pid=po.pid;}catch(_){}
     let _dayCls="";
     if(!po.isSelf&&Number.isFinite(po.createdAt)){const _pd=_localDayKey(po.createdAt),_td=jstKey();if(_pd&&_pd===addDays(_td,-1))_dayCls=" catDayY1";else if(_pd&&_pd<=addDays(_td,-2))_dayCls=" catDayY2";}
     const _bt=_hashStr(po.uid||po.name||i)%4;
@@ -29884,18 +29908,50 @@ function _advRewardOf(i){
   var nm=(typeof YB_NAME!=="undefined"&&YB_NAME[k])?YB_NAME[k]:{ico:"",n:k};
   return {k:k,g:g,ico:nm.ico,name:nm.n,pct:Math.round(g*100)};
 }
-function _ybGet(){ try{var v=JSON.parse(localStorage.getItem(YB_KEY)||"null"); return (v&&v.k&&v.mul>1.001)?v:null;}catch(_){ return null; } }
-function _ybSave(v){ try{ if(v)localStorage.setItem(YB_KEY,JSON.stringify(v)); else localStorage.removeItem(YB_KEY); }catch(_){} try{_ybPaintHome();}catch(_){} }
-function _ybClear(){ _ybSave(null); }
+/* ★確率アップは 最大2つ：本線（クエスト/ボス）1つ ＋ にげられた ボーナス1つ */
+function _ybGetAll(){
+  try{
+    var v=JSON.parse(localStorage.getItem(YB_KEY)||"null");
+    if(!v)return [];
+    if(Array.isArray(v))return v.filter(function(x){return x&&x.k&&x.mul>1.001;});
+    if(v.k&&v.mul>1.001)return [{k:v.k,mul:v.mul,src:"main"}];   /* 古いデータの ひきつぎ */
+    return [];
+  }catch(_){ return []; }
+}
+function _ybSaveAll(a){
+  try{
+    a=(a||[]).filter(function(x){return x&&x.k&&x.mul>1.001;});
+    if(a.length)localStorage.setItem(YB_KEY,JSON.stringify(a)); else localStorage.removeItem(YB_KEY);
+  }catch(_){}
+  try{_ybPaintHome();}catch(_){}
+}
+function _ybGet(){ return _ybGetAll()[0]||null; }            /* 互換（1つめ） */
+function _ybMul(k){ var m=1; _ybGetAll().forEach(function(x){ if(x.k===k)m*=x.mul; }); return m; }
+function _ybClear(){ _ybSaveAll([]); }
 /* 敵を たおすと つぎの1回だけ アップ（上限つき） */
 function _ybAdd(diff,isBoss){
   try{
-    var cur=_ybGet();
+    var all=_ybGetAll(), cur=all.filter(function(x){return x.src!=="flee";})[0]||null;
     var k=(cur&&cur.k)||["shiny","big","star3"][Math.floor(Math.random()*3)];
-    var cap=YB_CAP;
     var gain=Math.min(0.42,0.05+(Math.max(1,diff||1))*0.028)*(isBoss?1.5:1);
-    var mul=Math.min(cap,((cur&&cur.mul)||1)+gain);
-    _ybSave({k:k,mul:mul});
+    var mul=Math.min(YB_CAP,((cur&&cur.mul)||1)+gain);
+    var keep=all.filter(function(x){return x.src==="flee";});
+    _ybSaveAll([{k:k,mul:mul,src:"main"}].concat(keep));
+    return {k:k,mul:mul,name:(YB_NAME[k]||{}).n||k,ico:(YB_NAME[k]||{}).ico||""};
+  }catch(_){ return null; }
+}
+/* ★にげられた時の おわび（ほかに ついていても ＋で つく） */
+function _ybAddFlee(){
+  try{
+    var all=_ybGetAll();
+    var cur=all.filter(function(x){return x.src==="flee";})[0]||null;
+    var used=all.filter(function(x){return x.src!=="flee";}).map(function(x){return x.k;});
+    var pool=["shiny","big","star3"].filter(function(k){return used.indexOf(k)<0;});
+    if(!pool.length)pool=["shiny","big","star3"];
+    var k=(cur&&cur.k)||pool[Math.floor(Math.random()*pool.length)];
+    var mul=Math.min(YB_CAP,((cur&&cur.mul)||1)+0.08);
+    var keep=all.filter(function(x){return x.src!=="flee";});
+    _ybSaveAll(keep.concat([{k:k,mul:mul,src:"flee"}]));
     return {k:k,mul:mul,name:(YB_NAME[k]||{}).n||k,ico:(YB_NAME[k]||{}).ico||""};
   }catch(_){ return null; }
 }
@@ -29903,9 +29959,10 @@ function _ybAdd(diff,isBoss){
 function _ybAddFixed(rw){
   try{
     if(!rw)return null;
-    var cur=_ybGet(), cap=YB_CAP;
-    var mul=(cur&&cur.k===rw.k)?Math.min(cap,cur.mul+rw.g):Math.min(cap,1+rw.g);
-    _ybSave({k:rw.k,mul:mul});
+    var all=_ybGetAll(), cur=all.filter(function(x){return x.src!=="flee";})[0]||null;
+    var mul=(cur&&cur.k===rw.k)?Math.min(YB_CAP,cur.mul+rw.g):Math.min(YB_CAP,1+rw.g);
+    var keep=all.filter(function(x){return x.src==="flee";});
+    _ybSaveAll([{k:rw.k,mul:mul,src:"main"}].concat(keep));
     return {k:rw.k,mul:mul,name:rw.name,ico:rw.ico};
   }catch(_){ return null; }
 }
@@ -29919,9 +29976,9 @@ function _pStatAtLeast(star,v){
   return 1-Math.pow(x,1/2.2);
 }
 function _yumeOddsNow(){
-  var b=_ybGet(), sh=YB_BASE.shiny, bg=YB_BASE.big, s3=YB_BASE.star3;
-  if(b){ if(b.k==="shiny")sh*=b.mul; else if(b.k==="big")bg*=b.mul; else if(b.k==="star3")s3*=b.mul; }
+  var sh=YB_BASE.shiny*_ybMul("shiny"), bg=YB_BASE.big*_ybMul("big"), s3=YB_BASE.star3*_ybMul("star3");
   sh=Math.min(.9,sh); bg=Math.min(.9,bg); s3=Math.min(.9,s3);
+  var _ks=_ybGetAll().map(function(x){return x.k;});
   var s2=Math.min(1-s3,YB_BASE.star2), s1=Math.max(0,1-s3-s2);
   var W=[[1,s1],[2,s2],[3,s3]];
   var acc={SSS:0,SS:0,S:0,A:0};
@@ -29934,11 +29991,11 @@ function _yumeOddsNow(){
     acc.S  +=pw*(1-Math.pow(q,3));
     acc.A  +=pw*(Math.pow(q,3)-Math.pow(qa,3));
   });
-  var up=b?b.k:null, upS=(up==="star3");
+  var upS=(_ks.indexOf("star3")>=0);
   return [
     {k:"SSS",  ico:"\ud83c\udfc6", n:"SSS",   p:acc.SSS, up:upS},
-    {k:"shiny",ico:"\ud83c\udf08", n:"色違い", p:sh,      up:(up==="shiny")},
-    {k:"BIG",  ico:"\ud83d\udc51", n:"BIG",   p:bg,       up:(up==="big")},
+    {k:"shiny",ico:"\ud83c\udf08", n:"色違い", p:sh,      up:(_ks.indexOf("shiny")>=0)},
+    {k:"BIG",  ico:"\ud83d\udc51", n:"BIG",   p:bg,       up:(_ks.indexOf("big")>=0)},
     {k:"S3",   ico:"",               n:"\u2605\u2605\u2605", p:s3, up:upS},
     {k:"SS",   ico:"",               n:"SS",    p:acc.SS,  up:upS},
     {k:"S",    ico:"",               n:"S",     p:acc.S,   up:upS},
@@ -29973,11 +30030,13 @@ function _ybPaintHome(){
   try{
     var btn=$("randomModeBtn"); if(!btn)return;
     var el=document.getElementById("ybBadge");
-    var b=_ybGet();
-    if(!b){ if(el)el.hidden=true; return; }
+    var all=_ybGetAll();
+    if(!all.length){ if(el)el.hidden=true; return; }
     if(!el){ el=document.createElement("span"); el.id="ybBadge"; btn.appendChild(el); }
-    var nm=(YB_NAME[b.k]||{});
-    el.textContent=((nm.ico?nm.ico+" ":"")+(nm.n||"")+"率アップ！").trim();
+    el.innerHTML=all.slice(0,2).map(function(b){
+      var nm=(YB_NAME[b.k]||{});
+      return '<i>'+((nm.ico?nm.ico+" ":"")+(nm.n||"")+"率アップ！").trim()+'</i>';
+    }).join("");
     el.hidden=false;
   }catch(_){}
 }
@@ -30041,10 +30100,7 @@ function _ygPaintOdds(){
   }catch(_){}
 }
 function _yumeRoll(){
-  var _b=_ybGet();
-  var _sh=YB_BASE.shiny,_bg=YB_BASE.big,_s3=YB_BASE.star3;
-  if(_b){ if(_b.k==="shiny")_sh*=_b.mul; else if(_b.k==="big")_bg*=_b.mul; else if(_b.k==="star3")_s3*=_b.mul; }
-  _sh=Math.min(.9,_sh); _bg=Math.min(.9,_bg); _s3=Math.min(.9,_s3);
+  var _sh=Math.min(.9,YB_BASE.shiny*_ybMul("shiny")),_bg=Math.min(.9,YB_BASE.big*_ybMul("big")),_s3=Math.min(.9,YB_BASE.star3*_ybMul("star3"));
   var _r=Math.random(), star=(_r<_s3)?3:((_r<_s3+0.25)?2:1);
   var base=_yumePick(star);
   var shiny=(Math.random()<_sh);
@@ -30314,6 +30370,7 @@ function _exCatchWin(){
 }
 function _exCatchFlee(){
   _exCatchStop(); window._exCatchWon=false; window._exCatchDone=true;
+  try{ var _fr=_ybAddFlee(); if(_fr){ setTimeout(function(){ try{toast((_fr.ico?_fr.ico+" ":"")+"つぎの ユメっ子の "+_fr.name+"率アップ！");}catch(_){} },900); } }catch(_){}
   try{ var ch=$("exCatchChar"); if(ch)ch.classList.add("away"); }catch(_){}
   try{$("exCatchTip").textContent="いなくなっちゃった…";}catch(_){}
   try{_ygSad();}catch(_){}
@@ -31093,8 +31150,55 @@ function _myYume1(){try{
   var best=null,bv=-1; dex.forEach(function(y){ var v=(typeof _yumeMaxLv==="function")?_yumeMaxLv(y):0; if(v>bv){bv=v;best=y;} });
   return best||dex[0]||null;
 }catch(_){return null;}}
-function _yume1Payload(){try{var y=_myYume1();if(!y)return null;return {img:y.img||"",name:y.name||"",star:y.star||1,shiny:y.shiny?1:0,hue:y.hue||0,big:y.big?1:0};}catch(_){return null;}}
+function _yume1Payload(){try{var y=_myYume1();if(!y)return null;return {img:y.img||"",name:y.name||"",star:y.star||1,shiny:y.shiny?1:0,hue:y.hue||0,big:y.big?1:0,hp:y.hp||0,atk:y.atk||0,spd:y.spd||0,lv:_yumeLv(y)||0};}catch(_){return null;}}
 function _yumeOwnedImgs(){try{return _yumeDex().map(function(y){return y.img;});}catch(_){return [];}}
+/* ★猫を タップ＝その人の ユメっ子の ステータスを 見る */
+function _catY1PopClose(){ try{var p=document.getElementById("catY1Pop"); if(p)p.remove();}catch(_){} }
+function _catY1PopOpen(y1,isSelf,anchor){
+  try{
+    _catY1PopClose();
+    if(!y1||!y1.img)return;
+    var owned=isSelf||_yumeOwnedImgs().indexOf(y1.img)>=0;
+    var g=function(v){ return (Number(v)>0)?_yumeGrade(Number(v)):"?"; };
+    var pop=document.createElement("div"); pop.id="catY1Pop";
+    pop.innerHTML=
+      '<div class="cypPic'+(owned?"":" sil")+'"><img src="'+escHtml(y1.img)+'" alt=""/></div>'+
+      '<div class="cypName">'+(owned?escHtml(y1.name||""):"？？？")+'</div>'+
+      '<div class="cypStars">'+_yumeStarStr(y1.star||1)+'</div>'+
+      '<div class="cypRow"><span><i>たいりょく</i><b>'+g(y1.hp)+'</b></span>'+
+      '<span><i>ちから</i><b>'+g(y1.atk)+'</b></span>'+
+      '<span><i>すばやさ</i><b>'+g(y1.spd)+'</b></span></div>'+
+      (y1.big?'<div class="cypTag">\ud83d\udc51 BIG</div>':"")+
+      (y1.shiny&&owned?'<div class="cypTag sh">\ud83c\udf08 色ちがい</div>':"");
+    document.body.appendChild(pop);
+    try{
+      var r=anchor?anchor.getBoundingClientRect():null;
+      var w=pop.offsetWidth||150, h=pop.offsetHeight||150;
+      var left=r?Math.max(8,Math.min(window.innerWidth-w-8,r.left+r.width/2-w/2)):(window.innerWidth/2-w/2);
+      var top=r?Math.max(8,r.top-h-10):(window.innerHeight/2-h/2);
+      if(r&&top<8)top=Math.min(window.innerHeight-h-8,r.bottom+10);
+      pop.style.left=left+"px"; pop.style.top=top+"px";
+    }catch(_){}
+    setTimeout(function(){ try{pop.classList.add("on");}catch(_){} },10);
+    try{playPop();}catch(_){}
+  }catch(_){}
+}
+try{ document.addEventListener("click",function(e){
+  var t=e.target; if(!t||!t.closest)return;
+  if(t.closest("#catY1Pop")){ _catY1PopClose(); return; }
+  var c=t.closest("#hillCats .hillCat");
+  if(!c){ _catY1PopClose(); return; }
+  if(t.closest(".cmtLike")||t.closest(".catLikeHeart"))return;
+  try{
+    var pid=c.getAttribute("data-pid")||"", uid=c.getAttribute("data-uid")||"";
+    var po=(_hillAllCats||[]).filter(function(x){return x&&((pid&&x.pid===pid)||(uid&&x.uid===uid));})[0];
+    if(!po){ var b=c.querySelector(".catY1"); if(!b)return; }
+    var y1=po?po.y1:null;
+    if(!y1&&po&&po.isSelf){ try{y1=_yume1Payload();}catch(_){} }
+    if(!y1)return;
+    _catY1PopOpen(y1,!!(po&&po.isSelf),c);
+  }catch(_){}
+}); }catch(_){}
 function _catYumeBadge(y1,isSelf){ if(!y1||!y1.img)return null; var owned=isSelf||_yumeOwnedImgs().indexOf(y1.img)>=0; var d=document.createElement("div"); d.className="catY1"+(owned?"":" sil"); d.title=owned?(y1.name||""):"？？？"; var im=document.createElement("img"); im.src=y1.img; im.alt=""; if(y1.shiny&&owned){im.style.filter="hue-rotate("+(y1.hue||0)+"deg) saturate(1.25) drop-shadow(0 0 4px rgba(255,240,150,.95))"; d.classList.add("shiny");} if(y1.big)d.classList.add("big"); im.onerror=function(){try{d.style.display="none";}catch(_){}}; d.appendChild(im); return d; }
 function openAdventure(){
   var sc=$("advScreen");if(!sc)return;

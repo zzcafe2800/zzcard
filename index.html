@@ -5743,22 +5743,68 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 #taisoScreen.recLock #krSkip{opacity:1 !important;text-decoration:underline;text-underline-offset:3px;}
 @media (prefers-reduced-motion:reduce){#taisoScreen.recLock #askBox{animation:none;}}
 </style>
+<style id="advQuestCss">
+/* ===== 冒険：クエストの ごほうび ===== */
+.advNode .advRw{position:absolute;top:-13px;left:50%;transform:translateX(-50%);font-size:11px;line-height:1;
+  opacity:.75;pointer-events:none;filter:drop-shadow(0 1px 2px rgba(0,0,0,.35));}
+.advNode.lock .advRw{opacity:.3;filter:grayscale(1);}
+#advRwTxt{margin:8px auto 0;text-align:center;font-family:"Yomogi","Kosugi Maru",sans-serif;
+  font-size:11.5px;font-weight:800;color:#8aa6bb;line-height:1.5;}
+#advRwTxt b{display:inline-block;background:rgba(255,255,255,.75);border-radius:999px;
+  padding:2px 9px;margin-right:6px;font-size:10.5px;color:#6f93ad;}
+#advRwTxt i{font-style:normal;font-weight:900;color:#e0a24b;}
+/* ===== 冒険：ならびかえ ===== */
+#advSortRow{display:flex;gap:7px;justify-content:center;margin:6px 0 8px;}
+.advSortBtn{border:1.5px solid rgba(160,195,220,.5);background:rgba(255,255,255,.72);border-radius:999px;
+  padding:5px 15px;cursor:pointer;font-family:"Yomogi","Kosugi Maru",sans-serif;
+  font-size:11.5px;font-weight:800;color:#7fa3bd;}
+.advSortBtn.on{background:linear-gradient(135deg,#9fd8f2,#5eb0da);color:#fff;border-color:transparent;
+  box-shadow:0 3px 9px rgba(94,176,218,.35);}
+.advSortBtn:active{transform:scale(.95);}
+/* ===== 数字 ⇄ アルファベット ===== */
+.advCardNums span{position:relative;display:inline-block;}
+.advCardNums .gv{display:none;font-style:normal;font-weight:900;}
+.advCardNums .nv{font-style:normal;}
+#advTeam.showGrade .advCardNums .nv{display:none;}
+#advTeam.showGrade .advCardNums .gv{display:inline;}
+#advTeam .advCardNums .nv,#advTeam .advCardNums .gv{animation:advNumIn .35s ease;}
+@keyframes advNumIn{from{opacity:0;transform:translateY(-3px);}to{opacity:1;transform:none;}}
+@media (prefers-reduced-motion:reduce){#advTeam .advCardNums .nv,#advTeam .advCardNums .gv{animation:none;}}
+</style>
 <style id="ygOddsCss">
-/* ===== なかまにする画面の すみ：かくりつ一覧（目には入るけど 目立たない） ===== */
-#ygOdds{position:absolute;left:12px;top:calc(12px + env(safe-area-inset-top));z-index:6;
-  display:none;flex-direction:column;gap:1px;pointer-events:none;
-  font-family:"Kosugi Maru","Yomogi",sans-serif;opacity:.5;}
+/* ===== なかまにする画面の すみ：かくりつ一覧（読めるけど 出しゃばらない） ===== */
+#ygOdds{position:absolute;left:14px;top:calc(126px + env(safe-area-inset-top));z-index:6;
+  display:none;flex-direction:column;gap:2px;pointer-events:none;
+  background:rgba(12,18,32,.30);border:1px solid rgba(255,255,255,.14);border-radius:12px;
+  padding:9px 11px;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  font-family:"Kosugi Maru","Yomogi",sans-serif;opacity:.86;}
 #yumeGacha.s-reveal #ygOdds{display:flex;animation:ygOddsIn .8s ease .4s both;}
-@keyframes ygOddsIn{from{opacity:0;transform:translateX(-6px);}to{opacity:.5;transform:none;}}
-#ygOdds i{display:grid;grid-template-columns:66px 52px 12px;align-items:center;gap:5px;font-style:normal;}
-#ygOdds b{font-size:9px;font-weight:800;color:#dfe8f5;letter-spacing:0;white-space:nowrap;
-  text-shadow:0 1px 3px rgba(0,0,0,.85);}
-#ygOdds u{font-size:9px;font-weight:800;color:#bcd0e6;text-decoration:none;text-align:right;
-  font-variant-numeric:tabular-nums;text-shadow:0 1px 3px rgba(0,0,0,.85);}
-#ygOdds s{font-size:9px;font-weight:800;color:#9fd8b6;text-decoration:none;text-align:center;
-  text-shadow:0 1px 3px rgba(0,0,0,.85);}
+@keyframes ygOddsIn{from{opacity:0;transform:translateX(-8px);}to{opacity:.86;transform:none;}}
+#ygOdds i{display:grid;grid-template-columns:78px 58px 14px;align-items:center;gap:8px;font-style:normal;}
+#ygOdds b{font-size:11.5px;font-weight:800;color:#f2f7ff;white-space:nowrap;
+  text-shadow:0 1px 3px rgba(0,0,0,.9);}
+#ygOdds u{font-size:11.5px;font-weight:800;color:#cfe0f2;text-decoration:none;text-align:right;
+  font-variant-numeric:tabular-nums;text-shadow:0 1px 3px rgba(0,0,0,.9);}
+#ygOdds s{font-size:11.5px;font-weight:800;color:#8fe0ae;text-decoration:none;text-align:center;
+  text-shadow:0 1px 3px rgba(0,0,0,.9);}
 #ygOdds i.up b,#ygOdds i.up u{color:#ffd98f;}
-@media (max-width:400px){#ygOdds i{grid-template-columns:58px 46px 11px;gap:4px;}#ygOdds b,#ygOdds u,#ygOdds s{font-size:8px;}}
+/* ★あてた しゅんかんの チェック */
+#ygOdds s.pop{animation:ytPop .7s cubic-bezier(.2,1.6,.4,1);}
+@keyframes ytPop{0%{transform:scale(.3) rotate(-25deg);opacity:0;}45%{transform:scale(1.7) rotate(6deg);opacity:1;}100%{transform:scale(1);opacity:1;}}
+#ygOdds i.newGot{animation:ytRow 1.1s ease;}
+#ygOdds i.newGot b,#ygOdds i.newGot u,#ygOdds i.newGot s{color:#ffe27a;}
+@keyframes ytRow{0%,100%{background:transparent;box-shadow:none;}
+  25%{background:rgba(255,226,122,.30);box-shadow:0 0 14px rgba(255,226,122,.45);}
+  60%{background:rgba(255,226,122,.14);}}
+/* ★PC（よこなが）は 1.5倍 */
+@media (orientation:landscape) and (min-width:820px){
+  #ygOdds{left:24px;top:24px;padding:18px 22px;gap:6px;border-radius:16px;}
+  #ygOdds i{grid-template-columns:144px 108px 24px;gap:15px;}
+  #ygOdds b,#ygOdds u,#ygOdds s{font-size:21px;}
+}
+@media (prefers-reduced-motion:reduce){#ygOdds s.pop,#ygOdds i.newGot{animation:none;}}
+@media (max-width:400px){#ygOdds{padding:7px 9px;top:calc(118px + env(safe-area-inset-top));}
+  #ygOdds i{grid-template-columns:70px 52px 13px;gap:6px;}#ygOdds b,#ygOdds u,#ygOdds s{font-size:10.5px;}}
 /* ===== ホーム：つぎの ユメっ子の アップ表示 ===== */
 #randomModeBtn{position:relative;overflow:visible;}
 #ybBadge{position:absolute;top:-9px;right:-6px;z-index:5;pointer-events:none;
@@ -5912,6 +5958,12 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 /* ★「とうこうする」＝右がわの 下（もとは 詳細が あった ところ） */
 #tsPostRight #tsPostQuick{width:100%;margin-top:2px;padding:12px 14px;font-size:15px;border-radius:14px;}
 #tsPostRight #tsPostQuick.posted{background:linear-gradient(135deg,#bfe0f2,#8fbfd8);box-shadow:0 4px 12px rgba(120,170,200,.32);}
+/* ★とうこうの とりけし */
+#tsUnpost{display:block;width:100%;margin-top:8px;border:1.5px solid rgba(220,150,170,.55);
+  background:rgba(255,255,255,.8);border-radius:12px;padding:9px;cursor:pointer;
+  font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:12px;font-weight:800;color:#c07a92;}
+#tsUnpost[hidden]{display:none;}
+#tsUnpost:active{transform:scale(.97);}
 /* ★「詳細」＝猫の 下（もとは ボタンが あった ところ）。ひらいたら カード全体に ひろがる */
 #tsPostPreviewWrap{min-width:98px;}
 #tsPostPreviewWrap #tsMore{width:100%;margin-top:2px;}
@@ -7107,6 +7159,7 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
     <div class="trRow"><span class="trIco">😊</span><span class="trLbl">気分</span><b class="trVal" id="trMood">–</b></div>
     <div class="trRow"><span class="trIco">📻</span><span class="trLbl">総日数</span><b class="trVal" id="trTotal">–</b></div>
     <div class="trRow"><span class="trIco">🔥</span><span class="trLbl">連続日数</span><b class="trVal" id="trStreak">–</b></div>
+    <div class="trRow"><span class="trIco">🌏</span><span class="trLbl">きょうの なかま</span><b class="trVal" id="trActive">–</b></div>
   </div>
   <div class="taisoCard" id="tsRangeCard">
         <div class="tsCardTitle" id="tsMtTitle">これまでの山脈</div>
@@ -8428,8 +8481,19 @@ function _recAdviceData(){
   var dTrend=null;
   if(dv.length>=4){var h2=Math.floor(dv.length/2),b1=avg(dv.slice(0,h2)),b2=avg(dv.slice(h2));if(b1!=null&&b2!=null)dTrend=Math.round((b2-b1)*60);}
   var goal="";try{goal=(typeof _aiGoal==="function")?(_aiGoal()||""):"";}catch(_){}
+  /* ★きのう〜きょう（いちばん あたらしい 1日）の こと */
+  var lastK=null;
+  for(var li=dates.length-1;li>=0;li--){ var kk=dates[li]; if(Number.isFinite(wl[kk])||Number.isFinite(sl[kk])||mm[kk]){ lastK=kk; break; } }
+  var t1={key:lastK,wake:null,bed:null,dur:null,mood:null,moodTxt:"",diffMin:null};
+  if(lastK){
+    if(Number.isFinite(wl[lastK]))t1.wake=wl[lastK];
+    if(Number.isFinite(sl[lastK]))t1.bed=sl[lastK];
+    if(t1.wake!=null&&t1.bed!=null){var d1=t1.wake-t1.bed;if(d1<=0)d1+=24;if(d1<=16)t1.dur=d1;}
+    var m1=mm[lastK]; if(m1&&m1.l){ t1.mood=(_MOOD_VAL[m1.l]!=null)?_MOOD_VAL[m1.l]:null; t1.moodTxt=(m1.t||m1.l||""); }
+    if(t1.wake!=null)t1.diffMin=Math.round((t1.wake-target)*60);
+  }
   return {target:target, wake:avg(wv), wakeN:wv.length, dur:avg(dv), durN:dv.length, mood:avg(mv), moodN:mv.length, days:dates.length,
-          trend:trend, trendMin:trendMin, dTrend:dTrend, goal:goal};
+          trend:trend, trendMin:trendMin, dTrend:dTrend, goal:goal, today:t1};
 }
 function _recAdviceRule(d){
   var parts=[];
@@ -8477,7 +8541,13 @@ function buildRecAdvice(){
   try{
     var sysP="あなたは やさしい 生活リズムの みまもり役。ひらがな多め・あたたかい口調で、ぜったいに 責めず 前向きに。むずかしい言葉は つかわない。★その人の『もくひょう』と『いまの リズムの むき』に そった 内容にすること（一般論では なく その人むけに）。";
     var _tw={early:"だんだん はやく なってきている（いい ながれ）",late:"だんだん おそく なってきている",stable:"あまり 変わらず 安定している"}[d.trend]||"まだ わからない";
-    var userP="ご主人の 最近"+d.days+"日ぶんの データです。\n・平均起床 "+(d.wake!=null?_floatHM(d.wake):"記録なし")+"（目標 "+_floatHM(d.target)+"）\n・平均で ねむった時間 "+(d.dur!=null?d.dur.toFixed(1)+"時間":"記録なし")+"\n・気分の平均 "+(d.mood!=null?d.mood.toFixed(1)+"／5（5がいちばん良い）":"記録なし")+"\n・起きる時間の むき："+_tw+(d.trendMin!=null?("（前半とくらべて "+(d.trendMin>0?"+":"")+d.trendMin+"分）"):"")+(d.dTrend!=null?("\n・ねむった時間の むき："+(d.dTrend>0?"+":"")+d.dTrend+"分"):"")+(d.goal?("\n・ふたりの もくひょう：「"+d.goal+"」"):"\n・もくひょう：まだ 決めていない")+"\nこれらを ふまえて、その人の もくひょうと リズムの むきに 合わせて やさしく 分析し、参考になる アドバイスを『〜すると いいかも』のように 2〜3文で。もくひょうが あるなら 必ず そこに つなげる。最後は はげます ひとこと。JSONで {\"reply\":\"アドバイス文\"} だけ 返して。";
+    var _t1=d.today||{};
+    var _t1s="【きょう（いちばん あたらしい 1日）】\n"
+      +"・起きた時間 "+(_t1.wake!=null?_floatHM(_t1.wake)+"（目標 "+_floatHM(d.target)+"／"+(_t1.diffMin>0?"+":"")+_t1.diffMin+"分）":"記録なし")+"\n"
+      +"・ねた時間 "+(_t1.bed!=null?_floatHM(_t1.bed):"記録なし")+"\n"
+      +"・ねむった時間 "+(_t1.dur!=null?_t1.dur.toFixed(1)+"時間":"記録なし")+"\n"
+      +"・気分 "+(_t1.moodTxt?_t1.moodTxt:(_t1.mood!=null?_t1.mood+"／5":"記録なし"))+"\n";
+    var userP="★この『きょうの1日』について アドバイスして ください（1週間の まとめでは なく）。\n"+_t1s+"\n（参考）最近"+d.days+"日ぶんの データです。\n・平均起床 "+(d.wake!=null?_floatHM(d.wake):"記録なし")+"（目標 "+_floatHM(d.target)+"）\n・平均で ねむった時間 "+(d.dur!=null?d.dur.toFixed(1)+"時間":"記録なし")+"\n・気分の平均 "+(d.mood!=null?d.mood.toFixed(1)+"／5（5がいちばん良い）":"記録なし")+"\n・起きる時間の むき："+_tw+(d.trendMin!=null?("（前半とくらべて "+(d.trendMin>0?"+":"")+d.trendMin+"分）"):"")+(d.dTrend!=null?("\n・ねむった時間の むき："+(d.dTrend>0?"+":"")+d.dTrend+"分"):"")+(d.goal?("\n・ふたりの もくひょう：「"+d.goal+"」"):"\n・もくひょう：まだ 決めていない")+"\n★アドバイスは 『きょうの1日』の 起床・就寝・気分に ついて 具体的に。最近の データは 「いつもと くらべて どうか」を 言うためだけに つかう。あしたの 朝に すぐ できる ことを『〜すると いいかも』のように 2〜3文で。もくひょうが あるなら 必ず そこに つなげる。最後は はげます ひとこと。JSONで {\"reply\":\"アドバイス文\"} だけ 返して。";
     puter.ai.chat([{role:"system",content:sysP},{role:"user",content:userP}], {model:(typeof _aiModel==="function"?_aiModel():"gpt-4o-mini"), max_tokens:320, temperature:0.8}).then(function(out){
       var txt=""; try{txt=_puterText(out);}catch(_){}
       var j=_aiJson(txt); if(j&&j.reply)txt=j.reply;
@@ -8551,27 +8621,35 @@ function buildRecGraph(){
     wake:{name:"起床",col:"#4bb0e6",time:true,
       data:function(){var wl=(typeof getWakeLog==="function")?getWakeLog():{},o={};Object.keys(wl).forEach(function(k){if(Number.isFinite(wl[k]))o[k]=wl[k];});return o;}},
     bed:{name:"就寝",col:"#9a86e0",time:true,
-      data:function(){var sl=(typeof getSleepLog==="function")?getSleepLog():{},o={};Object.keys(sl).forEach(function(k){if(Number.isFinite(sl[k]))o[k]=(sl[k]<14?sl[k]+24:sl[k]);});return o;}},
+      data:function(){var sl=(typeof getSleepLog==="function")?getSleepLog():{},o={};Object.keys(sl).forEach(function(k){if(Number.isFinite(sl[k]))o[k]=sl[k];});return o;}},
     mood:{name:"気分",col:"#f28cb8",time:false,
       data:function(){var mm=(typeof _moodMap==="function")?_moodMap():{},o={};Object.keys(mm).forEach(function(k){var m=mm[k];if(m&&m.l&&_moodVal(m.l)!=null)o[k]=_moodVal(m.l);});return o;},
       emoji:function(k){var mm=(typeof _moodMap==="function")?_moodMap():{},m=mm[k];return (m&&m.e)||"";}}
   };
+  /* ★時間の こうもく（起床・就寝）は 24時間の おなじ めもりに そろえる。気分だけ 1〜5 */
+  var _R=_graphRange();
   var series=modes.map(function(m){
-    var d=DEF[m],data=d.data(),vals=Object.keys(data).map(function(k){return data[k];}),lo,hi;
+    var d=DEF[m],data=d.data(),lo,hi;
     if(!d.time){lo=0.5;hi=5.5;}
-    else if(vals.length){var mn=Math.min.apply(null,vals),mx=Math.max.apply(null,vals);if(m==="wake"&&tw!=null){mn=Math.min(mn,tw);mx=Math.max(mx,tw);}lo=mn-0.4;hi=mx+0.4;if(hi-lo<1){var mid=(hi+lo)/2;lo=mid-0.6;hi=mid+0.6;}}
-    else{lo=0;hi=1;}
+    else{ lo=_R.lo; hi=_R.hi;
+      Object.keys(data).forEach(function(k){ data[k]=_graphWrap(data[k],lo,hi); }); }
     return {m:m,def:d,data:data,lo:lo,hi:hi};
   });
+  var _hasTime=series.some(function(sr){return sr.def.time;});
   var dset={};series.forEach(function(sr){Object.keys(sr.data).forEach(function(k){dset[k]=1;});});
   var dates=Object.keys(dset).sort().slice(-14);
   if(!dates.length){box.innerHTML='<div class="recEmpty">記録が たまると<br>ここに グラフが 出るよ</div>';return;}
-  var W=340,H=176,pT=40,pB=22,pL=10,pR=10;
+  var W=340,H=176,pT=40,pB=22,pL=(_hasTime?34:10),pR=10;
   var n=dates.length,chartH=H-pT-pB,baseY=H-pB;
   var X=function(di){return n<=1?(pL+(W-pL-pR)/2):(pL+di*(W-pL-pR)/(n-1));};
   var YOf=function(sr,v){var frac=Math.max(0,Math.min(1,(v-sr.lo)/((sr.hi-sr.lo)||1)));return baseY-frac*chartH;};
   var s='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;display:block;">';
-  for(var g=1;g<=3;g++){var gy=(baseY-chartH*g/4).toFixed(1);s+='<line x1="'+pL+'" y1="'+gy+'" x2="'+(W-pR)+'" y2="'+gy+'" stroke="#eef2f6" stroke-width="1"/>';}
+  if(_hasTime){
+    var Yt=function(v){return baseY-Math.max(0,Math.min(1,(v-_R.lo)/((_R.hi-_R.lo)||1)))*chartH;};
+    s+=_graphHourLines(_R.lo,_R.hi,Yt,W,pL,pR,"#eef2f6","#c4d0d9");
+  }else{
+    for(var g=1;g<=3;g++){var gy=(baseY-chartH*g/4).toFixed(1);s+='<line x1="'+pL+'" y1="'+gy+'" x2="'+(W-pR)+'" y2="'+gy+'" stroke="#eef2f6" stroke-width="1"/>';}
+  }
   s+='<line x1="'+pL+'" y1="'+baseY+'" x2="'+(W-pR)+'" y2="'+baseY+'" stroke="#dde5ec" stroke-width="1.2"/>';
   /* 起床の 目標線（オレンジの点線・スケールは起床にあわせる） */
   var wsr=null;series.forEach(function(sr){if(sr.m==="wake")wsr=sr;});
@@ -8595,7 +8673,7 @@ function buildRecGraph(){
   dates.forEach(function(k,di){ if(n<=8 || di%Math.ceil(n/7)===0){var p=k.split("-");s+='<text x="'+X(di).toFixed(1)+'" y="'+(H-6)+'" font-size="8" text-anchor="middle" font-weight="700" fill="#a9b8c4">'+(+p[1])+'/'+(+p[2])+'</text>';} });
   var colW=(W-pL-pR)/3;
   series.forEach(function(sr,i){
-    var lx=pL+i*colW,rng=sr.def.time?(_recHM(sr.lo%24)+"〜"+_recHM(sr.hi%24)):"1〜5";
+    var lx=pL+i*colW,rng=sr.def.time?"24時間":"1〜5";
     s+='<rect x="'+lx.toFixed(1)+'" y="10" width="9" height="9" rx="2" fill="'+sr.def.col+'"/>';
     s+='<text x="'+(lx+13).toFixed(1)+'" y="18" font-size="9.5" font-weight="800" fill="#5f7a89">'+sr.def.name+'</text>';
     s+='<text x="'+(lx+13).toFixed(1)+'" y="30" font-size="7.5" font-weight="700" fill="#aab8c2">'+rng+'</text>';
@@ -11430,6 +11508,13 @@ function _applyHillFromVal(val){
       if(!byUid[v.uid]||(v.createdAt||0)>(byUid[v.uid].createdAt||0))byUid[v.uid]=Object.assign({pid},v);
     });
     _allTimeCats=Object.values(byUidAll);
+    /* ★きょう とうこうした 人数だけ かぞえる（名前などは 見ない） */
+    try{
+      var _tk="_"+jstKey(), _act={};
+      Object.keys(val).forEach(function(pid){ var v=val[pid]; if(!v||!v.uid)return; if(pid.slice(-_tk.length)===_tk)_act[v.uid]=1; });
+      window._todayActive=Object.keys(_act).length;
+      try{_paintActive();}catch(_){}
+    }catch(_){}
     const cats=Object.values(byUid).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,40);   /* あたらしい順 */
     const p=getProfile()||{};
     /* 自分の“今日の投稿”を取得。あれば投稿済み＝実際のひとこと・起床時間を表示、なければ「投稿する」ボタン */
@@ -11971,6 +12056,17 @@ function markSaved(){localStorage.setItem(SAVE_TS_KEY,JSON.stringify({date:jstKe
 function savedRecently(){const s=getSaveInfo();return !!(s&&s.date===jstKey()&&(Date.now()-(s.ts||0))<POST_WINDOW);}
 function postedToday(){return localStorage.getItem(POSTED_KEY)===jstKey();}
 function markPosted(){localStorage.setItem(POSTED_KEY,jstKey());}
+/* ★とうこうを とりけす（みんなからも 見えなくする） */
+async function unpostToday(){
+  try{
+    var db=await getDB(); if(!db){ try{toast("いま つながって ないみたい");}catch(_){} return false; }
+    var{ref,remove}=await import(FB_DB);
+    await remove(ref(db,"posts/"+getUid()+"_"+jstKey()));
+    try{localStorage.removeItem(POSTED_KEY);}catch(_){}
+    try{localStorage.setItem("radio_cat_only","0");}catch(_){}   /* 猫だけの じどう投稿も 止める */
+    return true;
+  }catch(e){ console.warn("unpost failed",e); return false; }
+}
 const RAND_CARD="card.png";
 const POOL=["stamp100.png","stamp101.png","stamp102.png","stamp103.png","stamp104.png"];
 const _POOL_BASE0=POOL.slice();
@@ -13090,8 +13186,35 @@ function _tsPaintPostBtns(){
     if(q){ q.textContent=done?"とうこう こうしん":"とうこうする"; q.classList.toggle("posted",done); }
     if(b){ b.textContent=done?"とうこう こうしん":"投稿する"; b.classList.toggle("posted",done); }
     var an=$("tsAutoNote"); if(an)an.hidden=!done;
+    /* ★とうこうずみの ときだけ 「とりけす」を 出す */
+    try{
+      var host=$("tsPostRight")||(q&&q.parentNode);
+      var un=document.getElementById("tsUnpost");
+      if(done){
+        if(!un&&host){ un=document.createElement("button"); un.id="tsUnpost"; un.type="button";
+          un.textContent="とうこうを とりけす"; host.appendChild(un); }
+        if(un)un.hidden=false;
+      }else if(un)un.hidden=true;
+    }catch(_){}
   }catch(_){}
 }
+/* 「とりけす」を おした時 */
+async function _tsDoUnpost(){
+  var un=document.getElementById("tsUnpost"); if(!un||un.disabled)return;
+  un.disabled=true; var old=un.textContent; un.textContent="とりけし中…";
+  var ok=false;
+  try{ ok=await unpostToday(); }catch(_){ ok=false; }
+  un.disabled=false; un.textContent=old;
+  if(!ok){ try{toast("とりけせなかった。もう一度 おしてね");}catch(_){} return; }
+  try{_tsPaintPostBtns();}catch(_){}
+  try{tsResetPost();}catch(_){}
+  try{refreshGroundPost();}catch(_){}
+  try{loadHillCats();}catch(_){}
+  try{toast("とうこうを とりけしたよ");}catch(_){}
+}
+try{ document.addEventListener("click",function(e){
+  var t=e.target; if(t&&t.closest&&t.closest("#tsUnpost")){ try{playClick();}catch(_){} _tsDoUnpost(); }
+}); }catch(_){}
 async function tsDoPost(){
   const wasEdit=postedToday();
   const b=$("tsPostBtn"),q=$("tsPostQuick");
@@ -14231,7 +14354,15 @@ try{ document.addEventListener("click",function(e){
   if(t.closest("#hcNext")){ try{playClick();}catch(_){} _hcSet(_hcIdx+1,true); return; }
   if(t.closest("#tsRecEdit")){ try{playClick();}catch(_){} try{openAskCard();}catch(_){} return; }
 }); }catch(_){}
+/* きょうの なかま（人数だけ） */
+function _paintActive(){
+  try{ var el=$("trActive"); if(!el)return;
+    var n=window._todayActive;
+    el.textContent=(n==null)?"–":(n+"人");
+  }catch(_){}
+}
 function _renderTodayRec(){
+  try{_paintActive();}catch(_){}
   try{ setTimeout(function(){try{_tsRecMirror();}catch(_){}},0); }catch(_){}
   try{
     var done=getDoneDates().indexOf(jstKey())>=0;
@@ -29656,10 +29787,41 @@ function _yumeMigrate(){
 var YB_KEY="radio_yume_boost", YT_KEY="radio_yume_tiers";
 var YB_BASE={shiny:1/150, big:0.10, star3:0.05, star2:0.25};
 var YB_NAME={shiny:{ico:"\ud83c\udf08",n:"色違い"},big:{ico:"\ud83d\udc51",n:"BIG"},star3:{ico:"\u2605",n:"\u2605\u2605\u2605"}};
+/* ★クエスト1〜12の ごほうび＝固定（クリアで つぎの ユメっ子の 確率が 上がる） */
+var ADV_RW_K=["big","star3","shiny"];
+/* ★カードの 数字 ⇄ アルファベット（5秒ごと・ループ） */
+var _advGradeT=0;
+function _advGradeStart(){
+  try{clearInterval(_advGradeT);}catch(_){}
+  _advGradeT=setInterval(function(){
+    try{ var g=$("advTeam"); if(!g||!g.offsetParent)return; g.classList.toggle("showGrade"); }catch(_){}
+  },5000);
+}
+try{ setTimeout(_advGradeStart,2500); }catch(_){}
+/* ★ならびかえ */
+function _advSortGet(){ try{return localStorage.getItem("radio_adv_sort")||"power";}catch(_){ return "power"; } }
+function _advSortPaint(){
+  try{ var cur=_advSortGet();
+    document.querySelectorAll("#advSortRow .advSortBtn").forEach(function(b){ b.classList.toggle("on",b.dataset.sort===cur); });
+  }catch(_){}
+}
+try{ document.addEventListener("click",function(e){
+  var t=e.target; if(!t||!t.closest)return;
+  var b=t.closest(".advSortBtn"); if(!b)return;
+  try{playClick();}catch(_){}
+  try{localStorage.setItem("radio_adv_sort",b.dataset.sort);}catch(_){}
+  try{_advRenderSetup();}catch(_){}
+}); }catch(_){}
+function _advRewardOf(i){
+  i=Math.max(0,i|0);
+  var k=ADV_RW_K[i%3], g=Math.round((0.08+i*0.03)*100)/100;
+  var nm=(typeof YB_NAME!=="undefined"&&YB_NAME[k])?YB_NAME[k]:{ico:"",n:k};
+  return {k:k,g:g,ico:nm.ico,name:nm.n,pct:Math.round(g*100)};
+}
 function _ybGet(){ try{var v=JSON.parse(localStorage.getItem(YB_KEY)||"null"); return (v&&v.k&&v.mul>1.001)?v:null;}catch(_){ return null; } }
 function _ybSave(v){ try{ if(v)localStorage.setItem(YB_KEY,JSON.stringify(v)); else localStorage.removeItem(YB_KEY); }catch(_){} try{_ybPaintHome();}catch(_){} }
 function _ybClear(){ _ybSave(null); }
-/* 敵を たおすと つぎの1回だけ アップ（強い敵ほど 大きく・上限つき） */
+/* 敵を たおすと つぎの1回だけ アップ（上限つき） */
 function _ybAdd(diff,isBoss){
   try{
     var cur=_ybGet();
@@ -29669,6 +29831,16 @@ function _ybAdd(diff,isBoss){
     var mul=Math.min(cap,((cur&&cur.mul)||1)+gain);
     _ybSave({k:k,mul:mul});
     return {k:k,mul:mul,name:(YB_NAME[k]||{}).n||k,ico:(YB_NAME[k]||{}).ico||""};
+  }catch(_){ return null; }
+}
+/* ★クエストは 固定のごほうび（種類が ちがえば 入れかえ・おなじなら つみ重ね） */
+function _ybAddFixed(rw){
+  try{
+    if(!rw)return null;
+    var cur=_ybGet(), cap=2;
+    var mul=(cur&&cur.k===rw.k)?Math.min(cap,cur.mul+rw.g):Math.min(cap,1+rw.g);
+    _ybSave({k:rw.k,mul:mul});
+    return {k:rw.k,mul:mul,name:rw.name,ico:rw.ico};
   }catch(_){ return null; }
 }
 /* いまの かくりつ（アップぶんも 入れる） */
@@ -29727,14 +29899,50 @@ function _ybShowGain(r,elId){
     try{_ybPaintHome();}catch(_){}
   }catch(_){}
 }
+/* はじめて そろった時の 音（コロン♪と 上がる） */
+function _ytChime(i){
+  try{
+    var ctx=ensureCtx(); if(!ctx)return; var out=sfxOut(ctx); if(!out)return;
+    var now=ctx.currentTime, base=[784,988,1175][Math.min(2,i||0)];
+    [0,0.09].forEach(function(dt,k){
+      var o=ctx.createOscillator(),g=ctx.createGain();
+      o.type="triangle"; o.frequency.setValueAtTime(base*(k?1.5:1),now+dt);
+      g.gain.setValueAtTime(0.0001,now+dt);
+      g.gain.exponentialRampToValueAtTime(0.20,now+dt+0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001,now+dt+0.34);
+      o.connect(g); g.connect(out); o.start(now+dt); o.stop(now+dt+0.4);
+    });
+  }catch(_){}
+}
 function _ygPaintOdds(){
   try{
     var box=$("ygOdds"); if(!box)return;
     try{ var g=$("yumeGacha"); if(g&&box.parentElement!==g)g.appendChild(box); }catch(_){}   /* すみに 出すため 直下へ */
     var got=_ytGot();
+    var cur=[]; try{ cur=_yumeTiersOf(_ygCurrent||{}); }catch(_){}
+    var hits=[];
     box.innerHTML=_yumeOddsNow().map(function(o){
-      return '<i'+(o.up?' class="up"':'')+'><b>'+(o.ico?o.ico+" ":"")+o.n+'</b><u>'+_ybFmt(o.p)+(o.up?" \u25b2":"")+'</u><s>'+(got[o.k]?"\u2714":"\u25a1")+'</s></i>';
+      var have=!!got[o.k], isNew=(!have && cur.indexOf(o.k)>=0);
+      if(isNew)hits.push(o.k);
+      return '<i data-k="'+o.k+'"'+(o.up?' class="up"':'')+'><b>'+(o.ico?o.ico+" ":"")+o.n+'</b><u>'+_ybFmt(o.p)+(o.up?" \u25b2":"")+'</u><s>'+(have?"\u2714":"\u25a1")+'</s></i>';
     }).join("");
+    /* ★まだ もっていない ランクを あてたら リアルタイムで チェックが つく */
+    try{clearTimeout(box._nt);}catch(_){}
+    if(hits.length){
+      box._nt=setTimeout(function(){
+        hits.forEach(function(k,i){
+          setTimeout(function(){
+            try{
+              var row=box.querySelector('i[data-k="'+k+'"]'); if(!row)return;
+              var mk=row.querySelector("s"); if(!mk)return;
+              row.classList.add("newGot"); mk.textContent="\u2714";
+              mk.classList.remove("pop"); void mk.offsetWidth; mk.classList.add("pop");
+              _ytChime(i);
+            }catch(_){}
+          }, i*560);
+        });
+      },1100);
+    }
   }catch(_){}
 }
 function _yumeRoll(){
@@ -30821,8 +31029,10 @@ function _advRenderSetup(){
     if(pa)pa.innerHTML=ADV_CHAPTERS.map(function(c,i){
       var opened=(i<=_open);
       var cls="advNode"+(opened?"":" lock")+((i===_pi)?" pick":"")+((i<_open)?" done":(i===_open)?" front":"");
-      return '<span class="'+cls+'" '+(opened?'data-stg="'+i+'" ':'')+'title="'+escHtml(c.area||c.name||"")+'">'+
+      var _rw=_advRewardOf(i);
+      return '<span class="'+cls+'" '+(opened?'data-stg="'+i+'" ':'')+'title="'+escHtml((c.area||c.name||"")+" / クリアで "+_rw.name+"率 +"+_rw.pct+"%")+'">'+
         ((i===_pi)?'<span class="advNowTag">えらび中</span>':"")+
+        '<span class="advRw">'+_rw.ico+'</span>'+
         '<span class="advDot">'+(opened?"":"\ud83d\udd12")+'</span>'+
         '<span class="advNodeNo">'+(i+1)+'</span>'+
       '</span>';
@@ -30833,24 +31043,40 @@ function _advRenderSetup(){
     var pt=$("advProgTxt");if(pt)pt.textContent="\ud83c\udff3\ufe0f すすみ "+Math.round((_open)/Math.max(1,_cn-1)*100)+"%";
     var nx=$("advNextTxt");
     if(nx){var nc=ADV_CHAPTERS[_open+1];nx.textContent=(_open<_cn-1)?("つぎに ひらく： "+(nc?nc.name:"")):"\u2728 さいごまで ひらいたよ！";}
+    /* ★えらんでいる クエストの ごほうび */
+    try{
+      var rwEl=document.getElementById("advRwTxt");
+      if(!rwEl){ var pp=$("advPath"); if(pp&&pp.parentNode){ rwEl=document.createElement("div"); rwEl.id="advRwTxt"; pp.parentNode.insertBefore(rwEl,pp.nextSibling); } }
+      if(rwEl){ var rw=_advRewardOf(_pi);
+        rwEl.innerHTML='<b>クリア</b>ほうしゅう <i>'+rw.ico+' '+rw.name+'率 +'+rw.pct+'%</i>'; }
+    }catch(_){}
   }catch(_){}
   try{
     var dex=_yumeDex(), g=$("advTeam");
     _advSel=_advSel.filter(function(id){return dex.some(function(y){return y.id===id;});});
     if(g){
       if(!dex.length){ g.innerHTML='<div class="advEmpty">まだ ユメっ子が いないよ。<br>あさの 体操の あとに 出会えるよ！</div>'; }
-      else g.innerHTML=dex.map(function(y){
+      else{
+      var _sort="power"; try{_sort=localStorage.getItem("radio_adv_sort")||"power";}catch(_){}
+      var _pw=function(y){return _yumeEff(y,"hp")+_yumeEff(y,"atk")+_yumeEff(y,"spd");};
+      dex=dex.slice();
+      if(_sort==="power")dex.sort(function(a,b){return _pw(b)-_pw(a);});
+      else dex.sort(function(a,b){return (a.at||0)-(b.at||0);});
+      g.innerHTML=dex.map(function(y){
         var friend=_yumeIsFriend(y.id), pos=_advSel.indexOf(y.id), sel=pos>=0;
         return '<button class="advCard'+(sel?" sel":"")+'" data-yid="'+y.id+'" type="button">'+
           (sel?'<span class="advCardNo">'+(pos+1)+'</span>':"")+
           '<div class="advCardPic">'+_yumeMiniInner(y)+'</div>'+
           '<div class="advCardName">'+escHtml(y.name)+(y.shiny?' <span class="advMini">\u2728</span>':"")+'</div>'+
           '<div class="advCardStars r'+y.star+'">'+_yumeStarStr(y.star)+'</div>'+
-          '<div class="advCardNums"><span>'+_yumeEff(y,"hp")+'</span><span>'+_yumeEff(y,"atk")+'</span><span>'+_yumeEff(y,"spd")+'</span></div>'+
+          '<div class="advCardNums">'+["hp","atk","spd"].map(function(kk){var vv=_yumeEff(y,kk);
+             return '<span><i class="nv">'+vv+'</i><i class="gv">'+_yumeGrade(vv)+'</i></span>';}).join("")+'</div>'+
           '<div class="advCardLv">Lv'+_yumeLv(y)+' / '+_yumeMaxLv(y)+'</div>'+
           '<div class="advCardBadges">'+_advPersLabel(_yumePers(y))+(friend?'<span class="advFriend">親友</span>':"")+'</div>'+
           '</button>';
       }).join("");
+      }
+      try{_advSortPaint();}catch(_){}
     }
   }catch(_){}
   try{
@@ -32091,8 +32317,8 @@ function _advFinish(){
   }
   _advShowResult(win,advanced,false,lvTxt);
   if(win){ try{
-    var _bd=(_advCh&&_advCh.diff)||1;
-    var _r=_ybAdd(_bd,false);
+    var _st=(_advBattleStage>=0?_advBattleStage:_advChapter());
+    var _r=_ybAddFixed(_advRewardOf(_st));
     if(_r)_ybShowGain(_r,"abResultSub");
   }catch(_){} }
 }
@@ -37032,6 +37258,10 @@ function _gpStreetHTML(){
   <div id="advScroll">
     <div id="advOppCard"><div id="advQuestHead"><span id="advQuestTag">⚔️ クエスト</span><span id="advQuestNo"></span></div><div id="advOpp"></div><div id="advPathWrap"><div id="advPathLine"></div><div id="advPath"></div></div><div id="advNextRow"><span id="advProgTxt"></span><span id="advNextTxt"></span></div></div>
     <div id="advTeamLabel">この子たちで いく（1〜3体 えらぶ）</div>
+    <div id="advSortRow">
+      <button class="advSortBtn on" data-sort="power" type="button">つよい順</button>
+      <button class="advSortBtn" data-sort="got" type="button">入手順</button>
+    </div>
     <div id="advTeam"></div>
   </div>
   <div id="advFoot"><div id="advNote"></div><button id="advStart" type="button" disabled>ユメっ子を えらぼう</button></div>

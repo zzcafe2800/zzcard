@@ -5923,6 +5923,13 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 .ybFree:active{transform:scale(.95);}
 .ybCard.justgot .ybFree,.ybCard.locked .ybFree{display:none;}
 </style>
+<style id="homeYumeBtnCss">
+/* ★ホームの「ユメっ子」ボタンを 押せると わかる 見た目に */
+#homeZZ{background:linear-gradient(135deg,#9fe8dd,#4fc4bb) !important;color:#0d4c48 !important;
+  font-weight:900 !important;letter-spacing:.03em;border:1.5px solid rgba(255,255,255,.85) !important;
+  box-shadow:0 4px 12px rgba(60,170,160,.4) !important;}
+#homeZZ:active{transform:scale(.94);}
+</style>
 <style id="yumeLabCss">
 /* ===== ユメっ子 けんきゅうじょ ===== */
 #yumeLab{position:fixed;inset:0;z-index:3500;display:flex;flex-direction:column;
@@ -6016,6 +6023,26 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 #ylSkill .ylSkTag{font-size:9px;background:rgba(79,224,212,.16);border:1px solid rgba(79,224,212,.4);
   padding:2px 7px;border-radius:3px;margin-right:6px;color:#7fe8db;}
 #ylLv{margin-top:5px;font-size:10px;font-weight:800;color:#5f9dad;letter-spacing:.06em;}
+#ylBtns{margin-top:9px;display:flex;flex-wrap:wrap;gap:6px;}
+.ylBtn{flex:1 1 auto;min-width:74px;border:1px solid rgba(94,226,224,.4);background:rgba(10,52,63,.75);
+  color:#9fdce8;border-radius:8px;padding:8px 6px;cursor:pointer;
+  font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:11px;font-weight:900;white-space:nowrap;}
+.ylBtn:active{transform:scale(.95);}
+.ylBtn.fav{border-color:rgba(255,140,180,.6);color:#ffb7cf;background:rgba(70,22,42,.55);}
+.ylBtn.fav.on{background:linear-gradient(135deg,#ff8fb4,#e0447c);color:#fff;border-color:transparent;
+  box-shadow:0 3px 10px rgba(224,68,124,.45);}
+.ylBtn.del{border-color:rgba(255,150,150,.45);color:#ffadad;}
+.ylBtn.del:disabled{opacity:.35;cursor:not-allowed;}
+.ylBtn.fuse{border-color:rgba(255,214,120,.5);color:#ffd98f;}
+.ylBtn.fuse:disabled{opacity:.35;cursor:not-allowed;}
+/* お気に入りの ❤ マーク */
+.ylItem .ylFav{position:absolute;top:2px;right:3px;font-size:11px;line-height:1;z-index:3;
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.6));}
+/* ★BIG は 大きく 見せる */
+.ylItem.big .ylThumb{transform:scale(1.22);}
+.ylItem.big{border-color:rgba(255,196,77,.55);}
+#ylPic.big{width:min(88%,320px);}
+#ylStage.big #ylRing{width:min(78%,268px);}
 #ylEmpty{padding:40px 20px;text-align:center;font-size:13px;font-weight:800;color:#6ea9b8;line-height:1.8;}
 @media (max-width:400px){
   #ylLeft{flex:0 0 78px;}
@@ -6901,7 +6928,7 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
       <div id="selectTitle">おはよう</div>
       <div id="lobbySub"></div>
       <button id="homeLoc" type="button" hidden></button>
-      <button id="homeZZ" type="button" aria-label="ユメっ子">🧬 ユメっ子</button>
+      <button id="homeZZ" type="button" aria-label="ユメっ子">🐾 ユメっ子</button>
     </div>
     <div id="homeGateTop">
       <div id="homeGateText">朝 6:00〜8:00 にひらくよ</div>
@@ -33241,7 +33268,20 @@ function _ygDexReveal(y,done){
   }catch(_){ _ybPreview=null; if(done)done(); }
 }
 /* ===== ユメっ子 けんきゅうじょ ===== */
-var _ylPick=0;
+var _ylPick=0, YL_FAV_KEY="radio_yume_fav";
+function _ylFav(){ try{var v=JSON.parse(localStorage.getItem(YL_FAV_KEY)||"{}");return (v&&typeof v==="object")?v:{};}catch(_){ return {}; } }
+function _ylFavSave(m){ try{localStorage.setItem(YL_FAV_KEY,JSON.stringify(m||{}));}catch(_){} }
+function _ylKey(y){ return (y&&(y.id||((y.name||"")+"_"+(y.at||0))))||""; }
+function _ylIsFav(y){ var k=_ylKey(y); return !!(k&&_ylFav()[k]); }
+function _ylToggleFav(y){ var m=_ylFav(), k=_ylKey(y); if(!k)return false;
+  if(m[k])delete m[k]; else m[k]=1; _ylFavSave(m); return !!m[k]; }
+/* 同じ名前の ほかの子（お気に入りは のぞく）＝合成の ざいりょう */
+function _ylFuseMats(y){
+  try{ var k=_ylKey(y);
+    var sp=function(z){ return (z&&z.img)||(z&&z.name)||""; };   /* ★なまえを 変えても 同じ種類なら 合成できる */
+    return (_yumeDex()||[]).filter(function(x){ return x && sp(x)===sp(y) && _ylKey(x)!==k && !_ylIsFav(x); });
+  }catch(_){ return []; }
+}
 function _ylList(){
   try{
     var a=_yumeDex()||[];
@@ -33278,7 +33318,8 @@ function _ylPaint(){
     try{var e0=document.getElementById("ylEmpty"); if(e0)e0.remove();}catch(_){}
     if(_ylPick>=a.length)_ylPick=0;
     if(list)list.innerHTML=a.map(function(y,i){
-      return '<div class="ylItem'+(i===_ylPick?" on":"")+'" data-i="'+i+'">'+
+      return '<div class="ylItem'+(i===_ylPick?" on":"")+(y.big?" big":"")+'" data-i="'+i+'">'+
+        (_ylIsFav(y)?'<span class="ylFav">\u2764</span>':"")+
         '<div class="ylThumb">'+_yumeMiniInner(y)+'</div>'+
         '<div class="ylNm">'+escHtml(y.name||"")+'</div></div>';
     }).join("");
@@ -33288,7 +33329,8 @@ function _ylPaint(){
 function _ylPaintOne(y){
   try{
     if(!y)return;
-    var pic=$("ylPic"); if(pic)pic.innerHTML=_yumeMiniInner(y);
+    var pic=$("ylPic"); if(pic){pic.innerHTML=_yumeMiniInner(y);pic.classList.toggle("big",!!y.big);}
+    try{var stg=$("ylStage"); if(stg)stg.classList.toggle("big",!!y.big);}catch(_){}
     var nm=$("ylName"); if(nm)nm.textContent=y.name||"";
     var st=$("ylStars"); if(st)st.textContent=_yumeStarStr(y.star||1);
     var tg=$("ylTags");
@@ -33315,11 +33357,71 @@ function _ylPaintOne(y){
       sk.innerHTML=k?('<span class="ylSkTag">とくいわざ</span>'+(k.e||"")+" "+escHtml(k.n||"")):""; }
     var lv=$("ylLv");
     if(lv)lv.textContent="のびしろ LV "+_yumeLv(y)+" / "+_yumeMaxLv(y);
+    var bt=$("ylBtns");
+    if(bt){
+      var fav=_ylIsFav(y), mats=_ylFuseMats(y), full=(_yumeLv(y)>=_yumeMaxLv(y));
+      bt.innerHTML=
+        '<button class="ylBtn fav'+(fav?" on":"")+'" data-act="fav" type="button">'+(fav?"\u2764 おきにいり":"\u2661 おきにいり")+'</button>'+
+        '<button class="ylBtn" data-act="name" type="button">\u270f\ufe0f なまえ</button>'+
+        '<button class="ylBtn fuse" data-act="fuse" type="button"'+((!mats.length||full)?" disabled":"")+'>\u2697\ufe0f ごうせい'+(mats.length?"（"+mats.length+"）":"")+'</button>'+
+        '<button class="ylBtn del" data-act="del" type="button"'+(fav?" disabled":"")+'>\ud83d\uddd1 にがす</button>';
+    }
+  }catch(_){}
+}
+/* ==== ボタンの しょり ==== */
+function _ylAct(act){
+  try{
+    var a=_ylList(), y=a[_ylPick]; if(!y)return;
+    if(act==="fav"){ _ylToggleFav(y); _ylPaint(); try{toast(_ylIsFav(y)?"おきにいりに したよ":"おきにいりを 外したよ");}catch(_){} return; }
+    if(act==="name"){
+      var nn=prompt("なまえを かえる（15文字まで）", y.name||"");
+      if(nn===null)return;
+      nn=String(nn).trim().slice(0,15);
+      if(!nn){try{toast("なまえを 入れてね");}catch(_){}return;}
+      var dex=_yumeDex(), k=_ylKey(y);
+      for(var i=0;i<dex.length;i++){ if(_ylKey(dex[i])===k){ dex[i].name=nn; break; } }
+      _yumeSaveDex(dex);
+      try{if(typeof syncSoon==="function")syncSoon();}catch(_){}
+      _ylPaint(); try{toast("「"+nn+"」に なったよ");}catch(_){}
+      return;
+    }
+    if(act==="fuse"){
+      var mats=_ylFuseMats(y);
+      if(!mats.length){try{toast("おなじ子が いないよ");}catch(_){}return;}
+      var cap=_yumeMaxLv(y), now=_yumeLv(y);
+      if(now>=cap){try{toast("もう これいじょう 上がらないよ");}catch(_){}return;}
+      var gain=0; mats.forEach(function(m){ gain+=Math.max(1,Math.round(_yumeLv(m)*0.5)); });
+      var after=Math.min(cap,now+gain);
+      if(!confirm("「"+(y.name||"")+"」に おなじ子 "+mats.length+"匹を ごうせいします。\n\nのびしろ LV "+now+" → "+after+"（上限 "+cap+"）\n\n★ざいりょうの "+mats.length+"匹は きえます。もどせません。\n（おきにいりの子は ざいりょうに なりません）\n\nよろしいですか？"))return;
+      var keep=_ylKey(y), used={};
+      mats.forEach(function(m){ used[_ylKey(m)]=1; });
+      var dex=_yumeDex().filter(function(x){ return !used[_ylKey(x)]; });
+      for(var j=0;j<dex.length;j++){ if(_ylKey(dex[j])===keep){ dex[j].lv=after; break; } }
+      _yumeSaveDex(dex);
+      try{if(typeof syncSoon==="function")syncSoon();}catch(_){}
+      try{ var na=_ylList(); var ni=na.findIndex(function(x){return _ylKey(x)===keep;}); _ylPick=(ni>=0?ni:0); }catch(_){ _ylPick=0; }
+      _ylPaint();
+      try{toast("ごうせい！ LV "+now+" → "+after);}catch(_){}
+      try{_ytChime(2);}catch(_){}
+      return;
+    }
+    if(act==="del"){
+      if(_ylIsFav(y)){try{toast("おきにいりは にがせないよ");}catch(_){}return;}
+      if(!confirm("「"+(y.name||"")+"」を にがしますか？\n\n★もどせません。"))return;
+      var k2=_ylKey(y);
+      _yumeSaveDex(_yumeDex().filter(function(x){ return _ylKey(x)!==k2; }));
+      try{if(typeof syncSoon==="function")syncSoon();}catch(_){}
+      _ylPick=0; _ylPaint();
+      try{toast("にがしたよ");}catch(_){}
+      return;
+    }
   }catch(_){}
 }
 try{ document.addEventListener("click",function(e){
   var t=e.target; if(!t||!t.closest)return;
   if(t.closest("#ylClose")){ try{playClick();}catch(_){} closeYumeLab(); return; }
+  var ab=t.closest("#ylBtns .ylBtn");
+  if(ab){ if(ab.disabled)return; try{playClick();}catch(_){} _ylAct(ab.dataset.act); return; }
   var it=t.closest("#ylList .ylItem");
   if(it){ try{playClick();}catch(_){} _ylPick=parseInt(it.dataset.i,10)||0;
     try{ document.querySelectorAll("#ylList .ylItem").forEach(function(x){x.classList.toggle("on",x===it);}); }catch(_){}
@@ -37864,6 +37966,7 @@ function _gpStreetHTML(){
         <div id="ylBars"></div>
         <div id="ylSkill"></div>
         <div id="ylLv"></div>
+        <div id="ylBtns"></div>
       </div>
     </div>
   </div>

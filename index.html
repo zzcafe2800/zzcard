@@ -5923,6 +5923,24 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 .ybFree:active{transform:scale(.95);}
 .ybCard.justgot .ybFree,.ybCard.locked .ybFree{display:none;}
 </style>
+<style id="tsCardShadowCss">
+/* ★白い背景でも カードの ふちが わかるように */
+#taisoScreen .taisoCard,#taisoScreen #askBox{
+  border:1px solid rgba(150,190,215,.35) !important;
+  box-shadow:0 10px 26px rgba(90,140,180,.18),0 2px 6px rgba(90,140,180,.12) !important;
+}
+#taisoScreen.recLock #askBox{
+  box-shadow:0 0 0 4px rgba(120,205,155,.5),0 16px 38px rgba(80,160,110,.3) !important;
+}
+#taisoScreen #tsPostCard.needPost{
+  box-shadow:0 0 0 3px rgba(87,189,122,.35),0 10px 26px rgba(90,140,180,.2) !important;
+}
+#taisoScreen #askBox.done{
+  border-color:rgba(120,200,150,.45) !important;
+  box-shadow:0 10px 26px rgba(90,160,120,.2),0 2px 6px rgba(90,160,120,.14) !important;
+}
+#taisoScreen #taisoCards>*{transition:box-shadow .25s ease;}
+</style>
 <style id="krRowFixCss">
 /* ★起床・就寝の 行：絵文字と 文字を 横一列に そろえる（おりかえさない） */
 #askBox .krTime{gap:6px;padding:7px 9px;flex-wrap:nowrap;}
@@ -26977,21 +26995,9 @@ function _strDock(){   /* 商店街でもドックを出す（refreshDockに一�
 }
 /* --- 地図 --- */
 let _tvView=null;
-function _tvMapSVG(){
-  const h=_tvHere();
-  const cx=_jpX(h.lng),cy=_jpY(h.lat);
-  if(!_tvView)_tvView={cx:cx,cy:cy,w:_jpW*0.42};
-  const _box=_tvBox();
-  if(_tvPPW&&Math.abs(_box.w-_tvPPW)>1)_tvView.w*=_box.w/_tvPPW;   /* 広げたら 範囲が広がるだけ */
-  _tvPPW=_box.w;
-  _tvView=_tvClamp(_tvView);
-  const U=_tvView.w/Math.max(1,_box.w);
-  const w=_tvView.w,hh=_tvView.h,vx=_tvView.cx-w/2,vy=_tvView.cy-hh/2;
-  let s='<svg class="tvMapSvg" preserveAspectRatio="none" viewBox="'+_tvVB()+
-        '" xmlns="http://www.w3.org/2000/svg"><rect x="'+vx.toFixed(2)+'" y="'+vy.toFixed(2)+'" width="'+w.toFixed(2)+
-        '" height="'+hh.toFixed(2)+'" fill="#dceffa"/>';
-  s+='<path d="'+_jrnLandPaths()+'" fill="#f4f1e4" stroke="#f4f1e4" stroke-width="'+(U*1.1).toFixed(4)+'"/>';
-  s+=_tvBgPaths2(vx,vy,w,hh,U);
+/* ★動く部分だけ（道・お店・家・旗）。地図の下じきは 作りなおさない */
+function _tvDynSVG(vx,vy,w,hh,U){
+  var s="";
   /* 目的地までの道 */
   const t=getTrip();
   if(t&&t.route&&t.route.length>1){
@@ -27075,6 +27081,24 @@ function _tvMapSVG(){
   getHomes().forEach(hm=>_drawHome(hm,U*7,"#e0885b","ワープできるよ","#3f9a63"));
   if(!tvHideHome())_tvOthers.forEach(o=>{(o.hm||[]).forEach(q=>{
     if(Array.isArray(q)&&q.length>1)_drawHome({lng:q[0],lat:q[1]},U*4.6,"#c9a08a",((o.n||"だれか").slice(0,6))+"の家","#a58a72");});});
+  return s;
+}
+function _tvMapSVG(){
+  const h=_tvHere();
+  const cx=_jpX(h.lng),cy=_jpY(h.lat);
+  if(!_tvView)_tvView={cx:cx,cy:cy,w:_jpW*0.42};
+  const _box=_tvBox();
+  if(_tvPPW&&Math.abs(_box.w-_tvPPW)>1)_tvView.w*=_box.w/_tvPPW;   /* 広げたら 範囲が広がるだけ */
+  _tvPPW=_box.w;
+  _tvView=_tvClamp(_tvView);
+  const U=_tvView.w/Math.max(1,_box.w);
+  const w=_tvView.w,hh=_tvView.h,vx=_tvView.cx-w/2,vy=_tvView.cy-hh/2;
+  let s='<svg class="tvMapSvg" preserveAspectRatio="none" viewBox="'+_tvVB()+
+        '" xmlns="http://www.w3.org/2000/svg"><rect id="tvSea" x="'+vx.toFixed(2)+'" y="'+vy.toFixed(2)+'" width="'+w.toFixed(2)+
+        '" height="'+hh.toFixed(2)+'" fill="#dceffa"/>';
+  s+='<g id="tvLand">'+_jrnLandPaths()+'</g>';
+  s+='<g id="tvBg">'+_tvBgPaths2(vx,vy,w,hh,U)+'</g>';
+  s+='<g id="tvDyn">'+_tvDynSVG(vx,vy,w,hh,U)+'</g>';
   /* じぶんの猫と 配送の車は HTMLで かさねる（_tvPlaceOverlay） */
   s+='</svg>';
   return s;
@@ -27084,16 +27108,42 @@ function _tvDrawSoon(){
   if(_tvDrawQ)return;
   _tvDrawQ=requestAnimationFrame(()=>{_tvDrawQ=0;_tvDraw();});
 }
+/* ★下じき（日本地図・約240KB）は 作りなおさず、viewBox と 動く部分だけ 差しかえる */
+function _tvViewCalc(){
+  const h=_tvHere();
+  if(!_tvView)_tvView={cx:_jpX(h.lng),cy:_jpY(h.lat),w:_jpW*0.42};
+  const _box=_tvBox();
+  if(_tvPPW&&Math.abs(_box.w-_tvPPW)>1)_tvView.w*=_box.w/_tvPPW;
+  _tvPPW=_box.w;
+  _tvView=_tvClamp(_tvView);
+  const U=_tvView.w/Math.max(1,_box.w);
+  return {U:U,w:_tvView.w,hh:_tvView.h,vx:_tvView.cx-_tvView.w/2,vy:_tvView.cy-_tvView.h/2};
+}
+function _tvUpdateFast(svg){
+  try{
+    const v=_tvViewCalc();
+    svg.setAttribute("viewBox",_tvVB());
+    const sea=svg.querySelector("#tvSea");
+    if(sea){sea.setAttribute("x",v.vx.toFixed(2));sea.setAttribute("y",v.vy.toFixed(2));
+      sea.setAttribute("width",v.w.toFixed(2));sea.setAttribute("height",v.hh.toFixed(2));}
+    const bg=svg.querySelector("#tvBg"); if(bg)bg.innerHTML=_tvBgPaths2(v.vx,v.vy,v.w,v.hh,v.U);
+    const dyn=svg.querySelector("#tvDyn"); if(dyn)dyn.innerHTML=_tvDynSVG(v.vx,v.vy,v.w,v.hh,v.U);
+    return true;
+  }catch(_){ return false; }
+}
 function _tvDraw(){
   const wrap=$("tvWrap");if(!wrap)return;
   if(wrap.hidden||wrap.offsetParent===null||(wrap.clientWidth||0)<10||(wrap.clientHeight||0)<10)return;
   _tvRectCache=null;_tvBoxCache=null;
   const old=wrap.querySelector(".tvMapSvg");
-  const html=_tvMapSVG();
-  if(old)old.outerHTML=html;else wrap.insertAdjacentHTML("afterbegin",html);
+  if(old&&old.querySelector("#tvDyn")&&_tvUpdateFast(old)){ /* はやい みち */ }
+  else{
+    const html=_tvMapSVG();
+    if(old)old.outerHTML=html;else wrap.insertAdjacentHTML("afterbegin",html);
+    _tvBind();
+  }
   const ov=$("tvOverlay");
   if(ov){ov.innerHTML=_tvOverlayHTML();try{_tvOthEls=ov.querySelectorAll(".tvOth");}catch(_){_tvOthEls=null;}}
-  _tvBind();
   requestAnimationFrame(()=>{try{_tvPlaceOverlay();}catch(_){}});
 }
 function _tvBind(){

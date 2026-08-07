@@ -8633,7 +8633,7 @@ function buildRecGraph(){
     var d=DEF[m],data=d.data(),lo,hi;
     if(!d.time){lo=0.5;hi=5.5;}
     else{ lo=_R.lo; hi=_R.hi;
-      Object.keys(data).forEach(function(k){ data[k]=_graphWrap(data[k],lo,hi); }); }
+      Object.keys(data).forEach(function(k){ data[k]=_graphWrap(data[k]); }); }
     return {m:m,def:d,data:data,lo:lo,hi:hi};
   });
   var _hasTime=series.some(function(sr){return sr.def.time;});
@@ -8643,10 +8643,12 @@ function buildRecGraph(){
   var W=340,H=176,pT=40,pB=22,pL=(_hasTime?34:10),pR=10;
   var n=dates.length,chartH=H-pT-pB,baseY=H-pB;
   var X=function(di){return n<=1?(pL+(W-pL-pR)/2):(pL+di*(W-pL-pR)/(n-1));};
-  var YOf=function(sr,v){var frac=Math.max(0,Math.min(1,(v-sr.lo)/((sr.hi-sr.lo)||1)));return baseY-frac*chartH;};
+  /* ★時間の こうもくは 上が 14時・下が つぎの日の14時（時間が 下へ ながれる）。気分は 今までどおり 上が いい */
+  var YOf=function(sr,v){var frac=Math.max(0,Math.min(1,(v-sr.lo)/((sr.hi-sr.lo)||1)));
+    return sr.def.time?(pT+frac*chartH):(baseY-frac*chartH);};
   var s='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;display:block;">';
   if(_hasTime){
-    var Yt=function(v){return baseY-Math.max(0,Math.min(1,(v-_R.lo)/((_R.hi-_R.lo)||1)))*chartH;};
+    var Yt=_graphYf(_R.lo,_R.hi,pT,chartH);
     s+=_graphHourLines(_R.lo,_R.hi,Yt,W,pL,pR,"#eef2f6","#c4d0d9");
   }else{
     for(var g=1;g<=3;g++){var gy=(baseY-chartH*g/4).toFixed(1);s+='<line x1="'+pL+'" y1="'+gy+'" x2="'+(W-pR)+'" y2="'+gy+'" stroke="#eef2f6" stroke-width="1"/>';}
@@ -8654,8 +8656,8 @@ function buildRecGraph(){
   s+='<line x1="'+pL+'" y1="'+baseY+'" x2="'+(W-pR)+'" y2="'+baseY+'" stroke="#dde5ec" stroke-width="1.2"/>';
   /* 起床の 目標線（オレンジの点線・スケールは起床にあわせる） */
   var wsr=null;series.forEach(function(sr){if(sr.m==="wake")wsr=sr;});
-  if(wsr&&tw!=null&&tw>=wsr.lo&&tw<=wsr.hi){
-    var ty=YOf(wsr,tw);
+  if(wsr&&tw!=null){
+    var ty=YOf(wsr,_graphWrap(tw));
     s+='<line x1="'+pL+'" y1="'+ty.toFixed(1)+'" x2="'+(W-pR)+'" y2="'+ty.toFixed(1)+'" stroke="#ffb37a" stroke-width="1.6" stroke-dasharray="4 5"/>';
     s+='<text x="'+(W-pR)+'" y="'+(ty-3).toFixed(1)+'" text-anchor="end" font-size="8.5" font-weight="800" fill="#e8a25a">目標 '+_recHM(tw%24)+'</text>';
   }
@@ -8685,22 +8687,30 @@ function buildRecGraph(){
 /* ★起床・就寝で まったく おなじ めもり（24時間ぶん）
    目標時間が 下から 1/4 の ところに 来るように 上下を きめる
    （目標6時なら 上が24時・下が0時）                              */
+/* ★時間の めもり：ひるの 14時を きりかえ地点に して、上から 下へ 時間が ながれる。
+   → 23時に ねる／1時に ねる が となりどうしに なるので 日を またいでも 線が とばない。
+   → 就寝が 上・起床が 下 に くる。                                            */
+var GRAPH_ANCHOR=14;
 function _graphRange(){
   var t=6; try{t=profileWake();}catch(_){}
   if(!Number.isFinite(t))t=6;
-  return {lo:t-6, hi:t+18, target:t};
+  return {lo:0, hi:24, target:t, anchor:GRAPH_ANCHOR};
 }
-function _graphWrap(v,lo,hi){
-  v=((v%24)+24)%24;
-  while(v<lo)v+=24;
-  while(v>=hi)v-=24;
-  return v;
+/* 時刻 → めもりの 位置（0＝14時・24＝つぎの日の14時） */
+function _graphWrap(v){
+  if(!Number.isFinite(v))return 0;
+  return (((v-GRAPH_ANCHOR)%24)+24)%24;
+}
+/* 上が 0（＝14時）・下が 24 なので Y は そのまま ふえる */
+function _graphYf(lo,hi,pT,plotH){
+  return function(t){ return pT+Math.max(0,Math.min(1,(t-lo)/((hi-lo)||1)))*plotH; };
 }
 function _graphHourLines(lo,hi,Y,W,pL,pR,gridCol,txtCol){
-  var s="",step=3,h0=Math.ceil(lo/step)*step;
-  for(var h=h0;h<=hi;h+=step){
+  var s="",step=3;
+  for(var h=0;h<=24;h+=step){
+    var lab=((h+GRAPH_ANCHOR)%24);
     s+='<line x1="'+pL+'" y1="'+Y(h).toFixed(1)+'" x2="'+(W-pR)+'" y2="'+Y(h).toFixed(1)+'" stroke="'+gridCol+'" stroke-width="1"/>';
-    s+='<text x="4" y="'+(Y(h)+3).toFixed(1)+'" font-size="9" font-weight="800" fill="'+txtCol+'">'+(((h%24)+24)%24)+':00</text>';
+    s+='<text x="4" y="'+(Y(h)+3).toFixed(1)+'" font-size="9" font-weight="800" fill="'+txtCol+'">'+lab+':00</text>';
   }
   return s;
 }
@@ -8710,13 +8720,14 @@ function _buildWakeGraph(box){
   const data=Object.entries(wl).filter(([k,v])=>Number.isFinite(v)).sort((a,b)=>a[0]<b[0]?-1:1).slice(-14);
   if(data.length<2){box.innerHTML='<div class="recEmpty">記録がたまると<br>ここにグラフが出るよ</div>';return;}
   const _R=_graphRange(), target=_R.target, lo=_R.lo, hi=_R.hi;
-  const vals=data.map(d=>_graphWrap(d[1],lo,hi));
+  const vals=data.map(d=>_graphWrap(d[1]));
   const W=340,H=150,pL=34,pR=8,pT=16,pB=22;
-  const X=i=>pL+i*(W-pL-pR)/(data.length-1), Y=v=>pT+(hi-v)/(hi-lo)*(H-pT-pB);
+  const X=i=>pL+i*(W-pL-pR)/(data.length-1), Y=_graphYf(lo,hi,pT,H-pT-pB);
   let s='<svg viewBox="0 0 340 150" style="width:100%;height:auto;display:block;">';
   s+=_graphHourLines(lo,hi,Y,W,pL,pR,"#eef3f7","#c4d0d9");
-  s+='<line x1="'+pL+'" y1="'+Y(target).toFixed(1)+'" x2="'+(W-pR)+'" y2="'+Y(target).toFixed(1)+'" stroke="#ffb37a" stroke-width="2" stroke-dasharray="4 5"/>';
-  s+='<text x="'+(W-pR)+'" y="'+(Y(target)-4).toFixed(1)+'" text-anchor="end" font-size="9" font-weight="800" fill="#e8a25a">目標 '+_floatHM(target)+'</text>';
+  var _ty=Y(_graphWrap(target));
+  s+='<line x1="'+pL+'" y1="'+_ty.toFixed(1)+'" x2="'+(W-pR)+'" y2="'+_ty.toFixed(1)+'" stroke="#ffb37a" stroke-width="2" stroke-dasharray="4 5"/>';
+  s+='<text x="'+(W-pR)+'" y="'+(_ty-4).toFixed(1)+'" text-anchor="end" font-size="9" font-weight="800" fill="#e8a25a">目標 '+_floatHM(target)+'</text>';
   /* ★「起床だけ」を えらんだ時は 起床だけを 出す（気分の線は かさねない）。
      気分を 見たい時は チェックで 気分を えらぶと 出るよ。 */
   s+='<polyline points="'+vals.map((v,i)=>X(i).toFixed(1)+","+Y(v).toFixed(1)).join(" ")+'" fill="none" stroke="#7fd0f0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>';
@@ -8756,14 +8767,15 @@ function _buildBedGraph(box){
   if(!raw.length){box.innerHTML='<div class="recEmpty">ねた時間の 記録が たまると<br>ここに グラフが 出るよ</div>';return;}
   /* ★起床グラフと まったく おなじ めもり（24時間・目標いちも 同じ） */
   const _R=_graphRange(), lo=_R.lo, hi=_R.hi, target=_R.target;
-  const data=raw.map(([k,v])=>[k,_graphWrap(v,lo,hi)]);
+  const data=raw.map(([k,v])=>[k,_graphWrap(v)]);
   const vals=data.map(d=>d[1]);
   const W=340,H=168,pL=38,pR=8,pT=16,pB=40;
-  const X=i=>(data.length<=1)?(pL+(W-pL-pR)/2):(pL+i*(W-pL-pR)/(data.length-1)), Y=v=>pT+(hi-v)/(hi-lo)*(H-pT-pB);
+  const X=i=>(data.length<=1)?(pL+(W-pL-pR)/2):(pL+i*(W-pL-pR)/(data.length-1)), Y=_graphYf(lo,hi,pT,H-pT-pB);
   let s='<svg viewBox="0 0 340 150" style="width:100%;height:auto;display:block;">';
   s+=_graphHourLines(lo,hi,Y,W,pL,pR,"#f0edf7","#c9c0dc");
-  s+='<line x1="'+pL+'" y1="'+Y(target).toFixed(1)+'" x2="'+(W-pR)+'" y2="'+Y(target).toFixed(1)+'" stroke="#ffb37a" stroke-width="2" stroke-dasharray="4 5"/>';
-  s+='<text x="'+(W-pR)+'" y="'+(Y(target)-4).toFixed(1)+'" text-anchor="end" font-size="9" font-weight="800" fill="#e8a25a">目標 '+_floatHM(target)+'</text>';
+  var _ty=Y(_graphWrap(target));
+  s+='<line x1="'+pL+'" y1="'+_ty.toFixed(1)+'" x2="'+(W-pR)+'" y2="'+_ty.toFixed(1)+'" stroke="#ffb37a" stroke-width="2" stroke-dasharray="4 5"/>';
+  s+='<text x="'+(W-pR)+'" y="'+(_ty-4).toFixed(1)+'" text-anchor="end" font-size="9" font-weight="800" fill="#e8a25a">目標 '+_floatHM(target)+'</text>';
   /* ●の ある日どうしを つないで 1本の線に（記録が ない日は とばす） */
   if(data.length>=2)s+='<polyline points="'+data.map((d,i)=>X(i).toFixed(1)+","+Y(d[1]).toFixed(1)).join(" ")+'" fill="none" stroke="#b6a8ef" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>';
   /* ●＝就寝が 記録された日だけ。色は その日の ねむった時間 */

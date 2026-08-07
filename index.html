@@ -5963,6 +5963,7 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
   background:rgba(255,255,255,.8);border-radius:12px;padding:9px;cursor:pointer;
   font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:12px;font-weight:800;color:#c07a92;}
 #tsUnpost[hidden]{display:none;}
+#trActiveRow[hidden]{display:none !important;}
 #tsUnpost:active{transform:scale(.97);}
 /* ★「詳細」＝猫の 下（もとは ボタンが あった ところ）。ひらいたら カード全体に ひろがる */
 #tsPostPreviewWrap{min-width:98px;}
@@ -7159,7 +7160,7 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
     <div class="trRow"><span class="trIco">😊</span><span class="trLbl">気分</span><b class="trVal" id="trMood">–</b></div>
     <div class="trRow"><span class="trIco">📻</span><span class="trLbl">総日数</span><b class="trVal" id="trTotal">–</b></div>
     <div class="trRow"><span class="trIco">🔥</span><span class="trLbl">連続日数</span><b class="trVal" id="trStreak">–</b></div>
-    <div class="trRow"><span class="trIco">🌏</span><span class="trLbl">きょうの なかま</span><b class="trVal" id="trActive">–</b></div>
+    <div class="trRow" id="trActiveRow" hidden><span class="trIco">🌏</span><span class="trLbl">きょうの なかま</span><b class="trVal" id="trActive">–</b></div>
   </div>
   <div class="taisoCard" id="tsRangeCard">
         <div class="tsCardTitle" id="tsMtTitle">これまでの山脈</div>
@@ -14356,7 +14357,11 @@ try{ document.addEventListener("click",function(e){
 }); }catch(_){}
 /* きょうの なかま（人数だけ） */
 function _paintActive(){
-  try{ var el=$("trActive"); if(!el)return;
+  try{
+    var row=$("trActiveRow"), el=$("trActive");
+    var on=false; try{on=(typeof _devUnlockAll!=="undefined")&&!!_devUnlockAll;}catch(_){}
+    if(row)row.hidden=!on;                       /* ★全衣装モードの ときだけ 見せる */
+    if(!on||!el)return;
     var n=window._todayActive;
     el.textContent=(n==null)?"–":(n+"人");
   }catch(_){}
@@ -17366,7 +17371,7 @@ function devToggleTest(){
   try{ if($("catRoom").classList.contains("visible")){refreshOutingUI();updateOutingCountdown();} }catch(_){}
   try{ if($("profilePanel").classList.contains("visible"))renderCloset(); }catch(_){}
   try{refreshHomeOutingChip();}catch(_){}
-  try{_bossHauntPaint();_bossEtaPaint();_homeLocPaint(true);}catch(_){}
+  try{_bossHauntPaint();_bossEtaPaint();_homeLocPaint(true);_paintActive();}catch(_){}
   try{toast(on?"【テスト】投稿OFF＋おでかけ1分＋全解放⏱":"【テスト】OFF（通常・投稿ON）");}catch(_){}
 }
 function ensureDevHomeBtn(){
@@ -18485,7 +18490,7 @@ function ensureUnlockBtn(){
     try{refreshCostumeEverywhere();}catch(_){}
     try{if(typeof buildCostumeDex==="function")buildCostumeDex();}catch(_){}
     try{updateHomeScenery();}catch(_){}
-    try{_bossHauntPaint();_bossEtaPaint();_homeLocPaint(true);}catch(_){}
+    try{_bossHauntPaint();_bossEtaPaint();_homeLocPaint(true);_paintActive();}catch(_){}
     try{toast(_devUnlockAll?"🔓 全衣装ON":"🔒 全衣装OFF");}catch(_){}
   });
   box.appendChild(b);refreshUnlockBtn();

@@ -5955,6 +5955,35 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
   box-shadow:0 4px 12px rgba(60,170,160,.4) !important;}
 #homeZZ:active{transform:scale(.94);}
 </style>
+<style id="moodShapeCss">
+#moodShapeWrap{display:flex;align-items:center;gap:14px;padding:4px 2px 2px;}
+#moodShape{flex:0 0 auto;width:158px;height:158px;display:block;
+  filter:drop-shadow(0 4px 12px rgba(120,150,180,.22));}
+#moodShapeLg{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:5px;}
+#moodShapeLg .msRow{display:flex;align-items:center;gap:7px;}
+#moodShapeLg .msDot{width:13px;height:13px;border-radius:4px;flex:0 0 auto;
+  box-shadow:0 1px 3px rgba(0,0,0,.12);}
+#moodShapeLg .msNm{flex:1 1 auto;min-width:0;font-size:12px;font-weight:800;color:#7a8fa0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#moodShapeLg .msPct{flex:0 0 auto;font-size:12px;font-weight:900;color:#5f8ba5;font-variant-numeric:tabular-nums;}
+#moodShapeLg .msNone{font-size:12px;font-weight:800;color:#a9bccb;line-height:1.7;}
+@media (max-width:400px){#moodShape{width:132px;height:132px;}#moodShapeLg .msNm,#moodShapeLg .msPct{font-size:11px;}}
+@media (min-width:820px){#moodShape{width:196px;height:196px;}}
+</style>
+<style id="krSleepCss">
+/* ===== 寝つき度 ===== */
+#krSlpRow .krSlpWrap{display:flex;gap:6px;flex:1 1 auto;justify-content:flex-end;}
+.krSlp{flex:0 1 auto;min-width:60px;border:1.5px solid rgba(170,160,215,.45);background:rgba(255,255,255,.8);
+  border-radius:12px;padding:5px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:0;
+  font-family:"Yomogi","Kosugi Maru",sans-serif;line-height:1.1;}
+.krSlp b{font-size:17px;font-weight:900;color:#8b83c4;}
+.krSlp i{font-style:normal;font-size:8.5px;font-weight:800;color:#a9a3c8;letter-spacing:-.02em;white-space:nowrap;}
+.krSlp.on{background:linear-gradient(135deg,#c9c2f0,#9d92dd);border-color:transparent;
+  box-shadow:0 3px 9px rgba(140,130,205,.4);}
+.krSlp.on b,.krSlp.on i{color:#fff;}
+.krSlp:active{transform:scale(.95);}
+@media (max-width:400px){.krSlp{min-width:52px;padding:4px 5px;}.krSlp b{font-size:15px;}.krSlp i{font-size:7.5px;}}
+</style>
 <style id="yumeLabCss">
 /* ===== ユメっ子 けんきゅうじょ ===== */
 #yumeLab{position:fixed;inset:0;z-index:3500;display:flex;flex-direction:column;
@@ -5980,10 +6009,11 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 #ylTag{flex:0 0 auto;font-size:10px;font-weight:900;letter-spacing:.22em;color:#4fe0d4;
   text-shadow:0 0 12px rgba(79,224,212,.55);}
 #ylSub{flex:1 1 auto;min-width:0;font-size:11.5px;font-weight:800;color:#7fb6c4;letter-spacing:.06em;}
-#ylClose{margin-left:auto;border:1px solid rgba(94,226,224,.45);background:rgba(8,40,50,.7);
-  color:#8fe6dd;border-radius:10px;width:34px;height:32px;font-size:15px;font-weight:900;cursor:pointer;
-  align-self:center;}
-#ylClose:active{transform:scale(.93);}
+#ylBook,#ylClose{border:1px solid rgba(94,226,224,.45);background:rgba(8,40,50,.7);
+  color:#8fe6dd;border-radius:10px;width:36px;height:32px;font-size:15px;font-weight:900;cursor:pointer;
+  align-self:center;padding:0;line-height:1;}
+#ylBook{margin-left:auto;margin-right:7px;}
+#ylBook:active,#ylClose:active{transform:scale(.93);}
 /* 本体 */
 #ylMain{position:relative;z-index:2;flex:1 1 auto;min-height:0;display:flex;gap:10px;padding:10px 12px 14px;}
 #ylLeft{flex:0 0 96px;display:flex;flex-direction:column;min-height:0;}
@@ -6061,6 +6091,15 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 .ylBtn.fuse{border-color:rgba(255,214,120,.5);color:#ffd98f;}
 .ylBtn.fuse:disabled{opacity:.35;cursor:not-allowed;}
 /* お気に入りの ❤ マーク */
+.ylItem.cand{border-color:#ffd45e;box-shadow:0 0 16px rgba(255,212,94,.55),0 0 0 1px rgba(255,212,94,.5) inset;
+  animation:ylCand 1.6s ease-in-out infinite;}
+@keyframes ylCand{0%,100%{box-shadow:0 0 12px rgba(255,212,94,.4),0 0 0 1px rgba(255,212,94,.4) inset;}
+  50%{box-shadow:0 0 22px rgba(255,212,94,.75),0 0 0 2px rgba(255,212,94,.7) inset;}}
+.ylItem.fsel{border-color:#4fe0d4;background:rgba(18,96,110,.95);
+  box-shadow:0 0 20px rgba(79,224,212,.6) !important;animation:none;}
+.ylItem .ylChk{position:absolute;top:1px;left:3px;z-index:3;font-size:13px;font-weight:900;color:#4fe0d4;
+  text-shadow:0 1px 3px rgba(0,0,0,.7);}
+@media (prefers-reduced-motion:reduce){.ylItem.cand{animation:none;}}
 .ylItem .ylFav{position:absolute;top:2px;right:3px;font-size:11px;line-height:1;z-index:3;
   filter:drop-shadow(0 1px 2px rgba(0,0,0,.6));}
 /* ★BIG は 大きく 見せる */
@@ -7345,6 +7384,14 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
       <div class="krTimeLeft"><span class="krTimeLbl">🌙 就寝</span><button class="krDunno" id="krBedDunno" data-t="bed" type="button">わからない</button></div>
       <div class="krStepWrap"><button class="krStep" data-t="bed" data-d="-1" type="button">−</button><span class="krTimeV" id="krBedV">23:00</span><button class="krStep" data-t="bed" data-d="1" type="button">＋</button></div>
       </div>
+      <div class="krTime slp" id="krSlpRow">
+      <div class="krTimeLeft"><span class="krTimeLbl">😴 寝つき</span></div>
+      <div class="krSlpWrap">
+        <button class="krSlp" data-s="1" type="button"><b>○</b><i>すぐ寝れた</i></button>
+        <button class="krSlp" data-s="2" type="button"><b>△</b><i>ふつう</i></button>
+        <button class="krSlp" data-s="3" type="button"><b>×</b><i>寝つけず</i></button>
+      </div>
+      </div>
       <button id="krSave" type="button">きろく する</button>
       
       <button id="krSkip" type="button">スキップ</button>
@@ -7823,6 +7870,13 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
       <div class="recEye"><span class="recEyeDot" style="background:#63ccff;"></span><span id="recGraphTitle">起きた時間の うつりかわり</span></div>
       <div id="recGraphSeg" class="recSeg"><button type="button" class="recSegBtn on" data-gm="wake">起床</button><button type="button" class="recSegBtn on" data-gm="bed">就寝</button><button type="button" class="recSegBtn on" data-gm="mood">気分</button></div>
       <div id="recGraph"></div>
+    </div>
+    <div class="recCard">
+      <div class="recEye"><span class="recEyeDot" style="background:#ffa9c9;"></span><span>今週の 気分</span></div>
+      <div id="moodShapeWrap">
+        <canvas id="moodShape" width="440" height="440"></canvas>
+        <div id="moodShapeLg"></div>
+      </div>
     </div>
     <div class="recCard">
       <div class="recEye"><span class="recEyeDot" style="background:#c9a8f0;"></span>わたしの ぶんせき</div>
@@ -8652,7 +8706,7 @@ function _recDot(dm){ return dm<=10 ? "#63ccff" : "#ff9e4d"; }
 function _floatHM(f){ let h=Math.floor(f),m=Math.round((f-h)*60); if(m===60){h++;m=0;} return fmtHM(h,m); }
 function openRecord(){ $("recordScreen").classList.add("visible"); buildRecord(); }
 function closeRecord(){ $("recordScreen").classList.remove("visible"); }
-function buildRecord(){ try{buildRecSummary();}catch(_){} try{buildRecGraph();}catch(_){} try{buildRecAdvice();}catch(_){} try{buildRecCalendar();}catch(_){} try{buildRecWeekday();}catch(_){} try{buildRecSleep();}catch(_){} }
+function buildRecord(){ try{buildRecSummary();}catch(_){} try{buildRecGraph();}catch(_){} try{_msPaint();}catch(_){} try{buildRecAdvice();}catch(_){} try{buildRecCalendar();}catch(_){} try{buildRecWeekday();}catch(_){} try{buildRecSleep();}catch(_){} }
 var _recRangeDays=7;
 function _recWord(dm){
   if(dm==null)return "";
@@ -8867,7 +8921,10 @@ function buildRecGraph(boxArg){
   /* ★時間の こうもくは 上が 14時・下が つぎの日の14時（時間が 下へ ながれる）。気分は 今までどおり 上が いい */
   var YOf=function(sr,v){var frac=Math.max(0,Math.min(1,(v-sr.lo)/((sr.hi-sr.lo)||1)));
     return sr.def.time?(pT+frac*chartH):(baseY-frac*chartH);};
-  var s='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;display:block;">';
+  var s='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;display:block;">'+
+    '<defs><linearGradient id="slpG" x1="0" y1="0" x2="0" y2="1">'+
+    '<stop offset="0" stop-color="#b9a8ec" stop-opacity=".42"/>'+
+    '<stop offset="1" stop-color="#8fd0f0" stop-opacity=".30"/></linearGradient></defs>';
   if(_hasTime){
     var Yt=_graphYf(_R.lo,_R.hi,pT,chartH);
     s+=_graphHourLines(_R.lo,_R.hi,Yt,W,pL,pR,"#eef2f6","#c4d0d9");
@@ -8876,7 +8933,22 @@ function buildRecGraph(boxArg){
   }
   s+='<line x1="'+pL+'" y1="'+baseY+'" x2="'+(W-pR)+'" y2="'+baseY+'" stroke="#dde5ec" stroke-width="1.2"/>';
   /* 起床の 目標線（オレンジの点線・スケールは起床にあわせる） */
-  var wsr=null;series.forEach(function(sr){if(sr.m==="wake")wsr=sr;});
+  var wsr=null,bsr=null;series.forEach(function(sr){if(sr.m==="wake")wsr=sr;if(sr.m==="bed")bsr=sr;});
+  /* ★ねている あいだ（就寝→起床）を うすく ぬる */
+  if(wsr&&bsr){
+    var segs=[],cur=[];
+    dates.forEach(function(k,di){
+      var bv=bsr.data[k], wv=wsr.data[k];
+      if(bv==null||wv==null){ if(cur.length>1)segs.push(cur); cur=[]; return; }
+      cur.push([X(di),YOf(bsr,bv),YOf(wsr,wv)]);
+    });
+    if(cur.length>1)segs.push(cur);
+    segs.forEach(function(sg){
+      var top=sg.map(function(q){return q[0].toFixed(1)+","+q[1].toFixed(1);}).join(" ");
+      var bot=sg.slice().reverse().map(function(q){return q[0].toFixed(1)+","+q[2].toFixed(1);}).join(" ");
+      s+='<polygon points="'+top+" "+bot+'" fill="url(#slpG)" opacity=".55"/>';
+    });
+  }
   if(wsr&&tw!=null){
     var ty=YOf(wsr,_graphWrap(tw));
     s+='<line x1="'+pL+'" y1="'+ty.toFixed(1)+'" x2="'+(W-pR)+'" y2="'+ty.toFixed(1)+'" stroke="#ffb37a" stroke-width="1.6" stroke-dasharray="4 5"/>';
@@ -8889,8 +8961,16 @@ function buildRecGraph(boxArg){
     if(pts.length>=2)s+='<polyline points="'+pts.map(function(p){return p[0].toFixed(1)+","+p[1].toFixed(1);}).join(" ")+'" fill="none" stroke="'+sr.def.col+'" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>';
     dates.forEach(function(k,di){var v=sr.data[k];if(v==null)return;var x=X(di),y=YOf(sr,v);
       if(sr.m==="mood"){var em=sr.def.emoji(k);s+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="6.5" fill="#fff" stroke="'+sr.def.col+'" stroke-width="1.5"/>'+(em?'<text x="'+x.toFixed(1)+'" y="'+(y+3.4).toFixed(1)+'" font-size="8.5" text-anchor="middle">'+em+'</text>':'');}
-      else if(sr.m==="wake"){var dc=(tw!=null)?_recDot(Math.round((v-tw)*60)):sr.def.col;s+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="3.8" fill="'+dc+'" stroke="#fff" stroke-width="1"/>';}
-      else if(sr.m==="bed"){var bc=_sleepDurColor(_sleepDurOf(k));s+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="3.8" fill="'+bc+'" stroke="#fff" stroke-width="1"/>';}
+      else if(sr.m==="wake"){var dc=(tw!=null)?_recDot(Math.round((v-tw)*60)):sr.def.col;
+        s+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="6" fill="'+dc+'" stroke="#fff" stroke-width="1.4"/>'
+          +'<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="2.1" fill="#fff" opacity=".92"/>';
+        for(var rk=0;rk<8;rk++){var ra=rk*Math.PI/4;
+          s+='<line x1="'+(x+Math.cos(ra)*2.9).toFixed(1)+'" y1="'+(y+Math.sin(ra)*2.9).toFixed(1)+'" x2="'+(x+Math.cos(ra)*4.1).toFixed(1)+'" y2="'+(y+Math.sin(ra)*4.1).toFixed(1)+'" stroke="#fff" stroke-width="0.9" opacity=".85" stroke-linecap="round"/>';}
+      }
+      else if(sr.m==="bed"){var bc=_sleepDurColor(_sleepDurOf(k));
+        s+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="6" fill="'+bc+'" stroke="#fff" stroke-width="1.4"/>'
+          +'<path d="M '+(x+1.5).toFixed(1)+' '+(y-3).toFixed(1)+' a 3 3 0 1 0 0 6 a 3.6 3.6 0 1 1 0 -6 Z" fill="#fff" opacity=".95"/>';
+      }
       else s+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="3" fill="'+sr.def.col+'"/>';
     });
   });
@@ -11944,7 +12024,8 @@ function renderHillPage(){
     const riseEl=lab.querySelector(".catRise")||null;
     if(comment){   /* クリックで全文表示 */
       lab.title="コメントを見る";
-      lab.addEventListener("click",e=>{e.stopPropagation();_readComment(lab,comment);});
+      lab.addEventListener("click",e=>{e.stopPropagation();_readComment(lab,comment);
+        try{_catY1PopOpen(po,lab.closest(".hillCat")||lab);}catch(_){}});
     }
     const body=po.catBody||"#1c1c1c",ear=po.color||"#8fdcff";
     const pose=po.isSelf?getEquippedPose():(po.pose||"sit");
@@ -22836,6 +22917,78 @@ try{MMOODS.forEach(function(m){if(m&&m.l&&m.v!=null)_MOOD_VAL[m.l]=m.v;});}catch
 const MMOOD_KEY="radio_moods";
 function _moodMap(){try{const v=JSON.parse(localStorage.getItem(MMOOD_KEY)||"{}");return(v&&typeof v==="object")?v:{};}catch(_){return{};}}
 function _saveMood(dk,m){try{const mm=_moodMap();mm[dk]={e:m.e,l:m.l};localStorage.setItem(MMOOD_KEY,JSON.stringify(mm));try{syncSoon();}catch(_){}}catch(_){}}
+/* ===== 今週の 気分を ユメっ子の シルエットで ===== */
+function _msColorOf(label){
+  try{
+    for(var i=0;i<MOOD3.length;i++){
+      var top=MOOD3[i];
+      if(top.l===label)return {c:_askMoodTint(i,MOOD3.length).b,n:top.l,e:top.e};
+      var f=function(list){ for(var j=0;j<list.length;j++){ if(list[j].l===label)return true;
+        if(list[j].c&&f(list[j].c))return true; } return false; };
+      if(top.c&&f(top.c))return {c:_askMoodTint(i,MOOD3.length).b,n:top.l,e:top.e};
+    }
+  }catch(_){}
+  return {c:"#cfd8e0",n:"そのほか",e:""};
+}
+function _msWeek(){
+  var mm=_moodMap(), now=new Date(), out=[], seen={};
+  for(var i=6;i>=0;i--){
+    var d=new Date(now.getTime()-i*86400000);
+    var k=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+    var m=mm[k]; if(!m||!m.l)continue;
+    var t=_msColorOf(m.l);
+    if(!seen[t.n])seen[t.n]={n:t.n,e:t.e,c:t.c,v:0};
+    seen[t.n].v++; out.push(t);
+  }
+  var arr=Object.keys(seen).map(function(k){return seen[k];});
+  arr.sort(function(a,b){return b.v-a.v;});
+  return {rows:arr,total:out.length};
+}
+async function _msPaint(){
+  try{
+    var cvs=$("moodShape"), lg=$("moodShapeLg"); if(!cvs)return;
+    var W=cvs.width,H=cvs.height,c=cvs.getContext("2d");
+    c.clearRect(0,0,W,H);
+    var w=_msWeek();
+    /* シルエットの もと＝いまの ユメっ子（いなければ 丸） */
+    var img=null;
+    try{ var y1=_myYume1(); if(y1&&y1.img)img=await loadImg(y1.img); }catch(_){}
+    var off=document.createElement("canvas");off.width=W;off.height=H;
+    var oc=off.getContext("2d");
+    if(img){ oc.drawImage(img,0,0,W,H); }
+    else{ oc.beginPath();oc.arc(W/2,H/2,W*0.42,0,Math.PI*2);oc.fillStyle="#000";oc.fill(); }
+    /* まっ白の シルエット */
+    oc.globalCompositeOperation="source-in";
+    oc.fillStyle="#fdfdff";oc.fillRect(0,0,W,H);
+    /* 下から 色を つみあげる（ぜんぶで 100%） */
+    if(w.total>0){
+      oc.globalCompositeOperation="source-atop";
+      var yy=H;
+      w.rows.forEach(function(r){
+        var hh=H*(r.v/w.total);
+        var gg=oc.createLinearGradient(0,yy-hh,0,yy);
+        gg.addColorStop(0,r.c);gg.addColorStop(1,r.c);
+        oc.fillStyle=gg;oc.fillRect(0,yy-hh,W,hh+.6);
+        yy-=hh;
+      });
+      /* 水面っぽい つや */
+      oc.globalCompositeOperation="source-atop";
+      var sh=oc.createLinearGradient(0,0,0,H);
+      sh.addColorStop(0,"rgba(255,255,255,.34)");sh.addColorStop(.5,"rgba(255,255,255,0)");
+      oc.fillStyle=sh;oc.fillRect(0,0,W,H);
+    }
+    oc.globalCompositeOperation="source-over";
+    c.drawImage(off,0,0);
+    if(lg){
+      if(!w.total){ lg.innerHTML='<div class="msNone">きろくが たまると<br>ここに 色が つくよ</div>'; }
+      else lg.innerHTML=w.rows.map(function(r){
+        return '<div class="msRow"><span class="msDot" style="background:'+r.c+'"></span>'+
+          '<span class="msNm">'+(r.e?r.e+" ":"")+escHtml(r.n)+'</span>'+
+          '<span class="msPct">'+Math.round(r.v/w.total*100)+'%</span></div>';
+      }).join("");
+    }
+  }catch(_){}
+}
 function _moodColorV(v){
   switch(v){
     case 5:return {bg:"#ffdde9",bd:"#f7b3ce",fg:"#d1638f"};
@@ -22956,6 +23109,9 @@ function _mood3Pick(a,b,c){
   }catch(_){return null;}
 }
 var SLEEP_KEY="radio_sleeplog";
+var SLPQ_KEY="radio_sleepq";
+function getSlpLog(){try{var v=JSON.parse(localStorage.getItem(SLPQ_KEY)||"{}");return (v&&typeof v==="object")?v:{};}catch(_){return{};}}
+function setSlpFor(k,v){try{var m=getSlpLog();if(v)m[k]=v;else delete m[k];localStorage.setItem(SLPQ_KEY,JSON.stringify(m));}catch(_){}}
 function getSleepLog(){try{const v=JSON.parse(localStorage.getItem(SLEEP_KEY)||"{}");return(v&&typeof v==="object")?v:{};}catch(_){return{};}}
 function setSleepHF(hf){
   try{const o=getSleepLog();o[jstKey()]=hf;localStorage.setItem(SLEEP_KEY,JSON.stringify(o));syncSoon();}catch(_){}
@@ -22966,7 +23122,7 @@ var ASKDONE_KEY="radio_ask_done";
 function _askDone(){try{return JSON.parse(localStorage.getItem(ASKDONE_KEY)||"{}")||{};}catch(_){return{};}}
 function _askMark(k,v){try{const o=_askDone();o[jstKey()]=Object.assign({},o[jstKey()]||{},{[k]:v});localStorage.setItem(ASKDONE_KEY,JSON.stringify(o));}catch(_){}}
 function askedToday(k){try{const d=_askDone()[jstKey()]||{};return !!d[k];}catch(_){return false;}}
-var _askM1=null,_askM2=null,_askM3=null,_askWG=null,_askWH=null,_askBG=null,_askBH=null,_askThen=null,_askSec=0,_krWakeH=null,_krBedH=null;
+var _askM1=null,_askM2=null,_askM3=null,_askWG=null,_askWH=null,_askBG=null,_askBH=null,_askThen=null,_askSec=0,_krWakeH=null,_krBedH=null,_krSlp=null;
 function _askFmt(hf){
   if(!Number.isFinite(hf))return"－";
   let h=Math.floor(hf),m=Math.round((hf-h)*60);
@@ -23018,6 +23174,7 @@ function _askPaint(){
     var bv=$("krBedV");if(bv){bv.textContent=fmt(_krBedH);bv.classList.toggle("dunno",_krBedH==null);}
     var wd=$("krWakeDunno");if(wd)wd.classList.toggle("on",_krWakeH==null);
     var bd=$("krBedDunno");if(bd)bd.classList.toggle("on",_krBedH==null);
+    try{ document.querySelectorAll("#krSlpRow .krSlp").forEach(function(b){ b.classList.toggle("on",String(_krSlp)===b.dataset.s); }); }catch(_){}
   }catch(_){}
 }
 function _askAdvance(){ if(_askSec<2){_askSec++;_askPaint();} else {try{playPop();}catch(_){}_askClose(true);} }
@@ -23033,6 +23190,7 @@ function openAskCard(then){
   _askThen=then||null;
   if(askedToday("all")){ _askPaintDone(); if(_askThen){const f=_askThen;_askThen=null;f();} return; }
   _askM1=null;_askM2=null;_askM3=null;
+  try{_krSlp=getSlpLog()[jstKey()]||null;}catch(_){_krSlp=null;}
   var _n=new Date();
   _krWakeH=_n.getHours();                        /* 起床＝いまの ○時 */
   _krBedH=((_n.getHours()-6)%24+24)%24;          /* 就寝＝いまから 6時間前 */
@@ -23094,12 +23252,14 @@ function _askSyncInline(){
     _tsLockPaint();
     if(!bx._inited){ bx._inited=1;
       _askM1=null;_askM2=null;_askM3=null;
+      try{_krSlp=getSlpLog()[jstKey()]||null;}catch(_){_krSlp=null;}
       var n=new Date(); _krWakeH=n.getHours(); _krBedH=((n.getHours()-6)%24+24)%24;
       _askPaint();
     }
   }catch(_){}
 }
 function _askClose(save){
+  try{ if(save)setSlpFor(jstKey(),_krSlp); }catch(_){}
   try{ if(save)_askPaintDone(); else _askSkipped=true; }catch(_){}
   try{ var _ts=$("taisoScreen"); if(_ts){_ts.classList.remove("tsSimple");_ts._moreOpen=true;} }catch(_){}   /* ★ここで ほかも 出す */
   try{_tsLockPaint();}catch(_){}
@@ -28504,6 +28664,9 @@ try{
     const t=e.target;if(!t||!t.closest)return;
     const pick=(nm,fn)=>{const x=t.closest("[data-"+nm+"]");if(!x)return false;try{playClick();}catch(_){}fn(parseInt(x.dataset[nm],10));_askPaint();return true;};
     if(t.closest("#krMoodBk")){try{playClick();}catch(_){}if(_askM2!=null){_askM2=null;_askM3=null;}else _askM1=null;_askPaint();return;}
+    var sq=t.closest("#krSlpRow .krSlp");
+    if(sq){ try{playClick();}catch(_){} var sv=parseInt(sq.dataset.s,10);
+      _krSlp=(_krSlp===sv)?null:sv; _askPaint(); return; }
     var q1=t.closest("[data-m1]");
     if(q1&&$("askBox")&&$("askBox").classList.contains("kr1")){   /* ★かんたんモード＝気分だけ えらぶ */
       try{playClick();}catch(_){}
@@ -33249,7 +33412,7 @@ function _ybRender(){
       '<div class="ybNm">'+(have?escHtml(m.name):"？？？")+'</div>'+
       '<div class="advCardStars r'+m.star+'">'+_yumeStarStr(m.star)+'</div>'+
       info+
-      (have?'<button class="ybFree" type="button" data-nm="'+escHtml(m.name)+'">にがす</button>':"")+
+
     '</div>';
   }).join("");
   g.innerHTML=html;
@@ -33293,13 +33456,53 @@ function _ygDexReveal(y,done){
   }catch(_){ _ybPreview=null; if(done)done(); }
 }
 /* ===== ユメっ子 けんきゅうじょ ===== */
-var _ylPick=0, YL_FAV_KEY="radio_yume_fav";
+var _ylPick=0, _ylFuseOn=false, _ylFuseSel={}, YL_FAV_KEY="radio_yume_fav";
 function _ylFav(){ try{var v=JSON.parse(localStorage.getItem(YL_FAV_KEY)||"{}");return (v&&typeof v==="object")?v:{};}catch(_){ return {}; } }
 function _ylFavSave(m){ try{localStorage.setItem(YL_FAV_KEY,JSON.stringify(m||{}));}catch(_){} }
 function _ylKey(y){ return (y&&(y.id||((y.name||"")+"_"+(y.at||0))))||""; }
 function _ylIsFav(y){ var k=_ylKey(y); return !!(k&&_ylFav()[k]); }
 function _ylToggleFav(y){ var m=_ylFav(), k=_ylKey(y); if(!k)return false;
   if(m[k])delete m[k]; else m[k]=1; _ylFavSave(m); return !!m[k]; }
+/* ★合成の えらべる 相手か（同じ種類・自分いがい・おきにいりで ない） */
+function _ylFuseCand(base,y){
+  try{
+    if(!base||!y)return false;
+    var sp=function(z){ return (z&&z.img)||(z&&z.name)||""; };
+    return sp(base)===sp(y) && _ylKey(base)!==_ylKey(y) && !_ylIsFav(y);
+  }catch(_){ return false; }
+}
+function _ylFuseStart(){
+  var a=_ylList(), y=a[_ylPick]; if(!y)return;
+  var cands=a.filter(function(x){ return _ylFuseCand(y,x); });
+  if(!cands.length){ try{toast("おなじ子が いないよ");}catch(_){} return; }
+  if(_yumeLv(y)>=_yumeMaxLv(y)){ try{toast("もう これいじょう 上がらないよ");}catch(_){} return; }
+  _ylFuseOn=true; _ylFuseSel={};
+  _ylPaint();
+  try{toast("ひからせた子から えらんでね");}catch(_){}
+}
+function _ylFuseCancel(){ _ylFuseOn=false; _ylFuseSel={}; _ylPaint(); }
+function _ylFuseDo(){
+  try{
+    var a=_ylList(), y=a[_ylPick]; if(!y)return;
+    var mats=a.filter(function(x){ return _ylFuseSel[_ylKey(x)] && _ylFuseCand(y,x); });
+    if(!mats.length){ try{toast("ざいりょうを えらんでね");}catch(_){} return; }
+    var cap=_yumeMaxLv(y), nowv=_yumeLv(y);
+    var gain=0; mats.forEach(function(m){ gain+=Math.max(1,Math.round(_yumeLv(m)*0.5)); });
+    var after=Math.min(cap,nowv+gain);
+    if(!confirm("「"+(y.name||"")+"」に えらんだ "+mats.length+"匹を ごうせいします。\n\nのびしろ LV "+nowv+" → "+after+"（上限 "+cap+"）\n\n★えらんだ "+mats.length+"匹は きえます。もどせません。\n\nよろしいですか？"))return;
+    var keep=_ylKey(y), used={};
+    mats.forEach(function(m){ used[_ylKey(m)]=1; });
+    var dex=_yumeDex().filter(function(x){ return !used[_ylKey(x)]; });
+    for(var j=0;j<dex.length;j++){ if(_ylKey(dex[j])===keep){ dex[j].lv=after; break; } }
+    _yumeSaveDex(dex);
+    try{if(typeof syncSoon==="function")syncSoon();}catch(_){}
+    _ylFuseOn=false; _ylFuseSel={};
+    try{ var na=_ylList(); var ni=na.findIndex(function(x){return _ylKey(x)===keep;}); _ylPick=(ni>=0?ni:0); }catch(_){ _ylPick=0; }
+    _ylPaint();
+    try{toast("ごうせい！ LV "+nowv+" → "+after);}catch(_){}
+    try{_ytChime(2);}catch(_){}
+  }catch(_){}
+}
 /* 同じ名前の ほかの子（お気に入りは のぞく）＝合成の ざいりょう */
 function _ylFuseMats(y){
   try{ var k=_ylKey(y);
@@ -33330,11 +33533,149 @@ function _scPanel(c,x,y,w,h,r,a){_scRR(x,c,y,w,h,r||28);c.fillStyle="rgba(255,25
   c.shadowColor="rgba(40,90,130,.28)";c.shadowBlur=26;c.shadowOffsetY=8;c.fill();
   c.shadowColor="transparent";c.shadowBlur=0;c.shadowOffsetY=0;}
 function _scSpark(c,x,y,r,col){
-  c.save();c.translate(x,y);c.fillStyle=col||"#fff";c.beginPath();
+  c.save();c.translate(x,y);c.fillStyle=col||"#fff";
+  c.shadowColor=col||"#fff";c.shadowBlur=r*.9;
+  c.beginPath();
   for(var i=0;i<4;i++){var a=i*Math.PI/2;c.moveTo(0,0);
-    c.quadraticCurveTo(Math.cos(a+.4)*r*.28,Math.sin(a+.4)*r*.28,Math.cos(a)*r,Math.sin(a)*r);
-    c.quadraticCurveTo(Math.cos(a-.4)*r*.28,Math.sin(a-.4)*r*.28,0,0);}
+    c.quadraticCurveTo(Math.cos(a+.4)*r*.24,Math.sin(a+.4)*r*.24,Math.cos(a)*r,Math.sin(a)*r);
+    c.quadraticCurveTo(Math.cos(a-.4)*r*.24,Math.sin(a-.4)*r*.24,0,0);}
   c.fill();c.restore();
+}
+/* ふわっと ひかる 玉 */
+function _scBokeh(c,x,y,r,col,a){
+  var g=c.createRadialGradient(x,y,0,x,y,r);
+  g.addColorStop(0,col.replace("ALPHA",(a==null?.5:a)));
+  g.addColorStop(1,col.replace("ALPHA",0));
+  c.fillStyle=g;c.beginPath();c.arc(x,y,r,0,Math.PI*2);c.fill();
+}
+/* まんなかから ひろがる 光 */
+function _scBurst(c,cx,cy,r,col){
+  c.save();c.translate(cx,cy);c.globalAlpha=.34;
+  for(var i=0;i<20;i++){
+    var a=i*Math.PI/10, w=(i%2?.028:.055);
+    var g=c.createLinearGradient(0,0,Math.cos(a)*r,Math.sin(a)*r);
+    g.addColorStop(0,col.replace("ALPHA",.55));g.addColorStop(1,col.replace("ALPHA",0));
+    c.fillStyle=g;c.beginPath();c.moveTo(0,0);
+    c.lineTo(Math.cos(a-w)*r,Math.sin(a-w)*r);c.lineTo(Math.cos(a+w)*r,Math.sin(a+w)*r);
+    c.closePath();c.fill();
+  }
+  c.restore();
+}
+/* リボン（両はしが V に へこむ 帯） */
+function _scRibbon(c,x,y,w,h,c1,c2,txt,fs,tcol){
+  c.save();
+  var g=c.createLinearGradient(x,y,x,y+h);g.addColorStop(0,c1);g.addColorStop(1,c2);
+  c.shadowColor="rgba(60,110,150,.28)";c.shadowBlur=16;c.shadowOffsetY=6;
+  c.fillStyle=g;c.beginPath();
+  c.moveTo(x,y);c.lineTo(x+w,y);c.lineTo(x+w-h*.36,y+h/2);c.lineTo(x+w,y+h);
+  c.lineTo(x,y+h);c.lineTo(x+h*.36,y+h/2);c.closePath();c.fill();
+  c.restore();
+  if(txt){c.textAlign="center";c.textBaseline="middle";c.fillStyle=tcol||"#fff";
+    c.font="900 "+(fs||30)+"px 'Yomogi','Kosugi Maru',sans-serif";c.fillText(txt,x+w/2,y+h/2+1);}
+}
+/* 雲の形（パネル・ふきだし 共通） */
+function _scCloudPath(c,x,y,w,h){
+  c.beginPath();
+  c.moveTo(x+w*.16,y+h);
+  c.arc(x+w*.17,y+h-h*.34,h*.36,Math.PI*.5,Math.PI*1.45);
+  c.arc(x+w*.40,y+h*.34,h*.40,Math.PI*1.05,Math.PI*1.85);
+  c.arc(x+w*.68,y+h*.30,h*.42,Math.PI*1.25,Math.PI*1.95);
+  c.arc(x+w*.85,y+h-h*.36,h*.37,Math.PI*1.55,Math.PI*.48);
+  c.closePath();
+}
+function _scCloudPanel(c,x,y,w,h,a){
+  c.save();c.shadowColor="rgba(60,120,170,.3)";c.shadowBlur=30;c.shadowOffsetY=10;
+  _scCloudPath(c,x,y,w,h);c.fillStyle="rgba(255,255,255,"+(a==null?.95:a)+")";c.fill();c.restore();
+}
+/* ハート */
+function _scHeart(c,x,y,r,col){
+  c.save();c.translate(x,y);c.fillStyle=col;c.beginPath();
+  c.moveTo(0,r*.36);
+  c.bezierCurveTo(-r*1.1,-r*.5,-r*.35,-r*1.15,0,-r*.4);
+  c.bezierCurveTo(r*.35,-r*1.15,r*1.1,-r*.5,0,r*.36);
+  c.closePath();c.fill();c.restore();
+}
+/* 紙ふぶき */
+function _scConfetti(c,x,y,w,h,col,rot){
+  c.save();c.translate(x,y);c.rotate(rot||0);c.fillStyle=col;
+  _scRR(-w/2,c,-h/2,w,h,3);c.fill();c.restore();
+}
+/* 手がきふうの おひさま */
+function _scDoodleSun(c,x,y,r,col){
+  c.save();c.translate(x,y);c.strokeStyle=col;c.lineWidth=r*.14;c.lineCap="round";
+  c.beginPath();c.arc(0,0,r*.62,0,Math.PI*2);c.stroke();
+  for(var i=0;i<8;i++){var a=i*Math.PI/4;c.beginPath();
+    c.moveTo(Math.cos(a)*r*.88,Math.sin(a)*r*.88);c.lineTo(Math.cos(a)*r*1.25,Math.sin(a)*r*1.25);c.stroke();}
+  c.restore();
+}
+/* パネルの 内がわに 点線の わく（シールっぽく） */
+function _scDashIn(c,x,y,w,h,r,col){
+  c.save();c.setLineDash([9,8]);c.strokeStyle=col||"rgba(150,200,225,.55)";c.lineWidth=3;
+  _scRR(x+12,c,y+12,w-24,h-24,Math.max(6,r-8));c.stroke();c.restore();
+}
+/* フチどり文字（いちばん 映える） */
+function _scOutText(c,txt,x,y,font,fill,stroke,lw,align){
+  c.save();c.font=font;c.textAlign=align||"left";c.textBaseline="middle";
+  c.lineJoin="round";c.miterLimit=2;
+  c.strokeStyle=stroke||"#fff";c.lineWidth=lw||14;c.strokeText(txt,x,y);
+  c.fillStyle=fill;c.fillText(txt,x,y);c.restore();
+}
+/* マスキングテープ */
+function _scTape(c,x,y,w,h,col,rot){
+  c.save();c.translate(x,y);c.rotate(rot||0);
+  c.globalAlpha=.85;c.fillStyle=col;
+  c.beginPath();c.moveTo(-w/2,-h/2);
+  for(var i=0;i<=6;i++)c.lineTo(-w/2+w*i/6,-h/2+(i%2?2.5:-2.5));
+  c.lineTo(w/2,h/2);
+  for(var j=6;j>=0;j--)c.lineTo(-w/2+w*j/6,h/2+(j%2?-2.5:2.5));
+  c.closePath();c.fill();
+  c.globalAlpha=.28;c.fillStyle="#fff";c.fillRect(-w/2,-h/2,w,h*.34);
+  c.restore();
+}
+/* クリップ */
+function _scClipPin(c,x,y,r,col){
+  c.save();c.translate(x,y);c.strokeStyle=col;c.lineWidth=r*.28;c.lineCap="round";
+  c.beginPath();
+  c.moveTo(-r*.34,r*.9);c.lineTo(-r*.34,-r*.55);
+  c.arc(0,-r*.55,r*.34,Math.PI,0);
+  c.lineTo(r*.34,r*.45);
+  c.arc(0,r*.45,r*.34,0,Math.PI);
+  c.lineTo(-r*.02,-r*.3);
+  c.stroke();c.restore();
+}
+/* パネルの つや */
+function _scGloss(c,x,y,w,h,r){
+  c.save();_scRR(x,c,y,w,h,r);c.clip();
+  var g=c.createLinearGradient(0,y,0,y+h*.5);
+  g.addColorStop(0,"rgba(255,255,255,.75)");g.addColorStop(1,"rgba(255,255,255,0)");
+  c.fillStyle=g;c.fillRect(x,y,w,h*.5);c.restore();
+}
+/* にじ */
+function _scRainbow(c,cx,cy,r,w){
+  var cols=["rgba(255,150,150,A)","rgba(255,200,130,A)","rgba(255,240,150,A)","rgba(160,225,175,A)","rgba(150,200,255,A)","rgba(200,170,240,A)"];
+  c.save();c.lineCap="butt";
+  cols.forEach(function(col,i){
+    c.strokeStyle=col.replace("A",.30);c.lineWidth=w;
+    c.beginPath();c.arc(cx,cy,r-i*w,Math.PI*1.03,Math.PI*1.97);c.stroke();
+  });
+  c.restore();
+}
+/* 外わく（ポラロイドふう） */
+function _scFrame(c,W,H){
+  c.save();
+  c.strokeStyle="rgba(255,255,255,.95)";c.lineWidth=22;
+  _scRR(11,c,11,W-22,H-22,44);c.stroke();
+  c.strokeStyle="rgba(255,255,255,.5)";c.lineWidth=3;
+  _scRR(34,c,34,W-68,H-68,32);c.stroke();
+  c.restore();
+}
+/* ６方向の きらめき */
+function _scStar6(c,x,y,r,col){
+  c.save();c.translate(x,y);c.strokeStyle=col;c.lineWidth=r*.16;c.lineCap="round";
+  c.shadowColor=col;c.shadowBlur=r*.8;
+  for(var i=0;i<3;i++){var a=i*Math.PI/3;c.beginPath();
+    c.moveTo(-Math.cos(a)*r,-Math.sin(a)*r);c.lineTo(Math.cos(a)*r,Math.sin(a)*r);c.stroke();}
+  c.restore();
 }
 function _scSvgImg(svg){
   return new Promise(function(res){
@@ -33346,27 +33687,40 @@ function _scHM(v){var h=Math.floor(v),m=Math.round((v-h)*60);if(m>=60){h++;m-=60
 async function _scBuild(){
   var cv=document.createElement("canvas");cv.width=SC_W;cv.height=SC_H;
   var c=cv.getContext("2d");
-  var now=new Date(), hr=now.getHours();
-  /* ---- 空 ---- */
+  var now=new Date(), hr=now.getHours(), night=(hr>=19||hr<5);
+  /* ================= 背景 ================= */
   var g=c.createLinearGradient(0,0,0,SC_H);
   _scSky(hr).forEach(function(p){g.addColorStop(p[1],p[0]);});
   c.fillStyle=g;c.fillRect(0,0,SC_W,SC_H);
-  var night=(hr>=19||hr<5);
-  c.save();c.globalAlpha=night?.10:.24;c.fillStyle="#fff";
-  [[170,180,160],[900,120,130],[250,1010,180],[860,1150,150],[540,700,120],[80,560,110]].forEach(function(q){
-    c.beginPath();c.arc(q[0],q[1],q[2],0,Math.PI*2);c.arc(q[0]+q[2]*.8,q[1]+12,q[2]*.72,0,Math.PI*2);
-    c.arc(q[0]-q[2]*.8,q[1]+16,q[2]*.6,0,Math.PI*2);c.fill();});
+  if(!night)_scBurst(c,880,180,1150,"rgba(255,246,214,ALPHA)");
+  else _scBurst(c,880,180,900,"rgba(190,215,255,ALPHA)");
+  _scBokeh(c,300,1000,520,"rgba(255,255,255,ALPHA)",night?.16:.42);
+  _scBokeh(c,900,760,460,"rgba(255,236,200,ALPHA)",night?.14:.4);
+  if(!night)_scRainbow(c,540,1420,700,26);
+  /* もこもこ雲 */
+  c.save();c.globalAlpha=night?.13:.32;c.fillStyle="#fff";
+  [[150,200,170],[930,300,140],[210,1060,200],[880,1180,165],[560,780,130],[70,620,120],[1020,520,110]].forEach(function(q){
+    c.beginPath();c.arc(q[0],q[1],q[2],0,Math.PI*2);c.arc(q[0]+q[2]*.82,q[1]+14,q[2]*.74,0,Math.PI*2);
+    c.arc(q[0]-q[2]*.82,q[1]+18,q[2]*.62,0,Math.PI*2);c.arc(q[0]+q[2]*.2,q[1]-q[2]*.5,q[2]*.6,0,Math.PI*2);c.fill();});
   c.restore();
-  /* おひさま（夜以外） */
+  /* きらきら玉 */
+  [[180,420,60,.5],[820,980,70,.45],[420,270,44,.5],[1000,700,52,.4],[120,880,40,.45],[640,1120,46,.4]].forEach(function(q){
+    _scBokeh(c,q[0],q[1],q[2],"rgba(255,255,255,ALPHA)",q[3]);});
+  /* おひさま（右上） */
   if(!night){
-    c.save();c.translate(930,150);
-    c.fillStyle="rgba(255,206,92,.9)";c.beginPath();c.arc(0,0,66,0,Math.PI*2);c.fill();
-    c.strokeStyle="rgba(255,206,92,.75)";c.lineWidth=9;c.lineCap="round";
-    for(var r0=0;r0<12;r0++){var an=r0*Math.PI/6;c.beginPath();
-      c.moveTo(Math.cos(an)*86,Math.sin(an)*86);c.lineTo(Math.cos(an)*118,Math.sin(an)*118);c.stroke();}
+    c.save();c.translate(958,140);
+    c.shadowColor="rgba(255,205,90,.9)";c.shadowBlur=48;
+    var sg=c.createRadialGradient(0,0,10,0,0,74);
+    sg.addColorStop(0,"#fff3c4");sg.addColorStop(.55,"#ffd166");sg.addColorStop(1,"#ffb347");
+    c.fillStyle=sg;c.beginPath();c.arc(0,0,74,0,Math.PI*2);c.fill();
+    c.shadowBlur=22;c.strokeStyle="rgba(255,200,80,.92)";c.lineCap="round";
+    for(var r0=0;r0<14;r0++){var an=r0*Math.PI/7, L=(r0%2?128:152);
+      c.lineWidth=r0%2?9:13;c.beginPath();
+      c.moveTo(Math.cos(an)*92,Math.sin(an)*92);c.lineTo(Math.cos(an)*L,Math.sin(an)*L);c.stroke();}
     c.restore();
+    _scDoodleSun(c,96,300,42,"rgba(255,196,90,.95)");
   }
-  /* ---- データ ---- */
+  /* ================= データ ================= */
   var wl={},done=[];
   try{wl=getWakeLog()||{};}catch(_){}
   try{done=getDoneDates()||[];}catch(_){}
@@ -33377,30 +33731,47 @@ async function _scBuild(){
   var todayKey=jstKey();
   var wakeToday=Number.isFinite(wl[todayKey])?wl[todayKey]:null;
   if(wakeToday==null)wakeToday=now.getHours()+now.getMinutes()/60;
-  /* ---- 上：雲の パネルに 大きな数字 ---- */
+  /* ================= 上：雲パネル＋リボン ================= */
+  _scCloudPanel(c,120,26,700,300,.96);
+  c.textAlign="center";c.textBaseline="middle";
+  _scOutText(c,useStreak?"連続記録":"そう日数",470,132,"900 62px 'Yomogi','Kosugi Maru',sans-serif","#3f8fc0","rgba(255,255,255,.95)",10,"center");
+  c.font="900 158px 'Yomogi','Kosugi Maru',sans-serif";
+  var nw=c.measureText(String(bigN)).width;
+  var ng=c.createLinearGradient(0,168,0,278);
+  ng.addColorStop(0,"#ffb45c");ng.addColorStop(.55,"#ff8a3d");ng.addColorStop(1,"#f4661f");
+  c.save();c.shadowColor="rgba(255,150,60,.55)";c.shadowBlur=30;
+  _scOutText(c,String(bigN),470-(nw+96)/2,238,"900 158px 'Yomogi','Kosugi Maru',sans-serif",ng,"#fff",18,"left");
+  _scOutText(c,"日!",470-(nw+96)/2+nw+16,260,"900 68px 'Yomogi','Kosugi Maru',sans-serif","#ff8a3d","#fff",12,"left");
+  c.restore();
+  _scRibbon(c,36,44,238,66,"#ffb490","#ff8f66","やったー！",32,"#fff");
+  _scRibbon(c,152,306,636,54,"#ffe08a","#ffc94d","毎朝つづけて、こころもからだも 元気に！",26,"#8a5a10");
+  /* 右：ふきだし雲 */
   (function(){
-    var x=118,y=42,w=844,h=250;
-    c.save();c.shadowColor="rgba(60,120,170,.3)";c.shadowBlur=34;c.shadowOffsetY=10;
-    c.fillStyle="rgba(255,255,255,.94)";c.beginPath();
-    c.moveTo(x+120,y+h);c.arc(x+150,y+h-96,110,Math.PI*.55,Math.PI*1.5);
-    c.arc(x+w/2,y+104,124,Math.PI,Math.PI*2);
-    c.arc(x+w-150,y+h-96,110,Math.PI*1.5,Math.PI*.45);
-    c.closePath();c.fill();c.restore();
+    _scCloudPanel(c,712,470,340,272,.94);
     c.textAlign="center";c.textBaseline="middle";
-    c.fillStyle="#3f8fc0";c.font="900 58px 'Yomogi','Kosugi Maru',sans-serif";
-    c.fillText(useStreak?"連続記録":"そう日数",x+w/2,y+108);
-    c.fillStyle="#ff8a3d";c.font="900 150px 'Yomogi','Kosugi Maru',sans-serif";
-    var nw=c.measureText(String(bigN)).width;
-    c.textAlign="left";
-    c.fillText(String(bigN),x+w/2-(nw+86)/2,y+202);
-    c.font="900 64px 'Yomogi','Kosugi Maru',sans-serif";
-    c.fillText("日!",x+w/2-(nw+86)/2+nw+14,y+222);
+    c.fillStyle="#4d86a8";c.font="900 30px 'Yomogi','Kosugi Maru',sans-serif";
+    c.fillText("小さな一歩が",882,562);
+    c.fillText("大きな習慣に \u2728",882,606);
+    c.save();c.setLineDash([8,7]);c.strokeStyle="rgba(150,200,225,.7)";c.lineWidth=3;
+    c.beginPath();c.moveTo(776,638);c.lineTo(988,638);c.stroke();c.restore();
+    c.fillStyle="#7fb0c8";c.font="900 26px 'Yomogi','Kosugi Maru',sans-serif";
+    c.fillText("明日も いっしょに",882,672);
+    c.fillText("がんばろ〜！",882,706);
+    _scHeart(c,986,712,14,"rgba(255,150,180,.9)");
+    _scClipPin(c,806,470,26,"rgba(110,165,215,.95)");
   })();
-  /* ---- 左：今週の 起きた時間（折れ線） ---- */
-  _scPanel(c,44,326,656,340,32,.93);
+  c.save();c.translate(760,392);c.rotate(-.18);
+  c.fillStyle="#ffb0a0";c.font="900 40px 'Yomogi','Kosugi Maru',sans-serif";
+  c.textAlign="left";c.fillText("今日も",0,0);c.fillText("いい朝だ〜！",26,52);c.restore();
+  /* ================= 左：折れ線グラフ ================= */
+  _scPanel(c,40,382,634,330,34,.95);
+  _scGloss(c,40,382,634,330,34);
+  _scDashIn(c,40,382,634,330,34);
+  _scTape(c,120,388,130,34,"#ffd9a0",-.12);
+  _scTape(c,596,378,110,30,"#bfe3f7",.16);
   c.textAlign="left";c.textBaseline="middle";
   c.fillStyle="#3f7f9f";c.font="900 38px 'Yomogi','Kosugi Maru',sans-serif";
-  c.fillText("\u23f0 今週の 起きた時間",78,376);
+  c.fillText("\u23f0 今週の 起きた時間",76,432);
   var lab=["日","月","火","水","木","金","土"],days=[];
   for(var i=6;i>=0;i--){var d=new Date(now.getTime()-i*86400000);
     var k=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
@@ -33410,26 +33781,28 @@ async function _scBuild(){
   if(!vals.length)vals=[target];
   var lo=Math.min.apply(null,vals.concat([target]))-1.2, hi=Math.max.apply(null,vals.concat([target]))+1.2;
   if(hi-lo<3){var mid=(hi+lo)/2;lo=mid-1.5;hi=mid+1.5;}
-  var gx=160,gy=418,gw=500,gh=176;
-  c.strokeStyle="rgba(130,180,210,.28)";c.lineWidth=2;
+  var gx=156,gy=470,gw=486,gh=176;
+  c.strokeStyle="rgba(130,180,210,.26)";c.lineWidth=2;
   for(var q=0;q<=3;q++){var yy=gy+gh*q/3;c.beginPath();c.moveTo(gx,yy);c.lineTo(gx+gw,yy);c.stroke();
-    c.fillStyle="#9ab8ca";c.font="800 24px 'Kosugi Maru',sans-serif";c.textAlign="right";
+    c.fillStyle="#9ab8ca";c.font="800 23px 'Kosugi Maru',sans-serif";c.textAlign="right";
     c.fillText(_scHM(hi-(hi-lo)*q/3),gx-14,yy);}
   var PX=function(i2){return gx+gw*(i2+.5)/7;}, PY=function(v){return gy+gh*(1-(v-lo)/(hi-lo));};
   var ty=PY(target);
   c.setLineDash([11,9]);c.strokeStyle="#ffb168";c.lineWidth=4;
   c.beginPath();c.moveTo(gx,ty);c.lineTo(gx+gw,ty);c.stroke();c.setLineDash([]);
-  /* 折れ線 */
   var pts=[];days.forEach(function(d,i2){ if(d.v!=null)pts.push([PX(i2),PY(d.v),d.t]); });
   if(pts.length>1){
-    c.strokeStyle="#5fb0dd";c.lineWidth=7;c.lineJoin="round";c.lineCap="round";
+    var lg=c.createLinearGradient(gx,0,gx+gw,0);lg.addColorStop(0,"#8fd6f5");lg.addColorStop(1,"#5aa8dd");
+    c.save();c.shadowColor="rgba(90,168,221,.5)";c.shadowBlur=14;
+    c.strokeStyle=lg;c.lineWidth=8;c.lineJoin="round";c.lineCap="round";
     c.beginPath();pts.forEach(function(pt,i3){ if(i3)c.lineTo(pt[0],pt[1]); else c.moveTo(pt[0],pt[1]); });
-    c.stroke();
+    c.stroke();c.restore();
   }
   pts.forEach(function(pt){
-    c.beginPath();c.arc(pt[0],pt[1],pt[2]?15:11,0,Math.PI*2);
+    c.save();if(pt[2])c.shadowColor="rgba(255,138,61,.6)",c.shadowBlur=16;
+    c.beginPath();c.arc(pt[0],pt[1],pt[2]?16:11,0,Math.PI*2);
     c.fillStyle=pt[2]?"#ff8a3d":"#7fc9ef";c.fill();
-    c.lineWidth=5;c.strokeStyle="#fff";c.stroke();
+    c.lineWidth=5;c.strokeStyle="#fff";c.stroke();c.restore();
   });
   c.textAlign="center";
   days.forEach(function(d,i2){
@@ -33438,42 +33811,52 @@ async function _scBuild(){
   });
   var tl="目標 "+_scHM(target);
   c.font="900 24px 'Yomogi','Kosugi Maru',sans-serif";
-  var tw=c.measureText(tl).width+24;
-  _scRR(gx+6,c,ty-36,tw,30,15);c.fillStyle="rgba(255,255,255,.95)";c.fill();
-  c.textAlign="left";c.fillStyle="#ff9f4d";c.textBaseline="middle";c.fillText(tl,gx+18,ty-21);
-  /* ---- 左下：じっさいの スタンプラリー ---- */
-  _scPanel(c,44,694,656,282,32,.93);
+  var tw=c.measureText(tl).width+26;
+  _scRR(gx+6,c,ty-38,tw,32,16);c.fillStyle="rgba(255,255,255,.96)";c.fill();
+  c.lineWidth=2.5;c.strokeStyle="rgba(255,177,104,.85)";c.stroke();
+  c.textAlign="left";c.fillStyle="#ff9f4d";c.textBaseline="middle";c.fillText(tl,gx+19,ty-21);
+  /* ================= 左下：スタンプ（本物を 8こ） ================= */
+  _scPanel(c,40,736,634,286,34,.95);
+  _scGloss(c,40,736,634,286,34);
+  _scDashIn(c,40,736,634,286,34);
+  _scTape(c,560,732,120,32,"#ffc9d8",.1);
   c.textAlign="left";c.fillStyle="#3f7f9f";c.font="900 38px 'Yomogi','Kosugi Maru',sans-serif";
-  c.fillText("\u2600 スタンプ",78,742);
+  c.fillText("スタンプ",76,786);
+  _scDoodleSun(c,232,782,20,"rgba(255,190,80,.95)");
   var card=[];
   try{ var cards=getStampCards()||[]; card=(cards[cards.length-1]||[]).slice(); }catch(_){}
-  var sr=44,scol=5,sx0=138,sy0=830;
   var todayStamped=card.some(function(x){return x&&x.date&&x.date===todayKey;});
-  var slots=card.slice(-9);
+  var slots=card.slice(-(todayStamped?8:7));
   if(!todayStamped)slots.push({today:1});
-  for(var si=0;si<slots.length&&si<10;si++){
+  var sr=44,scol=4,sx0=152,sy0=876;
+  for(var si=0;si<slots.length&&si<8;si++){
     var it=slots[si], col=si%scol, row=Math.floor(si/scol);
-    var cx2=sx0+col*106, cy2=sy0+row*98, isT=!!it.today||(it.date===todayKey);
+    var cx2=sx0+col*118, cy2=sy0+row*96, isT=!!it.today||(it.date===todayKey);
+    c.save();
+    if(isT){c.shadowColor="rgba(255,159,77,.6)";c.shadowBlur=18;}
     c.beginPath();c.arc(cx2,cy2,sr,0,Math.PI*2);
-    c.fillStyle=isT?"#fff4e4":"#eef8fd";c.fill();
-    c.lineWidth=isT?7:4;c.strokeStyle=isT?"#ff9f4d":"#a8d5ee";c.stroke();
+    c.fillStyle=isT?"#fff4e4":"#f2fafe";c.fill();
+    c.lineWidth=isT?7:4.5;c.strokeStyle=isT?"#ff9f4d":"#b6dcf0";c.stroke();c.restore();
     if(it.src){
-      try{ var sim=await loadImg(it.src); if(sim)c.drawImage(sim,cx2-sr*.86,cy2-sr*.86,sr*1.72,sr*1.72); }catch(_){}
+      try{ var sim=await loadImg(it.src);
+        if(sim){c.save();c.beginPath();c.arc(cx2,cy2,sr-5,0,Math.PI*2);c.clip();
+          c.drawImage(sim,cx2-sr*.94,cy2-sr*.94,sr*1.88,sr*1.88);c.restore();} }catch(_){}
     }else{
       c.textAlign="center";c.textBaseline="middle";
-      c.fillStyle=isT?"#ff8a3d":"#7fc0e4";c.font="900 40px 'Yomogi','Kosugi Maru',sans-serif";
+      c.fillStyle=isT?"#ff8a3d":"#8fcbe8";c.font="900 42px 'Yomogi','Kosugi Maru',sans-serif";
       c.fillText(isT?"\u2600":String(si+1),cx2,cy2+2);
     }
   }
-  /* ---- 主役：じぶんの猫（左）と きょうの ユメっ子（右）が ならんで にっこり ---- */
+  /* ================= 主役 ================= */
+  _scBokeh(c,700,1010,300,"rgba(255,255,255,ALPHA)",.55);
   try{
     var pr=(typeof getProfile==="function"&&getProfile())||{};
     var svg=catFigureHTML(pr.catBody||"#1c1c1c",pr.color||"#8fdcff","sit","front","happy",pr.cos||null);
     var im=await _scSvgImg(svg);
     if(im){
-      var CW=430, CH=CW*(124/120), dx=452, dy=838;
+      var CW=440, CH=CW*(124/120), dx=452, dy=838;
       c.save();c.beginPath();c.rect(0,dy,SC_W,CH*0.74);c.clip();
-      c.shadowColor="rgba(40,90,130,.3)";c.shadowBlur=30;c.shadowOffsetY=10;
+      c.shadowColor="rgba(40,90,130,.32)";c.shadowBlur=34;c.shadowOffsetY=12;
       c.drawImage(im,dx,dy,CW,CH);c.restore();
     }
   }catch(_){}
@@ -33483,27 +33866,49 @@ async function _scBuild(){
       var yi=await new Promise(function(res){var i4=new Image();i4.onload=function(){res(i4);};i4.onerror=function(){res(null);};i4.src=y1.img;});
       if(yi){
         var YS=y1.big?370:320, yx=SC_W-YS-46, yy2=1176-YS;
-        c.save();c.shadowColor="rgba(255,255,255,.75)";c.shadowBlur=44;
+        c.save();c.shadowColor="rgba(255,255,255,.8)";c.shadowBlur=50;
         if(y1.shiny)c.filter="hue-rotate("+(y1.hue||0)+"deg) saturate(1.25)";
         c.drawImage(yi,yx,yy2,YS,YS);c.restore();c.filter="none";
       }
     }
   }catch(_){}
-  /* ---- 下：きょうの 実績 ---- */
-  _scPanel(c,44,1188,SC_W-88,140,34,.95);
+  /* 手がきの ひとこと（左下） */
+  c.save();c.translate(52,1064);c.rotate(-.13);
+  c.fillStyle="rgba(255,168,140,.95)";c.font="900 40px 'Yomogi','Kosugi Maru',sans-serif";
+  c.textAlign="left";c.fillText("今日も",0,0);c.fillText("えらいっ！",6,50);
+  c.strokeStyle="rgba(255,255,255,.85)";c.lineWidth=6;c.lineCap="round";
+  [[-16,-30,-4,-58],[10,-38,26,-64],[-30,-4,-56,-16]].forEach(function(q){
+    c.beginPath();c.moveTo(q[0],q[1]);c.lineTo(q[2],q[3]);c.stroke();});
+  c.restore();
+  /* ================= 下：今日の実績 ================= */
+  _scPanel(c,40,1176,SC_W-80,152,36,.96);
+  _scGloss(c,40,1176,SC_W-80,152,36);
+  _scDashIn(c,40,1176,SC_W-80,152,36,"rgba(160,205,230,.6)");
+  _scRibbon(c,72,1160,268,54,"#9fc9ec","#6ba6d8","今日の実績",28,"#fff");
   c.textAlign="left";c.textBaseline="middle";
   c.fillStyle="#5fa8d8";c.font="900 34px 'Yomogi','Kosugi Maru',sans-serif";
-  c.fillText("\u23f0 起きた時間",92,1262);
-  c.fillStyle="#ff8a3d";c.font="900 104px 'Yomogi','Kosugi Maru',sans-serif";
-  c.fillText(_scHM(wakeToday),352,1264);
+  c.fillText("\u23f0 起きた時間",96,1276);
+  c.save();c.shadowColor="rgba(255,150,60,.45)";c.shadowBlur=22;
+  var tg2=c.createLinearGradient(0,1226,0,1330);
+  tg2.addColorStop(0,"#ffb45c");tg2.addColorStop(1,"#f4661f");
+  _scOutText(c,_scHM(wakeToday),358,1278,"900 108px 'Yomogi','Kosugi Maru',sans-serif",tg2,"#fff",13,"left");
+  c.restore();
   c.textAlign="right";c.fillStyle="#7fb6d4";c.font="900 32px 'Yomogi','Kosugi Maru',sans-serif";
-  c.fillText("ズズラジオ体操部",SC_W-92,1250);
+  c.fillText("ズズラジオ体操部",SC_W-96,1262);
   var dp=todayKey.split("-");
   c.fillStyle="#a9c6d8";c.font="800 24px 'Kosugi Maru',sans-serif";
-  c.fillText(dp[0]+"."+(+dp[1])+"."+(+dp[2]),SC_W-92,1292);
-  /* ---- きらきら ---- */
-  [[720,330,30],[1010,600,22],[100,1120,24],[700,1050,18],[60,300,20],[990,1020,26],[420,740,16]].forEach(function(q){
-    _scSpark(c,q[0],q[1],q[2],"rgba(255,255,255,.92)");});
+  c.fillText(dp[0]+"."+(+dp[1])+"."+(+dp[2])+"  \u2600",SC_W-96,1302);
+  /* ================= かざり ================= */
+  [[700,352,32],[1042,632,24],[92,1160,26],[676,1108,20],[44,352,22],[1010,1044,28],[398,742,18],[300,26,24],
+   [820,300,18],[150,690,16],[1046,220,20],[520,1160,15]].forEach(function(q){
+    _scSpark(c,q[0],q[1],q[2],"rgba(255,255,255,.95)");});
+  [[762,236,20,"rgba(255,224,140,.95)"],[1006,912,16,"rgba(255,190,215,.9)"],[62,1000,17,"rgba(190,225,255,.95)"],
+   [690,1042,14,"rgba(255,236,170,.9)"]].forEach(function(q){ _scStar6(c,q[0],q[1],q[2],q[3]); });
+  _scHeart(c,352,1006,17,"rgba(255,158,190,.85)");
+  _scHeart(c,1030,860,13,"rgba(255,190,120,.8)");
+  [[620,730,26,16,"#ffd9a0",.5],[708,1160,22,14,"#a8e0c0",-.3],[1044,470,20,13,"#ffc0d0",.9],[112,742,18,12,"#bcd8ff",-.6]].forEach(function(q){
+    _scConfetti(c,q[0],q[1],q[2],q[3],q[4],q[5]);});
+  _scFrame(c,SC_W,SC_H);
   return cv.toDataURL("image/png");
 }
 function openShareCard(){
@@ -33568,8 +33973,11 @@ function _ylPaint(){
     try{var e0=document.getElementById("ylEmpty"); if(e0)e0.remove();}catch(_){}
     if(_ylPick>=a.length)_ylPick=0;
     if(list)list.innerHTML=a.map(function(y,i){
-      return '<div class="ylItem'+(i===_ylPick?" on":"")+(y.big?" big":"")+'" data-i="'+i+'">'+
+      var _cand=false,_sel=false;
+      if(_ylFuseOn){ _cand=_ylFuseCand(a[_ylPick],y); _sel=!!_ylFuseSel[_ylKey(y)]; }
+      return '<div class="ylItem'+(i===_ylPick?" on":"")+(y.big?" big":"")+(_cand?" cand":"")+(_sel?" fsel":"")+'" data-i="'+i+'">'+
         (_ylIsFav(y)?'<span class="ylFav">\u2764</span>':"")+
+        (_sel?'<span class="ylChk">\u2713</span>':"")+
         '<div class="ylThumb">'+_yumeMiniInner(y)+'</div>'+
         '<div class="ylNm">'+escHtml(y.name||"")+'</div></div>';
     }).join("");
@@ -33610,6 +34018,12 @@ function _ylPaintOne(y){
     var bt=$("ylBtns");
     if(bt){
       var fav=_ylIsFav(y), mats=_ylFuseMats(y), full=(_yumeLv(y)>=_yumeMaxLv(y));
+      if(_ylFuseOn){
+        var nsel=Object.keys(_ylFuseSel).length;
+        bt.innerHTML='<button class="ylBtn fuse" data-act="fuseOk" type="button"'+(nsel?"":" disabled")+'>\u2697\ufe0f この'+nsel+'匹で ごうせい</button>'+
+          '<button class="ylBtn" data-act="fuseNo" type="button">やめる</button>';
+        return;
+      }
       bt.innerHTML=
         '<button class="ylBtn fav'+(fav?" on":"")+'" data-act="fav" type="button">'+(fav?"\u2764 おきにいり":"\u2661 おきにいり")+'</button>'+
         '<button class="ylBtn" data-act="name" type="button">\u270f\ufe0f なまえ</button>'+
@@ -33635,7 +34049,10 @@ function _ylAct(act){
       _ylPaint(); try{toast("「"+nn+"」に なったよ");}catch(_){}
       return;
     }
-    if(act==="fuse"){
+    if(act==="fuse"){ _ylFuseStart(); return; }
+    if(act==="fuseOk"){ _ylFuseDo(); return; }
+    if(act==="fuseNo"){ _ylFuseCancel(); return; }
+    if(act==="__old"){
       var mats=_ylFuseMats(y);
       if(!mats.length){try{toast("おなじ子が いないよ");}catch(_){}return;}
       var cap=_yumeMaxLv(y), now=_yumeLv(y);
@@ -33669,16 +34086,27 @@ function _ylAct(act){
 }
 try{ document.addEventListener("click",function(e){
   var t=e.target; if(!t||!t.closest)return;
+  if(t.closest("#ylBook")){ try{playClick();}catch(_){}
+    try{ var _bk=$("yumeBook"); if(_bk)_bk.classList.add("ygTop"); }catch(_){}   /* けんきゅうじょ(3500)より 上へ */
+    try{_ybOpen();}catch(_){} return; }
   if(t.closest("#ylClose")){ try{playClick();}catch(_){} closeYumeLab(); return; }
   var ab=t.closest("#ylBtns .ylBtn");
   if(ab){ if(ab.disabled)return; try{playClick();}catch(_){} _ylAct(ab.dataset.act); return; }
   var it=t.closest("#ylList .ylItem");
+  if(it&&_ylFuseOn){
+    try{playClick();}catch(_){}
+    var ii=parseInt(it.dataset.i,10)||0, arr=_ylList(), base=arr[_ylPick], yy=arr[ii];
+    if(!_ylFuseCand(base,yy))return;
+    var kk=_ylKey(yy);
+    if(_ylFuseSel[kk])delete _ylFuseSel[kk]; else _ylFuseSel[kk]=1;
+    _ylPaint(); return;
+  }
   if(it){ try{playClick();}catch(_){} _ylPick=parseInt(it.dataset.i,10)||0;
     try{ document.querySelectorAll("#ylList .ylItem").forEach(function(x){x.classList.toggle("on",x===it);}); }catch(_){}
     _ylPaintOne(_ylList()[_ylPick]); return; }
 }); }catch(_){}
 function _ybOpen(){ try{_yumeMigrate();}catch(_){} _ybRender(); var b=$("yumeBook"); if(b)b.classList.add("show"); }
-function _ybClose(){ var b=$("yumeBook"); if(b)b.classList.remove("show"); }
+function _ybClose(){ var b=$("yumeBook"); if(b){b.classList.remove("show");b.classList.remove("ygTop");} }
 try{var _bb=document.getElementById("advBookBtn");if(_bb)_bb.addEventListener("click",function(){try{playClick();}catch(_){}_ybOpen();});}catch(_){}
 try{ var _bg=document.getElementById("ybGrid");
   if(_bg)_bg.addEventListener("click",function(e){
@@ -38209,6 +38637,7 @@ function _gpStreetHTML(){
   <div id="ylHead">
     <span id="ylTag">YUMEKKO ANALYSIS LAB</span>
     <span id="ylSub">ユメっ子 けんきゅうじょ</span>
+    <button id="ylBook" type="button" aria-label="ユメっ子ずかん">📖</button>
     <button id="ylClose" type="button" aria-label="とじる">✕</button>
   </div>
   <div id="ylMain">

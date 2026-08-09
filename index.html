@@ -6020,11 +6020,11 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 <style id="tsPcFixCss">
 /* ★PC：カードが 4枚に なって つぶれるので おりかえす */
 @media (min-width:721px){
+  #taisoInner{max-width:1180px !important;}
   #taisoCards{flex-wrap:wrap !important;align-items:flex-start !important;justify-content:center !important;
     gap:16px !important;max-width:1180px;margin-left:auto;margin-right:auto;}
   #taisoCards>.taisoCard,#taisoScreen #askBox{
     flex:0 1 300px !important;min-width:286px !important;max-width:340px !important;}
-  #tsNextBtn{flex:0 0 100% !important;max-width:320px !important;order:2 !important;align-self:center;}
   #tsMoreCards{flex:0 0 100% !important;max-width:320px !important;order:3 !important;align-self:center;}
 }
 @media (min-width:1240px){
@@ -6070,13 +6070,7 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 .anBusy::after{content:"";display:inline-block;width:13px;height:13px;margin-left:7px;vertical-align:-2px;
   border:2.5px solid rgba(127,163,189,.3);border-top-color:#7fa3bd;border-radius:50%;animation:anSpin .8s linear infinite;}
 @keyframes anSpin{to{transform:rotate(360deg);}}
-#tsNextBtn{order:-1;display:none;width:100%;max-width:460px;margin:2px auto 0;
-  background:linear-gradient(135deg,#8fdcb0,#57bd7a);color:#fff;border:none;border-radius:16px;padding:14px;
-  cursor:pointer;font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:15px;font-weight:900;
-  box-shadow:0 6px 16px rgba(87,189,122,.4);}
-#tsNextBtn.on{display:block;}
-#tsNextBtn:active{transform:scale(.98);}
-@media (min-width:721px){#tsNextBtn{max-width:280px;align-self:center;order:2;}}
+
 @media (prefers-reduced-motion:reduce){.anBusy::after{animation:none;}}
 </style>
 <style id="krSlpyCss">
@@ -7454,11 +7448,9 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
   </div>
 </div>
 <div id="taisoScreen">
-  <button id="taisoBack" type="button" aria-label="もどる">‹ もどる</button>
   <div id="taisoInner">
     <div id="taisoHead">ラジオ体操完了</div>
     <div id="taisoCards">
-    <button id="tsNextBtn" type="button">つぎへ →</button>
     <button id="tsMoreCards" type="button">▾ ほかも 見る（とうこう・スタンプ）</button>
       <div class="taisoCard" id="tsStampCard">
         <div class="tsCardTitle">スタンプラリー</div>
@@ -7538,7 +7530,7 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
       <button id="krSkip" type="button">スキップ</button>
       </div>
     </div>
-    <div id="taisoFooter"><label id="storyJoinChkRow"><input type="checkbox" id="catOnlyChk" checked/> 猫のみのとうこう</label><button class="tsShare" id="tsShareBtn" type="button">📸 きろくカード</button><button class="tsCat" id="tsCatBtn" type="button">🐱 ねこと はなす</button><button class="tsAdv" id="tsAdvBtn" type="button">⚔️ 冒険</button><button class="tsNext" id="tsNextBtn" type="button">ホームへ →</button></div>
+    <div id="taisoFooter"><label id="storyJoinChkRow"><input type="checkbox" id="catOnlyChk" checked/> 猫のみのとうこう</label><button class="tsShare" id="tsShareBtn" type="button" aria-label="きろくカード">📸</button><button class="tsCat" id="tsCatBtn" type="button">🐱 ねこと はなす</button><button class="tsAdv" id="tsAdvBtn" type="button">⚔️ 冒険</button><button class="tsNext" id="tsNextBtn" type="button">ホームへ →</button></div>
   </div>
 </div>
 
@@ -13631,10 +13623,6 @@ function tsUpdatePreview(){
     var _ts=$("taisoScreen"); if(_ts&&!_ts._moreOpen&&!_dn)_ts.classList.add("tsSimple"); }catch(_){}
   try{ var _ns=$("krNoShare"); if(_ns)_ns.checked=_noShare(); }catch(_){}
   try{_askSyncInline();}catch(_){}
-  try{
-    var _dn2=false; try{_dn2=askedToday("all");}catch(_){}
-    var _nb=$("tsNextBtn"); if(_nb)_nb.classList.toggle("on",!!_dn2||!!_askSkipped);
-  }catch(_){}
   try{_tsLockPaint();}catch(_){}
   try{_renderTodayRec();}catch(_){}   /* 完了画面の「今日の記録」も 最新に */
   const c=(($("tsComment").value||"").trim())||_todayMoodText(),anon=!!($("tsAnon")&&$("tsAnon").checked);
@@ -18710,7 +18698,7 @@ try{var _tab=$("tsAdvBtn");if(_tab)_tab.addEventListener("click",()=>{try{playCl
 try{const _sb=$("tsSumBtn");if(_sb)_sb.addEventListener("click",()=>{try{openTodaySum();}catch(_){}});}catch(_){}
 try{const _rc=$("tsRangeCard");if(_rc)_rc.addEventListener("click",(e)=>{try{if(!(e.target&&e.target.closest&&e.target.closest("#tsRangeMore")))return;}catch(_){}try{playClick();}catch(_){}try{openRange();}catch(_){}});}catch(_){}
 /* ホーム左上の きりかえに 一本化したので 旧・自動ページ送りは 停止 */
-$("taisoBack").addEventListener("click",()=>{try{playClick();}catch(_){}$("taisoScreen").classList.remove("visible");try{showSelect();}catch(_){}try{updateTop();}catch(_){}});
+try{var _tb=$("taisoBack");if(_tb)_tb.addEventListener("click",()=>{try{playClick();}catch(_){}$("taisoScreen").classList.remove("visible");try{showSelect();}catch(_){}try{updateTop();}catch(_){}});}catch(_){}
 /* 横幅が変わったら丘の猫を並べ直す（PCでウィンドウをリサイズしたとき） */
 let _hillResizeT=null;
 window.addEventListener("resize",()=>{
@@ -23324,7 +23312,12 @@ function openBrief(){
     try{playPop();}catch(_){}
   }catch(_){}
 }
-function closeBrief(){ try{var el=$("zzBrief"); if(el)el.hidden=true;}catch(_){} }
+function closeBrief(){
+  try{var el=$("zzBrief"); if(el)el.hidden=true;}catch(_){}
+  /* ★とじたら とうこう・スタンプ・きろくを ならべて 出す */
+  try{ var ts=$("taisoScreen"); if(ts){ts.classList.remove("tsSimple");ts._moreOpen=true;} }catch(_){}
+  try{ var pc=$("tsPostCard"); if(pc&&pc.scrollIntoView)setTimeout(function(){try{pc.scrollIntoView({block:"center",behavior:"smooth"});}catch(_){}},260); }catch(_){}
+}
 try{ document.addEventListener("click",function(e){
   var t=e.target; if(!t||!t.closest)return;
   if(t.closest("#bfClose")||t.closest("#bfOk")){ try{playClick();}catch(_){} closeBrief(); return; }
@@ -23655,7 +23648,9 @@ function _mood3Pick(a,b,c){
   }catch(_){return null;}
 }
 var SLEEP_KEY="radio_sleeplog";
-var SLPQ_KEY="radio_sleepq", SLPY_KEY="radio_sleepiness";
+var SLPQ_KEY="radio_sleepq", SLPY_KEY="radio_sleepiness", KRLAST_KEY="radio_kr_last";
+function getKrLast(){try{var v=JSON.parse(localStorage.getItem(KRLAST_KEY)||"{}");return (v&&typeof v==="object")?v:{};}catch(_){return{};}}
+function setKrLast(o){try{localStorage.setItem(KRLAST_KEY,JSON.stringify(o||{}));}catch(_){}}
 var SLPY_LBL=["","かなり冴えてる","やや冴えてる","ふつう","ねむい","とても ねむい"];
 function getSlpyLog(){try{var v=JSON.parse(localStorage.getItem(SLPY_KEY)||"{}");return (v&&typeof v==="object")?v:{};}catch(_){return{};}}
 function setSlpyFor(k,v){try{var m=getSlpyLog();if(v)m[k]=v;else delete m[k];localStorage.setItem(SLPY_KEY,JSON.stringify(m));}catch(_){}}
@@ -23740,12 +23735,14 @@ function _askBackStep(){
 function openAskCard(then){
   _askThen=then||null;
   if(askedToday("all")){ _askPaintDone(); if(_askThen){const f=_askThen;_askThen=null;f();} return; }
-  _askM1=null;_askM2=null;_askM3=null;
-  try{_krSlp=getSlpLog()[jstKey()]||null;}catch(_){_krSlp=null;}
-  try{_krSlpy=getSlpyLog()[jstKey()]||3;}catch(_){_krSlpy=3;}
+  var _lt=getKrLast();
+  _askM1=(_lt.m1!=null)?_lt.m1:null;_askM2=null;_askM3=null;
+  try{_krSlp=getSlpLog()[jstKey()]||_lt.slp||null;}catch(_){_krSlp=_lt.slp||null;}
+  try{_krSlpy=getSlpyLog()[jstKey()]||_lt.slpy||3;}catch(_){_krSlpy=_lt.slpy||3;}
   var _n=new Date();
-  _krWakeH=_n.getHours();                        /* 起床＝いまの ○時 */
-  _krBedH=((_n.getHours()-6)%24+24)%24;          /* 就寝＝いまから 6時間前 */
+  /* ★まえに きめた 値を そのまま 出す（なければ いまの 時刻） */
+  _krWakeH=(_lt.wake!=null)?_lt.wake:_n.getHours();
+  _krBedH=(_lt.bed!=null)?_lt.bed:((_n.getHours()-6)%24+24)%24;
   _askPaint();
   try{ var bx=$("askBox"); if(bx){ bx.classList.remove("done"); if(bx.scrollIntoView)bx.scrollIntoView({block:"center",behavior:"smooth"}); } }catch(_){}
 }
@@ -23757,6 +23754,28 @@ try{ document.addEventListener("input",function(e){
     var sv=$("krSlpyV"); if(sv)sv.textContent=SLPY_LBL[_krSlpy]||"ふつう";
   }catch(_){}
 }); }catch(_){}
+/* ★きろくを きめた 音（ほかと ちがう 3音） */
+function _krDoneSound(){
+  try{
+    var ctx=ensureCtx(); if(!ctx)return; var out=sfxOut(ctx); if(!out)return;
+    var now=ctx.currentTime, F=[659.25,880,1174.66];
+    F.forEach(function(f,i){
+      var dt=i*0.085;
+      var o=ctx.createOscillator(),g=ctx.createGain();
+      o.type="sine"; o.frequency.setValueAtTime(f,now+dt);
+      g.gain.setValueAtTime(0.0001,now+dt);
+      g.gain.exponentialRampToValueAtTime(0.22,now+dt+0.014);
+      g.gain.exponentialRampToValueAtTime(0.0001,now+dt+0.42);
+      o.connect(g); g.connect(out); o.start(now+dt); o.stop(now+dt+0.5);
+    });
+    var o2=ctx.createOscillator(),g2=ctx.createGain();
+    o2.type="triangle"; o2.frequency.setValueAtTime(1567.98,now+0.22);
+    g2.gain.setValueAtTime(0.0001,now+0.22);
+    g2.gain.exponentialRampToValueAtTime(0.14,now+0.24);
+    g2.gain.exponentialRampToValueAtTime(0.0001,now+0.75);
+    o2.connect(g2); g2.connect(out); o2.start(now+0.22); o2.stop(now+0.8);
+  }catch(_){}
+}
 function _askPaintDone(){
   try{ var bx=$("askBox"); if(bx)bx.classList.add("done"); }catch(_){}
   try{ var sv=$("krSave"); if(sv)sv.textContent="きろくを こうしん"; }catch(_){}
@@ -23814,18 +23833,24 @@ function _askSyncInline(){
     bx.classList.remove("done");
     _tsLockPaint();
     if(!bx._inited){ bx._inited=1;
-      _askM1=null;_askM2=null;_askM3=null;
-      try{_krSlp=getSlpLog()[jstKey()]||null;}catch(_){_krSlp=null;}
-      try{_krSlpy=getSlpyLog()[jstKey()]||3;}catch(_){_krSlpy=3;}
-      var n=new Date(); _krWakeH=n.getHours(); _krBedH=((n.getHours()-6)%24+24)%24;
+      var lt=getKrLast();
+      _askM1=(lt.m1!=null)?lt.m1:null;_askM2=null;_askM3=null;
+      try{_krSlp=getSlpLog()[jstKey()]||lt.slp||null;}catch(_){_krSlp=lt.slp||null;}
+      try{_krSlpy=getSlpyLog()[jstKey()]||lt.slpy||3;}catch(_){_krSlpy=lt.slpy||3;}
+      var n=new Date();
+      _krWakeH=(lt.wake!=null)?lt.wake:n.getHours();
+      _krBedH=(lt.bed!=null)?lt.bed:((n.getHours()-6)%24+24)%24;
       _askPaint();
     }
   }catch(_){}
 }
 function _askClose(save){
-  try{ if(save){setSlpFor(jstKey(),_krSlp);setSlpyFor(jstKey(),_krSlpy);} }catch(_){}
+  try{ if(save){setSlpFor(jstKey(),_krSlp);setSlpyFor(jstKey(),_krSlpy);
+    setKrLast({wake:_krWakeH,bed:_krBedH,m1:_askM1,slp:_krSlp,slpy:_krSlpy});
+    _krDoneSound();
+  } }catch(_){}
   try{ if(save)_askPaintDone(); else _askSkipped=true; }catch(_){}
-  try{ var _nb2=$("tsNextBtn"); if(_nb2)_nb2.classList.add("on"); }catch(_){}   /* ★「つぎへ」を 出す */
+  try{ var _t4=$("taisoScreen"); if(_t4){_t4.classList.remove("tsSimple");_t4._moreOpen=true;} }catch(_){}
   try{_tsLockPaint();}catch(_){}
   if(save){
     try{ const pk=_mood3Pick(_askM1,_askM2,_askM3); if(pk){_saveMood(jstKey(),{e:pk.e,l:pk.l});_askMark("mood",1);} }catch(_){}
@@ -23850,7 +23875,6 @@ function _afterRecord(){
     if(typeof tutOn==="function"&&tutOn())return;
     /* ★分析を「更新中」に して、きょうを 入れた ものに 差しかえる */
     setTimeout(function(){ try{openBrief();}catch(_){} },420);
-    try{ var nb=$("tsNextBtn"); if(nb)nb.classList.add("on"); }catch(_){}
     try{ var ts=$("taisoScreen"); if(ts){ts.classList.add("tsSimple");ts._moreOpen=false;} }catch(_){}
   }catch(_){}
 }

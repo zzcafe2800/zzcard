@@ -5955,6 +5955,68 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
   box-shadow:0 4px 12px rgba(60,170,160,.4) !important;}
 #homeZZ:active{transform:scale(.94);}
 </style>
+<style id="briefCss">
+#zzBrief{position:fixed;inset:0;z-index:3900;display:flex;align-items:center;justify-content:center;
+  background:rgba(20,44,62,.55);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
+  padding:14px;font-family:"Yomogi","Kosugi Maru",sans-serif;animation:bfIn .3s ease both;}
+#zzBrief[hidden]{display:none;}
+@keyframes bfIn{from{opacity:0;}to{opacity:1;}}
+#bfBox{position:relative;display:flex;flex-direction:column;width:min(560px,96vw);max-height:92vh;
+  background:linear-gradient(180deg,#fffdf8,#f4faff);border-radius:24px;overflow:hidden;
+  box-shadow:0 22px 60px rgba(20,60,90,.35);animation:bfUp .38s cubic-bezier(.2,1.2,.35,1) both;}
+@keyframes bfUp{from{transform:translateY(18px) scale(.97);}to{transform:none;}}
+#bfClose{position:absolute;top:10px;right:10px;z-index:3;border:none;background:rgba(255,255,255,.9);
+  color:#7fa3bd;border-radius:10px;width:32px;height:30px;font-size:14px;font-weight:900;cursor:pointer;
+  box-shadow:0 2px 8px rgba(90,140,180,.2);}
+#bfBody{flex:1 1 auto;min-height:0;overflow-y:auto;padding:18px 16px 6px;
+  display:flex;flex-direction:column;gap:11px;-webkit-overflow-scrolling:touch;}
+#bfOk{flex:0 0 auto;margin:10px 16px calc(14px + env(safe-area-inset-bottom));border:none;border-radius:16px;
+  padding:15px;cursor:pointer;font-family:inherit;font-size:15px;font-weight:900;color:#fff;
+  background:linear-gradient(135deg,#8fdcb0,#57bd7a);box-shadow:0 6px 16px rgba(87,189,122,.4);}
+#bfOk:active{transform:scale(.98);}
+.bfHead{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:0 2px;}
+.bfHead b{display:block;font-size:20px;font-weight:900;color:#3f7a95;line-height:1.3;}
+.bfHead i{display:block;font-style:normal;font-size:12px;font-weight:800;color:#8fa9bd;margin-top:2px;}
+.bfDate{flex:0 0 auto;font-size:11.5px;font-weight:900;color:#a9c0d0;padding-top:4px;white-space:nowrap;}
+.bfCard{background:rgba(255,255,255,.95);border:1px solid rgba(160,205,230,.35);border-radius:18px;
+  padding:13px 15px;box-shadow:0 4px 14px rgba(90,140,180,.1);}
+.bfCard>b{display:block;font-size:13px;font-weight:900;color:#5f8298;margin-bottom:3px;}
+.bfCard>i{display:block;font-style:normal;font-size:12px;font-weight:800;color:#8fa9bd;line-height:1.6;}
+.bfBig{font-size:24px;font-weight:900;line-height:1.25;margin:2px 0 3px;}
+.bfMain{display:grid;grid-template-columns:118px 1fr;gap:12px;align-items:center;}
+.bfRingWrap{grid-row:span 2;}
+.bfRing{width:118px;height:118px;display:block;}
+.bfMainTxt b{display:block;font-size:17px;font-weight:900;line-height:1.3;}
+.bfMainTxt i{display:block;font-style:normal;font-size:11.5px;font-weight:800;color:#8fa9bd;line-height:1.6;margin-top:3px;}
+.bfFacts{grid-column:2;display:grid;grid-template-columns:1fr 1fr;gap:5px 10px;}
+.bfFacts span{display:flex;align-items:center;justify-content:space-between;gap:6px;}
+.bfFacts i{font-style:normal;font-size:10.5px;font-weight:800;color:#9ab4c4;white-space:nowrap;}
+.bfFacts b{font-size:13px;font-weight:900;color:#4f7f9c;white-space:nowrap;}
+.bfPeak{background:linear-gradient(135deg,#fffaf0,#fff4e0);border-color:rgba(240,200,140,.5);}
+.bfRow{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+.bfDip{background:linear-gradient(135deg,#f4fbff,#e8f4fd);border-color:rgba(150,205,235,.5);}
+.bfNap ul,.bfWarn ul{margin:4px 0 0;padding-left:15px;}
+.bfNap li,.bfWarn li{font-size:10.5px;font-weight:800;color:#8fa9bd;line-height:1.75;}
+.bfWork{background:linear-gradient(135deg,#f4fdf7,#e9f8ef);border-color:rgba(150,220,175,.5);}
+.bfWarn{background:linear-gradient(135deg,#fff6f6,#ffecec);border-color:rgba(240,170,170,.5);}
+.bfWarn>b{color:#d96a6a;}
+.bfWt{font-size:15px;font-weight:900;color:#c95f5f;margin:2px 0 2px;line-height:1.35;}
+.bfTip{background:linear-gradient(135deg,#fbf8ff,#f2edfd);border-color:rgba(185,168,236,.45);}
+.bfEmpty{padding:40px 16px;text-align:center;font-size:13px;font-weight:800;color:#a9bccb;line-height:1.9;}
+@media (max-width:520px){
+  .bfMain{grid-template-columns:92px 1fr;gap:10px;}
+  .bfRing{width:92px;height:92px;}
+  .bfBig{font-size:21px;}
+  .bfRow{grid-template-columns:1fr;}
+  .bfHead b{font-size:18px;}
+  .bfDate{font-size:10.5px;}
+  .bfRingWrap{grid-row:auto;}
+  .bfFacts{grid-column:1 / -1;margin-top:4px;padding-top:9px;border-top:1px dashed rgba(160,205,230,.5);}
+  .bfMainTxt b{font-size:15.5px;}
+  .bfFacts i{font-size:10px;}
+  .bfFacts b{font-size:12px;}
+}
+</style>
 <style id="tsPcFixCss">
 /* ★PC：カードが 4枚に なって つぶれるので おりかえす */
 @media (min-width:721px){
@@ -7396,7 +7458,6 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
   <div id="taisoInner">
     <div id="taisoHead">ラジオ体操完了</div>
     <div id="taisoCards">
-    <div class="taisoCard" id="anCardTs"><div class="tsCardTitle">きょうの コンディション</div><div id="anBoxTs"></div></div>
     <button id="tsNextBtn" type="button">つぎへ →</button>
     <button id="tsMoreCards" type="button">▾ ほかも 見る（とうこう・スタンプ）</button>
       <div class="taisoCard" id="tsStampCard">
@@ -13572,8 +13633,6 @@ function tsUpdatePreview(){
   try{_askSyncInline();}catch(_){}
   try{
     var _dn2=false; try{_dn2=askedToday("all");}catch(_){}
-    window._anSkip=window._anSkip||{}; window._anSkip.anBoxTs=!_dn2;
-    _anPaint("anBoxTs",{skipToday:!_dn2});
     var _nb=$("tsNextBtn"); if(_nb)_nb.classList.toggle("on",!!_dn2||!!_askSkipped);
   }catch(_){}
   try{_tsLockPaint();}catch(_){}
@@ -23054,6 +23113,43 @@ function _anDay(k,avgBed,avgWake){
     onset:[0,0,6,15][slp]||0,
     sleepy:[0,0,5,12,22,35][slpy]||12};
 }
+/* ★その人の「ふだん」＝ぜんぶの きろくから（古いほど 軽く・半減期21日） */
+function _anAllKeys(){
+  var wl={},sl={},set={};
+  try{wl=getWakeLog()||{};}catch(_){}
+  try{sl=getSleepLog()||{};}catch(_){}
+  Object.keys(wl).forEach(function(k){set[k]=1;});
+  Object.keys(sl).forEach(function(k){set[k]=1;});
+  return Object.keys(set).sort();
+}
+function _anWAvgCirc(pairs){
+  if(!pairs.length)return null;
+  var x=0,y=0,wsum=0;
+  pairs.forEach(function(q){ var r=q[0]/24*2*Math.PI; x+=Math.cos(r)*q[1]; y+=Math.sin(r)*q[1]; wsum+=q[1]; });
+  if(!wsum)return null;
+  var m=Math.atan2(y,x)/(2*Math.PI)*24; return ((m%24)+24)%24;
+}
+function _anBaseline(exKey){
+  var wl={},sl={};
+  try{wl=getWakeLog()||{};}catch(_){}
+  try{sl=getSleepLog()||{};}catch(_){}
+  var now=new Date(), HL=21, wp=[],bp=[],shs=[],wn=0;
+  _anAllKeys().forEach(function(k){
+    if(exKey&&k===exKey)return;
+    var d=new Date(k+"T00:00:00");
+    var age=Math.max(0,(now-d)/86400000);
+    var w=Math.pow(0.5,age/HL);
+    if(w<0.02)return;
+    if(Number.isFinite(wl[k])){wp.push([((wl[k]%24)+24)%24,w]);wn++;}
+    if(Number.isFinite(sl[k]))bp.push([((sl[k]%24)+24)%24,w]);
+    if(Number.isFinite(wl[k])&&Number.isFinite(sl[k])){
+      var sh=wl[k]-sl[k]; if(sh<=0)sh+=24; if(sh<=16)shs.push([sh,w]);
+    }
+  });
+  var shAvg=null;
+  if(shs.length){var a=0,b2=0;shs.forEach(function(q){a+=q[0]*q[1];b2+=q[1];});shAvg=a/b2;}
+  return {wake:_anWAvgCirc(wp),bed:_anWAvgCirc(bp),sh:shAvg,n:wn};
+}
 function _anAvg(keys,pick){
   var wl={},sl={},a=[];
   try{wl=getWakeLog()||{};}catch(_){}
@@ -23066,7 +23162,10 @@ function _anAvg(keys,pick){
 function _anCalc(range,skipToday){
   var wk=_anDayKeys(7), todayK=jstKey();
   if(skipToday)wk=wk.filter(function(k){return k!==todayK;});
-  var avgBed=_anAvg(wk,"bed"), avgWake=_anAvg(wk,"wake");
+  /* ★リズムの ものさしは「ぜんぶの きろく」から（直近ほど 重い） */
+  var _bl=_anBaseline(skipToday?todayK:null);
+  var avgBed=(_bl.bed!=null)?_bl.bed:_anAvg(wk,"bed");
+  var avgWake=(_bl.wake!=null)?_bl.wake:_anAvg(wk,"wake");
   var wDays=wk.map(function(k){return _anDay(k,avgBed,avgWake);}).filter(Boolean);
   var weekDebt=wDays.reduce(function(a,d){return a+d.debt;},0);
   /* ★きろく前は「きょうを のぞいた 直近 range日」を 見る（0件に ならないように 1日ずらす） */
@@ -23105,7 +23204,7 @@ function _anCalc(range,skipToday){
     var v=focus+16*Math.cos((t-2.5)*0.5)-14*Math.exp(-Math.pow((t-8)/2.1,2))-t*1.1;
     curve.push({t:t,h:(wakeH+t)%24,v:Math.max(0,Math.min(100,v))});
   }
-  var peak=curve[0],dip=curve[0];
+  var peak=curve[0],dip=curve[4]||curve[0];
   curve.forEach(function(q){ if(q.v>peak.v)peak=q; });
   curve.slice(4).forEach(function(q){ if(q.v<dip.v)dip=q; });
   /* 予言（ひとこと） */
@@ -23122,6 +23221,114 @@ function _anCalc(range,skipToday){
 }
 /* ==== 6角形グラフ＋時間帯カーブの 描画 ==== */
 var _anRange={};
+/* =========================================================
+   あさの ブリーフィング（きろくの あと 1回だけ 出る 画面）
+   ========================================================= */
+function _anBrief(){
+  var d=_anCalc(1,false); if(!d)return null;
+  var k=jstKey(), wl={},sl={};
+  try{wl=getWakeLog()||{};}catch(_){}
+  try{sl=getSleepLog()||{};}catch(_){}
+  var wake=Number.isFinite(wl[k])?wl[k]:null, bed=Number.isFinite(sl[k])?sl[k]:null;
+  var sh=null; if(wake!=null&&bed!=null){sh=wake-bed;if(sh<=0)sh+=24;if(sh>16)sh=null;}
+  var slpy=3; try{slpy=getSlpyLog()[k]||3;}catch(_){}
+  var mood=null; try{var m=_moodMap()[k]; if(m)mood=m;}catch(_){}
+  /* 回復度＝かいふく と つかれにくさ から */
+  var rec=Math.round(d.rec*0.6+d.fat*0.4);
+  var recTxt = rec>=80?{t:"とても いい 回復！",s:"しっかり 休めています。むずかしい ことに 向かうのに いい 日。",c:"#5fae7a"}
+             : rec>=60?{t:"まずまずの 回復",s:"ふだんどおりの 1日を すごせそうです。",c:"#5fb0dd"}
+             : rec>=40?{t:"すこし 足りていません",s:"ミスが ふえやすい 日。よくばらずに いきましょう。",c:"#e0a24b"}
+             :          {t:"回復が 足りていません",s:"きょうは「がんばる日」より「ととのえる日」。",c:"#e08585"};
+  /* 集中ピーク／眠気ゾーン */
+  var pk=d.peak.h, pk0=(pk-1+24)%24, pk1=(pk+1)%24;
+  var dp=d.dip.h, dp0=(dp-0.5+24)%24, dp1=(dp+0.5)%24;
+  /* 昼寝 */
+  var napOn=(d.nap.lv>0)||(sh!=null&&sh<6)||slpy>=4;
+  var napMin=(slpy>=4||(sh!=null&&sh<6))?"20分":"15分";
+  /* きょう のびやすい 作業 */
+  var work = rec>=75?{t:"線画・構図・むずかしい 判断",s:"あたまを つかう ことに 向く 日です。",c:"#5fae7a"}
+           : rec>=55?{t:"色ぬり・清書・編集",s:"手を うごかす 作業が はかどりそう。",c:"#5fb0dd"}
+           :          {t:"整理・投稿・資料あつめ",s:"考えなくても できる ことから。",c:"#e0a24b"};
+  /* 注意 */
+  var warn=null, wl2=[];
+  var late=0;
+  try{
+    var bl=_anBaseline(null);
+    for(var i2=0;i2<3;i2++){
+      var dd=new Date(Date.now()-i2*86400000);
+      var kk=dd.getFullYear()+"-"+String(dd.getMonth()+1).padStart(2,"0")+"-"+String(dd.getDate()).padStart(2,"0");
+      var bv=sl[kk]; if(!Number.isFinite(bv)||bl.bed==null)continue;
+      var diff=((bv-bl.bed+36)%24)-12;
+      if(diff>0.75)late++;
+    }
+  }catch(_){}
+  if(late>=2){ warn={t:"夜ふかしが "+late+"日 つづいています",s:"きょうは いつもの 時間までに 休みましょう。"}; wl2=["しゅうちゅう力の 低下","ミスの 増加","気分の 落ちこみ"]; }
+  else if(sh!=null&&sh<6){ warn={t:"睡眠が "+sh.toFixed(1)+"時間と みじかめ",s:"だいじな 判断は 午前に すませると 安心。"}; wl2=["ねむけ","見おとし","イライラ"]; }
+  else if(slpy>=4){ warn={t:"朝から ねむけが 強い日",s:"きょうは 予定を つめこまないで。"}; wl2=["集中の とぎれ","かんちがい"]; }
+  else if(d.emo<55){ warn={t:"きもちが ゆれやすい 日",s:"人の ことばを 深く うけとらないように。"}; wl2=["イライラ","不安"]; }
+  /* ひとこと */
+  var tip = rec>=75?"きょうは「やりたいこと」に 手を のばすと よく のびる 日。"
+          : rec>=55?"きょうは いつもの ペースが いちばん 強い 日。"
+          :          "きょうは「やるべきこと」より「へらすこと」を 考える 日。";
+  return {d:d,rec:rec,recTxt:recTxt,wake:wake,bed:bed,sh:sh,slpy:slpy,mood:mood,
+    pk0:pk0,pk1:pk1,dp0:dp0,dp1:dp1,napOn:napOn,napMin:napMin,work:work,warn:warn,wlist:wl2,tip:tip};
+}
+function _anRing(v,col){
+  var R=46,C=2*Math.PI*R, off=C*(1-Math.max(0,Math.min(100,v))/100);
+  return '<svg viewBox="0 0 120 120" class="bfRing"><circle cx="60" cy="60" r="'+R+'" fill="none" stroke="rgba(150,195,225,.22)" stroke-width="11"/>'+
+    '<circle cx="60" cy="60" r="'+R+'" fill="none" stroke="'+col+'" stroke-width="11" stroke-linecap="round" '+
+    'stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'" transform="rotate(-90 60 60)"/>'+
+    '<text x="60" y="62" text-anchor="middle" font-size="34" font-weight="900" fill="'+col+'">'+Math.round(v)+'</text>'+
+    '<text x="60" y="80" text-anchor="middle" font-size="11" font-weight="800" fill="#a9c0d0">/100</text></svg>';
+}
+function openBrief(){
+  try{
+    var el=$("zzBrief"); if(!el)return;
+    var b=_anBrief();
+    var body=$("bfBody"); if(!body)return;
+    if(!b){ body.innerHTML='<div class="bfEmpty">きろくが たまると<br>ここに きょうの 見立てが 出るよ</div>'; el.hidden=false; return; }
+    var now=new Date(), wd=["日","月","火","水","木","金","土"][now.getDay()];
+    var hm=function(v){ return (v==null)?"—":_scHM(v); };
+    body.innerHTML=
+      '<div class="bfHead"><div><b>おはよう\u3000\u2600\ufe0f</b><i>きょうも あなたらしい 1日を。</i></div>'+
+        '<span class="bfDate">'+(now.getMonth()+1)+'月'+now.getDate()+'日（'+wd+'）</span></div>'+
+      '<div class="bfCard bfMain">'+
+        '<div class="bfRingWrap">'+_anRing(b.rec,b.recTxt.c)+'</div>'+
+        '<div class="bfMainTxt"><b style="color:'+b.recTxt.c+'">'+b.recTxt.t+'</b><i>'+b.recTxt.s+'</i></div>'+
+        '<div class="bfFacts">'+
+          '<span><i>\ud83c\udf19 就寝</i><b>'+hm(b.bed)+'</b></span>'+
+          '<span><i>\u2600\ufe0f 起床</i><b>'+hm(b.wake)+'</b></span>'+
+          '<span><i>\ud83d\udecf\ufe0f 睡眠</i><b>'+(b.sh==null?"—":(Math.floor(b.sh)+"時間"+Math.round((b.sh%1)*60)+"分"))+'</b></span>'+
+          '<span><i>\ud83d\udc93 気分</i><b>'+(b.mood?(b.mood.e||"")+" "+escHtml(b.mood.l||""):"—")+'</b></span>'+
+        '</div>'+
+      '</div>'+
+      '<div class="bfCard bfPeak"><b>\u2b50 きょうの 集中ピーク</b>'+
+        '<div class="bfBig" style="color:#e0a24b">'+_scHM(b.pk0)+' 〜 '+_scHM(b.pk1)+'</div>'+
+        '<i>あたまが いちばん 冴えやすい 時間。だいじな ことは ここに。</i></div>'+
+      '<div class="bfRow">'+
+        '<div class="bfCard bfDip"><b>\ud83d\ude34 ねむくなる 時間</b>'+
+          '<div class="bfBig" style="color:#5fb0dd">'+_scHM(b.dp0)+' 〜 '+_scHM(b.dp1)+'</div>'+
+          '<i>'+(b.napOn?(b.napMin+"の ひるねが きく 時間です。"):"みじかい 休けいを はさむと 楽。")+'</i></div>'+
+        '<div class="bfCard bfNap"><b>\ud83d\udca4 ひるね</b>'+
+          '<div class="bfBig" style="color:'+(b.napOn?"#5fb0dd":"#8fa9bd")+'">'+(b.napOn?"おすすめ":"いらなそう")+'</div>'+
+          '<ul><li>'+_scHM(b.dp0)+'〜'+_scHM(b.dp1)+' ごろ</li><li>長さ '+b.napMin+'</li><li>30分を こえると 重くなる</li></ul></div>'+
+      '</div>'+
+      '<div class="bfCard bfWork"><b>\ud83d\udca1 きょう のびやすい 作業</b>'+
+        '<div class="bfBig" style="color:'+b.work.c+'">'+b.work.t+'</div><i>'+b.work.s+'</i></div>'+
+      (b.warn?('<div class="bfCard bfWarn"><b>\u26a0\ufe0f 気を つけたい こと</b>'+
+        '<div class="bfWt">'+escHtml(b.warn.t)+'</div><i>'+escHtml(b.warn.s)+'</i>'+
+        (b.wlist.length?'<ul>'+b.wlist.map(function(x){return '<li>'+escHtml(x)+'</li>';}).join("")+'</ul>':"")+'</div>'):"")+
+      '<div class="bfCard bfTip"><b>\ud83c\udf3f ひとこと</b><i>'+escHtml(b.tip)+'</i></div>';
+    el.hidden=false;
+    try{body.scrollTop=0;}catch(_){}
+    try{playPop();}catch(_){}
+  }catch(_){}
+}
+function closeBrief(){ try{var el=$("zzBrief"); if(el)el.hidden=true;}catch(_){} }
+try{ document.addEventListener("click",function(e){
+  var t=e.target; if(!t||!t.closest)return;
+  if(t.closest("#bfClose")||t.closest("#bfOk")){ try{playClick();}catch(_){} closeBrief(); return; }
+}); }catch(_){}
 function _anRankWord(v){
   return v>=76?{t:"ぜっこうちょう",c:"#5fae7a"}:v>=56?{t:"ふつう",c:"#5fb0dd"}:
          v>=40?{t:"ようちゅうい",c:"#e0a24b"}:{t:"かいふく ゆうせん",c:"#e08585"};
@@ -23642,13 +23849,7 @@ function _afterRecord(){
   try{
     if(typeof tutOn==="function"&&tutOn())return;
     /* ★分析を「更新中」に して、きょうを 入れた ものに 差しかえる */
-    try{
-      var bx=$("anBoxTs");
-      if(bx){ bx.innerHTML='<div class="anBusy">こうしん中</div>';
-        window._anSkip=window._anSkip||{}; window._anSkip.anBoxTs=false;
-        setTimeout(function(){ try{_anPaint("anBoxTs",{skipToday:false});}catch(_){} },900);
-      }
-    }catch(_){}
+    setTimeout(function(){ try{openBrief();}catch(_){} },420);
     try{ var nb=$("tsNextBtn"); if(nb)nb.classList.add("on"); }catch(_){}
     try{ var ts=$("taisoScreen"); if(ts){ts.classList.add("tsSimple");ts._moreOpen=false;} }catch(_){}
   }catch(_){}
@@ -38984,6 +39185,13 @@ function _gpStreetHTML(){
     <button id="tvUp" type="button" aria-label="てっぺんへ">↑ てっぺん</button>
   </div>
   <div id="tvFoot"><span id="tvTotal"></span></div>
+</div>
+<div id="zzBrief" hidden aria-hidden="true">
+  <div id="bfBox">
+    <button id="bfClose" type="button" aria-label="とじる">✕</button>
+    <div id="bfBody"></div>
+    <button id="bfOk" type="button">つづける →</button>
+  </div>
 </div>
 <div id="shareCard" hidden aria-hidden="true">
   <div id="scBox">

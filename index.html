@@ -22957,22 +22957,41 @@ async function _msPaint(){
     var oc=off.getContext("2d");
     if(img){ oc.drawImage(img,0,0,W,H); }
     else{ oc.beginPath();oc.arc(W/2,H/2,W*0.42,0,Math.PI*2);oc.fillStyle="#000";oc.fill(); }
+    /* ★シルエットの「よこ幅」を 行ごとに 数えて、**ぬる面積**が わりあいと 合うようにする
+       （高さで わけると 細い しっぽの ところが 損を するため）                       */
+    var rowA=new Float64Array(H), totalA=0;
+    try{
+      var idat=oc.getImageData(0,0,W,H).data;
+      for(var ry=0;ry<H;ry++){
+        var cnt=0, base=ry*W*4;
+        for(var rx=0;rx<W;rx++){ if(idat[base+rx*4+3]>24)cnt++; }
+        rowA[ry]=cnt; totalA+=cnt;
+      }
+    }catch(_){ for(var ry2=0;ry2<H;ry2++){rowA[ry2]=W;} totalA=W*H; }
     /* まっ白の シルエット */
     oc.globalCompositeOperation="source-in";
     oc.fillStyle="#fdfdff";oc.fillRect(0,0,W,H);
-    /* 下から 色を つみあげる（ぜんぶで 100%） */
-    if(w.total>0){
+    /* 下から 色を つみあげる（面積で わける・ぜんぶで 100%） */
+    if(w.total>0&&totalA>0){
       oc.globalCompositeOperation="source-atop";
-      var yy=H;
-      w.rows.forEach(function(r){
-        var hh=H*(r.v/w.total);
-        var gg=oc.createLinearGradient(0,yy-hh,0,yy);
-        gg.addColorStop(0,r.c);gg.addColorStop(1,r.c);
-        oc.fillStyle=gg;oc.fillRect(0,yy-hh,W,hh+.6);
-        yy-=hh;
+      /* 下から つみあげた 面積の しきい値を さがす */
+      var bounds=[], want=0, acc=0, yCur=H;
+      w.rows.forEach(function(r,ri){
+        want+=totalA*(r.v/w.total);
+        var yb=0;
+        for(var yq=yCur-1;yq>=0;yq--){
+          acc+=rowA[yq];
+          if(acc>=want-1e-9){ yb=yq; break; }
+          yb=0;
+        }
+        bounds.push([yb,yCur]); yCur=yb;
+      });
+      bounds.forEach(function(bd,bi){
+        var r=w.rows[bi], y0=bd[0], y1=bd[1];
+        oc.fillStyle=r.c;
+        oc.fillRect(0,y0,W,Math.max(0.6,y1-y0)+ (bi===bounds.length-1?0:0.6));
       });
       /* 水面っぽい つや */
-      oc.globalCompositeOperation="source-atop";
       var sh=oc.createLinearGradient(0,0,0,H);
       sh.addColorStop(0,"rgba(255,255,255,.34)");sh.addColorStop(.5,"rgba(255,255,255,0)");
       oc.fillStyle=sh;oc.fillRect(0,0,W,H);

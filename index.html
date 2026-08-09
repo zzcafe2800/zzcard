@@ -5955,6 +5955,20 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
   box-shadow:0 4px 12px rgba(60,170,160,.4) !important;}
 #homeZZ:active{transform:scale(.94);}
 </style>
+<style id="tsPcFixCss">
+/* ★PC：カードが 4枚に なって つぶれるので おりかえす */
+@media (min-width:721px){
+  #taisoCards{flex-wrap:wrap !important;align-items:flex-start !important;justify-content:center !important;
+    gap:16px !important;max-width:1180px;margin-left:auto;margin-right:auto;}
+  #taisoCards>.taisoCard,#taisoScreen #askBox{
+    flex:0 1 300px !important;min-width:286px !important;max-width:340px !important;}
+  #tsNextBtn{flex:0 0 100% !important;max-width:320px !important;order:2 !important;align-self:center;}
+  #tsMoreCards{flex:0 0 100% !important;max-width:320px !important;order:3 !important;align-self:center;}
+}
+@media (min-width:1240px){
+  #taisoCards>.taisoCard,#taisoScreen #askBox{flex:0 1 340px !important;max-width:380px !important;}
+}
+</style>
 <style id="anCss">
 /* ===== コンディション分析 ===== */
 #anCardTs{order:-2;}
@@ -5965,12 +5979,21 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 .anSegBtn.on{background:linear-gradient(135deg,#9fd8f2,#5eb0da);color:#fff;border-color:transparent;
   box-shadow:0 3px 8px rgba(94,176,218,.35);}
 .anSegBtn:active{transform:scale(.95);}
-.anTop{display:flex;align-items:center;gap:11px;margin-bottom:6px;}
+.anTop{display:flex;align-items:center;gap:9px;margin-bottom:5px;}
+.anRk{flex:0 0 auto;border-radius:999px;padding:4px 12px;font-size:12px;font-weight:900;letter-spacing:.02em;}
+.anBar{margin:2px 0 7px;}
+.anBar u{display:block;height:9px;border-radius:999px;background:rgba(150,195,225,.2);overflow:hidden;text-decoration:none;}
+.anBar s{display:block;height:100%;border-radius:999px;text-decoration:none;transition:width .7s cubic-bezier(.2,.9,.3,1);}
+.anLeg{display:flex;gap:12px;justify-content:center;margin-top:6px;}
+.anLg{display:flex;align-items:center;gap:5px;font-size:9.5px;font-weight:800;color:#8fa9bd;}
+.anLg::before{content:"";width:16px;height:3px;border-radius:2px;background:#5fb0dd;}
+.anLg.avg::before{background:repeating-linear-gradient(90deg,#b9a8ec 0 5px,transparent 5px 9px);}
 .anHp{flex:0 0 auto;display:flex;align-items:baseline;gap:3px;}
 .anHp b{font-size:34px;font-weight:900;line-height:1;}
 .anHp i{font-style:normal;font-size:10px;font-weight:900;color:#a9c0d0;}
-.anSay{flex:1 1 auto;min-width:0;font-size:12px;font-weight:800;color:#5f8298;line-height:1.45;}
-.anRadar{padding:14px 22px 6px;}
+.anSay{font-size:12.5px;font-weight:800;color:#5f8298;line-height:1.5;background:rgba(240,248,253,.9);
+  border-radius:12px;padding:8px 11px;}
+.anRadar{padding:16px 24px 8px;}
 .anCurveTtl{font-size:10.5px;font-weight:900;color:#8fa9bd;margin:6px 0 1px;}
 .anCurve{padding:0 2px;}
 .anTips{display:flex;gap:6px;margin-top:6px;}
@@ -7447,7 +7470,7 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
       </div>
       <div class="krTime slpy" id="krSlpyRow">
       <div class="krTimeLeft"><span class="krTimeLbl">💤 朝の ねむけ</span><span class="krSlpyV" id="krSlpyV">ふつう</span></div>
-      <div class="krSlpyWrap"><input id="krSlpy" type="range" min="1" max="5" step="1" value="3"/></div>
+      <div class="krSlpyWrap"><input id="krSlpy" type="range" min="1" max="5" step="any" value="3"/></div>
       </div>
       <button id="krSave" type="button">きろく する</button>
       
@@ -23099,7 +23122,11 @@ function _anCalc(range,skipToday){
 }
 /* ==== 6角形グラフ＋時間帯カーブの 描画 ==== */
 var _anRange={};
-function _anRadarSVG(d){
+function _anRankWord(v){
+  return v>=76?{t:"ぜっこうちょう",c:"#5fae7a"}:v>=56?{t:"ふつう",c:"#5fb0dd"}:
+         v>=40?{t:"ようちゅうい",c:"#e0a24b"}:{t:"かいふく ゆうせん",c:"#e08585"};
+}
+function _anRadarSVG(d,base){
   var R=86,cx=100,cy=100,s="";
   var pt=function(i,r){var a=-Math.PI/2+i*Math.PI/3;return [cx+Math.cos(a)*r,cy+Math.sin(a)*r];};
   var poly=function(r,fill,stroke,w,op){
@@ -23109,6 +23136,10 @@ function _anRadarSVG(d){
   for(var g=4;g>=1;g--)s+=poly(R*g/4,g%2?"rgba(255,255,255,0)":"rgba(140,190,220,.07)","rgba(140,190,220,.28)",1);
   for(var i2=0;i2<6;i2++){var p3=pt(i2,R);
     s+='<line x1="'+cx+'" y1="'+cy+'" x2="'+p3[0].toFixed(1)+'" y2="'+p3[1].toFixed(1)+'" stroke="rgba(140,190,220,.22)" stroke-width="1"/>';}
+  if(base){
+    var qb=[];AN_AX.forEach(function(ax,ib){var v=Math.max(4,Math.min(100,base[ax.k]||0));var pb=pt(ib,R*v/100);qb.push(pb[0].toFixed(1)+","+pb[1].toFixed(1));});
+    s+='<polygon points="'+qb.join(" ")+'" fill="none" stroke="#b9a8ec" stroke-width="2" stroke-dasharray="5 4" stroke-linejoin="round" opacity=".85"/>';
+  }
   var q2=[];AN_AX.forEach(function(ax,i3){var v=Math.max(4,Math.min(100,d[ax.k]||0));var p4=pt(i3,R*v/100);q2.push(p4[0].toFixed(1)+","+p4[1].toFixed(1));});
   s+='<polygon points="'+q2.join(" ")+'" fill="url(#anG)" stroke="#5fb0dd" stroke-width="2.6" stroke-linejoin="round"/>';
   AN_AX.forEach(function(ax,i4){var v=Math.max(4,Math.min(100,d[ax.k]||0));var p5=pt(i4,R*v/100);
@@ -23116,15 +23147,39 @@ function _anRadarSVG(d){
   AN_AX.forEach(function(ax,i5){var p6=pt(i5,R+17);
     var an=(i5===0||i5===3)?"middle":(p6[0]>cx?"start":"end");
     s+='<text x="'+p6[0].toFixed(1)+'" y="'+(p6[1]+3).toFixed(1)+'" text-anchor="'+an+'" font-size="9.5" font-weight="800" fill="#7f9ab0">'+ax.n+'</text>';
-    s+='<text x="'+p6[0].toFixed(1)+'" y="'+(p6[1]+14).toFixed(1)+'" text-anchor="'+an+'" font-size="11" font-weight="900" fill="'+ax.c+'">'+Math.round(d[ax.k]||0)+'</text>';});
+    var vv=Math.round(d[ax.k]||0);
+    s+='<text x="'+p6[0].toFixed(1)+'" y="'+(p6[1]+14).toFixed(1)+'" text-anchor="'+an+'" font-size="12" font-weight="900" fill="'+ax.c+'">'+vv+'</text>';
+    if(base){ var dv=vv-Math.round(base[ax.k]||0);
+      if(Math.abs(dv)>=3)s+='<text x="'+p6[0].toFixed(1)+'" y="'+(p6[1]+24).toFixed(1)+'" text-anchor="'+an+'" font-size="8.5" font-weight="900" fill="'+(dv>0?"#5fae7a":"#e08585")+'">'+(dv>0?"▲":"▼")+Math.abs(dv)+'</text>'; }
+  });
   return '<svg viewBox="0 0 200 200" style="width:100%;height:auto;display:block;overflow:visible;">'+
     '<defs><linearGradient id="anG" x1="0" y1="0" x2="0" y2="1">'+
     '<stop offset="0" stop-color="#8fd3f0" stop-opacity=".55"/>'+
     '<stop offset="1" stop-color="#b9a8ec" stop-opacity=".38"/></linearGradient></defs>'+s+'</svg>';
 }
+function _anBandOf(h){
+  if(h>=5&&h<10) return {c:"#ffe6c4",n:"あさ"};
+  if(h>=10&&h<15)return {c:"#d9f0fb",n:"ひる"};
+  if(h>=15&&h<18)return {c:"#ffdfc9",n:"ゆうがた"};
+  if(h>=18&&h<22)return {c:"#e2d4f3",n:"よる"};
+  return {c:"#cdd6ea",n:"しんや"};
+}
 function _anCurveSVG(d){
-  var W=280,H=88,pL=6,pR=6,pT=8,pB=18,cw=W-pL-pR,ch=H-pT-pB,s="";
+  var W=280,H=104,pL=6,pR=6,pT=8,pB=30,cw=W-pL-pR,ch=H-pT-pB,s="";
   var X=function(i){return pL+cw*i/(d.curve.length-1);}, Y=function(v){return pT+ch*(1-v/100);};
+  /* ★時間帯の 色おび（あさ／ひる／ゆうがた／よる） */
+  var segs=[],cur=null;
+  d.curve.forEach(function(q,i){
+    var bd=_anBandOf(Math.floor(q.h));
+    if(!cur||cur.n!==bd.n){ if(cur)segs.push(cur); cur={n:bd.n,c:bd.c,a:i,b:i}; }
+    else cur.b=i;
+  });
+  if(cur)segs.push(cur);
+  segs.forEach(function(sg){
+    var x0=X(Math.max(0,sg.a-0.5)),x1=X(Math.min(d.curve.length-1,sg.b+0.5));
+    s+='<rect x="'+x0.toFixed(1)+'" y="'+pT+'" width="'+(x1-x0).toFixed(1)+'" height="'+ch.toFixed(1)+'" fill="'+sg.c+'" opacity=".55"/>';
+    if((x1-x0)>26)s+='<text x="'+((x0+x1)/2).toFixed(1)+'" y="'+(H-16).toFixed(1)+'" text-anchor="middle" font-size="9" font-weight="900" fill="#8fa9bd">'+sg.n+'</text>';
+  });
   s+='<path d="M '+X(0).toFixed(1)+' '+(H-pB).toFixed(1)+' L '+d.curve.map(function(q,i){return X(i).toFixed(1)+" "+Y(q.v).toFixed(1);}).join(" L ")+' L '+X(d.curve.length-1).toFixed(1)+' '+(H-pB).toFixed(1)+' Z" fill="url(#anC)"/>';
   s+='<polyline points="'+d.curve.map(function(q,i){return X(i).toFixed(1)+","+Y(q.v).toFixed(1);}).join(" ")+'" fill="none" stroke="#5fb0dd" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>';
   var pi=d.curve.indexOf(d.peak), di=d.curve.indexOf(d.dip);
@@ -23133,7 +23188,7 @@ function _anCurveSVG(d){
   if(di>=0){s+='<circle cx="'+X(di).toFixed(1)+'" cy="'+Y(d.dip.v).toFixed(1)+'" r="4.2" fill="#ffa9a9" stroke="#fff" stroke-width="1.6"/>'
     +'<text x="'+X(di).toFixed(1)+'" y="'+(Y(d.dip.v)+15).toFixed(1)+'" text-anchor="middle" font-size="9" font-weight="900" fill="#e08585">'+_scHM(d.dip.h)+'</text>';}
   for(var t=0;t<d.curve.length;t+=4){
-    s+='<text x="'+X(t).toFixed(1)+'" y="'+(H-4).toFixed(1)+'" text-anchor="middle" font-size="8.5" font-weight="800" fill="#a9bccb">'+_scHM(d.curve[t].h)+'</text>';}
+    s+='<text x="'+X(t).toFixed(1)+'" y="'+(H-3).toFixed(1)+'" text-anchor="middle" font-size="8.5" font-weight="800" fill="#a9bccb">'+_scHM(d.curve[t].h)+'</text>';}
   return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;display:block;">'+
     '<defs><linearGradient id="anC" x1="0" y1="0" x2="0" y2="1">'+
     '<stop offset="0" stop-color="#8fd3f0" stop-opacity=".38"/>'+
@@ -23148,15 +23203,20 @@ function _anPaint(hostId,opt){
     var d=_anCalc(rg,!!opt.skipToday);
     if(!d){ host.innerHTML='<div class="anEmpty">きろくが たまると<br>ここに 分析が 出るよ</div>'; return; }
     var napCls=["","mid","hi"][d.nap.lv]||"";
+    var base=(rg===7)?null:_anCalc(7,!!opt.skipToday);
+    var rk=_anRankWord(d.hp);
     host.innerHTML=
       '<div class="anSeg">'+[1,3,7].map(function(r){
         return '<button class="anSegBtn'+(r===rg?" on":"")+'" data-an="'+hostId+'" data-r="'+r+'" type="button">'+(r===1?"1日":r===3?"3日":"1週間")+'</button>';
       }).join("")+'</div>'+
       '<div class="anTop">'+
         '<div class="anHp"><b style="color:'+_anHpCol(d.hp)+'">'+d.hp+'</b><i>HP</i></div>'+
-        '<div class="anSay">'+escHtml(d.say)+'</div>'+
+        '<div class="anRk" style="background:'+rk.c+'22;color:'+rk.c+'">'+rk.t+'</div>'+
       '</div>'+
-      '<div class="anRadar">'+_anRadarSVG(d)+'</div>'+
+      '<div class="anBar"><u><s style="width:'+d.hp+'%;background:'+_anHpCol(d.hp)+'"></s></u></div>'+
+      '<div class="anSay">\u2728 '+escHtml(d.say)+'</div>'+
+      (base?'<div class="anLeg"><span class="anLg now">きょう</span><span class="anLg avg">いつも</span></div>':"")+
+      '<div class="anRadar">'+_anRadarSVG(d,base)+'</div>'+
       '<div class="anCurveTtl">きょうの しゅうちゅう</div>'+
       '<div class="anCurve">'+_anCurveSVG(d)+'</div>'+
       '<div class="anTips">'+
@@ -23457,7 +23517,7 @@ function _askPaint(){
     var wd=$("krWakeDunno");if(wd)wd.classList.toggle("on",_krWakeH==null);
     var bd=$("krBedDunno");if(bd)bd.classList.toggle("on",_krBedH==null);
     try{ document.querySelectorAll("#krSlpRow .krSlp").forEach(function(b){ b.classList.toggle("on",String(_krSlp)===b.dataset.s); }); }catch(_){}
-    try{ var sy=$("krSlpy"); if(sy)sy.value=String(_krSlpy||3);
+    try{ var sy=$("krSlpy"); if(sy&&document.activeElement!==sy)sy.value=String(_krSlpy||3);
       var sv=$("krSlpyV"); if(sv)sv.textContent=SLPY_LBL[_krSlpy||3]||"ふつう"; }catch(_){}
   }catch(_){}
 }
@@ -23485,7 +23545,8 @@ function openAskCard(then){
 /* きろくずみの 見た目（カードは 消さずに 「きろく できたよ」に） */
 try{ document.addEventListener("input",function(e){
   try{ if(!e.target||e.target.id!=="krSlpy")return;
-    _krSlpy=parseInt(e.target.value,10)||3;
+    var raw=parseFloat(e.target.value); if(!Number.isFinite(raw))raw=3;
+    _krSlpy=Math.max(1,Math.min(5,Math.round(raw)));   /* ★見た目は なめらか・記録は いちばん近い 数値 */
     var sv=$("krSlpyV"); if(sv)sv.textContent=SLPY_LBL[_krSlpy]||"ふつう";
   }catch(_){}
 }); }catch(_){}

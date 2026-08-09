@@ -5891,11 +5891,12 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 /* ===== D) きろくは「気分ひとつ」だけ（くわしくは たたむ） ===== */
 /* ★かんたんモード＝かくすのは「気分の3段すすみ」だけ。起床・就寝・きろくするは そのまま */
 #askBox.kr1 #krMoodProg,#askBox.kr1 #krMoodBk,#askBox.kr1 #krMoodNow{display:none !important;}
+#askBox .krBlk{display:block !important;}
 #askBox.kr1 #krMoodRow [data-m1].sel{outline:3px solid #7fc9e8;outline-offset:1px;
   box-shadow:0 0 0 5px rgba(127,201,232,.28);transform:translateY(-2px);}
 #askBox.kr1 #krMoodRow{gap:7px;}
-#askBox .krSecTop{margin-top:9px;justify-content:center;}
-#askBox #krMore{display:none;margin-left:0;border:none;cursor:pointer;
+#askBox .krSecTop{display:none;}
+#askBox .krSecTopX{border:none;cursor:pointer;
   border-radius:999px;padding:4px 12px;font-family:"Yomogi","Kosugi Maru",sans-serif;
   font-size:11.5px;font-weight:900;color:#fff;letter-spacing:.03em;
   background:linear-gradient(135deg,#9fd8f2,#5eb0da);box-shadow:0 3px 9px rgba(94,176,218,.4);}
@@ -5956,22 +5957,90 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
   box-shadow:0 4px 12px rgba(60,170,160,.4) !important;}
 #homeZZ:active{transform:scale(.94);}
 </style>
+<style id="catFreeCss">
+/* ===== 猫を すきな 場所に おく ===== */
+#catFree{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:visible;}
+.cfCat{position:absolute;transform:translate(-50%,-100%);pointer-events:auto;cursor:grab;
+  touch-action:none;transition:left .35s cubic-bezier(.2,.9,.3,1),top .35s cubic-bezier(.2,.9,.3,1);
+  filter:drop-shadow(0 6px 12px rgba(40,70,100,.28));}
+.cfCat.me{cursor:grab;}
+.cfCat.drag{transition:none;cursor:grabbing;z-index:5;filter:drop-shadow(0 12px 20px rgba(40,70,100,.4));}
+.cfCat .catFig{pointer-events:none;}
+.cfCat .catNm{display:block;text-align:center;margin-top:-2px;font-family:"Yomogi","Kosugi Maru",sans-serif;
+  font-size:10px;font-weight:800;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.55);white-space:nowrap;}
+/* もといた ところ（うすい 猫） */
+.hillCat.moved .catFig{opacity:.22;filter:grayscale(.35);}
+.hillCat.moved .catFig::after{content:"";}
+.cfHint{position:absolute;transform:translate(-50%,6px);font-family:"Yomogi","Kosugi Maru",sans-serif;
+  font-size:9px;font-weight:800;color:rgba(255,255,255,.8);text-shadow:0 1px 3px rgba(0,0,0,.5);
+  white-space:nowrap;pointer-events:none;}
+.cfGrab{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);z-index:130;pointer-events:none;
+  background:rgba(20,44,62,.82);color:#fff;border-radius:999px;padding:7px 16px;
+  font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:12px;font-weight:800;opacity:0;transition:opacity .25s;}
+.cfGrab.on{opacity:1;}
+</style>
+<style id="krClockCss">
+.krCk{width:17px;height:17px;border-radius:50%;border:1.5px solid rgba(150,190,215,.6);background:#fff;
+  font-size:9px;line-height:1;padding:0;cursor:pointer;position:relative;z-index:3;
+  display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+.krCk:active{transform:scale(.9);}
+#krClockPop{position:fixed;inset:0;z-index:4100;display:flex;align-items:center;justify-content:center;
+  background:rgba(20,44,62,.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);padding:16px;
+  font-family:"Yomogi","Kosugi Maru",sans-serif;animation:kcIn .22s ease both;}
+#krClockPop[hidden]{display:none;}
+@keyframes kcIn{from{opacity:0;}to{opacity:1;}}
+#kcBox{width:min(320px,92vw);background:linear-gradient(180deg,#fdfeff,#f2f9fd);border-radius:26px;
+  padding:18px 18px 16px;text-align:center;box-shadow:0 20px 50px rgba(20,60,90,.35);
+  animation:kcUp .3s cubic-bezier(.2,1.2,.35,1) both;}
+@keyframes kcUp{from{transform:scale(.94) translateY(10px);}to{transform:none;}}
+#kcTtl{font-size:13px;font-weight:900;color:#8fa9bd;margin-bottom:6px;}
+#kcFace{width:min(232px,72vw);margin:0 auto;touch-action:none;user-select:none;-webkit-user-select:none;cursor:pointer;}
+#kcFace svg{width:100%;height:auto;display:block;}
+#kcNow{font-size:34px;font-weight:900;color:#4f7f9c;letter-spacing:.03em;margin-top:6px;
+  font-variant-numeric:tabular-nums;}
+#kcAmpm{display:flex;gap:7px;justify-content:center;margin-top:8px;}
+.kcAp{border:1.5px solid rgba(150,195,225,.55);background:#fff;border-radius:999px;padding:6px 20px;cursor:pointer;
+  font-family:inherit;font-size:12px;font-weight:900;color:#7fa3bd;}
+.kcAp.on{background:linear-gradient(135deg,#9fd8f2,#5eb0da);color:#fff;border-color:transparent;
+  box-shadow:0 3px 9px rgba(94,176,218,.35);}
+#kcBtns{display:flex;gap:9px;margin-top:14px;}
+#kcBtns button{flex:1 1 0;border:none;border-radius:14px;padding:13px;cursor:pointer;
+  font-family:inherit;font-size:14px;font-weight:900;}
+#kcCancel{background:rgba(255,255,255,.95);color:#8fa9bd;border:1.5px solid rgba(180,205,220,.55) !important;}
+#kcOk{background:linear-gradient(135deg,#5ec98c,#3fa86a);color:#fff;box-shadow:0 5px 14px rgba(63,168,106,.35);}
+#kcBtns button:active{transform:scale(.96);}
+</style>
 <style id="krNewCss">
 /* ===== きょうの きろく（作り直し） ===== */
 #askBox{background:linear-gradient(180deg,#fbfdff,#f4faf6) !important;}
 #askTtl{font-size:19px;font-weight:900;color:#3f7a95;text-align:center;letter-spacing:.02em;}
 #askSub{font-size:11px;font-weight:800;color:#a9bccb;text-align:center;margin-top:2px;}
-#krSteps{display:flex;gap:0;margin:11px 0 12px;}
-.krStp{flex:1 1 0;display:flex;align-items:center;justify-content:center;gap:5px;
-  padding:6px 2px 8px;font-size:11.5px;font-weight:900;color:#b6c6d2;
-  border-bottom:3px solid rgba(180,205,220,.35);}
-.krStp b{width:17px;height:17px;border-radius:50%;background:#cfdce6;color:#fff;font-size:10.5px;
-  display:flex;align-items:center;justify-content:center;}
-.krStp.on{color:#3fa06a;border-bottom-color:#4bb87a;}
-.krStp.on b{background:#4bb87a;}
-.krStp.done b{background:#9fd8b8;}
 .krBlk{background:#fff;border:1.5px solid rgba(170,210,190,.4);border-radius:16px;padding:11px 12px 12px;margin-bottom:10px;}
 .krBlkTtl{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:900;color:#3f7f60;margin-bottom:9px;}
+#askBox .krBlkTtl #krMore{display:none;margin-left:auto;border:none;cursor:pointer;
+  border-radius:999px;padding:3px 10px;font-family:"Yomogi","Kosugi Maru",sans-serif;
+  font-size:10px;font-weight:900;color:#fff;background:linear-gradient(135deg,#9fd8f2,#5eb0da);
+  box-shadow:0 2px 6px rgba(94,176,218,.35);}
+#askBox.kr1 .krBlkTtl #krMore{display:inline-block;}
+#askBox .krBlkTtl .krBk{margin-left:auto;}
+/* ？ボタン（わからない） */
+.krTbL{display:flex;align-items:center;gap:5px;}
+.krQ{width:17px;height:17px;border-radius:50%;border:1.5px solid rgba(150,190,215,.6);background:#fff;
+  color:#a9c0d0;font-size:10px;font-weight:900;line-height:1;padding:0;cursor:pointer;position:relative;z-index:3;
+  display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+.krQ.on{background:#8fa9bd;border-color:transparent;color:#fff;}
+.krQ:active{transform:scale(.9);}
+/* ねつき */
+.krSlpRow2{display:flex;align-items:center;gap:7px;margin-top:10px;}
+.krSlpL{font-size:10.5px;font-weight:900;color:#8fa9bd;flex:0 0 auto;}
+.krSlpRow2 .krSlp{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:1px;
+  border:1.5px solid rgba(180,205,220,.55);background:#fff;border-radius:11px;padding:6px 3px;cursor:pointer;}
+.krSlpRow2 .krSlp b{font-size:15px;font-weight:900;color:#9aa8c4;line-height:1.1;}
+.krSlpRow2 .krSlp i{font-style:normal;font-size:8.5px;font-weight:800;color:#a9bccb;white-space:nowrap;}
+.krSlpRow2 .krSlp.on{background:linear-gradient(135deg,#c9c2f0,#9d92dd);border-color:transparent;
+  box-shadow:0 3px 9px rgba(140,130,205,.4);}
+.krSlpRow2 .krSlp.on b,.krSlpRow2 .krSlp.on i{color:#fff;}
+.krSlpRow2 .krSlp:active{transform:scale(.95);}
 .krBlkTtl b{width:19px;height:19px;border-radius:50%;background:#4bb87a;color:#fff;font-size:11px;
   display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
 /* 気分カード */
@@ -7190,6 +7259,7 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
       <span id="wtTag"><b id="wtM">0m</b><i id="wtN">みんなで 0回</i></span>
     </button>
     <div id="hillCats"></div>
+    <div id="catFree"></div>
     <div class="hill hillFront"></div>
   </div>
   <div id="selectInner">
@@ -7576,39 +7646,30 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
       <div id="askBox">
       <div id="askTtl">きょうの きろく</div>
       <div id="askSub">3つの ステップで かんたん入力！</div>
-      <div id="krSteps">
-        <span class="krStp on" data-st="1"><b>1</b>気分</span>
-        <span class="krStp" data-st="2"><b>2</b>時間</span>
-        <span class="krStp" data-st="3"><b>3</b>ねむけ</span>
-      </div>
       <div class="krSec krBlk">
-        <div class="krBlkTtl"><b>1</b>きょうの 気分は？</div>
-        <div class="krMoodLine"><div class="krMoodRow" id="krMoodRow"></div></div>
-        <div class="krSecTop"><button id="krMore" type="button">もっと くわしく ▸</button><button id="krMoodBk" class="krBk" type="button" hidden>← もどる</button><span class="krNow" id="krMoodNow"></span></div>
+        <div class="krBlkTtl"><b>1</b>きょうの 気分は？<button id="krMore" type="button">くわしく ▸</button><button id="krMoodBk" class="krBk" type="button" hidden>← もどる</button><span class="krNow" id="krMoodNow"></span></div>
         <div class="krProg" id="krMoodProg"></div>
+        <div class="krMoodLine"><div class="krMoodRow" id="krMoodRow"></div></div>
       </div>
       <div class="krBlk">
         <div class="krBlkTtl"><b>2</b>ねた時間・おきた時間</div>
         <div class="krTimeGrid">
           <div class="krTimeBox bed">
-            <span class="krTbL">🌙 ねた時間</span>
+            <span class="krTbL">🌙 ねた時間<button class="krQ" data-t="bed" type="button" aria-label="わからない">？</button><button class="krCk" data-t="bed" type="button" aria-label="時計で えらぶ">🕑</button></span>
             <select id="krBedSel" class="krSel"></select>
             <span class="krTbV" id="krBedV">23:00</span>
           </div>
           <div class="krTimeBox wake">
-            <span class="krTbL">☀️ おきた時間</span>
+            <span class="krTbL">☀️ おきた時間<button class="krQ" data-t="wake" type="button" aria-label="わからない">？</button><button class="krCk" data-t="wake" type="button" aria-label="時計で えらぶ">🕑</button></span>
             <select id="krWakeSel" class="krSel"></select>
             <span class="krTbV" id="krWakeV">6:00</span>
           </div>
         </div>
-        <div class="krVague">
-          <label class="krVgChk"><input type="checkbox" id="krVague"/><span>おおよそ（時間が はっきり しない）</span></label>
-          <div class="krSlpMini" id="krSlpRow">
-            <span class="krSlpMiniL">寝つき</span>
-            <button class="krSlp" data-s="1" type="button">○</button>
-            <button class="krSlp" data-s="2" type="button">△</button>
-            <button class="krSlp" data-s="3" type="button">×</button>
-          </div>
+        <div class="krSlpRow2" id="krSlpRow">
+          <span class="krSlpL">ねつき</span>
+          <button class="krSlp" data-s="1" type="button"><b>○</b><i>すぐ</i></button>
+          <button class="krSlp" data-s="2" type="button"><b>△</b><i>ふつう</i></button>
+          <button class="krSlp" data-s="3" type="button"><b>×</b><i>なかなか</i></button>
         </div>
       </div>
       <div class="krBlk">
@@ -10540,6 +10601,7 @@ async function likeAllVisible(){
   await Promise.all(jobs);
   try{[...document.querySelectorAll("#hillCats .catLikeHeart")].forEach(b=>{if(b.dataset&&b.dataset.uid&&likedPost(b.dataset.uid,b.dataset.pid)){b.classList.add("done");b.textContent="♥";}});}catch(_){}
   try{_paintCmtLikes();}catch(_){}
+  try{_cpRender();}catch(_){}
   if(n>0){try{playPop();}catch(_){}}
   try{_paintLikeAllBtn();}catch(_){}
   toast(n>0?("💗 "+n+"人に♡したよ"):"おくれなかったみたい。もう一度おしてね");
@@ -12087,6 +12149,7 @@ function _applyHillFromVal(val){
       if(!byUid[v.uid]||(v.createdAt||0)>(byUid[v.uid].createdAt||0))byUid[v.uid]=Object.assign({pid},v);
     });
     _allTimeCats=Object.values(byUidAll);
+    try{ setTimeout(function(){try{_cpRender();}catch(_){}},80); }catch(_){}
     /* ★きょう とうこうした 人数だけ かぞえる（名前などは 見ない） */
     try{
       var _tk="_"+jstKey(), _act={};
@@ -23845,16 +23908,18 @@ try{ document.addEventListener("change",function(e){
     var t=e.target; if(!t)return;
     if(t.id==="krWakeSel"){ _krWakeH=parseFloat(t.value); _krPaintNew(); return; }
     if(t.id==="krBedSel"){ _krBedH=parseFloat(t.value); _krPaintNew(); return; }
-    if(t.id==="krVague"){
-      if(t.checked){ _krWakeH=null; _krBedH=null; }
-      else{ var n=new Date(); _krWakeH=n.getHours(); _krBedH=((n.getHours()-6)%24+24)%24; }
-      _krPaintNew(); return;
-    }
+
   }catch(_){}
 }); }catch(_){}
 try{ document.addEventListener("click",function(e){
   try{
     var t=e.target; if(!t||!t.closest)return;
+    var q=t.closest(".krQ");
+    if(q){ try{playClick();}catch(_){}
+      var n2=new Date();
+      if(q.dataset.t==="wake") _krWakeH=(_krWakeH==null)?n2.getHours():null;
+      else _krBedH=(_krBedH==null)?((n2.getHours()-6)%24+24)%24:null;
+      _krPaintNew(); return; }
     var pt=t.closest("#krSlpyPts .krSlpyPt"); if(!pt)return;
     try{playClick();}catch(_){}
     _krSlpy=parseInt(pt.dataset.p,10)||3; _krPaintNew();
@@ -23943,33 +24008,133 @@ function _krFace(kind,sz){
 }
 var KR_FACEK=["genki","odayaka","nemui","shizun","moya"];
 var KR_SLPY=[{k:"nemui",l:"とてもねむい"},{k:"nemui",l:"ねむい"},{k:"odayaka",l:"ふつう"},{k:"odayaka",l:"すっきり"},{k:"genki",l:"とてもすっきり"}];
+/* ===== 時計で 時間を えらぶ ===== */
+var _kcT="wake", _kcH=6, _kcAp=0, _kcDrag=false;
+function _kcFaceSVG(){
+  var R=100,cx=110,cy=110,s="";
+  s+='<circle cx="110" cy="110" r="104" fill="url(#kcBg)"/>';
+  s+='<circle cx="110" cy="110" r="104" fill="none" stroke="rgba(150,195,225,.35)" stroke-width="2"/>';
+  for(var i=0;i<12;i++){
+    var a=-Math.PI/2+i*Math.PI/6, big=(i%3===0);
+    var x1=cx+Math.cos(a)*(R-(big?0:2)), y1=cy+Math.sin(a)*(R-(big?0:2));
+    if(big){
+      var lbl=(i===0)?12:i;
+      s+='<text x="'+(cx+Math.cos(a)*(R-20)).toFixed(1)+'" y="'+(cy+Math.sin(a)*(R-20)+7).toFixed(1)+
+        '" text-anchor="middle" font-size="21" font-weight="900" fill="'+((i===_kcH%12)?"#3fa86a":"#7fa3bd")+'">'+lbl+'</text>';
+    }else{
+      s+='<circle cx="'+(cx+Math.cos(a)*(R-20)).toFixed(1)+'" cy="'+(cy+Math.sin(a)*(R-20)).toFixed(1)+
+        '" r="'+((i===_kcH%12)?5.5:3.2)+'" fill="'+((i===_kcH%12)?"#3fa86a":"#c4d6e2")+'"/>';
+    }
+  }
+  var ha=-Math.PI/2+(_kcH%12)*Math.PI/6;
+  var hx=cx+Math.cos(ha)*(R-20), hy=cy+Math.sin(ha)*(R-20);
+  s+='<line x1="'+cx+'" y1="'+cy+'" x2="'+hx.toFixed(1)+'" y2="'+hy.toFixed(1)+'" stroke="#5ec98c" stroke-width="5" stroke-linecap="round"/>';
+  s+='<circle cx="'+hx.toFixed(1)+'" cy="'+hy.toFixed(1)+'" r="17" fill="rgba(94,201,140,.28)"/>';
+  s+='<circle cx="110" cy="110" r="7" fill="#3fa86a"/>';
+  return '<svg viewBox="0 0 220 220"><defs><radialGradient id="kcBg" cx="38%" cy="32%">'+
+    '<stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#eaf5fc"/></radialGradient></defs>'+s+'</svg>';
+}
+function _kcPaint(){
+  try{
+    var f=$("kcFace"); if(f)f.innerHTML=_kcFaceSVG();
+    var h24=_kcTo24();
+    var nw=$("kcNow"); if(nw)nw.textContent=h24+":00";
+    document.querySelectorAll("#kcAmpm .kcAp").forEach(function(b){ b.classList.toggle("on",String(_kcAp)===b.dataset.ap); });
+    var tt=$("kcTtl"); if(tt)tt.textContent=(_kcT==="wake")?"おきた時間":"ねた時間";
+  }catch(_){}
+}
+function _kcTo24(){ var h=_kcH%12; return _kcAp?((h===0?12:h)+12)%24:(h===0?0:h); }
+function _kcFrom24(h){ h=((Math.round(h)%24)+24)%24; _kcAp=(h>=12)?1:0; _kcH=h%12; }
+function openKrClock(which){
+  try{
+    _kcT=which||"wake";
+    var v=(_kcT==="wake")?_krWakeH:_krBedH;
+    if(v==null)v=(_kcT==="wake")?6:23;
+    _kcFrom24(v);
+    var el=$("krClockPop"); if(!el)return;
+    el.hidden=false; _kcPaint();
+    try{playClick();}catch(_){}
+  }catch(_){}
+}
+function closeKrClock(){ try{var el=$("krClockPop"); if(el)el.hidden=true;}catch(_){} _kcDrag=false; }
+function _kcFromPoint(e){
+  try{
+    var f=$("kcFace"); if(!f)return;
+    var r=f.getBoundingClientRect();
+    var t=(e.touches&&e.touches[0])||e;
+    var dx=t.clientX-(r.left+r.width/2), dy=t.clientY-(r.top+r.height/2);
+    if(Math.abs(dx)<3&&Math.abs(dy)<3)return;
+    var a=Math.atan2(dy,dx)+Math.PI/2;
+    var h=Math.round(a/(Math.PI/6));
+    _kcH=((h%12)+12)%12;
+    _kcPaint();
+  }catch(_){}
+}
+try{
+  document.addEventListener("pointerdown",function(e){
+    var t=e.target; if(!t||!t.closest)return;
+    if(!t.closest("#kcFace"))return;
+    _kcDrag=true; _kcFromPoint(e); e.preventDefault();
+  },{passive:false});
+  document.addEventListener("pointermove",function(e){ if(_kcDrag){ _kcFromPoint(e); e.preventDefault(); } },{passive:false});
+  document.addEventListener("pointerup",function(){ _kcDrag=false; });
+  document.addEventListener("pointercancel",function(){ _kcDrag=false; });
+}catch(_){}
+try{ document.addEventListener("click",function(e){
+  var t=e.target; if(!t||!t.closest)return;
+  var ck=t.closest(".krCk");
+  if(ck){ openKrClock(ck.dataset.t); return; }
+  var ap=t.closest("#kcAmpm .kcAp");
+  if(ap){ try{playClick();}catch(_){} _kcAp=parseInt(ap.dataset.ap,10)||0; _kcPaint(); return; }
+  if(t.closest("#kcCancel")){ try{playClick();}catch(_){} closeKrClock(); return; }
+  if(t.closest("#kcOk")){
+    try{playClick();}catch(_){}
+    var h=_kcTo24();
+    if(_kcT==="wake")_krWakeH=h; else _krBedH=h;
+    closeKrClock(); try{_krPaintNew();}catch(_){}
+    return;
+  }
+  if(t.closest("#krClockPop")&&!t.closest("#kcBox")){ closeKrClock(); return; }
+}); }catch(_){}
+/* ★時刻の 上で ホイールを まわすと 1時間ずつ */
+try{ document.addEventListener("wheel",function(e){
+  try{
+    var t=e.target; if(!t||!t.closest)return;
+    var box=t.closest(".krTimeBox");
+    if(box){
+      var isW=box.classList.contains("wake");
+      var cur=isW?_krWakeH:_krBedH;
+      if(cur==null)return;
+      var d=(e.deltaY<0)?1:-1;
+      var nv=((Math.round(cur)+d)%24+24)%24;
+      if(isW)_krWakeH=nv; else _krBedH=nv;
+      _krPaintNew(); e.preventDefault(); return;
+    }
+    if(t.closest("#kcFace")||t.closest("#kcNow")){
+      var d2=(e.deltaY<0)?1:-1;
+      var h2=((_kcTo24()+d2)%24+24)%24; _kcFrom24(h2); _kcPaint(); e.preventDefault();
+    }
+  }catch(_){}
+},{passive:false}); }catch(_){}
 function _krPaintNew(){
   try{
-    /* ステップの すすみ */
-    var st1=(_askM1!=null), st2=true, st3=true;
-    var stp=document.querySelectorAll("#krSteps .krStp");
-    if(stp.length){
-      stp[0].className="krStp"+(st1?" done":" on");
-      stp[1].className="krStp"+(st1?" on":"");
-      stp[2].className="krStp"+(st1?" on":"");
-    }
     /* 時間の セレクト */
     ["Wake","Bed"].forEach(function(kk){
       var sel=$("kr"+kk+"Sel"); if(!sel)return;
       if(!sel.options.length){
         var h="";
-        for(var m=0;m<24*60;m+=15){ var hh=Math.floor(m/60),mm=m%60;
-          h+='<option value="'+(m/60)+'">'+hh+":"+String(mm).padStart(2,"0")+'</option>'; }
+        for(var hh=0;hh<24;hh++)h+='<option value="'+hh+'">'+hh+':00</option>';   /* ★1時間きざみ */
         sel.innerHTML=h;
       }
       var v=(kk==="Wake")?_krWakeH:_krBedH;
       var box=sel.closest(".krTimeBox"), lab=$("kr"+kk+"V");
-      if(v==null){ if(box)box.classList.add("dunno"); if(lab)lab.textContent="おおよそ"; }
+      if(v==null){ if(box)box.classList.add("dunno"); if(lab)lab.textContent="わからない"; }
       else{ if(box)box.classList.remove("dunno");
-        var q=Math.round(v*4)/4; sel.value=String(q);
-        if(lab)lab.textContent=Math.floor(q)+":"+String(Math.round((q%1)*60)).padStart(2,"0"); }
+        var q=Math.round(v); if(q>23)q=q-24; if(q<0)q+=24; sel.value=String(q);
+        if(lab)lab.textContent=q+":00"; }
     });
-    try{ var vg=$("krVague"); if(vg)vg.checked=(_krWakeH==null||_krBedH==null); }catch(_){}
+    try{ document.querySelectorAll(".krQ").forEach(function(b){
+      b.classList.toggle("on", (b.dataset.t==="wake")?(_krWakeH==null):(_krBedH==null)); }); }catch(_){}
     /* ねむけ（左＝とてもねむい＝内部5） */
     var pts=$("krSlpyPts");
     if(pts){
@@ -24022,6 +24187,9 @@ try{ document.addEventListener("click",function(e){
     try{ var _b=$("askBox"); if(_b){_b.classList.remove("kr1");_b._moreOpen=true;} }catch(_){}
     try{ _askM1=null;_askM2=null;_askM3=null; _askPaint(); }catch(_){}
     return; }
+  if(t.closest("#krMoodBk")&&$("askBox")&&!$("askBox").classList.contains("kr1")&&_askM1==null){
+    try{ var _b2=$("askBox"); if(_b2){_b2.classList.add("kr1");_b2._moreOpen=false;} }catch(_){}
+    try{_askPaint();}catch(_){} return; }
   if(t.closest("#krNoShare")){ try{localStorage.setItem("radio_no_share",$("krNoShare").checked?"1":"0");}catch(_){} return; }
 }); }catch(_){}
 function _tsLockPaint(){
@@ -24034,20 +24202,27 @@ function _tsLockPaint(){
 /* 完了画面を ひらいた時に 状態を そろえる */
 function _askSyncInline(){
   try{
-    if(askedToday("all")){ _askPaintDone(); return; }
     var bx=$("askBox"); if(!bx){ try{_tsLockPaint();}catch(_){} return; }
+    var done=false; try{done=askedToday("all");}catch(_){}
+    if(!bx._inited){
+      bx._inited=1;
+      var lt=getKrLast(), k=jstKey(), n=new Date();
+      _askM1=(lt.m1!=null)?lt.m1:null;_askM2=null;_askM3=null;
+      try{_krSlp=getSlpLog()[k]||lt.slp||null;}catch(_){_krSlp=lt.slp||null;}
+      try{_krSlpy=getSlpyLog()[k]||lt.slpy||3;}catch(_){_krSlpy=lt.slpy||3;}
+      /* きょう すでに きろくして いれば その値を 出す */
+      try{ var wlg=getWakeLog(); if(Number.isFinite(wlg[k]))_krWakeH=wlg[k];
+        else _krWakeH=(lt.wake!=null)?lt.wake:n.getHours(); }catch(_){ _krWakeH=n.getHours(); }
+      try{ var slg=getSleepLog(); if(Number.isFinite(slg[k]))_krBedH=slg[k];
+        else _krBedH=(lt.bed!=null)?lt.bed:((n.getHours()-6)%24+24)%24; }catch(_){ _krBedH=((n.getHours()-6)%24+24)%24; }
+      try{ var mm2=_moodMap()[k];
+        if(mm2&&mm2.l){ for(var mi=0;mi<MOOD3.length;mi++){ if(MOOD3[mi].l===mm2.l){_askM1=mi;break;} } } }catch(_){}
+    }
+    /* ★きろくずみでも かならず 中身を 描く（前は ここで return していて ①③が 空だった） */
+    _askPaint();
+    if(done){ _askPaintDone(); return; }
     bx.classList.remove("done");
     _tsLockPaint();
-    if(!bx._inited){ bx._inited=1;
-      var lt=getKrLast();
-      _askM1=(lt.m1!=null)?lt.m1:null;_askM2=null;_askM3=null;
-      try{_krSlp=getSlpLog()[jstKey()]||lt.slp||null;}catch(_){_krSlp=lt.slp||null;}
-      try{_krSlpy=getSlpyLog()[jstKey()]||lt.slpy||3;}catch(_){_krSlpy=lt.slpy||3;}
-      var n=new Date();
-      _krWakeH=(lt.wake!=null)?lt.wake:n.getHours();
-      _krBedH=(lt.bed!=null)?lt.bed:((n.getHours()-6)%24+24)%24;
-      _askPaint();
-    }
   }catch(_){}
 }
 function _askClose(save){
@@ -32327,6 +32502,196 @@ function _myYume1(){try{
 function _yume1Payload(){try{var y=_myYume1();if(!y)return null;return {img:y.img||"",name:y.name||"",star:y.star||1,shiny:y.shiny?1:0,hue:y.hue||0,big:y.big?1:0,hp:y.hp||0,atk:y.atk||0,spd:y.spd||0,lv:_yumeLv(y)||0};}catch(_){return null;}}
 function _yumeOwnedImgs(){try{return _yumeDex().map(function(y){return y.img;});}catch(_){return [];}}
 /* ★猫を タップ＝その人の ユメっ子の ステータスを 見る */
+/* =========================================================
+   猫を すきな 場所に おく（画面比が ちがっても 同じに 見える）
+   ========================================================= */
+var CP_KEY="radio_cat_pos";
+/* ★安全な エリア＝UIの ない ところ。ここを 0〜1 で 覚える。
+   どの 画面比でも「UIの すきま」に 対する 割合なので おなじ 場所に 見える。 */
+function _cpSafe(){
+  var host=$("catFree")||$("hillCats");
+  var W=window.innerWidth, H=window.innerHeight;
+  var r=host?host.getBoundingClientRect():{left:0,top:0,width:W,height:H};
+  var top=Math.max(r.top+8, 150);      /* 上の UI（プロフィール・カード）の 下 */
+  var bot=r.top+r.height;              /* 丘の 下端 */
+  try{ var d=document.querySelector("#dock,#homeDock"); if(d&&d.offsetParent){ var dr=d.getBoundingClientRect(); if(dr.top<bot)bot=dr.top-6; } }catch(_){}
+  if(bot-top<80)bot=top+80;
+  return {x:r.left+14,y:top,w:Math.max(60,r.width-28),h:Math.max(80,bot-top),host:r};
+}
+function _cpToXY(nx,ny){
+  var s2=_cpSafe();
+  return {x:s2.x+s2.w*Math.max(0,Math.min(1,nx)), y:s2.y+s2.h*Math.max(0,Math.min(1,ny))};
+}
+function _cpFromXY(x,y){
+  var s2=_cpSafe();
+  return {nx:Math.max(0,Math.min(1,(x-s2.x)/s2.w)), ny:Math.max(0,Math.min(1,(y-s2.y)/s2.h))};
+}
+/* UIに かぶったら 外に にがす */
+function _cpAvoid(x,y,el){
+  try{
+    var s2=_cpSafe();
+    var w=(el&&el.offsetWidth)||64, h=(el&&el.offsetHeight)||70;
+    var cl=function(){
+      x=Math.max(s2.x+w/2,Math.min(s2.x+s2.w-w/2,x));
+      y=Math.max(s2.y+h,Math.min(s2.y+s2.h,y));
+    };
+    cl();   /* ★まず 画面（安全エリア）の 中に */
+    var sels="#topLeftStack,#hcNav,#dock,#homeDock,#randomModeBtn,#profileBtn,#topRight,#installBar,#bossEta,#likeAllBtn,#taisoCard";
+    for(var pass=0;pass<3;pass++){
+      var box={l:x-w/2,r:x+w/2,t:y-h,b:y}, hit=null;
+      var us=document.querySelectorAll(sels);
+      for(var i2=0;i2<us.length;i2++){
+        var u=us[i2], cs=null;
+        try{ cs=getComputedStyle(u); }catch(_){}
+        if(cs&&(cs.display==="none"||cs.visibility==="hidden"||parseFloat(cs.opacity||"1")<0.05))continue;
+        var ur=u.getBoundingClientRect();
+        if(ur.width<4||ur.height<4)continue;
+        if(box.r>ur.left&&box.l<ur.right&&box.b>ur.top&&box.t<ur.bottom){ hit=ur; break; }
+      }
+      if(!hit)break;
+      var dLeft=box.r-hit.left, dRight=hit.right-box.l, dUp=box.b-hit.top, dDown=hit.bottom-box.t;
+      var m=Math.min(dLeft,dRight,dUp,dDown);
+      if(m===dLeft)      x=hit.left-w/2-8;
+      else if(m===dRight)x=hit.right+w/2+8;
+      else if(m===dUp)   y=hit.top-8;
+      else               y=hit.bottom+h+8;
+      cl();
+    }
+    return {x:x,y:y};
+  }catch(_){ return {x:x,y:y}; }
+}
+function _cpGet(){
+  try{ var v=JSON.parse(localStorage.getItem(CP_KEY)||"null");
+    if(v&&v.d===jstKey()&&Number.isFinite(v.nx))return v; }catch(_){}
+  return null;
+}
+function _cpSet(nx,ny){
+  try{ localStorage.setItem(CP_KEY,JSON.stringify({nx:nx,ny:ny,d:jstKey()})); }catch(_){}
+  try{ _cpPush(nx,ny); }catch(_){}
+}
+/* みんなにも 見えるように（きょうの 投稿に 位置を 足す） */
+async function _cpPush(nx,ny){
+  try{
+    if(!postedToday())return;
+    var db=await getDB(); if(!db)return;
+    var{ref,update}=await import(FB_DB);
+    await update(ref(db,"posts/"+getUid()+"_"+jstKey()),{px:Math.round(nx*1000)/1000,py:Math.round(ny*1000)/1000});
+  }catch(_){}
+}
+/* 置いた猫を 描く */
+function _cpRender(){
+  try{
+    var host=$("catFree"); if(!host)return;
+    var list=(_hillAllCats||[]).filter(function(c){ return c&&(Number.isFinite(c.px)||c.isSelf); });
+    var mine=_cpGet();
+    var html="";
+    (_hillAllCats||[]).forEach(function(c){ });
+    document.querySelectorAll("#hillCats .hillCat").forEach(function(e){ e.classList.remove("moved"); });
+    var items=[];
+    (_hillAllCats||[]).forEach(function(c){
+      if(!c)return;
+      var nx=null,ny=null;
+      if(c.isSelf&&mine){ nx=mine.nx; ny=mine.ny; }
+      else if(Number.isFinite(c.px)&&Number.isFinite(c.py)){ nx=c.px; ny=c.py; }
+      if(nx==null)return;
+      items.push({c:c,nx:nx,ny:ny});
+    });
+    if(!items.length){ host.innerHTML=""; return; }
+    host.innerHTML=items.map(function(q){
+      return '<div class="cfCat'+(q.c.isSelf?" me":"")+'" data-uid="'+escHtml(q.c.uid||"")+'" data-pid="'+escHtml(q.c.pid||"")+'">'+
+        '<span class="catFig"><span class="catPose">'+catFigureHTML(q.c.catBody||"#1c1c1c",q.c.color||"#8fdcff",q.c.pose||"sit",null,null,q.c.cos||null)+'</span></span>'+
+        '</div>';
+    }).join("");
+    var els=host.querySelectorAll(".cfCat");
+    items.forEach(function(q,i3){
+      var el=els[i3]; if(!el)return;
+      var pt=_cpToXY(q.nx,q.ny);
+      var fixed=_cpAvoid(pt.x,pt.y,el);
+      var hr=host.getBoundingClientRect();
+      el.style.left=(fixed.x-hr.left)+"px";
+      el.style.top=(fixed.y-hr.top)+"px";
+      /* もといた ところを うすく */
+      try{
+        var sel='#hillCats .hillCat'+(q.c.pid?'[data-pid="'+q.c.pid+'"]':(q.c.uid?'[data-uid="'+q.c.uid+'"]':""));
+        var org=document.querySelector(sel); if(org)org.classList.add("moved");
+      }catch(_){}
+    });
+  }catch(_){}
+}
+/* ドラッグ */
+var _cpDrag=null;
+function _cpHint(on,txt){
+  try{
+    var h=document.getElementById("cfGrabHint");
+    if(!h){ h=document.createElement("div"); h.id="cfGrabHint"; h.className="cfGrab"; document.body.appendChild(h); }
+    h.textContent=txt||"すきな ところに おいてね";
+    h.classList.toggle("on",!!on);
+  }catch(_){}
+}
+try{
+  document.addEventListener("pointerdown",function(e){
+    try{
+      var t=e.target; if(!t||!t.closest)return;
+      var el=t.closest("#catFree .cfCat.me")||(function(){
+        var hc=t.closest("#hillCats .hillCat"); if(!hc)return null;
+        var po=(_hillAllCats||[]).filter(function(c){return c&&c.isSelf;})[0];
+        if(!po)return null;
+        if(hc.dataset.uid&&po.uid&&hc.dataset.uid!==po.uid)return null;
+        if(!hc.dataset.uid&&!po.isSelf)return null;
+        return hc.querySelector(".catFig")?hc:null;
+      })();
+      if(!el)return;
+      if(t.closest(".cmtLike")||t.closest(".catLikeHeart"))return;
+      _cpDrag={el:el,t0:Date.now(),moved:false,x:e.clientX,y:e.clientY,free:el.classList.contains("cfCat")};
+    }catch(_){}
+  },true);
+  document.addEventListener("pointermove",function(e){
+    try{
+      if(!_cpDrag)return;
+      var dx=e.clientX-_cpDrag.x, dy=e.clientY-_cpDrag.y;
+      if(!_cpDrag.moved&&Math.abs(dx)+Math.abs(dy)<8)return;
+      if(!_cpDrag.moved){
+        _cpDrag.moved=true;
+        if(!_cpDrag.free){
+          var mine=_cpGet()||{nx:.5,ny:.8};
+          _cpSet(mine.nx,mine.ny); _cpRender();
+          var host=$("catFree"); var me=host&&host.querySelector(".cfCat.me");
+          if(me)_cpDrag.el=me; else return;
+          _cpDrag.free=true;
+        }
+        _cpDrag.el.classList.add("drag");
+        _cpHint(true);
+        try{playPop();}catch(_){}
+      }
+      var host2=$("catFree"); if(!host2)return;
+      var hr=host2.getBoundingClientRect();
+      var fixed=_cpAvoid(e.clientX,e.clientY,_cpDrag.el);
+      _cpDrag.el.style.left=(fixed.x-hr.left)+"px";
+      _cpDrag.el.style.top=(fixed.y-hr.top)+"px";
+      e.preventDefault();
+    }catch(_){}
+  },{passive:false});
+  var up=function(e){
+    try{
+      if(!_cpDrag)return;
+      var d=_cpDrag; _cpDrag=null;
+      if(!d.moved)return;
+      d.el.classList.remove("drag");
+      _cpHint(false);
+      var host=$("catFree"); if(!host)return;
+      var hr=host.getBoundingClientRect();
+      var x=hr.left+parseFloat(d.el.style.left||0), y=hr.top+parseFloat(d.el.style.top||0);
+      var fixed=_cpAvoid(x,y,d.el);
+      var n=_cpFromXY(fixed.x,fixed.y);
+      _cpSet(n.nx,n.ny);
+      _cpRender();
+      try{playClick();}catch(_){}
+    }catch(_){}
+  };
+  document.addEventListener("pointerup",up);
+  document.addEventListener("pointercancel",up);
+  window.addEventListener("resize",function(){ try{_cpRender();}catch(_){} });
+}catch(_){}
 function _catY1PopClose(){ try{var p=document.getElementById("catY1Pop"); if(p)p.remove();}catch(_){} }
 function _catY1PopOpen(po,anchor){
   try{
@@ -39414,6 +39779,15 @@ function _gpStreetHTML(){
     <button id="tvUp" type="button" aria-label="てっぺんへ">↑ てっぺん</button>
   </div>
   <div id="tvFoot"><span id="tvTotal"></span></div>
+</div>
+<div id="krClockPop" hidden aria-hidden="true">
+  <div id="kcBox">
+    <div id="kcTtl">ねた時間</div>
+    <div id="kcFace"></div>
+    <div id="kcNow">6:00</div>
+    <div id="kcAmpm"><button class="kcAp on" data-ap="0" type="button">午前</button><button class="kcAp" data-ap="1" type="button">午後</button></div>
+    <div id="kcBtns"><button id="kcCancel" type="button">やめる</button><button id="kcOk" type="button">けってい</button></div>
+  </div>
 </div>
 <div id="zzBrief" hidden aria-hidden="true">
   <div id="bfBox">

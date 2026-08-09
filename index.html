@@ -5955,6 +5955,57 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
   box-shadow:0 4px 12px rgba(60,170,160,.4) !important;}
 #homeZZ:active{transform:scale(.94);}
 </style>
+<style id="anCss">
+/* ===== コンディション分析 ===== */
+#anCardTs{order:-2;}
+#taisoScreen.tsSimple #anCardTs{display:flex !important;}
+.anSeg{display:flex;gap:5px;justify-content:center;margin-bottom:8px;}
+.anSegBtn{border:1.5px solid rgba(150,195,225,.5);background:rgba(255,255,255,.75);border-radius:999px;
+  padding:4px 13px;cursor:pointer;font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:11px;font-weight:800;color:#7fa3bd;}
+.anSegBtn.on{background:linear-gradient(135deg,#9fd8f2,#5eb0da);color:#fff;border-color:transparent;
+  box-shadow:0 3px 8px rgba(94,176,218,.35);}
+.anSegBtn:active{transform:scale(.95);}
+.anTop{display:flex;align-items:center;gap:11px;margin-bottom:6px;}
+.anHp{flex:0 0 auto;display:flex;align-items:baseline;gap:3px;}
+.anHp b{font-size:34px;font-weight:900;line-height:1;}
+.anHp i{font-style:normal;font-size:10px;font-weight:900;color:#a9c0d0;}
+.anSay{flex:1 1 auto;min-width:0;font-size:12px;font-weight:800;color:#5f8298;line-height:1.45;}
+.anRadar{padding:14px 22px 6px;}
+.anCurveTtl{font-size:10.5px;font-weight:900;color:#8fa9bd;margin:6px 0 1px;}
+.anCurve{padding:0 2px;}
+.anTips{display:flex;gap:6px;margin-top:6px;}
+.anTip{flex:1 1 0;display:flex;flex-direction:column;align-items:center;gap:1px;
+  background:rgba(240,248,253,.9);border-radius:10px;padding:5px 4px;}
+.anTip i{font-style:normal;font-size:8.5px;font-weight:800;color:#9ab4c4;}
+.anTip b{font-size:12px;font-weight:900;color:#5f8ba5;}
+.anTip.mid{background:rgba(255,244,225,.95);}.anTip.mid b{color:#d18a3f;}
+.anTip.hi{background:rgba(255,232,232,.95);}.anTip.hi b{color:#d96a6a;}
+.anEmpty{padding:26px 10px;text-align:center;font-size:12px;font-weight:800;color:#a9bccb;line-height:1.7;}
+.anBusy{padding:34px 10px;text-align:center;font-size:12.5px;font-weight:800;color:#7fa3bd;}
+.anBusy::after{content:"";display:inline-block;width:13px;height:13px;margin-left:7px;vertical-align:-2px;
+  border:2.5px solid rgba(127,163,189,.3);border-top-color:#7fa3bd;border-radius:50%;animation:anSpin .8s linear infinite;}
+@keyframes anSpin{to{transform:rotate(360deg);}}
+#tsNextBtn{order:-1;display:none;width:100%;max-width:460px;margin:2px auto 0;
+  background:linear-gradient(135deg,#8fdcb0,#57bd7a);color:#fff;border:none;border-radius:16px;padding:14px;
+  cursor:pointer;font-family:"Yomogi","Kosugi Maru",sans-serif;font-size:15px;font-weight:900;
+  box-shadow:0 6px 16px rgba(87,189,122,.4);}
+#tsNextBtn.on{display:block;}
+#tsNextBtn:active{transform:scale(.98);}
+@media (min-width:721px){#tsNextBtn{max-width:280px;align-self:center;order:2;}}
+@media (prefers-reduced-motion:reduce){.anBusy::after{animation:none;}}
+</style>
+<style id="krSlpyCss">
+#krSlpyRow{flex-wrap:wrap;}
+#krSlpyRow .krSlpyV{font-size:10px;font-weight:900;color:#5f9ad8;background:rgba(143,200,240,.22);
+  border-radius:999px;padding:2px 9px;white-space:nowrap;}
+#krSlpyRow .krSlpyWrap{flex:1 1 100%;padding:2px 6px 0;}
+#krSlpy{width:100%;-webkit-appearance:none;appearance:none;height:8px;border-radius:999px;outline:none;
+  background:linear-gradient(90deg,#a8e0f5,#8fd3f0 25%,#ffe1a8 50%,#ffbf8f 75%,#f5a2a2);}
+#krSlpy::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;
+  background:#fff;border:3px solid #7fc0e8;box-shadow:0 2px 7px rgba(90,150,200,.4);cursor:pointer;}
+#krSlpy::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:#fff;border:3px solid #7fc0e8;
+  box-shadow:0 2px 7px rgba(90,150,200,.4);cursor:pointer;}
+</style>
 <style id="moodShapeCss">
 #moodShapeWrap{display:flex;align-items:center;gap:14px;padding:4px 2px 2px;}
 #moodShape{flex:0 0 auto;width:158px;height:158px;display:block;
@@ -7322,6 +7373,8 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
   <div id="taisoInner">
     <div id="taisoHead">ラジオ体操完了</div>
     <div id="taisoCards">
+    <div class="taisoCard" id="anCardTs"><div class="tsCardTitle">きょうの コンディション</div><div id="anBoxTs"></div></div>
+    <button id="tsNextBtn" type="button">つぎへ →</button>
     <button id="tsMoreCards" type="button">▾ ほかも 見る（とうこう・スタンプ）</button>
       <div class="taisoCard" id="tsStampCard">
         <div class="tsCardTitle">スタンプラリー</div>
@@ -7391,6 +7444,10 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
         <button class="krSlp" data-s="2" type="button"><b>△</b><i>ふつう</i></button>
         <button class="krSlp" data-s="3" type="button"><b>×</b><i>寝つけず</i></button>
       </div>
+      </div>
+      <div class="krTime slpy" id="krSlpyRow">
+      <div class="krTimeLeft"><span class="krTimeLbl">💤 朝の ねむけ</span><span class="krSlpyV" id="krSlpyV">ふつう</span></div>
+      <div class="krSlpyWrap"><input id="krSlpy" type="range" min="1" max="5" step="1" value="3"/></div>
       </div>
       <button id="krSave" type="button">きろく する</button>
       
@@ -7872,9 +7929,13 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
       <div id="recGraph"></div>
     </div>
     <div class="recCard">
+      <div class="recEye"><span class="recEyeDot" style="background:#a8c9f0;"></span><span>コンディション分析</span></div>
+      <div id="anBoxRec"></div>
+    </div>
+    <div class="recCard">
       <div class="recEye"><span class="recEyeDot" style="background:#ffa9c9;"></span><span>今週の 気分</span></div>
       <div id="moodShapeWrap">
-        <canvas id="moodShape" width="440" height="440"></canvas>
+        <canvas id="moodShape" width="200" height="200"></canvas>
         <div id="moodShapeLg"></div>
       </div>
     </div>
@@ -8706,7 +8767,7 @@ function _recDot(dm){ return dm<=10 ? "#63ccff" : "#ff9e4d"; }
 function _floatHM(f){ let h=Math.floor(f),m=Math.round((f-h)*60); if(m===60){h++;m=0;} return fmtHM(h,m); }
 function openRecord(){ $("recordScreen").classList.add("visible"); buildRecord(); }
 function closeRecord(){ $("recordScreen").classList.remove("visible"); }
-function buildRecord(){ try{buildRecSummary();}catch(_){} try{buildRecGraph();}catch(_){} try{_msPaint();}catch(_){} try{buildRecAdvice();}catch(_){} try{buildRecCalendar();}catch(_){} try{buildRecWeekday();}catch(_){} try{buildRecSleep();}catch(_){} }
+function buildRecord(){ try{buildRecSummary();}catch(_){} try{buildRecGraph();}catch(_){} try{_msPaint();}catch(_){} try{_anPaint("anBoxRec",{});}catch(_){} try{buildRecAdvice();}catch(_){} try{buildRecCalendar();}catch(_){} try{buildRecWeekday();}catch(_){} try{buildRecSleep();}catch(_){} }
 var _recRangeDays=7;
 function _recWord(dm){
   if(dm==null)return "";
@@ -8936,18 +8997,22 @@ function buildRecGraph(boxArg){
   var wsr=null,bsr=null;series.forEach(function(sr){if(sr.m==="wake")wsr=sr;if(sr.m==="bed")bsr=sr;});
   /* ★ねている あいだ（就寝→起床）を うすく ぬる */
   if(wsr&&bsr){
-    var segs=[],cur=[];
-    dates.forEach(function(k,di){
-      var bv=bsr.data[k], wv=wsr.data[k];
-      if(bv==null||wv==null){ if(cur.length>1)segs.push(cur); cur=[]; return; }
-      cur.push([X(di),YOf(bsr,bv),YOf(wsr,wv)]);
-    });
-    if(cur.length>1)segs.push(cur);
-    segs.forEach(function(sg){
-      var top=sg.map(function(q){return q[0].toFixed(1)+","+q[1].toFixed(1);}).join(" ");
-      var bot=sg.slice().reverse().map(function(q){return q[0].toFixed(1)+","+q[2].toFixed(1);}).join(" ");
-      s+='<polygon points="'+top+" "+bot+'" fill="url(#slpG)" opacity=".55"/>';
-    });
+    /* ★かるく：記録の ない日は 前後の 値で うめて、ポリゴン1つだけ 描く */
+    var fill=function(sr){
+      var a=dates.map(function(k){var v=sr.data[k];return (v==null)?null:v;});
+      var last=null;
+      for(var i2=0;i2<a.length;i2++){ if(a[i2]==null)a[i2]=last; else last=a[i2]; }
+      last=null;
+      for(var j2=a.length-1;j2>=0;j2--){ if(a[j2]==null)a[j2]=last; else last=a[j2]; }
+      return a;
+    };
+    var ba=fill(bsr), wa=fill(wsr);
+    if(ba[0]!=null&&wa[0]!=null){
+      var top="",bot="";
+      for(var i3=0;i3<dates.length;i3++)top+=(i3?" ":"")+X(i3).toFixed(1)+","+YOf(bsr,ba[i3]).toFixed(1);
+      for(var j3=dates.length-1;j3>=0;j3--)bot+=" "+X(j3).toFixed(1)+","+YOf(wsr,wa[j3]).toFixed(1);
+      s+='<polygon points="'+top+bot+'" fill="url(#slpG)" opacity=".5"/>';
+    }
   }
   if(wsr&&tw!=null){
     var ty=YOf(wsr,_graphWrap(tw));
@@ -13482,6 +13547,12 @@ function tsUpdatePreview(){
     var _ts=$("taisoScreen"); if(_ts&&!_ts._moreOpen&&!_dn)_ts.classList.add("tsSimple"); }catch(_){}
   try{ var _ns=$("krNoShare"); if(_ns)_ns.checked=_noShare(); }catch(_){}
   try{_askSyncInline();}catch(_){}
+  try{
+    var _dn2=false; try{_dn2=askedToday("all");}catch(_){}
+    window._anSkip=window._anSkip||{}; window._anSkip.anBoxTs=!_dn2;
+    _anPaint("anBoxTs",{skipToday:!_dn2});
+    var _nb=$("tsNextBtn"); if(_nb)_nb.classList.toggle("on",!!_dn2||!!_askSkipped);
+  }catch(_){}
   try{_tsLockPaint();}catch(_){}
   try{_renderTodayRec();}catch(_){}   /* 完了画面の「今日の記録」も 最新に */
   const c=(($("tsComment").value||"").trim())||_todayMoodText(),anon=!!($("tsAnon")&&$("tsAnon").checked);
@@ -22918,6 +22989,190 @@ const MMOOD_KEY="radio_moods";
 function _moodMap(){try{const v=JSON.parse(localStorage.getItem(MMOOD_KEY)||"{}");return(v&&typeof v==="object")?v:{};}catch(_){return{};}}
 function _saveMood(dk,m){try{const mm=_moodMap();mm[dk]={e:m.e,l:m.l};localStorage.setItem(MMOOD_KEY,JSON.stringify(mm));try{syncSoon();}catch(_){}}catch(_){}}
 /* ===== 今週の 気分を ユメっ子の シルエットで ===== */
+/* =========================================================
+   コンディション分析（きろくから 6つの スコアと 予測）
+   ========================================================= */
+var AN_AX=[
+  {k:"fat", n:"つかれにくさ", c:"#ff9f6e"},
+  {k:"sta", n:"リズム",       c:"#7fc9ef"},
+  {k:"emo", n:"きもち",       c:"#ffa9c9"},
+  {k:"foc", n:"しゅうちゅう", c:"#8fd3a0"},
+  {k:"rec", n:"かいふく",     c:"#c3a8f0"},
+  {k:"cla", n:"あたまの さえ",c:"#ffd45e"}
+];
+function _anDayKeys(n){
+  var out=[],now=new Date();
+  for(var i=n-1;i>=0;i--){var d=new Date(now.getTime()-i*86400000);
+    out.push(d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"));}
+  return out;
+}
+function _anMood10(k){
+  try{ var m=_moodMap()[k]; if(!m||!m.l)return null;
+    var v=(typeof _MOOD_VAL!=="undefined"&&_MOOD_VAL[m.l]!=null)?_MOOD_VAL[m.l]:3;
+    return Math.max(1,Math.min(10,v*2)); }catch(_){ return null; }
+}
+function _anDay(k,avgBed,avgWake){
+  var wl={},sl={};
+  try{wl=getWakeLog()||{};}catch(_){}
+  try{sl=getSleepLog()||{};}catch(_){}
+  var wake=Number.isFinite(wl[k])?wl[k]:null, bed=Number.isFinite(sl[k])?sl[k]:null;
+  if(wake==null&&bed==null)return null;
+  var sh=null;
+  if(wake!=null&&bed!=null){ sh=wake-bed; if(sh<=0)sh+=24; if(sh>16)sh=null; }
+  var slp=1,slpy=3;
+  try{slp=getSlpLog()[k]||1;}catch(_){}
+  try{slpy=getSlpyLog()[k]||3;}catch(_){}
+  var mood=_anMood10(k); if(mood==null)mood=6;
+  var bd=(bed!=null&&avgBed!=null)?Math.min(6,Math.abs(((bed-avgBed+36)%24)-12)):0;
+  var wd=(wake!=null&&avgWake!=null)?Math.min(6,Math.abs(((wake-avgWake+36)%24)-12)):0;
+  return {k:k,wake:wake,bed:bed,sh:sh,mood:mood,
+    rhythm:bd*0.4+wd*0.6,
+    debt:Math.max(0,8-(sh==null?8:sh)),
+    onset:[0,0,6,15][slp]||0,
+    sleepy:[0,0,5,12,22,35][slpy]||12};
+}
+function _anAvg(keys,pick){
+  var wl={},sl={},a=[];
+  try{wl=getWakeLog()||{};}catch(_){}
+  try{sl=getSleepLog()||{};}catch(_){}
+  keys.forEach(function(k){ var v=(pick==="bed")?sl[k]:wl[k]; if(Number.isFinite(v))a.push(((v%24)+24)%24); });
+  if(!a.length)return null;
+  var x=0,y=0;a.forEach(function(v){var r=v/24*2*Math.PI;x+=Math.cos(r);y+=Math.sin(r);});
+  var m=Math.atan2(y,x)/(2*Math.PI)*24; return ((m%24)+24)%24;
+}
+function _anCalc(range,skipToday){
+  var wk=_anDayKeys(7), todayK=jstKey();
+  if(skipToday)wk=wk.filter(function(k){return k!==todayK;});
+  var avgBed=_anAvg(wk,"bed"), avgWake=_anAvg(wk,"wake");
+  var wDays=wk.map(function(k){return _anDay(k,avgBed,avgWake);}).filter(Boolean);
+  var weekDebt=wDays.reduce(function(a,d){return a+d.debt;},0);
+  /* ★きろく前は「きょうを のぞいた 直近 range日」を 見る（0件に ならないように 1日ずらす） */
+  var keys=_anDayKeys(range+(skipToday?1:0));
+  if(skipToday)keys=keys.filter(function(k){return k!==todayK;});
+  var days=keys.map(function(k){return _anDay(k,avgBed,avgWake);}).filter(Boolean);
+  if(!days.length&&skipToday){
+    var back=_anDayKeys(10).filter(function(k){return k!==todayK;}).reverse();
+    for(var bi=0;bi<back.length&&days.length<range;bi++){
+      var dd=_anDay(back[bi],avgBed,avgWake); if(dd)days.unshift(dd);
+    }
+  }
+  if(!days.length)return null;
+  var A=function(f){var s2=0;days.forEach(function(d){s2+=f(d);});return s2/days.length;};
+  var rhythm=A(function(d){return d.rhythm;}), onset=A(function(d){return d.onset;}),
+      sleepy=A(function(d){return d.sleepy;}), mood=A(function(d){return d.mood;}),
+      sh=A(function(d){return d.sh==null?7.5:d.sh;});
+  var cl=function(v){return Math.max(0,Math.min(100,Math.round(v)));};
+  var fatigue=cl(10+weekDebt*2.4+rhythm*8+onset*0.7+sleepy*0.9+(10-mood)*2);
+  var focus  =cl(100-weekDebt*3.2-rhythm*9-onset*0.8-sleepy*1.3-(10-mood)*1.5);
+  var clarity=cl(100-weekDebt*2.5-rhythm*10-onset*0.7-sleepy-Math.max(0,6-mood)*4);
+  var emotion=cl(100-weekDebt*2.2-rhythm*6-onset-sleepy*0.8-(10-mood)*3.5);
+  var recov  =cl(100-fatigue+Math.max(0,sh-8)*5-sleepy*0.3);
+  var stab   =cl(100-rhythm*20-Math.max(0,weekDebt-5)*1.2);
+  var risk=cl(weekDebt*3+rhythm*10+onset*0.8+sleepy*1.1+(10-mood)*2.2);
+  var last=days[days.length-1];
+  var wakeH=(last&&last.wake!=null)?last.wake:6;
+  /* 昼寝 */
+  var nap={lv:0,txt:"いらなそう",time:""};
+  var sy=sleepy;
+  if(sy>=20||fatigue>=60||focus<55){ nap={lv:2,txt:"おすすめ",time:_scHM(wakeH+7)+"ごろ 20分"}; }
+  else if(sy>=10||fatigue>=40||focus<70){ nap={lv:1,txt:"みじかく",time:_scHM(wakeH+7)+"ごろ 15分"}; }
+  /* 時間帯の カーブ（起床から 16時間） */
+  var curve=[];
+  for(var t=0;t<=16;t+=1){
+    var v=focus+16*Math.cos((t-2.5)*0.5)-14*Math.exp(-Math.pow((t-8)/2.1,2))-t*1.1;
+    curve.push({t:t,h:(wakeH+t)%24,v:Math.max(0,Math.min(100,v))});
+  }
+  var peak=curve[0],dip=curve[0];
+  curve.forEach(function(q){ if(q.v>peak.v)peak=q; });
+  curve.slice(4).forEach(function(q){ if(q.v<dip.v)dip=q; });
+  /* 予言（ひとこと） */
+  var say="きょうは いつもどおりの ペースで いけそう。";
+  if(sy>=22&&focus<60) say="きょうは 見おとしが ふえやすい。だいじな 確認は 午前に。";
+  else if(fatigue>=60&&recov<50) say=_scHM(dip.h)+"ごろに 失速しやすい。その前に 休もう。";
+  else if(emotion<55&&mood<=5) say="きょうは 人の ことばに 敏感に なりやすい 日。";
+  else if(stab>=90&&focus>=75) say="リズムが 整ってる。むずかしい ことを やるなら きょう。";
+  else if(risk>=65) say="きょうは 攻めずに 回復を 優先すると 明日が 楽。";
+  else if(focus>=80) say=_scHM(peak.h)+"ごろが いちばん 頭が 冴える 予測。";
+  return {fat:cl(100-fatigue),sta:stab,emo:emotion,foc:focus,rec:recov,cla:clarity,
+    risk:risk,hp:cl(100-risk),fatigue:fatigue,nap:nap,curve:curve,peak:peak,dip:dip,
+    say:say,n:days.length,wakeH:wakeH};
+}
+/* ==== 6角形グラフ＋時間帯カーブの 描画 ==== */
+var _anRange={};
+function _anRadarSVG(d){
+  var R=86,cx=100,cy=100,s="";
+  var pt=function(i,r){var a=-Math.PI/2+i*Math.PI/3;return [cx+Math.cos(a)*r,cy+Math.sin(a)*r];};
+  var poly=function(r,fill,stroke,w,op){
+    var q=[];for(var i=0;i<6;i++){var p2=pt(i,r);q.push(p2[0].toFixed(1)+","+p2[1].toFixed(1));}
+    return '<polygon points="'+q.join(" ")+'" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+w+'"'+(op?' opacity="'+op+'"':"")+'/>';
+  };
+  for(var g=4;g>=1;g--)s+=poly(R*g/4,g%2?"rgba(255,255,255,0)":"rgba(140,190,220,.07)","rgba(140,190,220,.28)",1);
+  for(var i2=0;i2<6;i2++){var p3=pt(i2,R);
+    s+='<line x1="'+cx+'" y1="'+cy+'" x2="'+p3[0].toFixed(1)+'" y2="'+p3[1].toFixed(1)+'" stroke="rgba(140,190,220,.22)" stroke-width="1"/>';}
+  var q2=[];AN_AX.forEach(function(ax,i3){var v=Math.max(4,Math.min(100,d[ax.k]||0));var p4=pt(i3,R*v/100);q2.push(p4[0].toFixed(1)+","+p4[1].toFixed(1));});
+  s+='<polygon points="'+q2.join(" ")+'" fill="url(#anG)" stroke="#5fb0dd" stroke-width="2.6" stroke-linejoin="round"/>';
+  AN_AX.forEach(function(ax,i4){var v=Math.max(4,Math.min(100,d[ax.k]||0));var p5=pt(i4,R*v/100);
+    s+='<circle cx="'+p5[0].toFixed(1)+'" cy="'+p5[1].toFixed(1)+'" r="3.4" fill="'+ax.c+'" stroke="#fff" stroke-width="1.4"/>';});
+  AN_AX.forEach(function(ax,i5){var p6=pt(i5,R+17);
+    var an=(i5===0||i5===3)?"middle":(p6[0]>cx?"start":"end");
+    s+='<text x="'+p6[0].toFixed(1)+'" y="'+(p6[1]+3).toFixed(1)+'" text-anchor="'+an+'" font-size="9.5" font-weight="800" fill="#7f9ab0">'+ax.n+'</text>';
+    s+='<text x="'+p6[0].toFixed(1)+'" y="'+(p6[1]+14).toFixed(1)+'" text-anchor="'+an+'" font-size="11" font-weight="900" fill="'+ax.c+'">'+Math.round(d[ax.k]||0)+'</text>';});
+  return '<svg viewBox="0 0 200 200" style="width:100%;height:auto;display:block;overflow:visible;">'+
+    '<defs><linearGradient id="anG" x1="0" y1="0" x2="0" y2="1">'+
+    '<stop offset="0" stop-color="#8fd3f0" stop-opacity=".55"/>'+
+    '<stop offset="1" stop-color="#b9a8ec" stop-opacity=".38"/></linearGradient></defs>'+s+'</svg>';
+}
+function _anCurveSVG(d){
+  var W=280,H=88,pL=6,pR=6,pT=8,pB=18,cw=W-pL-pR,ch=H-pT-pB,s="";
+  var X=function(i){return pL+cw*i/(d.curve.length-1);}, Y=function(v){return pT+ch*(1-v/100);};
+  s+='<path d="M '+X(0).toFixed(1)+' '+(H-pB).toFixed(1)+' L '+d.curve.map(function(q,i){return X(i).toFixed(1)+" "+Y(q.v).toFixed(1);}).join(" L ")+' L '+X(d.curve.length-1).toFixed(1)+' '+(H-pB).toFixed(1)+' Z" fill="url(#anC)"/>';
+  s+='<polyline points="'+d.curve.map(function(q,i){return X(i).toFixed(1)+","+Y(q.v).toFixed(1);}).join(" ")+'" fill="none" stroke="#5fb0dd" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>';
+  var pi=d.curve.indexOf(d.peak), di=d.curve.indexOf(d.dip);
+  if(pi>=0){s+='<circle cx="'+X(pi).toFixed(1)+'" cy="'+Y(d.peak.v).toFixed(1)+'" r="4.2" fill="#8fd3a0" stroke="#fff" stroke-width="1.6"/>'
+    +'<text x="'+X(pi).toFixed(1)+'" y="'+(Y(d.peak.v)-7).toFixed(1)+'" text-anchor="middle" font-size="9" font-weight="900" fill="#5fae7a">'+_scHM(d.peak.h)+'</text>';}
+  if(di>=0){s+='<circle cx="'+X(di).toFixed(1)+'" cy="'+Y(d.dip.v).toFixed(1)+'" r="4.2" fill="#ffa9a9" stroke="#fff" stroke-width="1.6"/>'
+    +'<text x="'+X(di).toFixed(1)+'" y="'+(Y(d.dip.v)+15).toFixed(1)+'" text-anchor="middle" font-size="9" font-weight="900" fill="#e08585">'+_scHM(d.dip.h)+'</text>';}
+  for(var t=0;t<d.curve.length;t+=4){
+    s+='<text x="'+X(t).toFixed(1)+'" y="'+(H-4).toFixed(1)+'" text-anchor="middle" font-size="8.5" font-weight="800" fill="#a9bccb">'+_scHM(d.curve[t].h)+'</text>';}
+  return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;display:block;">'+
+    '<defs><linearGradient id="anC" x1="0" y1="0" x2="0" y2="1">'+
+    '<stop offset="0" stop-color="#8fd3f0" stop-opacity=".38"/>'+
+    '<stop offset="1" stop-color="#8fd3f0" stop-opacity="0"/></linearGradient></defs>'+s+'</svg>';
+}
+function _anHpCol(v){ return v>=76?"#5fae7a":v>=56?"#5fb0dd":v>=40?"#e0a24b":"#e08585"; }
+function _anPaint(hostId,opt){
+  try{
+    var host=$(hostId); if(!host)return;
+    opt=opt||{};
+    var rg=_anRange[hostId]||1;
+    var d=_anCalc(rg,!!opt.skipToday);
+    if(!d){ host.innerHTML='<div class="anEmpty">きろくが たまると<br>ここに 分析が 出るよ</div>'; return; }
+    var napCls=["","mid","hi"][d.nap.lv]||"";
+    host.innerHTML=
+      '<div class="anSeg">'+[1,3,7].map(function(r){
+        return '<button class="anSegBtn'+(r===rg?" on":"")+'" data-an="'+hostId+'" data-r="'+r+'" type="button">'+(r===1?"1日":r===3?"3日":"1週間")+'</button>';
+      }).join("")+'</div>'+
+      '<div class="anTop">'+
+        '<div class="anHp"><b style="color:'+_anHpCol(d.hp)+'">'+d.hp+'</b><i>HP</i></div>'+
+        '<div class="anSay">'+escHtml(d.say)+'</div>'+
+      '</div>'+
+      '<div class="anRadar">'+_anRadarSVG(d)+'</div>'+
+      '<div class="anCurveTtl">きょうの しゅうちゅう</div>'+
+      '<div class="anCurve">'+_anCurveSVG(d)+'</div>'+
+      '<div class="anTips">'+
+        '<span class="anTip"><i>ピーク</i><b>'+_scHM(d.peak.h)+'</b></span>'+
+        '<span class="anTip"><i>失速</i><b>'+_scHM(d.dip.h)+'</b></span>'+
+        '<span class="anTip '+napCls+'"><i>ひるね</i><b>'+d.nap.txt+'</b></span>'+
+      '</div>';
+  }catch(_){}
+}
+try{ document.addEventListener("click",function(e){
+  var t=e.target; if(!t||!t.closest)return;
+  var b=t.closest(".anSegBtn"); if(!b)return;
+  try{playClick();}catch(_){}
+  var h=b.dataset.an; _anRange[h]=parseInt(b.dataset.r,10)||1;
+  _anPaint(h,{skipToday:!!(window._anSkip&&window._anSkip[h])});
+}); }catch(_){}
 function _msColorOf(label){
   try{
     for(var i=0;i<MOOD3.length;i++){
@@ -22959,15 +23214,20 @@ async function _msPaint(){
     else{ oc.beginPath();oc.arc(W/2,H/2,W*0.42,0,Math.PI*2);oc.fillStyle="#000";oc.fill(); }
     /* ★シルエットの「よこ幅」を 行ごとに 数えて、**ぬる面積**が わりあいと 合うようにする
        （高さで わけると 細い しっぽの ところが 損を するため）                       */
-    var rowA=new Float64Array(H), totalA=0;
-    try{
-      var idat=oc.getImageData(0,0,W,H).data;
-      for(var ry=0;ry<H;ry++){
-        var cnt=0, base=ry*W*4;
-        for(var rx=0;rx<W;rx++){ if(idat[base+rx*4+3]>24)cnt++; }
-        rowA[ry]=cnt; totalA+=cnt;
-      }
-    }catch(_){ for(var ry2=0;ry2<H;ry2++){rowA[ry2]=W;} totalA=W*H; }
+    var _ck=(img&&img.src)||"circle", rowA=null, totalA=0;
+    if(window._msRowCache&&window._msRowCache.k===_ck){ rowA=window._msRowCache.a; totalA=window._msRowCache.t; }
+    else{
+      rowA=new Float64Array(H); totalA=0;
+      try{
+        var idat=oc.getImageData(0,0,W,H).data;
+        for(var ry=0;ry<H;ry++){
+          var cnt=0, base=ry*W*4;
+          for(var rx=0;rx<W;rx+=2){ if(idat[base+rx*4+3]>24)cnt+=2; }
+          rowA[ry]=cnt; totalA+=cnt;
+        }
+      }catch(_){ for(var ry2=0;ry2<H;ry2++){rowA[ry2]=W;} totalA=W*H; }
+      window._msRowCache={k:_ck,a:rowA,t:totalA};
+    }
     /* まっ白の シルエット */
     oc.globalCompositeOperation="source-in";
     oc.fillStyle="#fdfdff";oc.fillRect(0,0,W,H);
@@ -23128,7 +23388,10 @@ function _mood3Pick(a,b,c){
   }catch(_){return null;}
 }
 var SLEEP_KEY="radio_sleeplog";
-var SLPQ_KEY="radio_sleepq";
+var SLPQ_KEY="radio_sleepq", SLPY_KEY="radio_sleepiness";
+var SLPY_LBL=["","かなり冴えてる","やや冴えてる","ふつう","ねむい","とても ねむい"];
+function getSlpyLog(){try{var v=JSON.parse(localStorage.getItem(SLPY_KEY)||"{}");return (v&&typeof v==="object")?v:{};}catch(_){return{};}}
+function setSlpyFor(k,v){try{var m=getSlpyLog();if(v)m[k]=v;else delete m[k];localStorage.setItem(SLPY_KEY,JSON.stringify(m));}catch(_){}}
 function getSlpLog(){try{var v=JSON.parse(localStorage.getItem(SLPQ_KEY)||"{}");return (v&&typeof v==="object")?v:{};}catch(_){return{};}}
 function setSlpFor(k,v){try{var m=getSlpLog();if(v)m[k]=v;else delete m[k];localStorage.setItem(SLPQ_KEY,JSON.stringify(m));}catch(_){}}
 function getSleepLog(){try{const v=JSON.parse(localStorage.getItem(SLEEP_KEY)||"{}");return(v&&typeof v==="object")?v:{};}catch(_){return{};}}
@@ -23141,7 +23404,7 @@ var ASKDONE_KEY="radio_ask_done";
 function _askDone(){try{return JSON.parse(localStorage.getItem(ASKDONE_KEY)||"{}")||{};}catch(_){return{};}}
 function _askMark(k,v){try{const o=_askDone();o[jstKey()]=Object.assign({},o[jstKey()]||{},{[k]:v});localStorage.setItem(ASKDONE_KEY,JSON.stringify(o));}catch(_){}}
 function askedToday(k){try{const d=_askDone()[jstKey()]||{};return !!d[k];}catch(_){return false;}}
-var _askM1=null,_askM2=null,_askM3=null,_askWG=null,_askWH=null,_askBG=null,_askBH=null,_askThen=null,_askSec=0,_krWakeH=null,_krBedH=null,_krSlp=null;
+var _askM1=null,_askM2=null,_askM3=null,_askWG=null,_askWH=null,_askBG=null,_askBH=null,_askThen=null,_askSec=0,_krWakeH=null,_krBedH=null,_krSlp=null,_krSlpy=3;
 function _askFmt(hf){
   if(!Number.isFinite(hf))return"－";
   let h=Math.floor(hf),m=Math.round((hf-h)*60);
@@ -23194,6 +23457,8 @@ function _askPaint(){
     var wd=$("krWakeDunno");if(wd)wd.classList.toggle("on",_krWakeH==null);
     var bd=$("krBedDunno");if(bd)bd.classList.toggle("on",_krBedH==null);
     try{ document.querySelectorAll("#krSlpRow .krSlp").forEach(function(b){ b.classList.toggle("on",String(_krSlp)===b.dataset.s); }); }catch(_){}
+    try{ var sy=$("krSlpy"); if(sy)sy.value=String(_krSlpy||3);
+      var sv=$("krSlpyV"); if(sv)sv.textContent=SLPY_LBL[_krSlpy||3]||"ふつう"; }catch(_){}
   }catch(_){}
 }
 function _askAdvance(){ if(_askSec<2){_askSec++;_askPaint();} else {try{playPop();}catch(_){}_askClose(true);} }
@@ -23210,6 +23475,7 @@ function openAskCard(then){
   if(askedToday("all")){ _askPaintDone(); if(_askThen){const f=_askThen;_askThen=null;f();} return; }
   _askM1=null;_askM2=null;_askM3=null;
   try{_krSlp=getSlpLog()[jstKey()]||null;}catch(_){_krSlp=null;}
+  try{_krSlpy=getSlpyLog()[jstKey()]||3;}catch(_){_krSlpy=3;}
   var _n=new Date();
   _krWakeH=_n.getHours();                        /* 起床＝いまの ○時 */
   _krBedH=((_n.getHours()-6)%24+24)%24;          /* 就寝＝いまから 6時間前 */
@@ -23217,10 +23483,15 @@ function openAskCard(then){
   try{ var bx=$("askBox"); if(bx){ bx.classList.remove("done"); if(bx.scrollIntoView)bx.scrollIntoView({block:"center",behavior:"smooth"}); } }catch(_){}
 }
 /* きろくずみの 見た目（カードは 消さずに 「きろく できたよ」に） */
+try{ document.addEventListener("input",function(e){
+  try{ if(!e.target||e.target.id!=="krSlpy")return;
+    _krSlpy=parseInt(e.target.value,10)||3;
+    var sv=$("krSlpyV"); if(sv)sv.textContent=SLPY_LBL[_krSlpy]||"ふつう";
+  }catch(_){}
+}); }catch(_){}
 function _askPaintDone(){
   try{ var bx=$("askBox"); if(bx)bx.classList.add("done"); }catch(_){}
   try{ var sv=$("krSave"); if(sv)sv.textContent="きろくを こうしん"; }catch(_){}
-  try{ var ts=$("taisoScreen"); if(ts){ts.classList.remove("tsSimple");ts._moreOpen=true;} }catch(_){}   /* ★ほかも 出す */
   try{_tsLockPaint();}catch(_){}
 }
 /* ★きろく（or スキップ）が すむまで ほかは さわれない */
@@ -23248,7 +23519,12 @@ function _zzSplashHide(){
 try{ document.addEventListener("click",function(e){
   var t=e.target; if(!t||!t.closest)return;
   if(t.closest("#zsStay")){ try{playClick();}catch(_){} try{clearTimeout(_zsT);}catch(_){} var f=$("zsStay")._fn; _zzSplashHide(); if(f)try{f();}catch(_){} return; }
-  if(t.closest("#tsMoreCards")){ try{playClick();}catch(_){} try{$("taisoScreen").classList.remove("tsSimple");}catch(_){} return; }
+  if(t.closest("#tsMoreCards")){ try{playClick();}catch(_){} try{var _t2=$("taisoScreen");_t2.classList.remove("tsSimple");_t2._moreOpen=true;}catch(_){} return; }
+  if(t.closest("#tsNextBtn")){ try{playClick();}catch(_){}
+    try{ var _t3=$("taisoScreen"); if(_t3){_t3.classList.remove("tsSimple");_t3._moreOpen=true;} }catch(_){}
+    try{ var _n3=$("tsNextBtn"); if(_n3)_n3.classList.remove("on"); }catch(_){}
+    try{ var _pc=$("tsPostCard"); if(_pc&&_pc.scrollIntoView)_pc.scrollIntoView({block:"center",behavior:"smooth"}); }catch(_){}
+    return; }
   if(t.closest("#krMore")){ try{playClick();}catch(_){}
     try{ var _b=$("askBox"); if(_b){_b.classList.remove("kr1");_b._moreOpen=true;} }catch(_){}
     try{ _askM1=null;_askM2=null;_askM3=null; _askPaint(); }catch(_){}
@@ -23272,15 +23548,16 @@ function _askSyncInline(){
     if(!bx._inited){ bx._inited=1;
       _askM1=null;_askM2=null;_askM3=null;
       try{_krSlp=getSlpLog()[jstKey()]||null;}catch(_){_krSlp=null;}
+      try{_krSlpy=getSlpyLog()[jstKey()]||3;}catch(_){_krSlpy=3;}
       var n=new Date(); _krWakeH=n.getHours(); _krBedH=((n.getHours()-6)%24+24)%24;
       _askPaint();
     }
   }catch(_){}
 }
 function _askClose(save){
-  try{ if(save)setSlpFor(jstKey(),_krSlp); }catch(_){}
+  try{ if(save){setSlpFor(jstKey(),_krSlp);setSlpyFor(jstKey(),_krSlpy);} }catch(_){}
   try{ if(save)_askPaintDone(); else _askSkipped=true; }catch(_){}
-  try{ var _ts=$("taisoScreen"); if(_ts){_ts.classList.remove("tsSimple");_ts._moreOpen=true;} }catch(_){}   /* ★ここで ほかも 出す */
+  try{ var _nb2=$("tsNextBtn"); if(_nb2)_nb2.classList.add("on"); }catch(_){}   /* ★「つぎへ」を 出す */
   try{_tsLockPaint();}catch(_){}
   if(save){
     try{ const pk=_mood3Pick(_askM1,_askM2,_askM3); if(pk){_saveMood(jstKey(),{e:pk.e,l:pk.l});_askMark("mood",1);} }catch(_){}
@@ -23303,12 +23580,16 @@ function _noShare(){ try{return localStorage.getItem("radio_no_share")==="1";}ca
 function _afterRecord(){
   try{
     if(typeof tutOn==="function"&&tutOn())return;
-    var simple=false; try{simple=$("askBox")&&$("askBox").classList.contains("kr1");}catch(_){}
-    if(!simple)return;
-    /* ★じどう とうこうは しない。とうこうは「とうこうする」を おした時だけ */
-    setTimeout(function(){
-      try{ _zzSplash({ico:"\ud83d\udc3e",title:"おつかれさま！",sub:"きろく できたよ",ms:1400}); }catch(_){}
-    },800);
+    /* ★分析を「更新中」に して、きょうを 入れた ものに 差しかえる */
+    try{
+      var bx=$("anBoxTs");
+      if(bx){ bx.innerHTML='<div class="anBusy">こうしん中</div>';
+        window._anSkip=window._anSkip||{}; window._anSkip.anBoxTs=false;
+        setTimeout(function(){ try{_anPaint("anBoxTs",{skipToday:false});}catch(_){} },900);
+      }
+    }catch(_){}
+    try{ var nb=$("tsNextBtn"); if(nb)nb.classList.add("on"); }catch(_){}
+    try{ var ts=$("taisoScreen"); if(ts){ts.classList.add("tsSimple");ts._moreOpen=false;} }catch(_){}
   }catch(_){}
 }
 function _todayMoodText(){try{var mm=_moodMap(),m=mm[jstKey()];return m?(m.l+" "+m.e):"";}catch(_){return "";}}
@@ -28683,6 +28964,7 @@ try{
     const t=e.target;if(!t||!t.closest)return;
     const pick=(nm,fn)=>{const x=t.closest("[data-"+nm+"]");if(!x)return false;try{playClick();}catch(_){}fn(parseInt(x.dataset[nm],10));_askPaint();return true;};
     if(t.closest("#krMoodBk")){try{playClick();}catch(_){}if(_askM2!=null){_askM2=null;_askM3=null;}else _askM1=null;_askPaint();return;}
+    if(t&&t.id==="krSlpy")return;
     var sq=t.closest("#krSlpRow .krSlp");
     if(sq){ try{playClick();}catch(_){} var sv=parseInt(sq.dataset.s,10);
       _krSlp=(_krSlp===sv)?null:sv; _askPaint(); return; }

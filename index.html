@@ -5894,7 +5894,8 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 #askBox.kr1 #krMoodRow [data-m1].sel{outline:3px solid #7fc9e8;outline-offset:1px;
   box-shadow:0 0 0 5px rgba(127,201,232,.28);transform:translateY(-2px);}
 #askBox.kr1 #krMoodRow{gap:7px;}
-#askBox #krMore{display:none;margin-left:8px;border:none;cursor:pointer;
+#askBox .krSecTop{margin-top:9px;justify-content:center;}
+#askBox #krMore{display:none;margin-left:0;border:none;cursor:pointer;
   border-radius:999px;padding:4px 12px;font-family:"Yomogi","Kosugi Maru",sans-serif;
   font-size:11.5px;font-weight:900;color:#fff;letter-spacing:.03em;
   background:linear-gradient(135deg,#9fd8f2,#5eb0da);box-shadow:0 3px 9px rgba(94,176,218,.4);}
@@ -5954,6 +5955,80 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
   font-weight:900 !important;letter-spacing:.03em;border:1.5px solid rgba(255,255,255,.85) !important;
   box-shadow:0 4px 12px rgba(60,170,160,.4) !important;}
 #homeZZ:active{transform:scale(.94);}
+</style>
+<style id="krNewCss">
+/* ===== きょうの きろく（作り直し） ===== */
+#askBox{background:linear-gradient(180deg,#fbfdff,#f4faf6) !important;}
+#askTtl{font-size:19px;font-weight:900;color:#3f7a95;text-align:center;letter-spacing:.02em;}
+#askSub{font-size:11px;font-weight:800;color:#a9bccb;text-align:center;margin-top:2px;}
+#krSteps{display:flex;gap:0;margin:11px 0 12px;}
+.krStp{flex:1 1 0;display:flex;align-items:center;justify-content:center;gap:5px;
+  padding:6px 2px 8px;font-size:11.5px;font-weight:900;color:#b6c6d2;
+  border-bottom:3px solid rgba(180,205,220,.35);}
+.krStp b{width:17px;height:17px;border-radius:50%;background:#cfdce6;color:#fff;font-size:10.5px;
+  display:flex;align-items:center;justify-content:center;}
+.krStp.on{color:#3fa06a;border-bottom-color:#4bb87a;}
+.krStp.on b{background:#4bb87a;}
+.krStp.done b{background:#9fd8b8;}
+.krBlk{background:#fff;border:1.5px solid rgba(170,210,190,.4);border-radius:16px;padding:11px 12px 12px;margin-bottom:10px;}
+.krBlkTtl{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:900;color:#3f7f60;margin-bottom:9px;}
+.krBlkTtl b{width:19px;height:19px;border-radius:50%;background:#4bb87a;color:#fff;font-size:11px;
+  display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+/* 気分カード */
+#askBox .krMoodRow{display:grid !important;grid-template-columns:repeat(5,1fr);gap:6px;}
+#askBox .askChip{flex:none !important;display:flex;flex-direction:column;align-items:center;gap:3px;
+  border-radius:13px;padding:8px 2px 7px;border:1.5px solid transparent;min-width:0;}
+#askBox .askChip .askE{font-size:0;line-height:0;display:block;}
+#askBox .askChip .askE svg{width:34px;height:34px;display:block;}
+#askBox .askChip .askL{font-size:9.5px;font-weight:900;letter-spacing:-.02em;white-space:nowrap;}
+#askBox .askChip.on{border-color:#4bb87a;box-shadow:0 0 0 3px rgba(75,184,122,.18);transform:translateY(-2px);}
+/* 時間 */
+.krTimeGrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.krTimeBox{position:relative;background:#fbfdff;border:1.5px solid rgba(180,210,230,.55);border-radius:13px;
+  padding:8px 10px 9px;display:flex;flex-direction:column;gap:1px;}
+.krTimeBox.bed{background:#fbfaff;border-color:rgba(190,180,225,.5);}
+.krTbL{font-size:10px;font-weight:900;color:#8fa9bd;white-space:nowrap;}
+.krTbV{font-size:24px;font-weight:900;color:#4f7f9c;letter-spacing:.02em;pointer-events:none;}
+.krTimeBox.bed .krTbV{color:#7a6db5;}
+.krSel{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;
+  -webkit-appearance:none;appearance:none;border:none;background:none;font-size:16px;}
+.krTimeBox::after{content:"▾";position:absolute;right:10px;bottom:10px;font-size:12px;color:#a9c0d0;pointer-events:none;}
+.krTimeBox.dunno .krTbV{font-size:14px;color:#a9bccb;}
+.krVague{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:9px;flex-wrap:wrap;}
+.krVgChk{display:flex;align-items:center;gap:6px;font-size:10.5px;font-weight:800;color:#9ab4c4;cursor:pointer;}
+.krVgChk input{width:15px;height:15px;accent-color:#4bb87a;margin:0;cursor:pointer;}
+.krSlpMini{display:flex;align-items:center;gap:4px;}
+.krSlpMiniL{font-size:9.5px;font-weight:800;color:#b6c6d2;margin-right:2px;}
+.krSlpMini .krSlp{width:26px;height:26px;min-width:0;padding:0;border-radius:8px;
+  border:1.5px solid rgba(180,205,220,.55);background:#fff;color:#a9bccb;font-size:13px;font-weight:900;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;flex-direction:row;}
+.krSlpMini .krSlp.on{background:#9d92dd;border-color:transparent;color:#fff;box-shadow:0 2px 7px rgba(140,130,205,.4);}
+/* ねむけ */
+#krSlpyRow{position:relative;padding:6px 2px 2px;}
+.krSlpyTrack{position:absolute;left:11%;right:11%;top:26px;height:3px;border-radius:2px;
+  background:linear-gradient(90deg,#b0a6e8,#c9c6d6 25%,#9fd8b8 50%,#ffe08a 75%,#ffb45c);}
+.krSlpyPts{position:relative;display:grid;grid-template-columns:repeat(5,1fr);}
+.krSlpyPt{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;background:none;border:none;padding:0;}
+.krSlpyPt .kpF{width:34px;height:34px;border-radius:50%;background:#fff;border:2.5px solid #d6dee6;
+  display:flex;align-items:center;justify-content:center;transition:transform .18s,border-color .18s;}
+.krSlpyPt .kpF svg{width:26px;height:26px;display:block;}
+.krSlpyPt i{font-style:normal;font-size:8.5px;font-weight:800;color:#a9bccb;white-space:nowrap;letter-spacing:-.03em;}
+.krSlpyPt.on .kpF{transform:scale(1.18);border-color:#4bb87a;box-shadow:0 3px 10px rgba(75,184,122,.3);}
+.krSlpyPt.on i{color:#3fa06a;font-weight:900;}
+/* 保存ボタン */
+#askBox #krSave{width:100%;margin-top:2px;background:linear-gradient(135deg,#5ec98c,#3fa86a) !important;
+  color:#fff !important;border:none;border-radius:14px;padding:14px;font-size:15px;font-weight:900;cursor:pointer;
+  box-shadow:0 5px 14px rgba(63,168,106,.35);}
+#askBox #krSave::before{content:"✔️  ";}
+@media (max-width:400px){
+  #askBox .askChip .askE svg{width:29px;height:29px;}
+  #askBox .askChip .askL{font-size:8.5px;}
+  .krTbV{font-size:21px;}
+  .krSlpyPt .kpF{width:30px;height:30px;}
+  .krSlpyPt .kpF svg{width:23px;height:23px;}
+  .krSlpyPt i{font-size:7.5px;}
+  .krSlpyTrack{top:23px;}
+}
 </style>
 <style id="briefCss">
 #zzBrief{position:fixed;inset:0;z-index:3900;display:flex;align-items:center;justify-content:center;
@@ -7500,33 +7575,47 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
       </div>
       <div id="askBox">
       <div id="askTtl">きょうの きろく</div>
-      <div class="krSec">
-      <div class="krSecTop"><span class="krSecLbl">😊 きぶん</span><button id="krMore" type="button">もっと ▸</button><button id="krMoodBk" class="krBk" type="button" hidden>← もどる</button><span class="krNow" id="krMoodNow"></span></div>
-      <div class="krProg" id="krMoodProg"></div>
-      <div class="krMoodLine"><div class="krMoodRow" id="krMoodRow"></div></div>
+      <div id="askSub">3つの ステップで かんたん入力！</div>
+      <div id="krSteps">
+        <span class="krStp on" data-st="1"><b>1</b>気分</span>
+        <span class="krStp" data-st="2"><b>2</b>時間</span>
+        <span class="krStp" data-st="3"><b>3</b>ねむけ</span>
       </div>
-      <div class="krTime">
-      <div class="krTimeLeft"><span class="krTimeLbl">🌅 起床</span><button class="krDunno" id="krWakeDunno" data-t="wake" type="button">わからない</button></div>
-      <div class="krStepWrap"><button class="krStep" data-t="wake" data-d="-1" type="button">−</button><span class="krTimeV" id="krWakeV">6:00</span><button class="krStep" data-t="wake" data-d="1" type="button">＋</button></div>
+      <div class="krSec krBlk">
+        <div class="krBlkTtl"><b>1</b>きょうの 気分は？</div>
+        <div class="krMoodLine"><div class="krMoodRow" id="krMoodRow"></div></div>
+        <div class="krSecTop"><button id="krMore" type="button">もっと くわしく ▸</button><button id="krMoodBk" class="krBk" type="button" hidden>← もどる</button><span class="krNow" id="krMoodNow"></span></div>
+        <div class="krProg" id="krMoodProg"></div>
       </div>
-      <div class="krTime bed">
-      <div class="krTimeLeft"><span class="krTimeLbl">🌙 就寝</span><button class="krDunno" id="krBedDunno" data-t="bed" type="button">わからない</button></div>
-      <div class="krStepWrap"><button class="krStep" data-t="bed" data-d="-1" type="button">−</button><span class="krTimeV" id="krBedV">23:00</span><button class="krStep" data-t="bed" data-d="1" type="button">＋</button></div>
+      <div class="krBlk">
+        <div class="krBlkTtl"><b>2</b>ねた時間・おきた時間</div>
+        <div class="krTimeGrid">
+          <div class="krTimeBox bed">
+            <span class="krTbL">🌙 ねた時間</span>
+            <select id="krBedSel" class="krSel"></select>
+            <span class="krTbV" id="krBedV">23:00</span>
+          </div>
+          <div class="krTimeBox wake">
+            <span class="krTbL">☀️ おきた時間</span>
+            <select id="krWakeSel" class="krSel"></select>
+            <span class="krTbV" id="krWakeV">6:00</span>
+          </div>
+        </div>
+        <div class="krVague">
+          <label class="krVgChk"><input type="checkbox" id="krVague"/><span>おおよそ（時間が はっきり しない）</span></label>
+          <div class="krSlpMini" id="krSlpRow">
+            <span class="krSlpMiniL">寝つき</span>
+            <button class="krSlp" data-s="1" type="button">○</button>
+            <button class="krSlp" data-s="2" type="button">△</button>
+            <button class="krSlp" data-s="3" type="button">×</button>
+          </div>
+        </div>
       </div>
-      <div class="krTime slp" id="krSlpRow">
-      <div class="krTimeLeft"><span class="krTimeLbl">😴 寝つき</span></div>
-      <div class="krSlpWrap">
-        <button class="krSlp" data-s="1" type="button"><b>○</b><i>すぐ寝れた</i></button>
-        <button class="krSlp" data-s="2" type="button"><b>△</b><i>ふつう</i></button>
-        <button class="krSlp" data-s="3" type="button"><b>×</b><i>寝つけず</i></button>
+      <div class="krBlk">
+        <div class="krBlkTtl"><b>3</b>朝の ねむけは？</div>
+        <div id="krSlpyRow"><div class="krSlpyTrack"></div><div class="krSlpyPts" id="krSlpyPts"></div></div>
       </div>
-      </div>
-      <div class="krTime slpy" id="krSlpyRow">
-      <div class="krTimeLeft"><span class="krTimeLbl">💤 朝の ねむけ</span><span class="krSlpyV" id="krSlpyV">ふつう</span></div>
-      <div class="krSlpyWrap"><input id="krSlpy" type="range" min="1" max="5" step="any" value="3"/></div>
-      </div>
-      <button id="krSave" type="button">きろく する</button>
-      
+      <button id="krSave" type="button">きろくを ほぞんする</button>
       <button id="krSkip" type="button">スキップ</button>
       </div>
     </div>
@@ -23704,9 +23793,12 @@ function _askPaint(){
   try{
     const row=$("krMoodRow");
     let step=1,list=MOOD3,attr="data-m1";
-    if(_askM1!=null&&_askM2==null){step=2;list=MOOD3[_askM1].c;attr="data-m2";}
-    else if(_askM1!=null&&_askM2!=null){step=3;list=MOOD3[_askM1].c[_askM2].c;attr="data-m3";}
-    if(row)row.innerHTML=list.map((m,i)=>chip(m.e,m.l,(step===1?_askM1===i:step===2?_askM2===i:_askM3===i),attr+'="'+i+'"',_askMoodTint(i,list.length))).join("");
+    var _simple=false; try{_simple=$("askBox")&&$("askBox").classList.contains("kr1");}catch(_){}
+    if(!_simple){   /* ★かんたんモードは いつも 5つの 顔のまま */
+      if(_askM1!=null&&_askM2==null){step=2;list=MOOD3[_askM1].c;attr="data-m2";}
+      else if(_askM1!=null&&_askM2!=null){step=3;list=MOOD3[_askM1].c[_askM2].c;attr="data-m3";}
+    }
+    if(row)row.innerHTML=list.map((m,i)=>chip((step===1&&KR_FACEK[i])?_krFace(KR_FACEK[i],34):m.e,m.l,(step===1?_askM1===i:step===2?_askM2===i:_askM3===i),attr+'="'+i+'"',_askMoodTint(i,list.length))).join("");
     const dd=$("krMoodProg");if(dd)dd.innerHTML=dots(step,3);
     const bk=$("krMoodBk");if(bk)bk.hidden=(step===1);
     const nw=$("krMoodNow"),pk=_mood3Pick(_askM1,_askM2,_askM3);
@@ -23715,10 +23807,11 @@ function _askPaint(){
   const fmt=(h)=>(h==null)?"わからない":(h+":00");
   try{
     var wv=$("krWakeV");if(wv){wv.textContent=fmt(_krWakeH);wv.classList.toggle("dunno",_krWakeH==null);}
-    var bv=$("krBedV");if(bv){bv.textContent=fmt(_krBedH);bv.classList.toggle("dunno",_krBedH==null);}
+    /* 時間の 表示は _krPaintNew が やる */
     var wd=$("krWakeDunno");if(wd)wd.classList.toggle("on",_krWakeH==null);
     var bd=$("krBedDunno");if(bd)bd.classList.toggle("on",_krBedH==null);
     try{ document.querySelectorAll("#krSlpRow .krSlp").forEach(function(b){ b.classList.toggle("on",String(_krSlp)===b.dataset.s); }); }catch(_){}
+    try{_krPaintNew();}catch(_){}
     try{ var sy=$("krSlpy"); if(sy&&document.activeElement!==sy)sy.value=String(_krSlpy||3);
       var sv=$("krSlpyV"); if(sv)sv.textContent=SLPY_LBL[_krSlpy||3]||"ふつう"; }catch(_){}
   }catch(_){}
@@ -23747,6 +23840,26 @@ function openAskCard(then){
   try{ var bx=$("askBox"); if(bx){ bx.classList.remove("done"); if(bx.scrollIntoView)bx.scrollIntoView({block:"center",behavior:"smooth"}); } }catch(_){}
 }
 /* きろくずみの 見た目（カードは 消さずに 「きろく できたよ」に） */
+try{ document.addEventListener("change",function(e){
+  try{
+    var t=e.target; if(!t)return;
+    if(t.id==="krWakeSel"){ _krWakeH=parseFloat(t.value); _krPaintNew(); return; }
+    if(t.id==="krBedSel"){ _krBedH=parseFloat(t.value); _krPaintNew(); return; }
+    if(t.id==="krVague"){
+      if(t.checked){ _krWakeH=null; _krBedH=null; }
+      else{ var n=new Date(); _krWakeH=n.getHours(); _krBedH=((n.getHours()-6)%24+24)%24; }
+      _krPaintNew(); return;
+    }
+  }catch(_){}
+}); }catch(_){}
+try{ document.addEventListener("click",function(e){
+  try{
+    var t=e.target; if(!t||!t.closest)return;
+    var pt=t.closest("#krSlpyPts .krSlpyPt"); if(!pt)return;
+    try{playClick();}catch(_){}
+    _krSlpy=parseInt(pt.dataset.p,10)||3; _krPaintNew();
+  }catch(_){}
+}); }catch(_){}
 try{ document.addEventListener("input",function(e){
   try{ if(!e.target||e.target.id!=="krSlpy")return;
     var raw=parseFloat(e.target.value); if(!Number.isFinite(raw))raw=3;
@@ -23774,6 +23887,99 @@ function _krDoneSound(){
     g2.gain.exponentialRampToValueAtTime(0.14,now+0.24);
     g2.gain.exponentialRampToValueAtTime(0.0001,now+0.75);
     o2.connect(g2); g2.connect(out); o2.start(now+0.22); o2.stop(now+0.8);
+  }catch(_){}
+}
+/* ===== きぶんの 顔（イラスト） ===== */
+function _krFace(kind,sz){
+  sz=sz||34;
+  var S=function(inner,bg1,bg2){
+    return '<svg viewBox="0 0 40 40" width="'+sz+'" height="'+sz+'">'+
+      '<defs><radialGradient id="fg'+kind+'" cx="35%" cy="30%"><stop offset="0" stop-color="'+bg1+'"/><stop offset="1" stop-color="'+bg2+'"/></radialGradient></defs>'+inner+'</svg>';
+  };
+  var eyeC='<circle cx="14.5" cy="19" r="2.1" fill="#5a4326"/><circle cx="25.5" cy="19" r="2.1" fill="#5a4326"/>';
+  if(kind==="genki"){
+    var ray="";
+    for(var i=0;i<12;i++){var a=i*Math.PI/6;
+      ray+='<path d="M '+(20+Math.cos(a)*15).toFixed(1)+' '+(20+Math.sin(a)*15).toFixed(1)+
+        ' L '+(20+Math.cos(a+0.13)*19.5).toFixed(1)+' '+(20+Math.sin(a+0.13)*19.5).toFixed(1)+
+        ' L '+(20+Math.cos(a-0.13)*19.5).toFixed(1)+' '+(20+Math.sin(a-0.13)*19.5).toFixed(1)+' Z" fill="#ffb340"/>';}
+    return S(ray+'<circle cx="20" cy="20" r="15" fill="url(#fggenki)"/>'+
+      '<path d="M11 17.5 Q14.5 14 18 17.5" stroke="#5a4326" stroke-width="2.2" fill="none" stroke-linecap="round"/>'+
+      '<path d="M22 17.5 Q25.5 14 29 17.5" stroke="#5a4326" stroke-width="2.2" fill="none" stroke-linecap="round"/>'+
+      '<path d="M14 24 Q20 30.5 26 24 Z" fill="#7a3a2e"/>'+
+      '<ellipse cx="10" cy="24" rx="2.6" ry="1.7" fill="#ff9aa2" opacity=".75"/>'+
+      '<ellipse cx="30" cy="24" rx="2.6" ry="1.7" fill="#ff9aa2" opacity=".75"/>',"#ffe07a","#ffc23d");
+  }
+  if(kind==="odayaka"){
+    return S('<circle cx="20" cy="20" r="16" fill="url(#fgodayaka)"/>'+
+      '<path d="M11 19.5 Q14.5 15.5 18 19.5" stroke="#5a4326" stroke-width="2.2" fill="none" stroke-linecap="round"/>'+
+      '<path d="M22 19.5 Q25.5 15.5 29 19.5" stroke="#5a4326" stroke-width="2.2" fill="none" stroke-linecap="round"/>'+
+      '<path d="M15 25.5 Q20 29.5 25 25.5" stroke="#5a4326" stroke-width="2.2" fill="none" stroke-linecap="round"/>'+
+      '<ellipse cx="10.5" cy="24" rx="2.6" ry="1.7" fill="#ff9aa2" opacity=".7"/>'+
+      '<ellipse cx="29.5" cy="24" rx="2.6" ry="1.7" fill="#ff9aa2" opacity=".7"/>',"#ffe89a","#ffcf4f");
+  }
+  if(kind==="nemui"){
+    return S('<circle cx="20" cy="20" r="16" fill="url(#fgnemui)"/>'+
+      '<path d="M11 20 Q14.5 23.5 18 20" stroke="#5a4326" stroke-width="2.2" fill="none" stroke-linecap="round"/>'+
+      '<path d="M22 20 Q25.5 23.5 29 20" stroke="#5a4326" stroke-width="2.2" fill="none" stroke-linecap="round"/>'+
+      '<ellipse cx="20" cy="27" rx="2.6" ry="3.4" fill="#7a3a2e"/>'+
+      '<ellipse cx="9.5" cy="24" rx="2.6" ry="1.7" fill="#ff9aa2" opacity=".6"/>'+
+      '<ellipse cx="30.5" cy="24" rx="2.6" ry="1.7" fill="#ff9aa2" opacity=".6"/>'+
+      '<text x="30" y="11" font-size="9" font-weight="900" fill="#7fb6e8">z</text>'+
+      '<text x="35" y="7" font-size="6" font-weight="900" fill="#7fb6e8">z</text>',"#ffe89a","#ffcf4f");
+  }
+  if(kind==="shizun"){
+    return S('<circle cx="20" cy="21" r="14.5" fill="url(#fgshizun)"/>'+
+      '<path d="M6 15 a5.5 5.5 0 0 1 6.5-5.4 A7.5 7.5 0 0 1 27 9.6 a5.6 5.6 0 0 1 6.6 6.4 H6 Z" fill="#e8f0f8"/>'+
+      '<path d="M11 20 Q14.5 23.5 18 20" stroke="#3f5f7a" stroke-width="2.2" fill="none" stroke-linecap="round"/>'+
+      '<path d="M22 20 Q25.5 23.5 29 20" stroke="#3f5f7a" stroke-width="2.2" fill="none" stroke-linecap="round"/>'+
+      '<path d="M16 28 Q20 25 24 28" stroke="#3f5f7a" stroke-width="2.2" fill="none" stroke-linecap="round"/>'+
+      '<path d="M13 33 l-1.5 4 M20 34 l-1.5 4 M27 33 l-1.5 4" stroke="#7fb6e8" stroke-width="2" stroke-linecap="round"/>',"#bfe0f5","#8fc6ea");
+  }
+  return S('<circle cx="20" cy="20" r="16" fill="url(#fgmoya)"/>'+
+    '<path d="M10.5 17.5 L17.5 21 M17.5 17.5 L10.5 21" stroke="#4a3a6a" stroke-width="2.2" stroke-linecap="round"/>'+
+    '<path d="M22.5 17.5 L29.5 21 M29.5 17.5 L22.5 21" stroke="#4a3a6a" stroke-width="2.2" stroke-linecap="round"/>'+
+    '<path d="M14.5 28 Q20 24 25.5 28" stroke="#4a3a6a" stroke-width="2.2" fill="none" stroke-linecap="round"/>',"#d9cff2","#b3a3e0");
+}
+var KR_FACEK=["genki","odayaka","nemui","shizun","moya"];
+var KR_SLPY=[{k:"nemui",l:"とてもねむい"},{k:"nemui",l:"ねむい"},{k:"odayaka",l:"ふつう"},{k:"odayaka",l:"すっきり"},{k:"genki",l:"とてもすっきり"}];
+function _krPaintNew(){
+  try{
+    /* ステップの すすみ */
+    var st1=(_askM1!=null), st2=true, st3=true;
+    var stp=document.querySelectorAll("#krSteps .krStp");
+    if(stp.length){
+      stp[0].className="krStp"+(st1?" done":" on");
+      stp[1].className="krStp"+(st1?" on":"");
+      stp[2].className="krStp"+(st1?" on":"");
+    }
+    /* 時間の セレクト */
+    ["Wake","Bed"].forEach(function(kk){
+      var sel=$("kr"+kk+"Sel"); if(!sel)return;
+      if(!sel.options.length){
+        var h="";
+        for(var m=0;m<24*60;m+=15){ var hh=Math.floor(m/60),mm=m%60;
+          h+='<option value="'+(m/60)+'">'+hh+":"+String(mm).padStart(2,"0")+'</option>'; }
+        sel.innerHTML=h;
+      }
+      var v=(kk==="Wake")?_krWakeH:_krBedH;
+      var box=sel.closest(".krTimeBox"), lab=$("kr"+kk+"V");
+      if(v==null){ if(box)box.classList.add("dunno"); if(lab)lab.textContent="おおよそ"; }
+      else{ if(box)box.classList.remove("dunno");
+        var q=Math.round(v*4)/4; sel.value=String(q);
+        if(lab)lab.textContent=Math.floor(q)+":"+String(Math.round((q%1)*60)).padStart(2,"0"); }
+    });
+    try{ var vg=$("krVague"); if(vg)vg.checked=(_krWakeH==null||_krBedH==null); }catch(_){}
+    /* ねむけ（左＝とてもねむい＝内部5） */
+    var pts=$("krSlpyPts");
+    if(pts){
+      if(!pts.children.length){
+        pts.innerHTML=KR_SLPY.map(function(q,i){
+          return '<button class="krSlpyPt" data-p="'+(5-i)+'" type="button"><span class="kpF">'+_krFace(q.k,26)+'</span><i>'+q.l+'</i></button>';
+        }).join("");
+      }
+      pts.querySelectorAll(".krSlpyPt").forEach(function(b){ b.classList.toggle("on",String(_krSlpy)===b.dataset.p); });
+    }
   }catch(_){}
 }
 function _askPaintDone(){
@@ -29258,8 +29464,7 @@ try{
     if(q1&&$("askBox")&&$("askBox").classList.contains("kr1")){   /* ★かんたんモード＝気分だけ えらぶ */
       try{playClick();}catch(_){}
       _askM1=parseInt(q1.dataset.m1,10); _askM2=0; _askM3=0;
-      try{ var sib=$("krMoodRow").querySelectorAll("[data-m1]");
-        for(var si=0;si<sib.length;si++)sib[si].classList.toggle("sel",sib[si]===q1); }catch(_){}
+      try{_askPaint();}catch(_){}
       return;                                     /* 起床・就寝を 入れて「きろく する」で かんりょう */
     }
     if(pick("m1",v=>{_askM1=v;_askM2=null;_askM3=null;}))return;

@@ -6099,6 +6099,14 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
   .krSlpyTrack{top:23px;}
 }
 </style>
+<style id="anTabCss">
+.anTab{margin-bottom:10px;}
+.anTab .anSegBtn{flex:1 1 0;padding:7px 6px;font-size:11.5px;}
+.anBrief{display:flex;flex-direction:column;gap:11px;}
+.anBrief .bfCard{box-shadow:0 2px 9px rgba(90,140,180,.07);}
+#anBoxRec .bfG2{gap:10px;}
+@media (max-width:720px){#anBoxRec .bfG2{grid-template-columns:1fr;}}
+</style>
 <style id="briefCss">
 #zzBrief{position:fixed;inset:0;z-index:3900;display:flex;align-items:center;justify-content:center;
   background:rgba(20,44,62,.55);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
@@ -6118,47 +6126,84 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
   padding:15px;cursor:pointer;font-family:inherit;font-size:15px;font-weight:900;color:#fff;
   background:linear-gradient(135deg,#8fdcb0,#57bd7a);box-shadow:0 6px 16px rgba(87,189,122,.4);}
 #bfOk:active{transform:scale(.98);}
-.bfHead{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:0 2px;}
-.bfHead b{display:block;font-size:20px;font-weight:900;color:#3f7a95;line-height:1.3;}
-.bfHead i{display:block;font-style:normal;font-size:12px;font-weight:800;color:#8fa9bd;margin-top:2px;}
-.bfDate{flex:0 0 auto;font-size:11.5px;font-weight:900;color:#a9c0d0;padding-top:4px;white-space:nowrap;}
-.bfCard{background:rgba(255,255,255,.95);border:1px solid rgba(160,205,230,.35);border-radius:18px;
-  padding:13px 15px;box-shadow:0 4px 14px rgba(90,140,180,.1);}
-.bfCard>b{display:block;font-size:13px;font-weight:900;color:#5f8298;margin-bottom:3px;}
-.bfCard>i{display:block;font-style:normal;font-size:12px;font-weight:800;color:#8fa9bd;line-height:1.6;}
-.bfBig{font-size:24px;font-weight:900;line-height:1.25;margin:2px 0 3px;}
-.bfMain{display:grid;grid-template-columns:118px 1fr;gap:12px;align-items:center;}
-.bfRingWrap{grid-row:span 2;}
-.bfRing{width:118px;height:118px;display:block;}
-.bfMainTxt b{display:block;font-size:17px;font-weight:900;line-height:1.3;}
-.bfMainTxt i{display:block;font-style:normal;font-size:11.5px;font-weight:800;color:#8fa9bd;line-height:1.6;margin-top:3px;}
-.bfFacts{grid-column:2;display:grid;grid-template-columns:1fr 1fr;gap:5px 10px;}
-.bfFacts span{display:flex;align-items:center;justify-content:space-between;gap:6px;}
-.bfFacts i{font-style:normal;font-size:10.5px;font-weight:800;color:#9ab4c4;white-space:nowrap;}
-.bfFacts b{font-size:13px;font-weight:900;color:#4f7f9c;white-space:nowrap;}
-.bfPeak{background:linear-gradient(135deg,#fffaf0,#fff4e0);border-color:rgba(240,200,140,.5);}
-.bfRow{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
-.bfDip{background:linear-gradient(135deg,#f4fbff,#e8f4fd);border-color:rgba(150,205,235,.5);}
-.bfNap ul,.bfWarn ul{margin:4px 0 0;padding-left:15px;}
-.bfNap li,.bfWarn li{font-size:10.5px;font-weight:800;color:#8fa9bd;line-height:1.75;}
-.bfWork{background:linear-gradient(135deg,#f4fdf7,#e9f8ef);border-color:rgba(150,220,175,.5);}
-.bfWarn{background:linear-gradient(135deg,#fff6f6,#ffecec);border-color:rgba(240,170,170,.5);}
-.bfWarn>b{color:#d96a6a;}
-.bfWt{font-size:15px;font-weight:900;color:#c95f5f;margin:2px 0 2px;line-height:1.35;}
-.bfTip{background:linear-gradient(135deg,#fbf8ff,#f2edfd);border-color:rgba(185,168,236,.45);}
+.bfHead{display:flex;align-items:center;gap:10px;padding:2px 2px 0;}
+.bfHi{flex:0 0 auto;display:flex;}
+.bfHt{flex:1 1 auto;min-width:0;}
+.bfHt b{display:block;font-size:24px;font-weight:900;color:#2f4a5e;line-height:1.2;letter-spacing:.01em;}
+.bfHt i{display:block;font-style:normal;font-size:12px;font-weight:800;color:#8fa9bd;margin-top:2px;}
+.bfDate{flex:0 0 auto;display:flex;align-items:center;gap:5px;font-size:12px;font-weight:900;color:#8fa9bd;white-space:nowrap;}
+.bfG2{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+.bfCard{position:relative;overflow:hidden;background:#fff;border:1px solid rgba(170,200,225,.4);border-radius:18px;
+  padding:13px 14px;box-shadow:0 3px 12px rgba(90,140,180,.08);}
+.bfCt{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:900;color:#3f5f75;margin-bottom:8px;}
+.bfCt svg{flex:0 0 auto;}
+.bfBig{font-size:26px;font-weight:900;line-height:1.2;margin:1px 0 4px;letter-spacing:.01em;}
+.bfBig.w{font-size:20px;}
+.bfCap{display:block;font-style:normal;font-size:11px;font-weight:800;color:#8fa9bd;line-height:1.65;}
+.bfCap.top{margin-bottom:6px;}
+.bfCap.big{font-size:12.5px;color:#6f7f9a;line-height:1.8;max-width:70%;}
+.bfArt{position:absolute;right:6px;bottom:4px;width:96px;height:72px;opacity:.95;pointer-events:none;}
+/* コンディション */
+.bfCond .bfRingWrap{display:flex;justify-content:center;padding:2px 0 4px;}
+.bfCond .bfRing{width:136px;height:136px;}
+.bfCondBtm{display:flex;align-items:flex-end;gap:6px;}
+.bfCondTx{flex:1 1 auto;min-width:0;}
+.bfCondTx b{display:block;font-size:15px;font-weight:900;line-height:1.35;letter-spacing:-.02em;}
+.bfCondTx i{display:block;font-style:normal;font-size:11px;font-weight:800;color:#8fa9bd;line-height:1.65;margin-top:3px;}
+.bfCat{flex:0 0 auto;width:70px;display:block;}
+.bfCat svg{width:100%;height:auto;display:block;}
+/* リズム */
+.bfR3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center;}
+.bfR3 span{display:flex;flex-direction:column;align-items:center;gap:2px;position:relative;}
+.bfR3 span+span::before{content:"";position:absolute;left:-3px;top:14%;bottom:14%;width:1px;background:rgba(160,195,220,.35);}
+.bfR3 i,.bfR2 i{font-style:normal;font-size:10.5px;font-weight:800;color:#8fa9bd;white-space:nowrap;flex:0 0 auto;}
+.bfR3 b{font-size:14px;font-weight:900;color:#2f4a5e;white-space:nowrap;letter-spacing:-.02em;}
+.bfHr{height:1px;background:rgba(160,195,220,.32);margin:11px 2px;}
+.bfR2{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.bfR2 span{display:flex;align-items:center;gap:6px;min-width:0;}
+.bfR2 span>svg{flex:0 0 auto;}
+.bfR2 b{font-size:13px;font-weight:900;color:#2f4a5e;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;}
+.bfR2 i{margin-left:-2px;}
+/* ピーク／ねむけ */
+.bfPeak{background:linear-gradient(160deg,#fffdf6,#fff6e6);border-color:rgba(240,205,140,.55);}
+.bfDip{background:linear-gradient(160deg,#f8fcff,#eef6fe);border-color:rgba(150,200,240,.5);}
+/* おすすめ／作業 */
+.bfNap{background:linear-gradient(160deg,#f8fcff,#eef6fe);border-color:rgba(150,200,240,.5);}
+.bfWork{background:linear-gradient(160deg,#f7fdf9,#ecf9f0);border-color:rgba(150,215,175,.5);}
+.bfList{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;max-width:64%;}
+.bfList li{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:800;color:#5f7f95;white-space:nowrap;}
+/* 注意 */
+.bfWarn{background:linear-gradient(160deg,#fffafa,#ffeef0);border-color:rgba(245,180,180,.55);}
+.bfWarn .bfCt{color:#e0645c;}
+.bfWt{font-size:19px;font-weight:900;color:#e0554c;margin:2px 0 3px;line-height:1.35;max-width:72%;}
+.bfChips{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px;}
+.bfChip{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid rgba(245,190,190,.6);
+  border-radius:12px;padding:7px 12px;font-size:11px;font-weight:800;color:#7f6f75;white-space:nowrap;}
+/* ひとこと／まとめ */
+.bfTip{background:linear-gradient(160deg,#fbfaff,#f2eefc);border-color:rgba(185,168,236,.45);}
+.bfChr{background:linear-gradient(160deg,#fdfbff,#f6f1fb);border-color:rgba(190,175,225,.5);}
+.bfChr .bfCt{color:#7f6bb5;}
+.bfTip .bfCt{color:#7f6bb5;}
+.bfSum .bfSumRow{display:flex;align-items:center;gap:8px;}
+.bfSumL{flex:1 1 auto;font-size:11px;font-weight:800;color:#8fa9bd;line-height:1.4;}
+.bfSumRing{flex:0 0 auto;width:74px;}
+.bfSumRing .bfRing{width:74px;height:74px;}
+.bfSumD{flex:0 0 auto;text-align:center;}
+.bfSumD i{display:block;font-style:normal;font-size:10px;font-weight:800;color:#a9bccb;}
+.bfSumD b{display:block;font-size:19px;font-weight:900;color:#8fa9bd;}
+.bfSumD b.up{color:#3fa06a;} .bfSumD b.dn{color:#e0645c;}
+.bfSumBtm{display:flex;justify-content:space-between;gap:8px;margin-top:9px;font-size:10.5px;font-weight:800;color:#8fa9bd;}
 .bfEmpty{padding:40px 16px;text-align:center;font-size:13px;font-weight:800;color:#a9bccb;line-height:1.9;}
-@media (max-width:520px){
-  .bfMain{grid-template-columns:92px 1fr;gap:10px;}
-  .bfRing{width:92px;height:92px;}
-  .bfBig{font-size:21px;}
-  .bfRow{grid-template-columns:1fr;}
-  .bfHead b{font-size:18px;}
+@media (max-width:560px){
+  .bfG2{grid-template-columns:1fr;}
+  .bfHt b{font-size:20px;}
   .bfDate{font-size:10.5px;}
-  .bfRingWrap{grid-row:auto;}
-  .bfFacts{grid-column:1 / -1;margin-top:4px;padding-top:9px;border-top:1px dashed rgba(160,205,230,.5);}
-  .bfMainTxt b{font-size:15.5px;}
-  .bfFacts i{font-size:10px;}
-  .bfFacts b{font-size:12px;}
+  .bfCond .bfRing{width:118px;height:118px;}
+  .bfBig{font-size:23px;} .bfBig.w{font-size:18px;}
+  .bfArt{width:84px;height:64px;}
+  .bfList{max-width:60%;}
+  .bfCap.big{max-width:64%;}
+  .bfWt{font-size:17px;max-width:66%;}
 }
 </style>
 <style id="tsPcFixCss">
@@ -23339,14 +23384,43 @@ function _anCalc(range,skipToday){
   if(sy>=20||fatigue>=60||focus<55){ nap={lv:2,txt:"おすすめ",time:_scHM(wakeH+7)+"ごろ 20分"}; }
   else if(sy>=10||fatigue>=40||focus<70){ nap={lv:1,txt:"みじかく",time:_scHM(wakeH+7)+"ごろ 15分"}; }
   /* 時間帯の カーブ（起床から 16時間） */
-  var curve=[];
+  /* ★クロノタイプで 集中の 波を ずらす
+     二過程モデル＝「起きてからの 時間（恒常性）」＋「体内時計（概日リズム）」の 足しざん。
+     体内時計の 位相は MSFsc（からだの まん中の 時間）で 人ごとに ちがう。
+     いちばん 冴える 時間は「MSFsc の およそ +5〜6時間後」に なる（＝体温リズムの 上がりぎわ）。*/
+  var _ch=null; try{_ch=_anChrono();}catch(_){}
+  var msf=(_ch&&Number.isFinite(_ch.msf))?_ch.msf:null;
+  /* 体内時計だけで きまる「いちばん 冴える 時刻」 */
+  var circPeakH=(msf!=null)?((msf+5.5)%24):((wakeH+3.5)%24);
+  var raw=[];
   for(var t=0;t<=16;t+=1){
-    var v=focus+16*Math.cos((t-2.5)*0.5)-14*Math.exp(-Math.pow((t-8)/2.1,2))-t*1.1;
-    curve.push({t:t,h:(wakeH+t)%24,v:Math.max(0,Math.min(100,v))});
+    var h=(wakeH+t)%24;
+    /* ① 恒常性＝起きているほど じわじわ 下がる（さいしょの 1時間は 寝ぼけ） */
+    var homeo=-t*1.9-9*Math.exp(-Math.pow(t/1.1,2));
+    /* ② 概日リズム＝circPeakH で 山、その 12時間 反対で 谷 */
+    var dh=(((h-circPeakH+36)%24)-12);
+    var circ=17*Math.cos(dh/24*2*Math.PI);
+    /* ③ 昼すぎの おち込み（post-lunch dip）＝概日の 山から 4〜5時間後 */
+    var dipH=(circPeakH+4.5)%24, dd2=(((h-dipH+36)%24)-12);
+    var lunch=-9*Math.exp(-Math.pow(dd2/1.9,2));
+    raw.push({t:t,h:h,r:homeo+circ+lunch});
   }
-  var peak=curve[0],dip=curve[4]||curve[0];
+  /* ★かたちを つくってから focus のまわりに 収める
+     （さきに 100 で 切ると 山が つぶれて ピークが 出なく なる） */
+  var rmin=raw[0].r,rmax=raw[0].r;
+  raw.forEach(function(q){ if(q.r<rmin)rmin=q.r; if(q.r>rmax)rmax=q.r; });
+  var span=(rmax-rmin)||1, amp=Math.min(30,Math.max(16,span*0.62));
+  var top=Math.min(97,Math.max(focus+amp*0.45,focus*0.6+40));
+  var curve=raw.map(function(q){
+    var v=top-amp*(1-(q.r-rmin)/span);
+    return {t:q.t,h:q.h,v:Math.max(4,Math.min(99,v))};
+  });
+  var peak=curve[0];
   curve.forEach(function(q){ if(q.v>peak.v)peak=q; });
-  curve.slice(4).forEach(function(q){ if(q.v<dip.v)dip=q; });
+  /* ★失速＝ひるすぎの おち込み。夜の 自然な 低下を ひろわないよう 起床4〜11時間後に しぼる */
+  var win=curve.slice(4,12); if(!win.length)win=curve.slice(1);
+  var dip=win[0];
+  win.forEach(function(q){ if(q.v<dip.v)dip=q; });
   /* 予言（ひとこと） */
   var say="きょうは いつもどおりの ペースで いけそう。";
   if(sy>=22&&focus<60) say="きょうは 見おとしが ふえやすい。だいじな 確認は 午前に。";
@@ -23355,15 +23429,63 @@ function _anCalc(range,skipToday){
   else if(stab>=90&&focus>=75) say="リズムが 整ってる。むずかしい ことを やるなら きょう。";
   else if(risk>=65) say="きょうは 攻めずに 回復を 優先すると 明日が 楽。";
   else if(focus>=80) say=_scHM(peak.h)+"ごろが いちばん 頭が 冴える 予測。";
+  else if(_ch&&_ch.sjl!=null&&_ch.sjl>=2) say="休みの日と 平日の リズムが "+_ch.sjl.toFixed(1)+"時間 ずれてる。ここを つめると 楽に なる。";
   return {fat:cl(100-fatigue),sta:stab,emo:emotion,foc:focus,rec:recov,cla:clarity,
     risk:risk,hp:cl(100-risk),fatigue:fatigue,nap:nap,curve:curve,peak:peak,dip:dip,
-    say:say,n:days.length,wakeH:wakeH};
+    say:say,n:days.length,wakeH:wakeH,chrono:_ch,circPeak:circPeakH};
 }
 /* ==== 6角形グラフ＋時間帯カーブの 描画 ==== */
 var _anRange={};
 /* =========================================================
    あさの ブリーフィング（きろくの あと 1回だけ 出る 画面）
    ========================================================= */
+/* ★クロノタイプ（MCTQ の MSFsc に ならった 推定）
+   休日（土日）の 中間睡眠時刻 MSF から、平日の 睡眠不足ぶんを 引いて 補正する。 */
+function _anChrono(){
+  try{
+    var wl=getWakeLog()||{}, sl=getSleepLog()||{};
+    var free=[], work=[], all=[];
+    Object.keys(wl).forEach(function(k){
+      if(!Number.isFinite(wl[k])||!Number.isFinite(sl[k]))return;
+      var d=new Date(k+"T00:00:00"); if(isNaN(d))return;
+      var age=(Date.now()-d)/86400000; if(age>90)return;
+      var sd=wl[k]-sl[k]; if(sd<=0)sd+=24; if(sd>16||sd<2)return;
+      var ms=(sl[k]+sd/2)%24;                 /* 中間睡眠時刻 */
+      var rec={k:k,ms:ms,sd:sd,w:Math.pow(0.5,age/28)};
+      all.push(rec);
+      ((d.getDay()===0||d.getDay()===6)?free:work).push(rec);
+    });
+    if(all.length<5)return null;
+    var wavg=function(a,f){ var x=0,y=0,s2=0;
+      a.forEach(function(r){ var v=f(r); if(f===null)return; x+=v*r.w; s2+=r.w; });
+      return s2?x/s2:null; };
+    var wcirc=function(a){ var x=0,y=0,s2=0;
+      a.forEach(function(r){ var t=r.ms/24*2*Math.PI; x+=Math.cos(t)*r.w; y+=Math.sin(t)*r.w; s2+=r.w; });
+      if(!s2)return null; var m=Math.atan2(y,x)/(2*Math.PI)*24; return ((m%24)+24)%24; };
+    var base=free.length>=3?free:all;
+    var MSF=wcirc(base); if(MSF==null)return null;
+    var SDf=wavg(base,function(r){return r.sd;});
+    var SDw=work.length?wavg(work,function(r){return r.sd;}):SDf;
+    var SDall=wavg(all,function(r){return r.sd;});
+    /* 休日に 寝だめして いるぶんを 引く（MSFsc） */
+    var MSFsc=(SDf>SDw)?(MSF-(SDf-SDall)/2):MSF;
+    MSFsc=((MSFsc%24)+24)%24;
+    var t,c,tip;
+    if(MSFsc<2.5){ t="ちょう朝型"; c="#f0972c"; tip="朝いちばんが いちばん つよい タイプ。"; }
+    else if(MSFsc<3.5){ t="朝型"; c="#e8a93f"; tip="午前中に だいじな ことを 置くと のびる。"; }
+    else if(MSFsc<4.5){ t="やや朝型"; c="#5fae7a"; tip="午前〜昼すぎが 得意な 時間帯。"; }
+    else if(MSFsc<5.5){ t="ふつう型"; c="#5fb0dd"; tip="1日の まん中あたりが 安定して つよい。"; }
+    else if(MSFsc<6.5){ t="ややよる型"; c="#7f9fe0"; tip="夕方から あたまが 冴えてくる タイプ。"; }
+    else if(MSFsc<7.5){ t="よる型"; c="#8f7fd8"; tip="朝は ゆっくり。夜に 集中が のびる。"; }
+    else { t="ちょうよる型"; c="#a06fd0"; tip="無理な 早起きより リズムを 一定に。"; }
+    /* 社会的時差ぼけ（平日と休日の ズレ） */
+    var MSW=work.length>=3?wcirc(work):null;
+    var sjl=null;
+    if(MSW!=null&&free.length>=3){ var dd=((MSF-MSW+36)%24)-12; sjl=Math.abs(dd); }
+    return {msf:MSFsc,type:t,col:c,tip:tip,n:all.length,nFree:free.length,sjl:sjl,
+      sdf:SDf,sdw:SDw,ideal:((MSFsc+ (SDall||7)/2)%24)};
+  }catch(_){ return null; }
+}
 function _anBrief(){
   var d=_anCalc(1,false); if(!d)return null;
   var k=jstKey(), wl={},sl={};
@@ -23415,52 +23537,248 @@ function _anBrief(){
 }
 function _anRing(v,col){
   var R=46,C=2*Math.PI*R, off=C*(1-Math.max(0,Math.min(100,v))/100);
+  /* id は つかっていないので そのままで OK */
   return '<svg viewBox="0 0 120 120" class="bfRing"><circle cx="60" cy="60" r="'+R+'" fill="none" stroke="rgba(150,195,225,.22)" stroke-width="11"/>'+
     '<circle cx="60" cy="60" r="'+R+'" fill="none" stroke="'+col+'" stroke-width="11" stroke-linecap="round" '+
     'stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'" transform="rotate(-90 60 60)"/>'+
     '<text x="60" y="62" text-anchor="middle" font-size="34" font-weight="900" fill="'+col+'">'+Math.round(v)+'</text>'+
     '<text x="60" y="80" text-anchor="middle" font-size="11" font-weight="800" fill="#a9c0d0">/100</text></svg>';
 }
+/* ===== ブリーフィングの イラスト（ぜんぶ SVG） ===== */
+function _bfIcoSun(sz){sz=sz||30;var r="";for(var i=0;i<8;i++){var a=i*Math.PI/4;
+  r+='<line x1="'+(20+Math.cos(a)*11).toFixed(1)+'" y1="'+(20+Math.sin(a)*11).toFixed(1)+'" x2="'+(20+Math.cos(a)*17).toFixed(1)+'" y2="'+(20+Math.sin(a)*17).toFixed(1)+'" stroke="#ffb62e" stroke-width="3.4" stroke-linecap="round"/>';}
+  return '<svg viewBox="0 0 40 40" width="'+sz+'" height="'+sz+'">'+r+'<circle cx="20" cy="20" r="9" fill="#ffc12e"/></svg>';}
+function _bfIcoMoon(sz){sz=sz||30;return '<svg viewBox="0 0 40 40" width="'+sz+'" height="'+sz+'"><path d="M27 8 a13 13 0 1 0 6 22 a10.5 10.5 0 0 1-6-22 Z" fill="#ffd76b"/></svg>';}
+function _bfIcoBed(sz){sz=sz||30;return '<svg viewBox="0 0 40 40" width="'+sz+'" height="'+sz+'">'+
+  '<rect x="5" y="20" width="30" height="10" rx="3" fill="#9fb6cc"/><rect x="5" y="26" width="30" height="5" rx="2" fill="#7f9ab5"/>'+
+  '<rect x="8" y="14" width="12" height="7" rx="3" fill="#eaf2f8"/><path d="M4 30 v4 M36 30 v4" stroke="#7f9ab5" stroke-width="3" stroke-linecap="round"/></svg>';}
+function _bfIcoCal(sz){sz=sz||24;return '<svg viewBox="0 0 40 40" width="'+sz+'" height="'+sz+'">'+
+  '<rect x="6" y="9" width="28" height="26" rx="5" fill="none" stroke="#8fa9bd" stroke-width="3"/>'+
+  '<path d="M6 17 h28" stroke="#8fa9bd" stroke-width="3"/><path d="M13 5 v7 M27 5 v7" stroke="#8fa9bd" stroke-width="3" stroke-linecap="round"/>'+
+  '<rect x="12" y="22" width="5" height="5" rx="1.5" fill="#8fa9bd"/><rect x="23" y="22" width="5" height="5" rx="1.5" fill="#8fa9bd"/></svg>';}
+function _bfIcoHeart(sz){sz=sz||24;return '<svg viewBox="0 0 40 40" width="'+sz+'" height="'+sz+'"><path d="M20 33 C6 24 4 16 9 12 c4-3 9 0 11 4 c2-4 7-7 11-4 c5 4 3 12-11 21 Z" fill="#f2564f"/></svg>';}
+function _bfIcoToast(sz){sz=sz||24;return '<svg viewBox="0 0 40 40" width="'+sz+'" height="'+sz+'">'+
+  '<path d="M9 14 a5 5 0 0 1 0-6 h22 a5 5 0 0 1 0 6 v18 a3 3 0 0 1-3 3 H12 a3 3 0 0 1-3-3 Z" fill="#f5c98a" stroke="#e0a45c" stroke-width="2"/>'+
+  '<rect x="13" y="15" width="14" height="12" rx="3" fill="#fbe6c2"/></svg>';}
+function _bfIcoStar(sz){sz=sz||22;return '<svg viewBox="0 0 40 40" width="'+sz+'" height="'+sz+'"><path d="M20 5 l4.6 9.8 10.4 1.4 -7.6 7.4 1.9 10.6 -9.3-5.1 -9.3 5.1 1.9-10.6 -7.6-7.4 10.4-1.4 Z" fill="#ffc12e"/></svg>';}
+function _bfIcoBulb(sz){sz=sz||22;return '<svg viewBox="0 0 40 40" width="'+sz+'" height="'+sz+'">'+
+  '<path d="M20 5 a11 11 0 0 1 7 19.5 V29 h-14 v-4.5 A11 11 0 0 1 20 5 Z" fill="#ffe27a" stroke="#e8b93f" stroke-width="2"/>'+
+  '<rect x="15" y="30" width="10" height="3" rx="1.5" fill="#c9a martin"/><rect x="15" y="30" width="10" height="3" rx="1.5" fill="#cfa93f"/><rect x="16" y="34" width="8" height="3" rx="1.5" fill="#cfa93f"/></svg>';}
+function _bfIcoThumb(sz){sz=sz||22;return '<svg viewBox="0 0 40 40" width="'+sz+'" height="'+sz+'">'+
+  '<path d="M13 17 l6-10 a3 3 0 0 1 5 3 l-2 6 h9 a3 3 0 0 1 3 3.6 l-2.6 11 a4 4 0 0 1-4 3.4 H13 Z" fill="#5b9bea"/>'+
+  '<rect x="5" y="17" width="7" height="17" rx="2.5" fill="#7fb2f0"/></svg>';}
+function _bfIcoWarn(sz){sz=sz||20;return '<svg viewBox="0 0 40 40" width="'+sz+'" height="'+sz+'">'+
+  '<path d="M20 5 L37 34 H3 Z" fill="none" stroke="#f2705f" stroke-width="3.4" stroke-linejoin="round"/>'+
+  '<path d="M20 15 v9" stroke="#f2705f" stroke-width="3.4" stroke-linecap="round"/><circle cx="20" cy="29" r="2.1" fill="#f2705f"/></svg>';}
+function _bfIcoLeaf(sz){sz=sz||20;return '<svg viewBox="0 0 40 40" width="'+sz+'" height="'+sz+'">'+
+  '<path d="M33 7 C16 6 6 15 7 27 c1 9 10 10 16 6 C31 28 34 18 33 7 Z" fill="#a99ae6"/>'+
+  '<path d="M31 10 C22 18 15 26 11 33" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" opacity=".8"/></svg>';}
+function _bfIcoClock(sz){sz=sz||18;return '<svg viewBox="0 0 40 40" width="'+sz+'" height="'+sz+'"><circle cx="20" cy="20" r="15" fill="none" stroke="#7fa3bd" stroke-width="3"/><path d="M20 11 v10 l7 4" stroke="#7fa3bd" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';}
+function _bfIcoDown(sz){sz=sz||18;return '<svg viewBox="0 0 40 40" width="'+sz+'" height="'+sz+'"><path d="M20 6 v24 M11 22 l9 10 9-10" stroke="#f2705f" stroke-width="3.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';}
+function _bfIcoBrain(sz){sz=sz||18;return '<svg viewBox="0 0 40 40" width="'+sz+'" height="'+sz+'">'+
+  '<path d="M14 9 a6 6 0 0 0-6 6 a5 5 0 0 0-1 9 a6 6 0 0 0 7 7 h6 V9 Z" fill="#f6a8c0"/>'+
+  '<path d="M26 9 a6 6 0 0 1 6 6 a5 5 0 0 1 1 9 a6 6 0 0 1-7 7 h-6 V9 Z" fill="#f290b0"/></svg>';}
+function _bfIcoSad(sz){sz=sz||18;return '<svg viewBox="0 0 40 40" width="'+sz+'" height="'+sz+'"><circle cx="20" cy="20" r="15" fill="none" stroke="#7fa3bd" stroke-width="3"/>'+
+  '<circle cx="14.5" cy="17" r="2" fill="#7fa3bd"/><circle cx="25.5" cy="17" r="2" fill="#7fa3bd"/>'+
+  '<path d="M14 28 Q20 23 26 28" stroke="#7fa3bd" stroke-width="3" fill="none" stroke-linecap="round"/></svg>';}
+function _bfArtPillow(){return '<svg viewBox="0 0 120 90" class="bfArt">'+
+  '<path d="M18 26 C34 16 86 16 102 26 C112 34 112 58 102 66 C86 76 34 76 18 66 C8 58 8 34 18 26 Z" fill="#dfeaf6" stroke="#c2d6e8" stroke-width="2.5"/>'+
+  '<path d="M28 32 C44 26 76 26 92 32" stroke="#c2d6e8" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>';}
+function _bfArtNote(){return '<svg viewBox="0 0 120 90" class="bfArt">'+
+  '<rect x="20" y="12" width="62" height="70" rx="7" fill="#5fae7a"/><rect x="27" y="19" width="48" height="56" rx="4" fill="#eafaf0"/>'+
+  '<path d="M35 32 h32 M35 42 h32 M35 52 h22" stroke="#9fd8b8" stroke-width="3" stroke-linecap="round"/>'+
+  '<path d="M84 20 l14 14 -34 34 -18 4 4-18 Z" fill="#8fd3a0" stroke="#5fae7a" stroke-width="2.5" stroke-linejoin="round"/></svg>';}
+function _bfArtMoon(){return '<svg viewBox="0 0 120 90" class="bfArt">'+
+  '<path d="M74 14 a26 26 0 1 0 13 45 a21 21 0 0 1-13-45 Z" fill="#b9b3e0"/>'+
+  '<ellipse cx="46" cy="62" rx="26" ry="13" fill="#eef2fb"/><ellipse cx="70" cy="66" rx="20" ry="10" fill="#e3e9f7"/>'+
+  '<path d="M22 22 l2 5 5 2 -5 2 -2 5 -2-5 -5-2 5-2 Z" fill="#d8d2f0"/>'+
+  '<path d="M100 34 l1.5 4 4 1.5 -4 1.5 -1.5 4 -1.5-4 -4-1.5 4-1.5 Z" fill="#d8d2f0"/></svg>';}
+function _bfArtPlant(){return '<svg viewBox="0 0 120 90" class="bfArt">'+
+  '<path d="M60 60 C44 48 40 30 46 18 C58 24 64 40 60 60 Z" fill="#a3d9c0"/>'+
+  '<path d="M60 60 C74 50 82 34 78 22 C66 28 58 42 60 60 Z" fill="#8fd3a0"/>'+
+  '<path d="M42 62 h36 l-4 22 a4 4 0 0 1-4 3.5 H50 a4 4 0 0 1-4-3.5 Z" fill="#c9bef0"/>'+
+  '<rect x="40" y="56" width="40" height="8" rx="4" fill="#b3a3e0"/></svg>';}
+/* 24時間ぶんの 集中／ねむけ */
+var _bfUidN=0;
+function _bfUid(p2){ _bfUidN++; return (p2||"bf")+_bfUidN; }
+function _bfHourly(d){
+  var m={},i;
+  d.curve.forEach(function(q){ m[Math.round(q.h)%24]=q.v; });
+  var out=[];
+  for(i=0;i<24;i++){
+    var v=m[i];
+    if(v==null){ var back=i,fwd=i,vb=null,vf=null;
+      for(var k=1;k<24;k++){ if(vb==null&&m[(i-k+24)%24]!=null)vb=m[(i-k+24)%24];
+        if(vf==null&&m[(i+k)%24]!=null)vf=m[(i+k)%24]; if(vb!=null&&vf!=null)break; }
+      v=(vb!=null&&vf!=null)?(vb+vf)/2:(vb!=null?vb:(vf!=null?vf:50)); }
+    out.push(Math.max(0,Math.min(100,v)));
+  }
+  return out;
+}
+function _bfNorm(a,lo,hi){
+  var mn=Math.min.apply(null,a), mx=Math.max.apply(null,a), r=(mx-mn)||1;
+  return a.map(function(v){ return lo+(hi-lo)*((v-mn)/r); });
+}
+function _bfFocusSVG(d){
+  var hs=_bfNorm(_bfHourly(d),14,94), W=300,H=112,pL=26,pR=8,pT=10,pB=20,cw=W-pL-pR,ch=H-pT-pB,s="";
+  var X=function(i){return pL+cw*i/23;}, Y=function(v){return pT+ch*(1-v/100);};
+  var GID=_bfUid("bfF");
+  var pts=hs.map(function(v,i){return X(i).toFixed(1)+","+Y(v).toFixed(1);}).join(" ");
+  s+='<path d="M '+X(0).toFixed(1)+' '+(pT+ch)+' L '+hs.map(function(v,i){return X(i).toFixed(1)+" "+Y(v).toFixed(1);}).join(" L ")+' L '+X(23).toFixed(1)+' '+(pT+ch)+' Z" fill="url(#'+GID+')"/>';
+  s+='<polyline points="'+pts+'" fill="none" stroke="#f0a83c" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>';
+  var pk=0; hs.forEach(function(v,i){ if(v>hs[pk])pk=i; });
+  s+='<line x1="'+X(pk).toFixed(1)+'" y1="'+Y(hs[pk]).toFixed(1)+'" x2="'+X(pk).toFixed(1)+'" y2="'+(pT+ch)+'" stroke="#f0a83c" stroke-width="1.6" opacity=".55"/>';
+  s+='<g transform="translate('+(X(pk)-9).toFixed(1)+','+(Y(hs[pk])-18).toFixed(1)+')">'+_bfIcoStar(18)+'</g>';
+  ["高","中","低"].forEach(function(t,i){ s+='<text x="'+(pL-6)+'" y="'+(pT+4+ch*i/2).toFixed(1)+'" text-anchor="end" font-size="8" font-weight="800" fill="#c2a97a">'+t+'</text>'; });
+  [0,6,12,18,24].forEach(function(h){ var xi=Math.min(23,h);
+    s+='<text x="'+X(xi).toFixed(1)+'" y="'+(H-5)+'" text-anchor="middle" font-size="8.5" font-weight="800" fill="#c9b48d">'+h+'</text>'; });
+  s+='<line x1="'+pL+'" y1="'+(pT+ch)+'" x2="'+(W-pR)+'" y2="'+(pT+ch)+'" stroke="#eddcbb" stroke-width="1.4"/>';
+  return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;display:block;"><defs><linearGradient id="'+GID+'" x1="0" y1="0" x2="0" y2="1">'+
+    '<stop offset="0" stop-color="#ffd98f" stop-opacity=".75"/><stop offset="1" stop-color="#ffd98f" stop-opacity=".05"/></linearGradient></defs>'+s+'</svg>';
+}
+function _bfSleepySVG(d){
+  var hs=_bfNorm(_bfHourly(d).map(function(v){return 100-v;}),16,94);
+  var W=300,H=112,pL=26,pR=8,pT=10,pB=20,cw=W-pL-pR,ch=H-pT-pB,s="";
+  var GID2=_bfUid("bfS");
+  var bw=cw/24*0.62;
+  var X=function(i){return pL+cw*(i+0.5)/24;}, Y=function(v){return pT+ch*(1-v/100);};
+  hs.forEach(function(v,i){
+    var hh=Math.max(2,(pT+ch)-Y(v));
+    s+='<rect x="'+(X(i)-bw/2).toFixed(1)+'" y="'+Y(v).toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+hh.toFixed(1)+'" rx="'+(bw/2.6).toFixed(1)+'" fill="url(#'+GID2+')"/>';
+  });
+  var pk=0; hs.forEach(function(v,i){ if(v>hs[pk])pk=i; });
+  s+='<g transform="translate('+(X(pk)-9).toFixed(1)+','+(Y(hs[pk])-20).toFixed(1)+')">'+_bfIcoMoon(18)+'</g>';
+  ["強","中","弱"].forEach(function(t,i){ s+='<text x="'+(pL-6)+'" y="'+(pT+4+ch*i/2).toFixed(1)+'" text-anchor="end" font-size="8" font-weight="800" fill="#9ab7d0">'+t+'</text>'; });
+  [0,6,12,18,24].forEach(function(h){ var xi=Math.min(23,h);
+    s+='<text x="'+X(xi).toFixed(1)+'" y="'+(H-5)+'" text-anchor="middle" font-size="8.5" font-weight="800" fill="#a9c3d8">'+h+'</text>'; });
+  s+='<line x1="'+pL+'" y1="'+(pT+ch)+'" x2="'+(W-pR)+'" y2="'+(pT+ch)+'" stroke="#d8e6f2" stroke-width="1.4"/>';
+  return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;display:block;"><defs><linearGradient id="'+GID2+'" x1="0" y1="0" x2="0" y2="1">'+
+    '<stop offset="0" stop-color="#8fbdea"/><stop offset="1" stop-color="#c7ddf5"/></linearGradient></defs>'+s+'</svg>';
+}
+/* HPで 表情が かわる じぶんの猫 */
+function _bfMyCat(hp){
+  try{
+    var pr=(typeof getProfile==="function"&&getProfile())||{};
+    var ex=(hp>=76)?"happy":(hp>=56)?"normal":(hp>=40)?"sad":"sad";
+    var po=(hp<40)?"sleep":"sit";
+    return '<span class="bfCat">'+catFigureHTML(pr.catBody||"#1c1c1c",pr.color||"#8fdcff",po,"front",ex,pr.cos||null)+'</span>';
+  }catch(_){ return ""; }
+}
+function _bfYest(hp){
+  try{
+    var y=new Date(Date.now()-86400000);
+    var k=y.getFullYear()+"-"+String(y.getMonth()+1).padStart(2,"0")+"-"+String(y.getDate()).padStart(2,"0");
+    var wl=getWakeLog()||{}, sl=getSleepLog()||{};
+    if(!Number.isFinite(wl[k])&&!Number.isFinite(sl[k]))return null;
+    var save=window._anForceKey; window._anForceKey=k;
+    var d2=_anCalc(1,true); window._anForceKey=save;
+    return d2?d2.hp:null;
+  }catch(_){ return null; }
+}
+function _bfHTML(opt){
+  try{
+    var b=_anBrief();
+    if(!b)return '<div class="bfEmpty">きろくが たまると<br>ここに きょうの 見立てが 出るよ</div>';
+    var _noHead=!!(opt&&opt.noHead);
+    var d=b.d, now=new Date(), wd=["日","月","火","水","木","金","土"][now.getDay()];
+    var hm=function(v){ return (v==null)?"—":_scHM(v); };
+    var slpT=["","すぐ寝れた","ふつう","なかなか"][b.d&&0]||"";
+    var slpq=1; try{slpq=getSlpLog()[jstKey()]||1;}catch(_){}
+    var slpTxt=["","すぐ寝れた","ふつう","寝つけず"][slpq]||"—";
+    var yes=_bfYest(b.rec), diff=(yes==null)?null:(b.rec-yes);
+    return (_noHead?"":
+      ('<div class="bfHead"><span class="bfHi">'+_bfIcoSun(34)+'</span>'+
+        '<div class="bfHt"><b>おはよう！</b><i>きょうも、あたらしい1日を。</i></div>'+
+        '<span class="bfDate">'+_bfIcoCal(20)+(now.getMonth()+1)+'月'+now.getDate()+'日（'+wd+'）</span></div>'))+
+      '<div class="bfG2">'+
+        '<div class="bfCard bfCond"><b class="bfCt">今日の コンディション</b>'+
+          '<div class="bfRingWrap">'+_anRing(b.rec,b.recTxt.c)+'</div>'+
+          '<div class="bfCondBtm"><div class="bfCondTx"><b style="color:'+b.recTxt.c+'">'+b.recTxt.t+'</b><i>'+b.recTxt.s+'</i></div>'+_bfMyCat(b.rec)+'</div>'+
+        '</div>'+
+        '<div class="bfCard bfRhy"><b class="bfCt">きょうの リズム</b>'+
+          '<div class="bfR3">'+
+            '<span>'+_bfIcoMoon(28)+'<i>就寝</i><b>'+hm(b.bed)+'</b></span>'+
+            '<span>'+_bfIcoSun(28)+'<i>起床</i><b>'+hm(b.wake)+'</b></span>'+
+            '<span>'+_bfIcoBed(28)+'<i>睡眠時間</i><b>'+(b.sh==null?"—":(Math.floor(b.sh)+"時間"+Math.round((b.sh%1)*60)+"分"))+'</b></span>'+
+          '</div><div class="bfHr"></div>'+
+          '<div class="bfR2">'+
+            '<span>'+_bfIcoHeart(22)+'<i>気分</i><b>'+(b.mood?escHtml(b.mood.l||""):"—")+'</b></span>'+
+            '<span>'+_bfIcoToast(22)+'<i>ねつき</i><b>'+slpTxt+'</b></span>'+
+          '</div></div>'+
+      '</div>'+
+      '<div class="bfG2">'+
+        '<div class="bfCard bfPeak"><b class="bfCt">'+_bfIcoStar(20)+'きょうの 集中ピーク</b>'+
+          '<div class="bfBig" style="color:#f0972c">'+_scHM(b.pk0)+' - '+_scHM(b.pk1)+'</div>'+
+          _bfFocusSVG(d)+'<i class="bfCap">いちばん 冴えやすい 時間！</i></div>'+
+        '<div class="bfCard bfDip"><b class="bfCt">ねむくなる 時間</b>'+
+          '<div class="bfBig" style="color:#5b9bea">'+_scHM(b.dp0)+' - '+_scHM(b.dp1)+'</div>'+
+          '<i class="bfCap top">'+b.napMin+'の ひるねが きく 時間です。</i>'+_bfSleepySVG(d)+'</div>'+
+      '</div>'+
+      '<div class="bfG2">'+
+        '<div class="bfCard bfNap"><b class="bfCt">'+_bfIcoThumb(20)+'おすすめ</b>'+
+          '<ul class="bfList"><li>'+_bfIcoClock(16)+_scHM(b.dp0)+'〜'+_scHM(b.dp1)+' ごろ</li>'+
+          '<li>'+_bfIcoBed(16)+'長さ：'+b.napMin+'</li>'+
+          '<li>'+_bfIcoMoon(16)+'30分を こえると 重くなる</li></ul>'+_bfArtPillow()+'</div>'+
+        '<div class="bfCard bfWork"><b class="bfCt">'+_bfIcoBulb(20)+'きょうの やりやすい 作業</b>'+
+          '<div class="bfBig w" style="color:#3fa06a">'+b.work.t+'</div><i class="bfCap">'+b.work.s+'</i>'+_bfArtNote()+'</div>'+
+      '</div>'+
+      (b.warn?('<div class="bfCard bfWarn"><b class="bfCt">'+_bfIcoWarn(18)+'気を つけたい こと</b>'+
+        '<div class="bfWt">'+escHtml(b.warn.t)+'</div><i class="bfCap">'+escHtml(b.warn.s)+'</i>'+
+        (b.wlist.length?'<div class="bfChips">'+b.wlist.map(function(x,i){
+          return '<span class="bfChip">'+[_bfIcoDown(16),_bfIcoBrain(16),_bfIcoSad(16)][i%3]+escHtml(x)+'</span>';}).join("")+'</div>':"")+
+        _bfArtMoon()+'</div>'):"")+
+      (function(){var ch=_anChrono(); if(!ch)return "";
+        return '<div class="bfCard bfChr"><b class="bfCt">'+_bfIcoClock(18)+'あなたの タイプ</b>'+
+          '<div class="bfBig w" style="color:'+ch.col+'">'+ch.type+'</div>'+
+          '<i class="bfCap">'+ch.tip+'<br>からだの まん中の 時間 '+_scHM(ch.msf)+'　／　体内時計の 山 '+_scHM((ch.msf+5.5)%24)+
+          (ch.sjl!=null?('　／　平日と 休日の ズレ '+ch.sjl.toFixed(1)+'時間'+(ch.sjl>=2?'（大きめ）':'')):"")+'</i>'+
+          '<i class="bfCap" style="margin-top:4px;opacity:.75">'+ch.n+'日ぶんの きろくから 推定</i></div>';
+      })()+
+      '<div class="bfG2">'+
+        '<div class="bfCard bfTip"><b class="bfCt">'+_bfIcoLeaf(18)+'ひとこと</b>'+
+          '<i class="bfCap big">'+escHtml(b.tip)+'</i>'+_bfArtPlant()+'</div>'+
+        '<div class="bfCard bfSum"><b class="bfCt">今日の まとめ</b>'+
+          '<div class="bfSumRow"><span class="bfSumL">きょうの スコア</span>'+
+            '<span class="bfSumRing">'+_anRing(b.rec,b.recTxt.c)+'</span>'+
+            '<span class="bfSumD"><i>昨日より</i><b class="'+((diff==null)?"":(diff>=0?"up":"dn"))+'">'+
+              ((diff==null)?"—":((diff>=0?"↑ +":"↓ −")+Math.abs(diff)))+'</b></span></div>'+
+          '<div class="bfSumBtm"><span>💙 きょうも、あなたらしい1日を。</span><span>応援しています！</span></div></div>'+
+      '</div>';
+  }catch(_){ return '<div class="bfEmpty">うまく 出せなかった…</div>'; }
+}
+/* ★イラストが 文字に かぶったら 小さくする（それでも ダメなら 消す） */
+function _bfFitArt(root){
+  try{
+    if(!root)return;
+    root.querySelectorAll(".bfCard").forEach(function(card){
+      var art=card.querySelector(".bfArt"); if(!art)return;
+      art.style.width=""; art.style.height=""; art.style.opacity="";
+      var texts=card.querySelectorAll(".bfBig,.bfCap,.bfWt,.bfList li,.bfChip,.bfCt,.bfSumBtm span,.bfCondTx");
+      for(var i=0;i<9;i++){
+        var ar=art.getBoundingClientRect();
+        if(ar.width<6)break;
+        var hit=false;
+        for(var j=0;j<texts.length;j++){
+          var tr=texts[j].getBoundingClientRect();
+          if(tr.width<2||tr.height<2)continue;
+          if(ar.left<tr.right-3&&ar.right>tr.left+3&&ar.top<tr.bottom-3&&ar.bottom>tr.top+3){hit=true;break;}
+        }
+        if(!hit)break;
+        var w=ar.width*0.86;
+        if(w<38){ art.style.opacity="0"; break; }
+        art.style.width=w+"px"; art.style.height="auto";
+      }
+    });
+  }catch(_){}
+}
 function openBrief(){
   try{
     var el=$("zzBrief"); if(!el)return;
-    var b=_anBrief();
     var body=$("bfBody"); if(!body)return;
-    if(!b){ body.innerHTML='<div class="bfEmpty">きろくが たまると<br>ここに きょうの 見立てが 出るよ</div>'; el.hidden=false; return; }
-    var now=new Date(), wd=["日","月","火","水","木","金","土"][now.getDay()];
-    var hm=function(v){ return (v==null)?"—":_scHM(v); };
-    body.innerHTML=
-      '<div class="bfHead"><div><b>おはよう\u3000\u2600\ufe0f</b><i>きょうも あなたらしい 1日を。</i></div>'+
-        '<span class="bfDate">'+(now.getMonth()+1)+'月'+now.getDate()+'日（'+wd+'）</span></div>'+
-      '<div class="bfCard bfMain">'+
-        '<div class="bfRingWrap">'+_anRing(b.rec,b.recTxt.c)+'</div>'+
-        '<div class="bfMainTxt"><b style="color:'+b.recTxt.c+'">'+b.recTxt.t+'</b><i>'+b.recTxt.s+'</i></div>'+
-        '<div class="bfFacts">'+
-          '<span><i>\ud83c\udf19 就寝</i><b>'+hm(b.bed)+'</b></span>'+
-          '<span><i>\u2600\ufe0f 起床</i><b>'+hm(b.wake)+'</b></span>'+
-          '<span><i>\ud83d\udecf\ufe0f 睡眠</i><b>'+(b.sh==null?"—":(Math.floor(b.sh)+"時間"+Math.round((b.sh%1)*60)+"分"))+'</b></span>'+
-          '<span><i>\ud83d\udc93 気分</i><b>'+(b.mood?(b.mood.e||"")+" "+escHtml(b.mood.l||""):"—")+'</b></span>'+
-        '</div>'+
-      '</div>'+
-      '<div class="bfCard bfPeak"><b>\u2b50 きょうの 集中ピーク</b>'+
-        '<div class="bfBig" style="color:#e0a24b">'+_scHM(b.pk0)+' 〜 '+_scHM(b.pk1)+'</div>'+
-        '<i>あたまが いちばん 冴えやすい 時間。だいじな ことは ここに。</i></div>'+
-      '<div class="bfRow">'+
-        '<div class="bfCard bfDip"><b>\ud83d\ude34 ねむくなる 時間</b>'+
-          '<div class="bfBig" style="color:#5fb0dd">'+_scHM(b.dp0)+' 〜 '+_scHM(b.dp1)+'</div>'+
-          '<i>'+(b.napOn?(b.napMin+"の ひるねが きく 時間です。"):"みじかい 休けいを はさむと 楽。")+'</i></div>'+
-        '<div class="bfCard bfNap"><b>\ud83d\udca4 ひるね</b>'+
-          '<div class="bfBig" style="color:'+(b.napOn?"#5fb0dd":"#8fa9bd")+'">'+(b.napOn?"おすすめ":"いらなそう")+'</div>'+
-          '<ul><li>'+_scHM(b.dp0)+'〜'+_scHM(b.dp1)+' ごろ</li><li>長さ '+b.napMin+'</li><li>30分を こえると 重くなる</li></ul></div>'+
-      '</div>'+
-      '<div class="bfCard bfWork"><b>\ud83d\udca1 きょう のびやすい 作業</b>'+
-        '<div class="bfBig" style="color:'+b.work.c+'">'+b.work.t+'</div><i>'+b.work.s+'</i></div>'+
-      (b.warn?('<div class="bfCard bfWarn"><b>\u26a0\ufe0f 気を つけたい こと</b>'+
-        '<div class="bfWt">'+escHtml(b.warn.t)+'</div><i>'+escHtml(b.warn.s)+'</i>'+
-        (b.wlist.length?'<ul>'+b.wlist.map(function(x){return '<li>'+escHtml(x)+'</li>';}).join("")+'</ul>':"")+'</div>'):"")+
-      '<div class="bfCard bfTip"><b>\ud83c\udf3f ひとこと</b><i>'+escHtml(b.tip)+'</i></div>';
+    body.innerHTML=_bfHTML();
     el.hidden=false;
     try{body.scrollTop=0;}catch(_){}
+    try{requestAnimationFrame(function(){ setTimeout(function(){try{_bfFitArt(body);}catch(_){}},40); });}catch(_){}
     try{playPop();}catch(_){}
   }catch(_){}
 }
@@ -23479,6 +23797,7 @@ function _anRankWord(v){
          v>=40?{t:"ようちゅうい",c:"#e0a24b"}:{t:"かいふく ゆうせん",c:"#e08585"};
 }
 function _anRadarSVG(d,base){
+  var _RGID=_bfUid("anG");
   var R=86,cx=100,cy=100,s="";
   var pt=function(i,r){var a=-Math.PI/2+i*Math.PI/3;return [cx+Math.cos(a)*r,cy+Math.sin(a)*r];};
   var poly=function(r,fill,stroke,w,op){
@@ -23493,7 +23812,7 @@ function _anRadarSVG(d,base){
     s+='<polygon points="'+qb.join(" ")+'" fill="none" stroke="#b9a8ec" stroke-width="2" stroke-dasharray="5 4" stroke-linejoin="round" opacity=".85"/>';
   }
   var q2=[];AN_AX.forEach(function(ax,i3){var v=Math.max(4,Math.min(100,d[ax.k]||0));var p4=pt(i3,R*v/100);q2.push(p4[0].toFixed(1)+","+p4[1].toFixed(1));});
-  s+='<polygon points="'+q2.join(" ")+'" fill="url(#anG)" stroke="#5fb0dd" stroke-width="2.6" stroke-linejoin="round"/>';
+  s+='<polygon points="'+q2.join(" ")+'" fill="url(#'+_RGID+')" stroke="#5fb0dd" stroke-width="2.6" stroke-linejoin="round"/>';
   AN_AX.forEach(function(ax,i4){var v=Math.max(4,Math.min(100,d[ax.k]||0));var p5=pt(i4,R*v/100);
     s+='<circle cx="'+p5[0].toFixed(1)+'" cy="'+p5[1].toFixed(1)+'" r="3.4" fill="'+ax.c+'" stroke="#fff" stroke-width="1.4"/>';});
   AN_AX.forEach(function(ax,i5){var p6=pt(i5,R+17);
@@ -23505,7 +23824,7 @@ function _anRadarSVG(d,base){
       if(Math.abs(dv)>=3)s+='<text x="'+p6[0].toFixed(1)+'" y="'+(p6[1]+24).toFixed(1)+'" text-anchor="'+an+'" font-size="8.5" font-weight="900" fill="'+(dv>0?"#5fae7a":"#e08585")+'">'+(dv>0?"▲":"▼")+Math.abs(dv)+'</text>'; }
   });
   return '<svg viewBox="0 0 200 200" style="width:100%;height:auto;display:block;overflow:visible;">'+
-    '<defs><linearGradient id="anG" x1="0" y1="0" x2="0" y2="1">'+
+    '<defs><linearGradient id="'+_RGID+'" x1="0" y1="0" x2="0" y2="1">'+
     '<stop offset="0" stop-color="#8fd3f0" stop-opacity=".55"/>'+
     '<stop offset="1" stop-color="#b9a8ec" stop-opacity=".38"/></linearGradient></defs>'+s+'</svg>';
 }
@@ -23547,17 +23866,27 @@ function _anCurveSVG(d){
     '<stop offset="1" stop-color="#8fd3f0" stop-opacity="0"/></linearGradient></defs>'+s+'</svg>';
 }
 function _anHpCol(v){ return v>=76?"#5fae7a":v>=56?"#5fb0dd":v>=40?"#e0a24b":"#e08585"; }
+var _anMode={};
 function _anPaint(hostId,opt){
   try{
     var host=$(hostId); if(!host)return;
     opt=opt||{};
+    /* ★きょうの 見立て（新しい カード）を さきに 出す */
+    var md=_anMode[hostId]||"brief";
+    var tabs='<div class="anSeg anTab">'+
+      '<button class="anSegBtn'+(md==="brief"?" on":"")+'" data-anm="'+hostId+'" data-m="brief" type="button">きょうの 見立て</button>'+
+      '<button class="anSegBtn'+(md==="detail"?" on":"")+'" data-anm="'+hostId+'" data-m="detail" type="button">くわしく</button>'+
+      '</div>';
+    if(md==="brief"){ host.innerHTML=tabs+'<div class="anBrief">'+_bfHTML({noHead:true})+'</div>';
+      try{requestAnimationFrame(function(){ setTimeout(function(){try{_bfFitArt(host);}catch(_){}},40); });}catch(_){}
+      return; }
     var rg=_anRange[hostId]||1;
     var d=_anCalc(rg,!!opt.skipToday);
     if(!d){ host.innerHTML='<div class="anEmpty">きろくが たまると<br>ここに 分析が 出るよ</div>'; return; }
     var napCls=["","mid","hi"][d.nap.lv]||"";
     var base=(rg===7)?null:_anCalc(7,!!opt.skipToday);
     var rk=_anRankWord(d.hp);
-    host.innerHTML=
+    host.innerHTML=tabs+
       '<div class="anSeg">'+[1,3,7].map(function(r){
         return '<button class="anSegBtn'+(r===rg?" on":"")+'" data-an="'+hostId+'" data-r="'+r+'" type="button">'+(r===1?"1日":r===3?"3日":"1週間")+'</button>';
       }).join("")+'</div>'+
@@ -23582,6 +23911,8 @@ try{ document.addEventListener("click",function(e){
   var t=e.target; if(!t||!t.closest)return;
   var b=t.closest(".anSegBtn"); if(!b)return;
   try{playClick();}catch(_){}
+  if(b.dataset.anm){ _anMode[b.dataset.anm]=b.dataset.m;
+    _anPaint(b.dataset.anm,{skipToday:!!(window._anSkip&&window._anSkip[b.dataset.anm])}); return; }
   var h=b.dataset.an; _anRange[h]=parseInt(b.dataset.r,10)||1;
   _anPaint(h,{skipToday:!!(window._anSkip&&window._anSkip[h])});
 }); }catch(_){}
@@ -23895,10 +24226,13 @@ function openAskCard(then){
   _askM1=(_lt.m1!=null)?_lt.m1:null;_askM2=null;_askM3=null;
   try{_krSlp=getSlpLog()[jstKey()]||_lt.slp||null;}catch(_){_krSlp=_lt.slp||null;}
   try{_krSlpy=getSlpyLog()[jstKey()]||_lt.slpy||3;}catch(_){_krSlpy=_lt.slpy||3;}
-  var _n=new Date();
-  /* ★まえに きめた 値を そのまま 出す（なければ いまの 時刻） */
-  _krWakeH=(_lt.wake!=null)?_lt.wake:_n.getHours();
-  _krBedH=(_lt.bed!=null)?_lt.bed:((_n.getHours()-6)%24+24)%24;
+  var _n=new Date(), _k=jstKey();
+  /* ★ゆうせん順： きょう すでに きろく／自動で ついた 値 → 前回の 値 → いまの 時刻
+     （ここを 読まずに 上書きして いたので「更新した 時間で 変わる」バグに なっていた） */
+  try{ var _wl=getWakeLog(); _krWakeH=Number.isFinite(_wl[_k])?_wl[_k]:((_lt.wake!=null)?_lt.wake:_n.getHours()); }
+  catch(_){ _krWakeH=(_lt.wake!=null)?_lt.wake:_n.getHours(); }
+  try{ var _sl=getSleepLog(); _krBedH=Number.isFinite(_sl[_k])?_sl[_k]:((_lt.bed!=null)?_lt.bed:((_n.getHours()-6)%24+24)%24); }
+  catch(_){ _krBedH=(_lt.bed!=null)?_lt.bed:((_n.getHours()-6)%24+24)%24; }
   _askPaint();
   try{ var bx=$("askBox"); if(bx){ bx.classList.remove("done"); if(bx.scrollIntoView)bx.scrollIntoView({block:"center",behavior:"smooth"}); } }catch(_){}
 }
@@ -24131,7 +24465,10 @@ function _krPaintNew(){
       if(v==null){ if(box)box.classList.add("dunno"); if(lab)lab.textContent="わからない"; }
       else{ if(box)box.classList.remove("dunno");
         var q=Math.round(v); if(q>23)q=q-24; if(q<0)q+=24; sel.value=String(q);
-        if(lab)lab.textContent=q+":00"; }
+        /* ★じっさいの きろく（分つき）は そのまま 見せる。まるめない */
+        var hh2=Math.floor(((v%24)+24)%24), mm2=Math.round(((v%1)+1)%1*60);
+        if(mm2>=60){hh2=(hh2+1)%24;mm2=0;}
+        if(lab)lab.textContent=hh2+":"+String(mm2).padStart(2,"0"); }
     });
     try{ document.querySelectorAll(".krQ").forEach(function(b){
       b.classList.toggle("on", (b.dataset.t==="wake")?(_krWakeH==null):(_krBedH==null)); }); }catch(_){}
@@ -32690,7 +33027,9 @@ try{
   };
   document.addEventListener("pointerup",up);
   document.addEventListener("pointercancel",up);
-  window.addEventListener("resize",function(){ try{_cpRender();}catch(_){} });
+  window.addEventListener("resize",function(){ try{_cpRender();}catch(_){}
+    try{_bfFitArt(document.getElementById("bfBody"));}catch(_){}
+    try{_bfFitArt(document.getElementById("anBoxRec"));}catch(_){} });
 }catch(_){}
 function _catY1PopClose(){ try{var p=document.getElementById("catY1Pop"); if(p)p.remove();}catch(_){} }
 function _catY1PopOpen(po,anchor){

@@ -6056,15 +6056,15 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 .catLabel.bub.hasPhoto .catName{color:#fff !important;-webkit-text-fill-color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.62),0 0 2px rgba(0,0,0,.55);}
 .catLabel.bub.hasPhoto .catCmtWrap{margin-top:auto;position:relative;z-index:2;}
 .catLabel.bub.hasPhoto .catCmt{color:#fff !important;-webkit-text-fill-color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.78) !important;background:none !important;max-width:94px;padding:0 20px;}
-.catLabel.bub.hasPhoto .cwMore{z-index:3;bottom:5px;left:5px;top:auto;right:auto;}
+.catLabel.bub.hasPhoto .cwMore{z-index:3;top:5px;right:5px;bottom:auto;left:auto;}
 /* ==== ギャラリーのセル（日付・自分のは枠色・削除・タイトル） ==== */
-.glCell.mine{outline:2.5px solid #ffb84d;outline-offset:-2.5px;}
-.glCell .glNm .glDate{font-style:normal;opacity:.85;margin-left:5px;font-weight:800;}
+.glCell.mine::before{content:"";position:absolute;top:6px;left:6px;width:11px;height:11px;border-radius:50%;background:#ffa62b;box-shadow:0 0 0 2px rgba(0,0,0,.3),0 1px 3px rgba(0,0,0,.3);z-index:4;pointer-events:none;}
+.glCell .glDate{font-style:normal;opacity:.85;margin-left:5px;font-weight:800;}
 .glCell .glCap{position:absolute;left:6px;right:6px;bottom:6px;z-index:2;background:rgba(20,44,62,.62);color:#fff;
   border-radius:8px;padding:3px 8px;font-size:10.5px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
   box-sizing:border-box;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);}
 .glCell .glCapAdd{background:rgba(255,255,255,.85);color:#5f8ba5;border:1px dashed rgba(120,165,195,.75);cursor:pointer;}
-.glCell .glDel{position:absolute;top:6px;left:6px;z-index:3;width:25px;height:25px;border:none;border-radius:50%;
+.glCell .glDel{position:absolute;top:6px;right:6px;z-index:3;width:25px;height:25px;border:none;border-radius:50%;
   background:rgba(228,78,78,.92);color:#fff;font-size:12px;font-weight:900;line-height:1;cursor:pointer;padding:0;
   display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.28);opacity:0;transition:opacity .2s;}
 .glCell.mine:hover .glDel,.glCell.mine:active .glDel{opacity:1;}
@@ -6095,7 +6095,7 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 @media (min-width:620px){#glGrid{columns:3;}}
 @media (min-width:960px){#glGrid{columns:3;column-gap:6px;padding:10px 14px 6px;}}
 @media (min-width:1360px){#glGrid{columns:3;}}
-.glCell{break-inside:avoid;position:relative;margin:0 0 5px;border-radius:12px;overflow:hidden;cursor:pointer;
+.glCell{break-inside:avoid;position:relative;margin:0 0 5px;border-radius:2px;overflow:hidden;cursor:pointer;
   background:rgba(255,255,255,.6);box-shadow:0 3px 10px rgba(90,140,180,.16);}
 .glCell img{width:100%;display:block;}
 .glCell .glNm{position:absolute;top:6px;right:6px;z-index:2;background:rgba(20,44,62,.55);color:#fff;
@@ -6131,6 +6131,8 @@ body.galOpen #fabWrap{z-index:3450 !important;}
 @media (hover:hover){
   .glCell:hover::after{opacity:1;}
   .glCell:hover .glNm,.glCell:hover .glCap{opacity:1;}
+  #glGrid .glCell img{filter:blur(2.5px) brightness(.9);transition:filter .25s ease;}
+  #glGrid .glCell:hover img{filter:none;}
 }
 @media (hover:none){
   .glCell::after{opacity:1;}

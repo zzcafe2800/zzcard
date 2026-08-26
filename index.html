@@ -6044,6 +6044,12 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 #tsAutoNote{font-size:11px !important;font-weight:800;color:#5aa886 !important;background:#e8f8f0;border-radius:999px;
   padding:2px 10px;align-self:flex-end;margin:0 0 4px auto;}
 #tsAutoNote:not([hidden]){display:inline-block;}
+/* 昨日の作業時間 入力 */
+#tsWorkRow{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin:2px 0 6px;}
+#tsWorkRow .twLbl{font-size:11.5px;font-weight:900;color:#5aa886;}
+#tsWorkRow select{border:1.5px solid #cfe8dd;border-radius:8px;padding:4px 5px;font-size:13px;font-family:inherit;font-weight:800;color:#4a7a68;background:#fff;}
+#tsWorkRow .twU{font-size:11px;font-weight:800;color:#7fae9c;}
+.glCell .glWt{position:absolute;top:6px;right:6px;z-index:2;background:rgba(0,0,0,.55);color:#fff;border-radius:999px;padding:2px 8px;font-size:9.5px;font-weight:800;line-height:1.3;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);box-shadow:0 1px 4px rgba(0,0,0,.25);}
 /* ==== 吹き出しの中の写真（枠いっぱい・形にそって） ==== */
 .catLabel.bub.hasPhoto{min-height:98px;}
 .hillCat.hcPhoto .catDeco{display:none !important;}
@@ -6140,6 +6146,44 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
   .rcCell{min-height:56px;}
   #rcTlBox{height:300px;}
 }
+/* お部屋カレンダー：ダークテーマ＋日未選択で全画面 */
+#roomCalScreen{background:linear-gradient(180deg,#181a20,#111318 50%,#181a20) !important;}
+#roomCalScreen .rcTab{background:rgba(255,255,255,.06) !important;color:#8b93a0 !important;}
+#roomCalScreen .rcTab.active{background:#23262e !important;color:#f0f2f5 !important;box-shadow:0 -2px 8px rgba(0,0,0,.35) !important;}
+#rcMonthBar button{background:#262a33 !important;color:#e0e4ea !important;box-shadow:0 3px 8px rgba(0,0,0,.3) !important;}
+#rcMonthTtl{color:#f0f2f5 !important;}
+#rcCalPane,#rcDayPane{background:#20232a !important;box-shadow:0 8px 22px rgba(0,0,0,.4) !important;}
+#rcWeekHead span{color:#9aa2b0 !important;}
+#rcWeekHead span.sun{color:#f08a9e !important;}
+#rcWeekHead span.sat{color:#7fb0e0 !important;}
+.rcCell{background:#282c35 !important;border-color:transparent !important;}
+.rcCell:hover{background:#31353f !important;}
+.rcCell.rcOther{background:#1c1f26 !important;}
+.rcCell.rcToday{border-color:#5a6270 !important;}
+.rcCell.rcSel{border-color:#f0f2f5 !important;background:#33373f !important;}
+.rcCell .rcNum{color:#c8cdd6 !important;}
+.rcCell.rcSun .rcNum{color:#f08a9e !important;}
+.rcCell.rcSat .rcNum{color:#7fb0e0 !important;}
+.rcCell .rcMore{color:#9aa2b0 !important;}
+#rcHint{color:#7a828f !important;}
+#rcDayTtl{color:#f0f2f5 !important;}
+.rcLbl{color:#b8c0cc !important;}
+.rcTime select,#rcRoomId{background:#2a2e37 !important;border-color:#3a3f4a !important;color:#e6eaf0 !important;}
+.rcColon{color:#8b93a0 !important;}
+.rcAmpm{background:#3a2f38 !important;color:#f0a8c0 !important;}
+.rcAmpm.pm{background:#2f3948 !important;color:#8fb8e0 !important;}
+#rcSave{background:linear-gradient(135deg,#eef0f3,#dfe3e8) !important;color:#1c1e24 !important;box-shadow:0 5px 12px rgba(0,0,0,.4) !important;}
+#rcDel{background:#2a2e37 !important;color:#c89aa4 !important;}
+#rcTlWrap{border-top-color:#3a3f4a !important;}
+#rcTlTtl{color:#b8c0cc !important;}
+#rcTimeline{background:repeating-linear-gradient(#22262e,#22262e calc(100%/24 - 1px),#171a20 calc(100%/24 - 1px),#171a20 calc(100%/24)) !important;}
+#rcTlHours{color:#8b93a0 !important;}
+.rcTlEmpty{color:#6a727f !important;}
+/* 日にち未選択＝カレンダーだけ全画面 */
+#rcDayPane{display:none;}
+#roomCalScreen.rcSelMode #rcDayPane{display:block;}
+#roomCalScreen:not(.rcSelMode) #rcCalPane{flex-basis:100%;flex-grow:1;}
+#roomCalScreen:not(.rcSelMode) .rcCell{min-height:92px;}
 #galleryScreen{position:fixed;inset:0;z-index:3400;overflow-y:auto;
   background:linear-gradient(180deg,#eaf7fd,#dff0fa 40%,#eef8fd);
   font-family:"Yomogi","Kosugi Maru",sans-serif;-webkit-overflow-scrolling:touch;}
@@ -6192,8 +6236,6 @@ body.galOpen #fabWrap{z-index:3450 !important;}
 @media (hover:hover){
   .glCell:hover::after{opacity:1;}
   .glCell:hover .glNm,.glCell:hover .glCap{opacity:1;}
-  #glGrid .glCell img{filter:blur(2.5px) brightness(.9);transition:filter .25s ease;}
-  #glGrid .glCell:hover img{filter:none;}
 }
 @media (hover:none){
   .glCell::after{opacity:1;}
@@ -7943,7 +7985,7 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
           </div>
           <div id="tsPostRight">
             <div id="wakeAdjRow"><span class="waLabel">おきた<br>じかん</span><div class="waCtrl"><button id="wakeAdjMinus" type="button" aria-label="はやく">◀</button><span id="wakeAdjTime">–</span><button id="wakeAdjPlus" type="button" aria-label="おそく">▶</button></div></div>
-            <div id="tsAutoNote" hidden>とうこう ずみ</div>
+            <div id="tsWorkRow"><span class="twLbl">昨日の作業時間</span><select id="tsWorkH" aria-label="時間"></select><span class="twU">時間</span><select id="tsWorkM" aria-label="分"></select><span class="twU">分</span></div>
             <div id="tsInputWrap">
               <textarea id="tsComment" maxlength="30" rows="2" placeholder=""></textarea>
             <div id="tsPhotoRow"><button id="tsPhotoAdd" type="button" aria-label="しゃしんを ついか"><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><rect x="2.4" y="6" width="16.2" height="13.6" rx="3" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="7.4" cy="10.6" r="1.6" fill="currentColor"/><path d="M3.4 18 L8.8 12.8 L12 15.6 L14.8 12.9 L17.6 15.4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="18.6" cy="6" r="4.2" fill="#fff" stroke="currentColor" stroke-width="1.7"/><path d="M18.6 4.1 V7.9 M16.7 6 H20.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><span id="tsPhotoBadge" hidden></span></button>
@@ -12483,12 +12525,12 @@ function _applyHillFromVal(val){
     const cats=Object.values(byUid).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,40);   /* あたらしい順 */
     const p=getProfile()||{};
     /* 自分の“今日の投稿”を取得。あれば投稿済み＝実際のひとこと・起床時間を表示、なければ「投稿する」ボタン */
-    const selfPost=val[me+"_"+jstKey()]||null;
-    const posters=cats.length+(selfPost?1:0);
+    const _postedTodayVal=val[me+"_"+jstKey()]||null; let selfPost=_postedTodayVal, _selfKey=me+"_"+jstKey(); if(!selfPost){ Object.keys(val).forEach(function(k){ var v=val[k]; if(v&&v.uid===me){ if(!selfPost||(v.createdAt||0)>(selfPost.createdAt||0)){selfPost=v;_selfKey=k;} } }); }
+    const posters=cats.length+(_postedTodayVal?1:0);
     if($("recentPostCount"))$("recentPostCount").innerHTML=posters>0?(`<span class="hsTop"><b>${posters}</b><i class="hsUnit">人</i></span><span class="hsLbl">とうこう</span>`):"";
     let self;
     if(selfPost){
-      self={uid:me,isSelf:true,catOnly:(selfPost.catOnly?1:0),pid:(me+"_"+jstKey()),y1:_yume1Payload(),name:p.name||"あなた",catBody:profileBody(),color:profileColor(),
+      self={uid:me,isSelf:true,catOnly:(selfPost.catOnly?1:0),pid:_selfKey,date:_selfKey.slice((me+"_").length),y1:_yume1Payload(),name:p.name||"あなた",catBody:profileBody(),color:profileColor(),
         wakeHour:selfPost.wakeHour,wakeMin:selfPost.wakeMin,
         createdAt:selfPost.createdAt||Date.now(),
         phN:selfPost.phN||0, phT:selfPost.phT||null,   /* ★自分の投稿にも しゃしんを 引きつぐ（これが 抜けてて 自分の吹き出しだけ 写真が 出なかった） */
@@ -24006,7 +24048,7 @@ function _bfHTML(opt){
     var yes=_bfYest(b.rec), diff=(yes==null)?null:(b.rec-yes);
     return (_noHead?"":
       ('<div class="bfHead"><span class="bfHi">'+_bfIcoSun(34)+'</span>'+
-        '<div class="bfHt"><b>おはよう！</b><i>きょうも、あたらしい1日を。</i></div>'+
+        '<div class="bfHt"><b>おはよう！</b></div>'+
         '<span class="bfDate">'+_bfIcoCal(20)+(now.getMonth()+1)+'月'+now.getDate()+'日（'+wd+'）</span></div>'))+
       '<div class="bfG2">'+
         '<div class="bfCard bfCond"><b class="bfCt">今日の コンディション</b>'+
@@ -24027,16 +24069,16 @@ function _bfHTML(opt){
       '<div class="bfG2">'+
         '<div class="bfCard bfPeak"><b class="bfCt">'+_bfIcoStar(20)+'きょうの 集中ピーク</b>'+
           '<div class="bfBig" style="color:#f0972c">'+_scHM(b.pk0)+' - '+_scHM(b.pk1)+'</div>'+
-          _bfFocusSVG(d)+'<i class="bfCap">いちばん 冴えやすい 時間！</i></div>'+
+          _bfFocusSVG(d)+'<i class="bfCap">冴える 時間</i></div>'+
         '<div class="bfCard bfDip"><b class="bfCt">ねむくなる 時間</b>'+
           '<div class="bfBig" style="color:#5b9bea">'+_scHM(b.dp0)+' - '+_scHM(b.dp1)+'</div>'+
-          '<i class="bfCap top">'+b.napMin+'の ひるねが きく 時間です。</i>'+_bfSleepySVG(d)+'</div>'+
+          '<i class="bfCap top">ひるねが きく</i>'+_bfSleepySVG(d)+'</div>'+
       '</div>'+
       '<div class="bfG2">'+
         '<div class="bfCard bfNap"><b class="bfCt">'+_bfIcoThumb(20)+'おすすめ</b>'+
-          '<ul class="bfList"><li>'+_bfIcoClock(16)+_scHM(b.dp0)+'〜'+_scHM(b.dp1)+' ごろ</li>'+
-          '<li>'+_bfIcoBed(16)+'長さ：'+b.napMin+'</li>'+
-          '<li>'+_bfIcoMoon(16)+'30分を こえると 重くなる</li></ul>'+_bfArtPillow()+'</div>'+
+          '<ul class="bfList"><li>'+_bfIcoClock(16)+_scHM(b.dp0)+'〜'+_scHM(b.dp1)+'</li>'+
+          '<li>'+_bfIcoBed(16)+b.napMin+'</li>'+
+          '<li>'+_bfIcoMoon(16)+'30分まで</li></ul>'+_bfArtPillow()+'</div>'+
         '<div class="bfCard bfWork"><b class="bfCt">'+_bfIcoBulb(20)+'きょうの やりやすい 作業</b>'+
           '<div class="bfBig w" style="color:#3fa06a">'+b.work.t+'</div><i class="bfCap">'+b.work.s+'</i>'+_bfArtNote()+'</div>'+
       '</div>'+
@@ -24046,8 +24088,8 @@ function _bfHTML(opt){
           return '<span class="bfChip">'+[_bfIcoDown(16),_bfIcoBrain(16),_bfIcoSad(16)][i%3]+escHtml(x)+'</span>';}).join("")+'</div>':"")+
         _bfArtMoon()+'</div>')
        :('<div class="bfCard bfSafe"><b class="bfCt">'+_bfIcoThumb(18)+'気を つけたい こと</b>'+
-        '<div class="bfWt">いまのところ 気になる点は なし</div>'+
-        '<i class="bfCap">リズムは 保てています。この ちょうしで。</i>'+
+        '<div class="bfWt">気になる点は なし</div>'+
+        '<i class="bfCap">この ちょうしで</i>'+
         '<div class="bfChips"><span class="bfChip ok">夜ふかし なし</span><span class="bfChip ok">睡眠 たりてる</span></div>'+
         _bfArtMoon()+'</div>'))+
       (function(){var ch=null; try{ch=_anChrono();}catch(_){}
@@ -24055,13 +24097,12 @@ function _bfHTML(opt){
           var nd=(ch&&ch.need)?ch.need:5;
           return '<div class="bfCard bfChr"><b class="bfCt">'+_bfIcoClock(18)+'あなたの タイプ</b>'+
             '<div class="bfBig w" style="color:#9a93c4">しらべ中…</div>'+
-            '<i class="bfCap">ねた時間と おきた時間が そろった日が <b>あと '+nd+'日</b>で、<br>あなたの 体内時計の タイプが わかるよ。</i></div>';
+            '<i class="bfCap">あと <b>'+nd+'日</b>で わかるよ</i></div>';
         }
         return '<div class="bfCard bfChr"><b class="bfCt">'+_bfIcoClock(18)+'あなたの タイプ</b>'+
           '<div class="bfBig w" style="color:'+ch.col+'">'+ch.type+'</div>'+
           '<i class="bfCap">'+ch.tip+'<br>からだの まん中の 時間 '+_scHM(ch.msf)+'　／　体内時計の 山 '+_scHM((ch.msf+5.5)%24)+
-          (ch.sjl!=null?('<br>平日と 休日の ズレ '+ch.sjl.toFixed(1)+'時間'+(ch.sjl>=2?'（大きめ）':'')):"")+'</i>'+
-          '<i class="bfCap" style="margin-top:4px;opacity:.75">'+ch.n+'日ぶんの きろくから 推定</i></div>';
+          (ch.sjl!=null?('<br>平日と 休日の ズレ '+ch.sjl.toFixed(1)+'時間'+(ch.sjl>=2?'（大きめ）':'')):"")+'</i></div>';
       })()+
       '<div class="bfG2">'+
         '<div class="bfCard bfTip"><b class="bfCt">'+_bfIcoLeaf(18)+'ひとこと</b>'+
@@ -24071,7 +24112,7 @@ function _bfHTML(opt){
             '<span class="bfSumRing">'+_anRing(b.rec,b.recTxt.c)+'</span>'+
             '<span class="bfSumD"><i>昨日より</i><b class="'+((diff==null)?"":(diff>=0?"up":"dn"))+'">'+
               ((diff==null)?"—":((diff>=0?"↑ +":"↓ −")+Math.abs(diff)))+'</b></span></div>'+
-          '<div class="bfSumBtm"><span>💙 きょうも、あなたらしい1日を。</span><span>応援しています！</span></div></div>'+
+          '<div class="bfSumBtm"><span>💙 おつかれさま！</span></div></div>'+
       '</div>';
   }catch(_){ return '<div class="bfEmpty">うまく 出せなかった…</div>'; }
 }
@@ -33427,11 +33468,12 @@ async function _phSave(){
     var key=getUid()+"_"+jstKey();
     var _pf=(typeof getProfile==="function"&&getProfile())||{};
     var nm=_pf.name||"匿名さん", at=Date.now();
+    var _wt=0; try{ _wt=(parseInt(($("tsWorkH")||{}).value,10)||0)*60+(parseInt(($("tsWorkM")||{}).value,10)||0); }catch(_){}
     await set(ref(db,"photos/"+key),{uid:getUid(),name:nm,at:at,
       imgs:_tsPhotos.map(function(q){return {u:q.u,w:q.w,h:q.h};})});
     /* ★ギャラリー用＝みほんだけの かるい さくいん（本体は 開いた時だけ 読む） */
     try{
-      await set(ref(db,"photoidx/"+key),{uid:getUid(),name:nm,at:at,
+      await set(ref(db,"photoidx/"+key),{uid:getUid(),name:nm,at:at,wt:_wt,
         ts:_tsPhotos.map(function(q){return {t:q.g||q.t,w:q.w,h:q.h};})});
     }catch(_){}
     return {n:_tsPhotos.length,th:_tsPhotos[0].t};
@@ -33503,10 +33545,10 @@ function _glPaint(){
     $("glEmpty").hidden=true;
     var next=Math.min(_glItems.length,_glShown+_GL_STEP);
     var add=_glItems.slice(_glShown,next).map(function(q,i){
-      var ar=(q.w&&q.h)?(q.h/q.w*100):75;var _gm=(q.uid===getUid());var _gd=_glDateLabel(q.date);var _lk=_gm?(_glLikeCount(q)>0?'<span class="glLikeCnt">\u2764 '+_glLikeCount(q)+'</span>':''):'<button class="glLike'+(_glLiked(q)?' on':'')+'" data-gi="'+(_glShown+i)+'" type="button" aria-label="いいね">'+(_glLiked(q)?'\u2764':'\u2661')+' '+_glLikeCount(q)+'</button>';
+      var ar=(q.w&&q.h)?(q.h/q.w*100):75;var _gm=(q.uid===getUid());var _gd=_glDateLabel(q.date);var _gw=_wtFmt(q.wt);var _lk=_gm?(_glLikeCount(q)>0?'<span class="glLikeCnt">\u2764 '+_glLikeCount(q)+'</span>':''):'<button class="glLike'+(_glLiked(q)?' on':'')+'" data-gi="'+(_glShown+i)+'" type="button" aria-label="いいね">'+(_glLiked(q)?'\u2764':'\u2661')+' '+_glLikeCount(q)+'</button>';
       return '<div class="glCell'+(_gm?' mine':'')+'" data-gi="'+(_glShown+i)+'">'+(_gm?'<button class="glDel" data-gi="'+(_glShown+i)+'" type="button" aria-label="さくじょ">✕</button>':'')+(q.cap?'<span class="glCap">'+escHtml(q.cap)+'</span>':(_gm?'<span class="glCap glCapAdd">＋タイトル</span>':''))+
         '<span class="glNm">'+escHtml(q.name)+(_gd?'<i class="glDate">'+_gd+'</i>':'')+'</span>'+
-        '<img src="'+q.u+'" alt="" loading="lazy" style="aspect-ratio:'+(q.w||4)+'/'+(q.h||3)+'"/>'+_lk+'</div>';
+        '<img src="'+q.u+'" alt="" loading="lazy" style="aspect-ratio:'+(q.w||4)+'/'+(q.h||3)+'"/>'+_lk+(_gw?'<span class="glWt">🕐 '+_gw+'</span>':'')+'</div>';
     }).join("");
     if(_glShown===0)grid.innerHTML=add; else grid.insertAdjacentHTML("beforeend",add);
     _glShown=next;
@@ -33533,7 +33575,7 @@ async function _glLoadMore(){
       ks.forEach(function(k){
         var e=v[k]; if(!e||!e.ts||!e.ts.length)return;
         e.ts.forEach(function(t,i){
-          _glItems.push({u:t.t,w:t.w,h:t.h,name:e.name||"匿名さん",at:(e.at||0)-i,uid:e.uid,key:k,idx:i,cap:(t.cap||""),date:_glDateFromKey(k)});
+          _glItems.push({u:t.t,w:t.w,h:t.h,name:e.name||"匿名さん",at:(e.at||0)-i,uid:e.uid,key:k,idx:i,cap:(t.cap||""),date:_glDateFromKey(k),wt:(e.wt||0)});
         });
       });
       _glSortItems();
@@ -33563,6 +33605,8 @@ async function _glToggleLike(gi){
     _glPaintLikeCell(gi);
   }catch(e){ console.warn("glLike",e); }
 }
+function _wtFmt(min){ min=min|0; if(min<=0)return ""; var h=Math.floor(min/60),m=min%60; var s=(h?h+"時間":"")+(m?m+"分":""); return s||"0分"; }
+try{ (function(){ var h=$("tsWorkH"),m=$("tsWorkM"); if(h){var o='<option value="0">0</option>';for(var i=1;i<=12;i++)o+='<option value="'+i+'">'+i+'</option>';h.innerHTML=o;} if(m){var o2="";[0,15,30,45].forEach(function(v){o2+='<option value="'+v+'">'+(v<10?"0":"")+v+'</option>';});m.innerHTML=o2;} })(); }catch(_){}
 function _glDateFromKey(k){ try{var p=String(k||"").split("_"); return p.length>=2?p.slice(1).join("_"):"";}catch(_){return"";} }
 function _glDateLabel(d){ try{var m=String(d||"").match(/^(\d{4})-(\d{2})-(\d{2})/); if(!m)return""; return parseInt(m[2],10)+"/"+parseInt(m[3],10);}catch(_){return"";} }
 async function _glDeleteImg(gi){
@@ -33629,7 +33673,7 @@ function _rcOpen(){ try{
   var el=$("roomCalScreen"); if(!el)return; _rcFillSelects();
   el.hidden=false; try{el.scrollTop=0;}catch(_){}
   try{document.body.classList.add("galOpen");}catch(_){} try{refreshDock();}catch(_){}
-  _rcMonthOff=0; _rcSel=null; _rcRenderMonth();
+  _rcMonthOff=0; _rcSel=null; try{$("roomCalScreen").classList.remove("rcSelMode");}catch(_){} _rcRenderMonth();
   _rcLoad().then(function(){ _rcRenderMonth(); if(_rcSel)_rcRenderDay(); });
 }catch(_){}}
 function _rcClose(){ try{var el=$("roomCalScreen"); if(el)el.hidden=true;}catch(_){} try{document.body.classList.remove("galOpen");}catch(_){} try{refreshDock();}catch(_){} }
@@ -33652,7 +33696,7 @@ function _rcRenderMonth(){ try{
   while(cellN%7!==0){ html+='<div class="rcCell rcOther"></div>'; cellN++; }
   grid.innerHTML=html;
 }catch(_){}}
-function _rcSelectDay(ds){ _rcSel=ds; _rcRenderMonth(); _rcRenderDay(); }
+function _rcSelectDay(ds){ _rcSel=ds; try{$("roomCalScreen").classList.add("rcSelMode");}catch(_){} _rcRenderMonth(); _rcRenderDay(); }
 function _rcRenderDay(){ try{
   if(!_rcSel)return;
   var parts=_rcSel.split("-"); var ttl=$("rcDayTtl"); if(ttl)ttl.textContent=(parseInt(parts[1],10))+"月"+(parseInt(parts[2],10))+"日 の 予定";

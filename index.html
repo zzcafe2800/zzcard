@@ -6073,11 +6073,11 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
   font-size:15px;font-weight:900;cursor:pointer;box-shadow:0 2px 8px rgba(90,140,180,.18);}
 #glTtl{font-size:16px;font-weight:900;color:#3f7a95;}
 #glCount{margin-left:auto;font-size:11.5px;font-weight:800;color:#8fb4c8;}
-#glGrid{columns:2;column-gap:8px;padding:10px 12px 4px;}
+#glGrid{columns:3;column-gap:5px;padding:8px 8px 4px;}
 @media (min-width:620px){#glGrid{columns:3;}}
-@media (min-width:960px){#glGrid{columns:4;column-gap:10px;padding:12px 16px 6px;}}
-@media (min-width:1360px){#glGrid{columns:5;}}
-.glCell{break-inside:avoid;position:relative;margin:0 0 8px;border-radius:12px;overflow:hidden;cursor:pointer;
+@media (min-width:960px){#glGrid{columns:3;column-gap:6px;padding:10px 14px 6px;}}
+@media (min-width:1360px){#glGrid{columns:3;}}
+.glCell{break-inside:avoid;position:relative;margin:0 0 5px;border-radius:12px;overflow:hidden;cursor:pointer;
   background:rgba(255,255,255,.6);box-shadow:0 3px 10px rgba(90,140,180,.16);}
 .glCell img{width:100%;display:block;}
 .glCell .glNm{position:absolute;top:6px;right:6px;z-index:2;background:rgba(20,44,62,.55);color:#fff;
@@ -6092,6 +6092,27 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
   box-shadow:0 5px 14px rgba(94,176,218,.35);}
 #glEmpty{font-size:13px;font-weight:800;color:#9ab8ca;padding:40px 0;}
 #glEmpty[hidden],#glMoreBtn[hidden]{display:none;}
+/* フォトおきば：並び替え・下ナビ・いいね・ホーム吹き出し拡大 */
+#glTop{padding-bottom:10px;}
+#glCount{margin-left:6px;}
+#glSort{margin-left:auto;border:none;border-radius:999px;padding:6px 13px;font-size:12px;font-weight:900;cursor:pointer;background:rgba(255,255,255,.92);color:#4f8aa8;box-shadow:0 2px 8px rgba(90,140,180,.2);font-family:inherit;white-space:nowrap;}
+#glSort:active{transform:scale(.94);}
+#glGrid{padding-bottom:80px;}
+#glNav{position:fixed;left:0;right:0;bottom:0;z-index:6;display:flex;padding:6px 8px calc(6px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(255,255,255,.72),rgba(255,255,255,.96));backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1.5px solid rgba(150,200,230,.35);}
+.glNavBtn{flex:1 1 0;display:flex;flex-direction:column;align-items:center;gap:2px;border:none;background:none;cursor:pointer;font-family:inherit;font-size:11px;font-weight:800;color:#8fb0c2;padding:5px 4px;border-radius:12px;transition:color .15s,background .15s;}
+.glNavBtn .gnIco{font-size:19px;line-height:1;}
+.glNavBtn.active{color:#3f8fbe;background:rgba(143,211,240,.16);}
+.glNavBtn:active{transform:scale(.95);}
+.glCell .glLike{position:absolute;right:6px;bottom:6px;z-index:3;border:none;border-radius:999px;padding:3px 9px;cursor:pointer;background:rgba(20,44,62,.6);color:#fff;font-size:11px;font-weight:900;font-family:inherit;line-height:1;display:flex;align-items:center;gap:3px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);box-shadow:0 2px 6px rgba(0,0,0,.2);}
+.glCell .glLike.on{background:rgba(224,64,124,.92);}
+.glCell .glLike:active{transform:scale(.9);}
+.glCell .glLikeCnt{position:absolute;right:6px;bottom:6px;z-index:2;background:rgba(224,64,124,.85);color:#fff;border-radius:999px;padding:3px 9px;font-size:11px;font-weight:900;line-height:1;box-shadow:0 2px 6px rgba(0,0,0,.2);}
+@media (hover:hover){
+  .catLabel.bub.hasPhoto{transition:transform .22s cubic-bezier(.34,1.4,.5,1);transform-origin:center bottom;will-change:transform;}
+  #hillCats:has(.catLabel.bub.hasPhoto:hover){z-index:60;}
+  .hillCat:has(.catLabel.bub.hasPhoto:hover){z-index:60;}
+  .catLabel.bub.hasPhoto:hover{transform:scale(2.4);}
+}
 </style>
 <style id="catFreeCss">
 /* ===== 猫を すきな 場所に おく ===== */
@@ -33335,7 +33356,7 @@ function openPhotoView(po){
 }
 function closePhotoView(){ try{var el=$("photoView"); if(el)el.hidden=true;}catch(_){} }
 /* ===== ギャラリー ===== */
-var _glItems=[], _glShown=0, _GL_STEP=40;
+var _glItems=[], _glShown=0, _GL_STEP=40, _glLikes={}, _glSort="new";
 async function openGallery(){
   try{
     var el=$("galleryScreen"); if(!el)return;
@@ -33344,6 +33365,7 @@ async function openGallery(){
     try{playClick();}catch(_){}
     var db=await getDB();
     if(!db){ if(grid)grid.innerHTML=""; $("glEmpty").hidden=false; return; }
+    try{var _lm=await import(FB_DB);var _ls=await _lm.get(_lm.ref(db,"photolikes"));_glLikes=_ls.exists()?(_ls.val()||{}):{};}catch(_){_glLikes={};}
     _glItems=[]; _glOldest=null; _glDone=false; _glShown=0;
     await _glLoadMore();
     _glPaint();   /* ★読み込んだあと 画面に えがく（これが 無くて「よみこみ中…」で 止まっていた） */
@@ -33356,10 +33378,10 @@ function _glPaint(){
     $("glEmpty").hidden=true;
     var next=Math.min(_glItems.length,_glShown+_GL_STEP);
     var add=_glItems.slice(_glShown,next).map(function(q,i){
-      var ar=(q.w&&q.h)?(q.h/q.w*100):75;var _gm=(q.uid===getUid());var _gd=_glDateLabel(q.date);
+      var ar=(q.w&&q.h)?(q.h/q.w*100):75;var _gm=(q.uid===getUid());var _gd=_glDateLabel(q.date);var _lk=_gm?(_glLikeCount(q)>0?'<span class="glLikeCnt">\u2764 '+_glLikeCount(q)+'</span>':''):'<button class="glLike'+(_glLiked(q)?' on':'')+'" data-gi="'+(_glShown+i)+'" type="button" aria-label="いいね">'+(_glLiked(q)?'\u2764':'\u2661')+' '+_glLikeCount(q)+'</button>';
       return '<div class="glCell'+(_gm?' mine':'')+'" data-gi="'+(_glShown+i)+'">'+(_gm?'<button class="glDel" data-gi="'+(_glShown+i)+'" type="button" aria-label="さくじょ">✕</button>':'')+(q.cap?'<span class="glCap">'+escHtml(q.cap)+'</span>':(_gm?'<span class="glCap glCapAdd">＋タイトル</span>':''))+
         '<span class="glNm">'+escHtml(q.name)+(_gd?'<i class="glDate">'+_gd+'</i>':'')+'</span>'+
-        '<img src="'+q.u+'" alt="" loading="lazy" style="aspect-ratio:'+(q.w||4)+'/'+(q.h||3)+'"/></div>';
+        '<img src="'+q.u+'" alt="" loading="lazy" style="aspect-ratio:'+(q.w||4)+'/'+(q.h||3)+'"/>'+_lk+'</div>';
     }).join("");
     if(_glShown===0)grid.innerHTML=add; else grid.insertAdjacentHTML("beforeend",add);
     _glShown=next;
@@ -33389,11 +33411,32 @@ async function _glLoadMore(){
           _glItems.push({u:t.t,w:t.w,h:t.h,name:e.name||"匿名さん",at:(e.at||0)-i,uid:e.uid,key:k,idx:i,cap:(t.cap||""),date:_glDateFromKey(k)});
         });
       });
-      _glItems.sort(function(a,b){return b.at-a.at;});
+      _glSortItems();
     }
     if(got<30)_glDone=true;
   }catch(e){ console.warn("gallery",e); _glDone=true; }
   _glBusy=false;
+}
+function _glLikeCount(q){ try{var o=(_glLikes[q.key]||{})[q.idx]; return o?Object.keys(o).length:0;}catch(_){return 0;} }
+function _glLiked(q){ try{var o=(_glLikes[q.key]||{})[q.idx]; return !!(o&&o[getUid()]);}catch(_){return false;} }
+function _glSortItems(){ try{ _glItems.sort(function(a,b){ if(_glSort==="like"){var la=_glLikeCount(a),lb=_glLikeCount(b); if(lb!==la)return lb-la;} return b.at-a.at; }); }catch(_){} }
+function _glToggleSort(){ _glSort=(_glSort==="new")?"like":"new"; try{var b=$("glSort"); if(b)b.textContent=(_glSort==="new")?"🆕 新着":"❤️ 人気";}catch(_){} _glSortItems(); _glShown=0; _glPaint(); }
+function _glPaintLikeCell(gi){ try{ var q=_glItems[gi]; if(!q)return; var cell=document.querySelector('#glGrid .glCell[data-gi="'+gi+'"]'); if(!cell)return; var btn=cell.querySelector(".glLike"); if(!btn)return; var on=_glLiked(q); btn.classList.toggle("on",on); btn.textContent=(on?"\u2764":"\u2661")+" "+_glLikeCount(q); }catch(_){} }
+async function _glToggleLike(gi){
+  try{
+    var q=_glItems[gi]; if(!q)return;
+    if(q.uid===getUid()){ try{toast("じぶんの しゃしんには おせないよ");}catch(_){} return; }
+    var me=getUid();
+    var db=await getDB(); if(!db){ try{toast("いま つながって ないみたい");}catch(_){} return; }
+    var{ref,set,remove}=await import(FB_DB);
+    if(!_glLikes[q.key])_glLikes[q.key]={};
+    if(!_glLikes[q.key][q.idx])_glLikes[q.key][q.idx]={};
+    var cur=!!_glLikes[q.key][q.idx][me];
+    var path="photolikes/"+q.key+"/"+(q.idx|0)+"/"+me;
+    if(cur){ delete _glLikes[q.key][q.idx][me]; try{await remove(ref(db,path));}catch(_){} }
+    else{ _glLikes[q.key][q.idx][me]=1; try{await set(ref(db,path),1);}catch(_){} }
+    _glPaintLikeCell(gi);
+  }catch(e){ console.warn("glLike",e); }
 }
 function _glDateFromKey(k){ try{var p=String(k||"").split("_"); return p.length>=2?p.slice(1).join("_"):"";}catch(_){return"";} }
 function _glDateLabel(d){ try{var m=String(d||"").match(/^(\d{4})-(\d{2})-(\d{2})/); if(!m)return""; return parseInt(m[2],10)+"/"+parseInt(m[3],10);}catch(_){return"";} }
@@ -33454,6 +33497,9 @@ try{ document.addEventListener("click",function(e){
     else _glPaint();
     return; }
   if(t.closest("#fabGallery")){ openGallery(); return; }
+  var _gNav=t.closest("#glNav .glNavBtn"); if(_gNav){ e.stopPropagation(); try{playClick();}catch(_){} var _nv=_gNav.dataset.gnav; if(_nv==="home"){ closeGallery(); try{dockGo("home");}catch(_){} } else if(_nv==="record"){ closeGallery(); try{openRecord();}catch(_){} } return; }
+  if(t.closest("#glSort")){ e.stopPropagation(); try{playClick();}catch(_){} _glToggleSort(); return; }
+  var _gLk=t.closest("#glGrid .glLike"); if(_gLk){ e.stopPropagation(); _glToggleLike(parseInt(_gLk.dataset.gi,10)); return; }
   var _gDel=t.closest("#glGrid .glDel"); if(_gDel){ e.stopPropagation(); _glDeleteImg(parseInt(_gDel.dataset.gi,10)); return; }
   var _gCap=t.closest("#glGrid .glCap"); if(_gCap){ var _gc=_gCap.closest(".glCell"); if(_gc){ e.stopPropagation(); _glEditTitle(parseInt(_gc.dataset.gi,10)); } return; }
   var cell=t.closest("#glGrid .glCell");
@@ -40581,9 +40627,10 @@ function _gpStreetHTML(){
   </div>
 </div>
 <div id="galleryScreen" hidden aria-hidden="true">
-  <div id="glTop"><button id="glClose" type="button">✕</button><span id="glTtl">ギャラリー</span><span id="glCount"></span></div>
+  <div id="glTop"><span id="glTtl">フォトおきば</span><span id="glCount"></span><button id="glSort" type="button">🆕 新着</button></div>
   <div id="glGrid"></div>
   <div id="glMore"><button id="glMoreBtn" type="button" hidden>もっと 見る</button><span id="glEmpty" hidden>まだ しゃしんが ないよ</span></div>
+  <div id="glNav"><button class="glNavBtn" data-gnav="home" type="button"><span class="gnIco">🏠</span><span>ラジオ体操</span></button><button class="glNavBtn active" data-gnav="gallery" type="button"><span class="gnIco">🖼</span><span>フォトおきば</span></button><button class="glNavBtn" data-gnav="record" type="button"><span class="gnIco">📖</span><span>きろく</span></button></div>
 </div>
 <div id="photoView" hidden aria-hidden="true">
   <div id="pvTop"><button id="pvClose" type="button">✕</button><span id="pvName"></span></div>

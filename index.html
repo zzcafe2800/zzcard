@@ -12309,6 +12309,7 @@ function _applyHillFromVal(val){
       self={uid:me,isSelf:true,catOnly:(selfPost.catOnly?1:0),pid:(me+"_"+jstKey()),y1:_yume1Payload(),name:p.name||"あなた",catBody:profileBody(),color:profileColor(),
         wakeHour:selfPost.wakeHour,wakeMin:selfPost.wakeMin,
         createdAt:selfPost.createdAt||Date.now(),
+        phN:selfPost.phN||0, phT:selfPost.phT||null,   /* ★自分の投稿にも しゃしんを 引きつぐ（これが 抜けてて 自分の吹き出しだけ 写真が 出なかった） */
         streak:Number.isFinite(selfPost.streak)?selfPost.streak:calcStreak().current,total:getDoneDates().length,
         comment:selfPost.comment||"",thanks:getThanksWord()};
     }else{
@@ -33273,8 +33274,9 @@ async function openGallery(){
     try{playClick();}catch(_){}
     var db=await getDB();
     if(!db){ if(grid)grid.innerHTML=""; $("glEmpty").hidden=false; return; }
-    _glItems=[]; _glOldest=null; _glDone=false;
+    _glItems=[]; _glOldest=null; _glDone=false; _glShown=0;
     await _glLoadMore();
+    _glPaint();   /* ★読み込んだあと 画面に えがく（これが 無くて「よみこみ中…」で 止まっていた） */
   }catch(e){ console.warn("gallery",e); }
 }
 function _glPaint(){

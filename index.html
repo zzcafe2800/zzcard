@@ -6104,19 +6104,22 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 #rcWeekHead span{text-align:center;font-size:11px;font-weight:900;color:#b98ba0;padding:3px 0;}
 #rcWeekHead span.sun{color:#e0708f;}
 #rcWeekHead span.sat{color:#6fa8d8;}
-#rcGrid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;flex:1 1 auto;min-height:0;grid-auto-rows:1fr;}
-#roomCalScreen .rcCell{min-height:0;border-radius:8px;background:#faf5f7;padding:3px 3px 2px;cursor:pointer;display:flex;flex-direction:column;gap:2px;overflow:hidden;transition:background .12s;border:2px solid transparent;}
+#rcGrid{display:grid;grid-template-columns:repeat(7,1fr);gap:0;flex:0 0 auto;min-height:0;grid-auto-rows:clamp(84px,13.5vh,118px);align-content:start;}
+#roomCalScreen .rcCell{min-height:0;border-radius:0;background:#faf5f7;padding:3px 0 2px;cursor:pointer;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;aspect-ratio:auto;gap:2px;overflow:hidden;transition:background .12s;border:0;box-shadow:inset -1px 0 0 rgba(255,255,255,.055),inset 0 -1px 0 rgba(255,255,255,.055);}
+#roomCalScreen .rcCell .rcNum{padding-left:6px;}
 #roomCalScreen .rcCell:hover{background:#f4e9ee;}
 .rcCell.rcOther{background:#f3f3f5;opacity:.55;}
-.rcCell.rcToday{border-color:#f0a8c0;}
-.rcCell.rcSel{border-color:#d46a8b;background:#fdeef2;}
+.rcCell.rcToday{outline:2px solid #f0a8c0;outline-offset:-2px;}
+.rcCell.rcSel{outline:2px solid #d46a8b;outline-offset:-2px;background:#fdeef2;}
 .rcCell .rcNum{font-size:12px;font-weight:800;color:#8a7480;line-height:1;padding:1px 2px;}
 .rcCell.rcSun .rcNum{color:#e0708f;}
 .rcCell.rcSat .rcNum{color:#6fa8d8;}
 .rcCell .rcBar{font-size:9px;font-weight:800;color:#fff;border-radius:4px;padding:1px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.35;}
 .rcCell .rcMore{font-size:9px;font-weight:800;color:#b58aa0;padding:0 2px;}
-#roomCalScreen .rcBars{display:flex;flex-direction:column;gap:1.5px;flex:1 1 auto;min-height:0;overflow:hidden;margin-top:2px;padding:0 1px;}
+#roomCalScreen .rcBars{display:flex;flex-direction:column;gap:1.5px;flex:1 1 auto;min-height:0;overflow:hidden;margin-top:2px;padding:0;}
 #roomCalScreen .rcCell .rcBar{align-self:flex-start;box-sizing:border-box;width:auto;font-size:9px;padding:1px 6px;line-height:1.6;flex:0 0 auto;border-radius:6px;}
+#roomCalScreen .rcCell .rcBar.rcCR{border-top-right-radius:0;border-bottom-right-radius:0;padding-right:2px;}
+#roomCalScreen .rcCell .rcBar.rcCL{border-top-left-radius:0;border-bottom-left-radius:0;padding-left:2px;}
 #roomCalScreen .rcNextDay{border:none;background:#2a2e37;color:#9aa2b0;font-weight:800;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;font-family:inherit;white-space:nowrap;}
 #roomCalScreen .rcNextDay.on{background:#4a3652;color:#f0a8c0;}
 #roomCalScreen .rcEndDaySel{border:1.5px solid #3a3f4a !important;border-radius:9px;padding:6px 6px;font-size:13px;font-family:inherit;font-weight:800;color:#e6eaf0 !important;background:#2a2e37 !important;}
@@ -6149,6 +6152,9 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 .rcTlItem b{display:block;font-size:10px;line-height:1.15;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .rcTlItem span{display:block;font-size:8.5px;opacity:.92;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .rcTlEmpty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#c9b3bd;font-size:12px;font-weight:800;}
+#roomCalScreen .rcNowLine{position:absolute;left:0;right:0;height:0;border-top:2px solid #ff5566;z-index:8;pointer-events:none;box-shadow:0 0 6px rgba(255,85,102,.5);}
+#roomCalScreen .rcNowLine::before{content:"";position:absolute;left:-1px;top:-4px;width:7px;height:7px;border-radius:50%;background:#ff5566;box-shadow:0 0 5px rgba(255,85,102,.7);}
+#roomCalScreen .rcNowLine span{position:absolute;right:3px;top:-8px;background:#ff5566;color:#fff;font-size:8.5px;font-weight:900;padding:0 5px;border-radius:5px;line-height:1.6;}
 @media (max-width:760px){
   #roomCalScreen{overflow-y:auto;}
   #rcBody{flex-direction:column;padding:0 10px 24px;overflow:visible;min-height:auto;}
@@ -6170,8 +6176,8 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 #roomCalScreen .rcCell{background:#282c35 !important;border-color:transparent !important;}
 #roomCalScreen .rcCell:hover{background:#31353f !important;}
 .rcCell.rcOther{background:#1c1f26 !important;}
-.rcCell.rcToday{border-color:#5a6270 !important;}
-.rcCell.rcSel{border-color:#f0f2f5 !important;background:#33373f !important;}
+.rcCell.rcToday{outline:2px solid #5a6270 !important;outline-offset:-2px;}
+.rcCell.rcSel{outline:2px solid #f0f2f5 !important;outline-offset:-2px;background:#33373f !important;}
 .rcCell .rcNum{color:#c8cdd6 !important;}
 .rcCell.rcSun .rcNum{color:#f08a9e !important;}
 .rcCell.rcSat .rcNum{color:#7fb0e0 !important;}
@@ -6194,6 +6200,11 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 #rcDayPane{display:none;}
 #roomCalScreen.rcSelMode #rcDayPane{display:block;}
 #roomCalScreen:not(.rcSelMode) #rcCalPane{flex-basis:100%;flex-grow:1;}
+@media (min-width:761px){
+  #rcBody{max-width:1240px;margin:0 auto;gap:18px;padding:0 16px 14px;}
+  #rcCalPane{order:2;flex:0 0 auto;width:788px;max-width:788px;}
+  #rcDayPane{order:1;flex:1 1 auto;min-width:300px;max-width:420px;}
+}
 #roomCalScreen:not(.rcSelMode) .rcCell{min-height:0;}
 #galleryScreen{position:fixed;inset:0;z-index:3400;overflow-y:auto;
   background:linear-gradient(180deg,#eaf7fd,#dff0fa 40%,#eef8fd);
@@ -33701,6 +33712,7 @@ function _rcOpen(){ try{
   el.hidden=false; try{el.scrollTop=0;}catch(_){}
   try{document.body.classList.add("galOpen");}catch(_){} try{refreshDock();}catch(_){}
   _rcMonthOff=0; _rcSel=null; try{$("roomCalScreen").classList.remove("rcSelMode");}catch(_){} _rcRenderMonth();
+  try{ if(window.innerWidth>760){ var _nn=new Date(); _rcSelectDay(_rcDateStr(_nn.getFullYear(),_nn.getMonth(),_nn.getDate()),false); } }catch(_){}
   _rcLoad().then(function(){ _rcRenderMonth(); if(_rcSel)_rcRenderDay(); });
 }catch(_){}}
 function _rcClose(){ try{var el=$("roomCalScreen"); if(el)el.hidden=true;}catch(_){} try{document.body.classList.remove("galOpen");}catch(_){} try{refreshDock();}catch(_){} }
@@ -33715,7 +33727,7 @@ function _rcRenderMonth(){ try{
   for(d=1;d<=info.days;d++){
     var ds=_rcDateStr(info.y,info.m,d), dow=(info.first+d-1)%7;
     var ents=_rcEntriesOn(ds), bars="";
-    ents.slice(0,4).forEach(function(it){ var _lf=Math.min((it.s0||0)/1440*100,50); bars+='<div class="rcBar" style="margin-left:'+_lf.toFixed(0)+'%;max-width:'+(100-_lf).toFixed(0)+'%;background:'+(it.e.col||_rcColor(it.uid))+'">'+escHtml(String(it.e.name||"？"))+(it.cont?'→':'')+'</div>'; });
+    ents.slice(0,4).forEach(function(it){ var _sp=(it.s0||0)/1440*100, _ep=(it.e0||1440)/1440*100, _lf, _w, _fill=true; if(it.isStart&&it.isEnd){ _lf=Math.min(_sp,50); _fill=false; } else if(it.cont&&!it.isStart){ _lf=0; _w=100; } else if(it.cont){ _lf=_sp; _w=Math.max(4,100-_sp); } else { _lf=0; _w=Math.max(15,_ep); } var _st='margin-left:'+_lf.toFixed(0)+'%;'+(_fill?('width:'+_w.toFixed(0)+'%;'):('max-width:'+(100-_lf).toFixed(0)+'%;'))+'background:'+(it.e.col||_rcColor(it.uid)); var _cls='rcBar'+(it.cont?' rcCR':'')+(!it.isStart?' rcCL':''); bars+='<div class="'+_cls+'" style="'+_st+'">'+escHtml(String(it.e.name||"？"))+'</div>'; });
     if(ents.length>4)bars+='<div class="rcMore">+'+(ents.length-4)+'</div>';
     var cls="rcCell"+(dow===0?" rcSun":dow===6?" rcSat":"")+(ds===todayStr?" rcToday":"")+(ds<todayStr?" rcPast":"")+(ds===_rcSel?" rcSel":"");
     html+='<div class="'+cls+'" data-d="'+ds+'"><span class="rcNum">'+d+'</span>'+(bars?'<div class="rcBars">'+bars+'</div>':'')+'</div>'; cellN++;
@@ -33723,11 +33735,12 @@ function _rcRenderMonth(){ try{
   while(cellN%7!==0){ html+='<div class="rcCell rcOther"></div>'; cellN++; }
   grid.innerHTML=html;
 }catch(_){}}
-function _rcSelectDay(ds){ _rcSel=ds; try{$("roomCalScreen").classList.add("rcSelMode");}catch(_){} _rcRenderMonth(); _rcRenderDay(); }
+var _rcFormOn=false;
+function _rcSelectDay(ds,form){ _rcSel=ds; _rcFormOn=(form!==false); try{$("roomCalScreen").classList.add("rcSelMode");}catch(_){} _rcRenderMonth(); _rcRenderDay(); }
 function _rcRenderDay(){ try{
   if(!_rcSel)return;
   var parts=_rcSel.split("-"); var ttl=$("rcDayTtl"); if(ttl)ttl.textContent=(parseInt(parts[1],10))+"月"+(parseInt(parts[2],10))+"日 の 予定";
-  var form=$("rcDayForm"); if(form)form.hidden=false; var tlw=$("rcTlWrap"); if(tlw)tlw.hidden=false;
+  var form=$("rcDayForm"); if(form)form.hidden=!_rcFormOn; var tlw=$("rcTlWrap"); if(tlw)tlw.hidden=false;
   var me=getUid(); var mine=(_rcData[_rcSel]||{})[me];
   if(mine){ _rcWriteTime("rcSAmpm","rcSHour","rcSMin",mine.s||0); _rcWriteTime("rcEAmpm","rcEHour","rcEMin",mine.e||0); var ri=$("rcRoomId"); if(ri)ri.value=mine.rid||""; var _rnI=$("rcRoomName"); if(_rnI)_rnI.value=mine.rn||""; var db=$("rcDel"); if(db)db.hidden=false; _rcFillEndDays(_rcSel,_rcEd(mine)); }
   else{ _rcWriteTime("rcSAmpm","rcSHour","rcSMin",20*60); _rcWriteTime("rcEAmpm","rcEHour","rcEMin",22*60); var ri2=$("rcRoomId"); if(ri2)ri2.value=""; var _rnI2=$("rcRoomName"); if(_rnI2)_rnI2.value=""; var db2=$("rcDel"); if(db2)db2.hidden=true; _rcFillEndDays(_rcSel,0); }
@@ -33736,13 +33749,14 @@ function _rcRenderDay(){ try{
 function _rcRenderTimeline(){ try{
   var hb=$("rcTlHours"); if(hb){ var hh="",h; for(h=0;h<=24;h+=3)hh+='<i style="top:'+(h/24*100)+'%">'+h+'</i>'; hb.innerHTML=hh; }
   var tl=$("rcTimeline"); if(!tl)return;
+  var _now=""; try{ var _nn=new Date(); if(_rcSel===_rcDateStr(_nn.getFullYear(),_nn.getMonth(),_nn.getDate())){ var _nm=_nn.getHours()*60+_nn.getMinutes(); _now='<div class="rcNowLine" style="top:'+(_nm/1440*100).toFixed(2)+'%"><span>'+_rcFmt(_nm)+'</span></div>'; } }catch(_){}
   var ents=_rcEntriesOn(_rcSel);
-  if(!ents.length){ tl.innerHTML='<div class="rcTlEmpty">まだ 予定が ないよ</div>'; return; }
+  if(!ents.length){ tl.innerHTML=_now+'<div class="rcTlEmpty">まだ 予定が ないよ</div>'; return; }
   var html="";
   ents.forEach(function(it){ var s=it.s0, en=it.e0; if(en<=s)en=s+15; var top=s/1440*100, hgt=Math.max(3,(en-s)/1440*100); var _ed=_rcEd(it.e); var _em=(_ed===1)?'翌':(_ed>1)?('+'+_ed+'日 '):''; var _lbl=_rcFmt(it.e.s||0)+'〜'+_em+_rcFmt(it.e.e||0);
     html+='<div class="rcTlItem" data-rid="'+escHtml(String(it.e.rid||""))+'" style="top:'+top+'%;height:'+hgt+'%;background:'+(it.e.col||_rcColor(it.uid))+'"><b>'+escHtml(String(it.e.name||"？"))+(it.e.rn?(' · '+escHtml(String(it.e.rn))):"")+'</b><span>'+_lbl+(it.e.rid?(' · '+escHtml(String(it.e.rid))):"")+'</span>'+(!it.isStart?'<i class="rcNdArrow rcNdTop">▴前日</i>':'')+(it.cont?'<i class="rcNdArrow">▾翌日</i>':'')+'</div>';
   });
-  tl.innerHTML=html;
+  tl.innerHTML=_now+html;
 }catch(_){}}
 async function _rcSave(){ try{
   if(!_rcSel){ try{toast("日を えらんでね");}catch(_){} return; }

@@ -6007,6 +6007,46 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 #pvBody img{max-width:100%;border-radius:14px;display:block;box-shadow:0 8px 24px rgba(0,0,0,.4);}
 #pvBody .pvCap{font-size:12.5px;font-weight:800;color:#cfe2f0;text-align:center;}
 /* ===== ギャラリー ===== */
+/* ==== 写真アイコン（一言欄の右下） ==== */
+#tsInputWrap{position:relative;}
+#tsInputWrap #tsComment{padding-right:46px;}
+#tsPhotoAdd{position:absolute !important;right:7px;bottom:7px;width:36px !important;height:36px;padding:0 !important;
+  border:none !important;border-radius:11px;background:rgba(255,255,255,.92) !important;color:#6aa6c8 !important;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(90,140,180,.25);cursor:pointer;
+  transition:transform .12s ease,background .15s,color .15s;z-index:4;font-size:0 !important;}
+#tsPhotoAdd:active{transform:scale(.88);}
+#tsPhotoAdd.has{background:#e8f6ff !important;color:#3f92c4 !important;}
+#tsPhotoAdd.loading{opacity:.5;pointer-events:none;}
+#tsPhotoAdd svg{width:21px;height:21px;display:block;}
+#tsPhotoBadge{position:absolute;top:-5px;right:-5px;min-width:17px;height:17px;padding:0 4px;border-radius:999px;
+  background:#5eb0da;color:#fff;font-size:10.5px;font-weight:900;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 1px 3px rgba(0,0,0,.28);box-sizing:border-box;}
+#tsPhotoBadge[hidden]{display:none;}
+#tsAutoNote{font-size:11px !important;font-weight:800;color:#5aa886 !important;background:#e8f8f0;border-radius:999px;
+  padding:2px 10px;align-self:flex-end;margin:0 0 4px auto;}
+#tsAutoNote:not([hidden]){display:inline-block;}
+/* ==== 吹き出しの中の写真（枠いっぱい・形にそって） ==== */
+.catLabel.bub.hasPhoto{min-height:98px;}
+.catLabel.bub.hasPhoto>.cwShade{position:absolute;inset:0;z-index:1;pointer-events:none;border-radius:inherit;
+  background:linear-gradient(180deg,rgba(15,32,48,.44) 0%,rgba(15,32,48,0) 24%,rgba(15,32,48,0) 52%,rgba(15,32,48,.64) 100%);}
+.catLabel.bub.hasPhoto .catRise{display:none !important;}
+.catLabel.bub.hasPhoto .catNameRow{position:relative;z-index:2;}
+.catLabel.bub.hasPhoto .catName{color:#fff !important;-webkit-text-fill-color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.62),0 0 2px rgba(0,0,0,.55);}
+.catLabel.bub.hasPhoto .catCmtWrap{margin-top:auto;position:relative;z-index:2;}
+.catLabel.bub.hasPhoto .catCmt{color:#fff !important;-webkit-text-fill-color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.78) !important;background:none !important;max-width:104px;}
+.catLabel.bub.hasPhoto .cwMore{z-index:3;top:6px;right:6px;bottom:auto;}
+/* ==== ギャラリーのセル（日付・自分のは枠色・削除・タイトル） ==== */
+.glCell.mine{outline:2.5px solid #ffb84d;outline-offset:-2.5px;}
+.glCell .glNm .glDate{font-style:normal;opacity:.85;margin-left:5px;font-weight:800;}
+.glCell .glCap{position:absolute;left:6px;right:6px;bottom:6px;z-index:2;background:rgba(20,44,62,.62);color:#fff;
+  border-radius:8px;padding:3px 8px;font-size:10.5px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  box-sizing:border-box;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);}
+.glCell .glCapAdd{background:rgba(255,255,255,.85);color:#5f8ba5;border:1px dashed rgba(120,165,195,.75);cursor:pointer;}
+.glCell .glDel{position:absolute;top:6px;left:6px;z-index:3;width:25px;height:25px;border:none;border-radius:50%;
+  background:rgba(228,78,78,.92);color:#fff;font-size:12px;font-weight:900;line-height:1;cursor:pointer;padding:0;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.28);opacity:0;transition:opacity .2s;}
+.glCell.mine:hover .glDel,.glCell.mine:active .glDel{opacity:1;}
+@media (hover:none){.glCell.mine .glDel{opacity:.9;}}
 #galleryScreen{position:fixed;inset:0;z-index:3400;overflow-y:auto;
   background:linear-gradient(180deg,#eaf7fd,#dff0fa 40%,#eef8fd);
   font-family:"Yomogi","Kosugi Maru",sans-serif;-webkit-overflow-scrolling:touch;}
@@ -7764,7 +7804,7 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
             <div id="tsAutoNote" hidden>とうこう ずみ</div>
             <div id="tsInputWrap">
               <textarea id="tsComment" maxlength="30" rows="2" placeholder=""></textarea>
-            <div id="tsPhotoRow"><button id="tsPhotoAdd" type="button">📷 しゃしんを ついか</button>
+            <div id="tsPhotoRow"><button id="tsPhotoAdd" type="button" aria-label="しゃしんを ついか"><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><rect x="2.4" y="6" width="16.2" height="13.6" rx="3" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="7.4" cy="10.6" r="1.6" fill="currentColor"/><path d="M3.4 18 L8.8 12.8 L12 15.6 L14.8 12.9 L17.6 15.4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="18.6" cy="6" r="4.2" fill="#fff" stroke="currentColor" stroke-width="1.7"/><path d="M18.6 4.1 V7.9 M16.7 6 H20.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><span id="tsPhotoBadge" hidden></span></button>
               <input id="tsPhotoIn" type="file" accept="image/*" multiple hidden/>
               <div id="tsPhotoList"></div></div>
             </div>
@@ -12428,6 +12468,19 @@ function renderHillPage(){
     `<svg class="bubBg" viewBox="0 0 140 112" preserveAspectRatio="none"><path d="${_BUB_CLOUD}" fill="#fdeaf1" stroke="#f3c4d6" stroke-width="2"/></svg>`,
     `<svg class="bubBg" viewBox="0 0 140 112" preserveAspectRatio="none"><path d="${_BUB_RECT}" fill="#fdf6df" stroke="#e6c76a" stroke-width="2" stroke-dasharray="6 4.5" stroke-linecap="round"/></svg>`
   ];
+  let _bpN=0;
+  const _bubPhotoSvg=(bt,url)=>{
+    const cloud=(bt===0||bt===2);
+    const path=cloud?_BUB_CLOUD:_BUB_RECT;
+    const stroke=["#ecd9bf","#9fd4f0","#f3c4d6","#e6c76a"][bt]||"#cfe3f0";
+    const dash=cloud?"":' stroke-dasharray="6 4.5" stroke-linecap="round"';
+    const id="bpc"+(++_bpN);
+    return '<svg class="bubBg bubPhoto" viewBox="0 0 140 112" preserveAspectRatio="none">'+
+      '<defs><clipPath id="'+id+'"><path d="'+path+'"/></clipPath></defs>'+
+      '<image href="'+url+'" x="-4" y="-4" width="148" height="120" preserveAspectRatio="xMidYMid slice" clip-path="url(#'+id+')"/>'+
+      '<path d="'+path+'" fill="none" stroke="'+stroke+'" stroke-width="2.5"'+dash+'/>'+
+      '</svg>';
+  };
   const _hashStr=t=>{let h=2166136261;for(const c of String(t||""))h=((h^c.charCodeAt(0))*16777619)>>>0;return h;};
   const _sRand=seed=>{let h=seed>>>0;return()=>{h=(h*1664525+1013904223)>>>0;return h/4294967296;};};
   const _DECOS=[
@@ -12452,13 +12505,16 @@ function renderHillPage(){
     const riseTxt=riseTextFromPost(po);
     const comment=po.comment||"";
     const _isGold=po.isSelf?((typeof _aiNormaGoldToday==="function")&&_aiNormaGoldToday()):!!po.gold;
-    lab.innerHTML=_BUBS[_bt]+
+    var _hasPh=(po.phN>0&&po.phT);
+    lab.innerHTML=(_hasPh?_bubPhotoSvg(_bt,po.phT):_BUBS[_bt])+(_hasPh?('<span class="cwShade"></span>'+(po.phN>1?('<span class="cwMore">+'+(po.phN-1)+'</span>'):'')):'')+
       `<span class="catNameRow"><span class="catName${_isGold?" catNameGold":""}">${escHtml(po.name||"匿名さん")}</span>${fireBadge}</span>`+   /* なまえ＋🔥連続（名前の右・③風火色） */
       `<span class="catRise" data-cat="${_riseCat(po)}"${riseTxt?"":' style="visibility:hidden"'}>（${riseTxt?escHtml(riseTxt):"・"}）</span>`+   /* カテゴリ（色＋形で区別） */
-      `<div class="catCmtWrap${(po.phN>0&&po.phT)?" hasPh":""}">${(po.phN>0&&po.phT)?`<span class="cwPh"><img src="${po.phT}" alt=""/></span><span class="cwShade"></span>${po.phN>1?`<span class="cwMore">+${po.phN-1}</span>`:""}`:""}${comment?`<span class="catCmt">${(typeof emoHTML==="function"?emoHTML(comment,15):escHtml(comment))}</span>`+((!po.isSelf&&po.uid&&po.pid)?`<button class="cmtLike${likedPost(po.uid,po.pid)?" done":""}" type="button" data-uid="${escHtml(po.uid)}" data-pid="${escHtml(po.pid)}" aria-label="いいね">${likedPost(po.uid,po.pid)?"\u2764":"\u2661"}</button>`:""):((!po.isSelf&&po.uid&&po.pid)?`<button class="cmtLike noCmt${likedPost(po.uid,po.pid)?" done":""}" type="button" data-uid="${escHtml(po.uid)}" data-pid="${escHtml(po.pid)}" aria-label="いいね">${likedPost(po.uid,po.pid)?"\u2764":"\u2661"}</button>`:"")}</div>`;   /* コメント枠：高さを最長に揃える */
+      `<div class="catCmtWrap">${comment?`<span class="catCmt">${(typeof emoHTML==="function"?emoHTML(comment,15):escHtml(comment))}</span>`+((!po.isSelf&&po.uid&&po.pid)?`<button class="cmtLike${likedPost(po.uid,po.pid)?" done":""}" type="button" data-uid="${escHtml(po.uid)}" data-pid="${escHtml(po.pid)}" aria-label="いいね">${likedPost(po.uid,po.pid)?"\u2764":"\u2661"}</button>`:""):((!po.isSelf&&po.uid&&po.pid)?`<button class="cmtLike noCmt${likedPost(po.uid,po.pid)?" done":""}" type="button" data-uid="${escHtml(po.uid)}" data-pid="${escHtml(po.pid)}" aria-label="いいね">${likedPost(po.uid,po.pid)?"\u2764":"\u2661"}</button>`:"")}</div>`;   /* コメント枠：高さを最長に揃える */
+    if(_hasPh)lab.classList.add("hasPhoto");
     const riseEl=lab.querySelector(".catRise")||null;
-    if(comment){   /* クリックで全文表示 */
-      lab.title="コメントを見る";
+    if(comment||_hasPh){   /* クリックで全文表示／しゃしんを 見る */
+      lab.title=_hasPh?"しゃしんを 見る":"コメントを見る";
+      if(_hasPh)lab.style.cursor="pointer";
       lab.addEventListener("click",e=>{e.stopPropagation();
         if(po.phN>0){ try{openPhotoView(po);}catch(_){} return; }
         _readComment(lab,comment);
@@ -12531,7 +12587,7 @@ function renderHillPage(){
   startCatLife(figs);
   startCommentCycle(figs);
   function _fitComment(el){try{if(!el||!el.textContent)return;el.style.fontSize="";let fs=10;el.style.fontSize=fs+"px";let g=0;while(el.scrollWidth>el.clientWidth+1&&fs>6&&g<28){fs-=0.5;el.style.fontSize=fs+"px";g++;}}catch(_){}}
-  function _equalizeCmt(){try{cont.querySelectorAll(".catCmt").forEach(_fitComment);const ws=[...cont.querySelectorAll(".catLabel:not(.catLabelSelf) .catCmtWrap")];if(ws.length>1){let mx=0;ws.forEach(w=>{w.style.minHeight="";if(w.offsetHeight>mx)mx=w.offsetHeight;});ws.forEach(w=>{w.style.minHeight=mx+"px";});}}catch(_){}}
+  function _equalizeCmt(){try{cont.querySelectorAll(".catCmt").forEach(_fitComment);const ws=[...cont.querySelectorAll(".catLabel:not(.catLabelSelf):not(.hasPhoto) .catCmtWrap")];if(ws.length>1){let mx=0;ws.forEach(w=>{w.style.minHeight="";if(w.offsetHeight>mx)mx=w.offsetHeight;});ws.forEach(w=>{w.style.minHeight=mx+"px";});}}catch(_){}}
   requestAnimationFrame(_equalizeCmt);setTimeout(_equalizeCmt,250);try{if(document.fonts&&document.fonts.ready)document.fonts.ready.then(_equalizeCmt);}catch(_){}   /* コメントを1行に自動縮小＋枠の高さを揃える */
   /* 収まりきらない時は ‹ › でページ切り替え */
   if(pages>1){
@@ -33165,7 +33221,7 @@ try{
    ・本体は photos/<uid>_<日付> に 置き、ホームの posts には
      「枚数」と「ちいさい みほん」だけ 入れる＝丘の 読みこみを 重くしない
    ========================================================= */
-var PH_MAX=1000, PH_Q=0.62, PH_TH=260, PH_THQ=0.5, PH_GL=340, PH_GLQ=0.48, _tsPhotos=[];
+var PH_MAX=1000, PH_Q=0.62, PH_TH=260, PH_THQ=0.5, PH_GL=480, PH_GLQ=0.62, _tsPhotos=[];
 function _phLoad(file){
   return new Promise(function(res){
     try{
@@ -33192,7 +33248,7 @@ function _phShrink(im,max,q){
   }catch(_){ return null; }
 }
 async function _phAddFiles(files){
-  var btn=$("tsPhotoAdd"); if(btn){btn.disabled=true;btn.textContent="よみこみ中…";}
+  var btn=$("tsPhotoAdd"); if(btn){btn.disabled=true;btn.classList.add("loading");}
   for(var i=0;i<files.length;i++){
     if(_tsPhotos.length>=20)break;
     var im=await _phLoad(files[i]); if(!im)continue;
@@ -33203,7 +33259,7 @@ async function _phAddFiles(files){
     var gth=_phShrink(im,PH_GL,PH_GLQ);
     _tsPhotos.push({u:big.url,w:big.w,h:big.h,t:th?th.url:big.url,g:gth?gth.url:(th?th.url:big.url)});
   }
-  if(btn){btn.disabled=false;btn.textContent="📷 しゃしんを ついか";}
+  if(btn){btn.disabled=false;btn.classList.remove("loading");}
   _phPaintList();
 }
 function _phPaintList(){
@@ -33213,7 +33269,7 @@ function _phPaintList(){
       return '<div class="tpItem"><img src="'+q.t+'" alt=""/><button class="tpDel" data-i="'+i+'" type="button">✕</button></div>';
     }).join("");
     var b=$("tsPhotoAdd");
-    if(b&&!b.disabled)b.textContent=_tsPhotos.length?("📷 しゃしん "+_tsPhotos.length+"枚（ついか）"):"📷 しゃしんを ついか";
+    {var bg=$("tsPhotoBadge"),n=_tsPhotos.length;if(b)b.classList.toggle("has",n>0);if(bg){if(n>0){bg.textContent=n;bg.hidden=false;}else{bg.hidden=true;}}}
   }catch(_){}
 }
 /* 保存＝本体は photos/、posts には 枚数と みほんだけ */
@@ -33286,9 +33342,9 @@ function _glPaint(){
     $("glEmpty").hidden=true;
     var next=Math.min(_glItems.length,_glShown+_GL_STEP);
     var add=_glItems.slice(_glShown,next).map(function(q,i){
-      var ar=(q.w&&q.h)?(q.h/q.w*100):75;
-      return '<div class="glCell" data-gi="'+(_glShown+i)+'">'+
-        '<span class="glNm">'+escHtml(q.name)+'</span>'+
+      var ar=(q.w&&q.h)?(q.h/q.w*100):75;var _gm=(q.uid===getUid());var _gd=_glDateLabel(q.date);
+      return '<div class="glCell'+(_gm?' mine':'')+'" data-gi="'+(_glShown+i)+'">'+(_gm?'<button class="glDel" data-gi="'+(_glShown+i)+'" type="button" aria-label="さくじょ">✕</button>':'')+(q.cap?'<span class="glCap">'+escHtml(q.cap)+'</span>':(_gm?'<span class="glCap glCapAdd">＋タイトル</span>':''))+
+        '<span class="glNm">'+escHtml(q.name)+(_gd?'<i class="glDate">'+_gd+'</i>':'')+'</span>'+
         '<img src="'+q.u+'" alt="" loading="lazy" style="aspect-ratio:'+(q.w||4)+'/'+(q.h||3)+'"/></div>';
     }).join("");
     if(_glShown===0)grid.innerHTML=add; else grid.insertAdjacentHTML("beforeend",add);
@@ -33316,7 +33372,7 @@ async function _glLoadMore(){
       ks.forEach(function(k){
         var e=v[k]; if(!e||!e.ts||!e.ts.length)return;
         e.ts.forEach(function(t,i){
-          _glItems.push({u:t.t,w:t.w,h:t.h,name:e.name||"匿名さん",at:(e.at||0)-i,uid:e.uid,key:k,idx:i});
+          _glItems.push({u:t.t,w:t.w,h:t.h,name:e.name||"匿名さん",at:(e.at||0)-i,uid:e.uid,key:k,idx:i,cap:(t.cap||""),date:_glDateFromKey(k)});
         });
       });
       _glItems.sort(function(a,b){return b.at-a.at;});
@@ -33324,6 +33380,51 @@ async function _glLoadMore(){
     if(got<30)_glDone=true;
   }catch(e){ console.warn("gallery",e); _glDone=true; }
   _glBusy=false;
+}
+function _glDateFromKey(k){ try{var p=String(k||"").split("_"); return p.length>=2?p.slice(1).join("_"):"";}catch(_){return"";} }
+function _glDateLabel(d){ try{var m=String(d||"").match(/^(\d{4})-(\d{2})-(\d{2})/); if(!m)return""; return parseInt(m[2],10)+"/"+parseInt(m[3],10);}catch(_){return"";} }
+async function _glDeleteImg(gi){
+  try{
+    var q=_glItems[gi]; if(!q)return;
+    if(q.uid!==getUid()){ try{toast("じぶんの しゃしんだけ 消せるよ");}catch(_){} return; }
+    if(!confirm("この しゃしんを 消す？"))return;
+    var db=await getDB(); if(!db){ try{toast("いま つながって ないみたい");}catch(_){} return; }
+    var{ref,get,set,remove,update}=await import(FB_DB);
+    var key=q.key, idx=q.idx|0;
+    var pSnap=await get(ref(db,"photos/"+key)); var iSnap=await get(ref(db,"photoidx/"+key));
+    var pv=pSnap.exists()?pSnap.val():null; var iv=iSnap.exists()?iSnap.val():null;
+    var imgs=(pv&&pv.imgs)?pv.imgs.slice():[]; var ts=(iv&&iv.ts)?iv.ts.slice():[];
+    if(idx>=0&&idx<imgs.length)imgs.splice(idx,1);
+    if(idx>=0&&idx<ts.length)ts.splice(idx,1);
+    var pkey="posts/"+key;
+    if(!imgs.length){
+      try{await remove(ref(db,"photos/"+key));}catch(_){}
+      try{await remove(ref(db,"photoidx/"+key));}catch(_){}
+      try{await update(ref(db,pkey),{phN:0,phT:null});}catch(_){}
+    }else{
+      try{await set(ref(db,"photos/"+key+"/imgs"),imgs);}catch(_){}
+      try{await set(ref(db,"photoidx/"+key+"/ts"),ts);}catch(_){}
+      try{await update(ref(db,pkey),{phN:imgs.length,phT:(ts[0]&&ts[0].t)||null});}catch(_){}
+    }
+    try{toast("消したよ");}catch(_){}
+    try{if(typeof loadHillCats==="function")loadHillCats();}catch(_){}
+    _glItems=[]; _glOldest=null; _glDone=false; _glShown=0;
+    await _glLoadMore(); _glPaint();
+  }catch(e){ console.warn("glDel",e); try{toast("消せなかった…");}catch(_){} }
+}
+async function _glEditTitle(gi){
+  try{
+    var q=_glItems[gi]; if(!q)return;
+    if(q.uid!==getUid())return;
+    var t=prompt("この しゃしんの タイトル（30文字まで）", q.cap||"");
+    if(t===null)return;
+    t=String(t).slice(0,30);
+    var db=await getDB(); if(!db){ try{toast("いま つながって ないみたい");}catch(_){} return; }
+    var{ref,set}=await import(FB_DB);
+    await set(ref(db,"photoidx/"+q.key+"/ts/"+(q.idx|0)+"/cap"),t);
+    q.cap=t; _glPaint();
+    try{toast(t?"タイトルを つけたよ":"タイトルを けしたよ");}catch(_){}
+  }catch(e){ console.warn("glCap",e); try{toast("できなかった…");}catch(_){} }
 }
 function closeGallery(){ try{var el=$("galleryScreen"); if(el)el.hidden=true;}catch(_){} }
 try{ document.addEventListener("click",function(e){
@@ -33339,6 +33440,8 @@ try{ document.addEventListener("click",function(e){
     else _glPaint();
     return; }
   if(t.closest("#fabGallery")){ openGallery(); return; }
+  var _gDel=t.closest("#glGrid .glDel"); if(_gDel){ e.stopPropagation(); _glDeleteImg(parseInt(_gDel.dataset.gi,10)); return; }
+  var _gCap=t.closest("#glGrid .glCap"); if(_gCap){ var _gc=_gCap.closest(".glCell"); if(_gc){ e.stopPropagation(); _glEditTitle(parseInt(_gc.dataset.gi,10)); } return; }
   var cell=t.closest("#glGrid .glCell");
   if(cell){ var q=_glItems[parseInt(cell.dataset.gi,10)]; if(!q)return;
     try{playPop();}catch(_){}

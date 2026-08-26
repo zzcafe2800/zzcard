@@ -6079,6 +6079,67 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
   .glCell.mine .glDel{opacity:.92;}
   .glCell .glCapAdd{opacity:1;}
 }
+/* ===== お部屋カレンダー ===== */
+#roomCalScreen{position:fixed;inset:0;z-index:3400;background:linear-gradient(180deg,#fdeef2,#f7e3ea 45%,#fdeef2);overflow-y:auto;display:flex;flex-direction:column;-webkit-overflow-scrolling:touch;}
+#roomCalScreen[hidden]{display:none;}
+.rcTabBar{display:flex;gap:6px;padding:10px 12px 4px;flex:0 0 auto;position:relative;z-index:2;}
+.rcTab{flex:1 1 0;border:none;border-radius:999px 999px 0 0;padding:9px 6px;font-family:inherit;font-size:13px;font-weight:900;cursor:pointer;background:rgba(255,255,255,.5);color:#b58aa0;transition:background .15s,color .15s;}
+.rcTab.active{background:#fff;color:#d46a8b;box-shadow:0 -2px 8px rgba(200,120,150,.15);}
+#galleryScreen .rcTabBar .rcTab{background:rgba(255,255,255,.08) !important;color:#9aa4ae !important;}
+#galleryScreen .rcTabBar .rcTab.active{background:rgba(34,38,45,.95) !important;color:#fff !important;}
+#rcMonthBar{display:flex;align-items:center;justify-content:center;gap:18px;padding:8px 12px 10px;flex:0 0 auto;}
+#rcMonthBar button{border:none;background:rgba(255,255,255,.7);color:#d46a8b;width:38px;height:38px;border-radius:50%;font-size:16px;font-weight:900;cursor:pointer;box-shadow:0 3px 8px rgba(200,120,150,.18);}
+#rcMonthBar button:disabled{opacity:.35;cursor:default;}
+#rcMonthTtl{font-size:19px;font-weight:900;color:#c05379;min-width:150px;text-align:center;letter-spacing:.02em;}
+#rcBody{flex:1 1 auto;display:flex;gap:14px;padding:0 14px 24px;align-items:flex-start;}
+#rcCalPane{flex:1 1 58%;min-width:0;background:#fff;border-radius:16px;padding:10px;box-shadow:0 8px 22px rgba(200,120,150,.14);}
+#rcDayPane{flex:1 1 40%;min-width:0;background:#fff;border-radius:16px;padding:14px;box-shadow:0 8px 22px rgba(200,120,150,.14);position:sticky;top:8px;}
+#rcWeekHead{display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:4px;}
+#rcWeekHead span{text-align:center;font-size:11px;font-weight:900;color:#b98ba0;padding:3px 0;}
+#rcWeekHead span.sun{color:#e0708f;}
+#rcWeekHead span.sat{color:#6fa8d8;}
+#rcGrid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.rcCell{min-height:74px;border-radius:8px;background:#faf5f7;padding:3px 3px 2px;cursor:pointer;display:flex;flex-direction:column;gap:2px;overflow:hidden;transition:background .12s;border:2px solid transparent;}
+.rcCell:hover{background:#f4e9ee;}
+.rcCell.rcOther{background:#f3f3f5;opacity:.55;}
+.rcCell.rcToday{border-color:#f0a8c0;}
+.rcCell.rcSel{border-color:#d46a8b;background:#fdeef2;}
+.rcCell .rcNum{font-size:12px;font-weight:800;color:#8a7480;line-height:1;padding:1px 2px;}
+.rcCell.rcSun .rcNum{color:#e0708f;}
+.rcCell.rcSat .rcNum{color:#6fa8d8;}
+.rcCell .rcBar{font-size:9px;font-weight:800;color:#fff;border-radius:4px;padding:1px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.35;}
+.rcCell .rcMore{font-size:9px;font-weight:800;color:#b58aa0;padding:0 2px;}
+#rcHint{font-size:11px;color:#bfa0ac;font-weight:700;text-align:center;padding:8px 4px 2px;}
+#rcDayTtl{font-size:16px;font-weight:900;color:#c05379;margin-bottom:8px;}
+.rcFormRow{display:flex;align-items:center;gap:8px;margin-bottom:9px;flex-wrap:wrap;}
+.rcLbl{font-size:12px;font-weight:900;color:#a2788c;min-width:56px;}
+.rcTime{display:flex;align-items:center;gap:5px;}
+.rcAmpm{border:none;background:#ffe1ec;color:#d46a8b;font-weight:900;border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer;font-family:inherit;}
+.rcAmpm.pm{background:#dfeeff;color:#4f8fc4;}
+.rcTime select{border:1.5px solid #f0d6e0;border-radius:9px;padding:6px 6px;font-size:14px;font-family:inherit;font-weight:800;color:#7a5f6c;background:#fff;}
+.rcColon{font-weight:900;color:#c9a3b3;}
+#rcRoomId{flex:1 1 130px;min-width:120px;border:1.5px solid #f0d6e0;border-radius:9px;padding:8px 10px;font-size:14px;font-family:inherit;}
+.rcFormBtns{display:flex;gap:8px;margin-top:2px;}
+#rcSave{flex:1 1 auto;border:none;background:linear-gradient(135deg,#f48fb1,#e0708f);color:#fff;font-weight:900;border-radius:11px;padding:11px;font-size:14px;cursor:pointer;font-family:inherit;box-shadow:0 5px 12px rgba(220,110,140,.32);}
+#rcSave:active{transform:scale(.97);}
+#rcDel{border:none;background:#f1e6ea;color:#b06a84;font-weight:900;border-radius:11px;padding:11px 14px;font-size:13px;cursor:pointer;font-family:inherit;}
+#rcTlWrap{margin-top:14px;border-top:1.5px dashed #f0d6e0;padding-top:12px;}
+#rcTlTtl{font-size:12px;font-weight:900;color:#a2788c;margin-bottom:8px;}
+#rcTlBox{display:flex;gap:6px;height:360px;}
+#rcTlHours{width:34px;flex:0 0 auto;position:relative;font-size:9px;color:#b8a2ac;font-weight:800;}
+#rcTlHours i{position:absolute;right:2px;transform:translateY(-50%);font-style:normal;}
+#rcTimeline{flex:1 1 auto;position:relative;background:repeating-linear-gradient(#faf5f7,#faf5f7 calc(100%/24 - 1px),#efe4e9 calc(100%/24 - 1px),#efe4e9 calc(100%/24));border-radius:8px;overflow:hidden;}
+.rcTlItem{position:absolute;left:3px;right:3px;border-radius:6px;padding:2px 6px;color:#fff;font-size:10px;font-weight:800;overflow:hidden;cursor:pointer;box-shadow:0 2px 5px rgba(0,0,0,.18);min-height:15px;box-sizing:border-box;}
+.rcTlItem:active{transform:scale(.98);}
+.rcTlItem b{display:block;font-size:10px;line-height:1.15;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rcTlItem span{display:block;font-size:8.5px;opacity:.92;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rcTlEmpty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#c9b3bd;font-size:12px;font-weight:800;}
+@media (max-width:760px){
+  #rcBody{flex-direction:column;padding:0 10px 30px;}
+  #rcCalPane,#rcDayPane{flex:1 1 auto;width:100%;position:static;}
+  .rcCell{min-height:56px;}
+  #rcTlBox{height:300px;}
+}
 #galleryScreen{position:fixed;inset:0;z-index:3400;overflow-y:auto;
   background:linear-gradient(180deg,#eaf7fd,#dff0fa 40%,#eef8fd);
   font-family:"Yomogi","Kosugi Maru",sans-serif;-webkit-overflow-scrolling:touch;}
@@ -18470,13 +18531,13 @@ function refreshDock(){
   const ppProfMode=vis("profilePanel")&&!$("profilePanel").classList.contains("bagMode");   /* 匿名さんから開くプロフ画面ではバーを出さない */
   const setOpen=$("settingsScreen")&&$("settingsScreen").classList.contains("show");   /* 設定・詳細設定・図鑑でもバーを出さない */
   const blocked=ppProfMode||setOpen||vis("profileSetup")||vis("dexPopup")||roomEdit||vis("friendScreen")||vis("clubScreen")||vis("tutorial")||vis("titleScreen")||vis("rouletteScreen")||vis("taisoScreen")||vis("firstMeet")||_firstMeetActive||($("catRoom")&&($("catRoom").classList.contains("guideGo")||$("catRoom").classList.contains("guideBack")))||vis("gachaReveal")||($("outingIntro")&&$("outingIntro").classList.contains("show"))||($("nyanShot")&&$("nyanShot").classList.contains("capmode"))||($("photoCancelBtn")&&!$("photoCancelBtn").hidden);
-  const onGal=$("galleryScreen")&&!$("galleryScreen").hidden;
+  const onGal=($("galleryScreen")&&!$("galleryScreen").hidden)||($("roomCalScreen")&&!$("roomCalScreen").hidden);
   const show=(onHome||onMain||onShop||onGal)&&!blocked;
   d.style.display=show?"flex":"none";
   try{d.style.zIndex=onShop?"3300":"";}catch(_){}   /* 商店街(z3200)の上に出す */
   if(show){
     /* いま開いてるアイコンをハイライト（ぱっと見で分かるように） */
-    const active=($("galleryScreen")&&!$("galleryScreen").hidden)?"fabGallery":vis("catRoom")?"fabRoom":vis("recordScreen")?"fabRecord":vis("profilePanel")?"fabCloset":onShop?"fabDex":(onHome&&!vis("dexPopup")?"fabHome":null);
+    const active=(($("galleryScreen")&&!$("galleryScreen").hidden)||($("roomCalScreen")&&!$("roomCalScreen").hidden))?"fabGallery":vis("catRoom")?"fabRoom":vis("recordScreen")?"fabRecord":vis("profilePanel")?"fabCloset":onShop?"fabDex":(onHome&&!vis("dexPopup")?"fabHome":null);
     ["fabHome","fabRoom","fabDex","fabCloset","fabRecord","fabGallery"].forEach(id=>{const e=$(id);if(e)e.classList.toggle("active",id===active);});
     try{const ae=active?$(active):null;if(ae){d.style.setProperty("--nx",(ae.offsetLeft+ae.offsetWidth/2)+"px");}else{d.style.setProperty("--nx","-999px");}}catch(_){}
     try{const ic=$("fabRoomIcon");if(ic&&ic.dataset.k!==(profileBody()+profileColor())){ic.innerHTML=catFaceSvg(profileBody(),profileColor(),null);ic.dataset.k=profileBody()+profileColor();}}catch(_){}
@@ -18494,7 +18555,7 @@ function refreshDock(){
   }catch(_){}
 })();
 function dockGo(t){
-  try{var _gs=$("galleryScreen"); if(_gs&&!_gs.hidden){_gs.hidden=true;document.body.classList.remove("galOpen");}}catch(_){}
+  try{var _gs=$("galleryScreen"); if(_gs&&!_gs.hidden){_gs.hidden=true;}var _rc=$("roomCalScreen"); if(_rc&&!_rc.hidden){_rc.hidden=true;}document.body.classList.remove("galOpen");}catch(_){}
   try{ if(typeof roomVisible==="function"&&roomVisible())closeRoom(); }catch(_){}
   try{$("recordScreen").classList.remove("visible");}catch(_){}
   try{$("profilePanel").classList.remove("visible");}catch(_){}
@@ -33548,6 +33609,102 @@ async function _glEditTitle(gi){
   }catch(e){ console.warn("glCap",e); try{toast("できなかった…");}catch(_){} }
 }
 function closeGallery(){ try{var el=$("galleryScreen"); if(el)el.hidden=true;}catch(_){} try{document.body.classList.remove("galOpen");}catch(_){} try{refreshDock();}catch(_){} }
+/* ===== お部屋カレンダー ===== */
+var RC_DB="roomcal", _rcMonthOff=0, _rcData={}, _rcSel=null, _rcFilled=false;
+function _rcPad(n){return (n<10?"0":"")+n;}
+function _rcDateStr(y,m,d){return y+"-"+_rcPad(m+1)+"-"+_rcPad(d);}
+function _rcMonthInfo(){ var now=new Date(); var base=new Date(now.getFullYear(),now.getMonth()+_rcMonthOff,1); var y=base.getFullYear(),m=base.getMonth(); return {y:y,m:m,first:new Date(y,m,1).getDay(),days:new Date(y,m+1,0).getDate()}; }
+function _rcColor(uid){ var h=0,s=String(uid||""); for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0; return "hsl("+(h%360)+",60%,60%)"; }
+function _rcFmt(min){ min=((min%1440)+1440)%1440; var h=Math.floor(min/60),mm=min%60; return h+":"+_rcPad(mm); }
+function _rcFillSelects(){ if(_rcFilled)return; _rcFilled=true; try{
+  ["rcSHour","rcEHour"].forEach(function(id){ var s=$(id); if(!s)return; var o=""; for(var h=1;h<=12;h++)o+='<option value="'+h+'">'+h+'</option>'; s.innerHTML=o; });
+  ["rcSMin","rcEMin"].forEach(function(id){ var s=$(id); if(!s)return; var o=""; for(var m=0;m<60;m+=5)o+='<option value="'+m+'">'+_rcPad(m)+'</option>'; s.innerHTML=o; });
+}catch(_){}}
+function _rcAmpm(btn){ return !!(btn&&btn.classList.contains("pm")); }
+function _rcSetAmpm(btn,pm){ if(!btn)return; btn.classList.toggle("pm",pm); btn.textContent=pm?"午後":"午前"; }
+function _rcReadTime(ampmId,hId,mId){ try{ var pm=_rcAmpm($(ampmId)); var h=parseInt($(hId).value,10)||12; var m=parseInt($(mId).value,10)||0; h=h%12; if(pm)h+=12; return h*60+m; }catch(_){return 0;} }
+function _rcWriteTime(ampmId,hId,mId,min){ try{ min=((min%1440)+1440)%1440; var h=Math.floor(min/60),m=min%60; var pm=h>=12; var h12=h%12; if(h12===0)h12=12; _rcSetAmpm($(ampmId),pm); var hs=$(hId); if(hs)hs.value=String(h12); var ms=$(mId); if(ms){ var m5=Math.round(m/5)*5; if(m5>55)m5=55; ms.value=String(m5); } }catch(_){} }
+async function _rcLoad(){ try{ var db=await getDB(); if(!db){_rcData={};return;} var m=await import(FB_DB); var snap=await m.get(m.ref(db,RC_DB)); _rcData=snap.exists()?(snap.val()||{}):{}; }catch(_){ _rcData={}; } }
+function _rcOpen(){ try{
+  var el=$("roomCalScreen"); if(!el)return; _rcFillSelects();
+  el.hidden=false; try{el.scrollTop=0;}catch(_){}
+  try{document.body.classList.add("galOpen");}catch(_){} try{refreshDock();}catch(_){}
+  _rcMonthOff=0; _rcSel=null; _rcRenderMonth();
+  _rcLoad().then(function(){ _rcRenderMonth(); if(_rcSel)_rcRenderDay(); });
+}catch(_){}}
+function _rcClose(){ try{var el=$("roomCalScreen"); if(el)el.hidden=true;}catch(_){} try{document.body.classList.remove("galOpen");}catch(_){} try{refreshDock();}catch(_){} }
+function _rcRenderMonth(){ try{
+  var info=_rcMonthInfo(); var tt=$("rcMonthTtl"); if(tt)tt.textContent=info.y+"年 "+(info.m+1)+"月";
+  try{$("rcPrev").disabled=(_rcMonthOff<=0); $("rcNext").disabled=(_rcMonthOff>=1);}catch(_){}
+  var wh=$("rcWeekHead"); if(wh){ var wd=["日","月","火","水","木","金","土"],w=""; for(var i=0;i<7;i++)w+='<span class="'+(i===0?"sun":i===6?"sat":"")+'">'+wd[i]+'</span>'; wh.innerHTML=w; }
+  var grid=$("rcGrid"); if(!grid)return;
+  var now=new Date(), todayStr=_rcDateStr(now.getFullYear(),now.getMonth(),now.getDate());
+  var html="", cellN=0, b, d;
+  for(b=0;b<info.first;b++){ html+='<div class="rcCell rcOther"></div>'; cellN++; }
+  for(d=1;d<=info.days;d++){
+    var ds=_rcDateStr(info.y,info.m,d), dow=(info.first+d-1)%7;
+    var day=_rcData[ds]||{}, uids=Object.keys(day), bars="";
+    uids.slice(0,3).forEach(function(u){ var e=day[u]; if(!e)return; bars+='<div class="rcBar" style="background:'+_rcColor(u)+'">'+escHtml(String(e.name||"？"))+'</div>'; });
+    if(uids.length>3)bars+='<div class="rcMore">+'+(uids.length-3)+'</div>';
+    var cls="rcCell"+(dow===0?" rcSun":dow===6?" rcSat":"")+(ds===todayStr?" rcToday":"")+(ds===_rcSel?" rcSel":"");
+    html+='<div class="'+cls+'" data-d="'+ds+'"><span class="rcNum">'+d+'</span>'+bars+'</div>'; cellN++;
+  }
+  while(cellN%7!==0){ html+='<div class="rcCell rcOther"></div>'; cellN++; }
+  grid.innerHTML=html;
+}catch(_){}}
+function _rcSelectDay(ds){ _rcSel=ds; _rcRenderMonth(); _rcRenderDay(); }
+function _rcRenderDay(){ try{
+  if(!_rcSel)return;
+  var parts=_rcSel.split("-"); var ttl=$("rcDayTtl"); if(ttl)ttl.textContent=(parseInt(parts[1],10))+"月"+(parseInt(parts[2],10))+"日 の 予定";
+  var form=$("rcDayForm"); if(form)form.hidden=false; var tlw=$("rcTlWrap"); if(tlw)tlw.hidden=false;
+  var me=getUid(); var mine=(_rcData[_rcSel]||{})[me];
+  if(mine){ _rcWriteTime("rcSAmpm","rcSHour","rcSMin",mine.s||0); _rcWriteTime("rcEAmpm","rcEHour","rcEMin",mine.e||0); var ri=$("rcRoomId"); if(ri)ri.value=mine.rid||""; var db=$("rcDel"); if(db)db.hidden=false; }
+  else{ _rcWriteTime("rcSAmpm","rcSHour","rcSMin",20*60); _rcWriteTime("rcEAmpm","rcEHour","rcEMin",22*60); var ri2=$("rcRoomId"); if(ri2)ri2.value=""; var db2=$("rcDel"); if(db2)db2.hidden=true; }
+  _rcRenderTimeline();
+}catch(_){}}
+function _rcRenderTimeline(){ try{
+  var hb=$("rcTlHours"); if(hb){ var hh="",h; for(h=0;h<=24;h+=3)hh+='<i style="top:'+(h/24*100)+'%">'+h+'</i>'; hb.innerHTML=hh; }
+  var tl=$("rcTimeline"); if(!tl)return;
+  var day=_rcData[_rcSel]||{}, uids=Object.keys(day);
+  if(!uids.length){ tl.innerHTML='<div class="rcTlEmpty">まだ 予定が ないよ</div>'; return; }
+  var html="";
+  uids.forEach(function(u){ var e=day[u]; if(!e)return; var s=e.s||0, en=e.e||0; if(en<=s)en=s+30; var top=s/1440*100, hgt=Math.max(2,(en-s)/1440*100);
+    html+='<div class="rcTlItem" data-rid="'+escHtml(String(e.rid||""))+'" style="top:'+top+'%;height:'+hgt+'%;background:'+_rcColor(u)+'"><b>'+escHtml(String(e.name||"？"))+'</b><span>'+_rcFmt(s)+'〜'+_rcFmt(en)+(e.rid?(' · '+escHtml(String(e.rid))):"")+'</span></div>';
+  });
+  tl.innerHTML=html;
+}catch(_){}}
+async function _rcSave(){ try{
+  if(!_rcSel){ try{toast("日を えらんでね");}catch(_){} return; }
+  var s=_rcReadTime("rcSAmpm","rcSHour","rcSMin"), e=_rcReadTime("rcEAmpm","rcEHour","rcEMin");
+  var rid=((($("rcRoomId")||{}).value)||"").trim();
+  if(!rid){ try{toast("お部屋IDを 入力してね");}catch(_){} return; }
+  var db=await getDB(); if(!db){ try{toast("いま つながって ないみたい");}catch(_){} return; }
+  var m=await import(FB_DB); var me=getUid(); var p=getProfile()||{};
+  var rec={s:s,e:e,rid:rid.slice(0,80),name:String(p.name||"匿名さん").slice(0,20),at:Date.now()};
+  await m.set(m.ref(db,RC_DB+"/"+_rcSel+"/"+me),rec);
+  if(!_rcData[_rcSel])_rcData[_rcSel]={}; _rcData[_rcSel][me]=rec;
+  _rcRenderMonth(); _rcRenderDay(); try{toast("とうろく したよ");}catch(_){}
+}catch(err){ console.warn("rcSave",err); try{toast("とうろく できなかった…");}catch(_){} }}
+async function _rcDelEntry(){ try{
+  if(!_rcSel)return; if(!confirm("この日の 予定を けす？"))return;
+  var db=await getDB(); if(!db)return; var m=await import(FB_DB); var me=getUid();
+  await m.remove(m.ref(db,RC_DB+"/"+_rcSel+"/"+me));
+  if(_rcData[_rcSel])delete _rcData[_rcSel][me];
+  _rcRenderMonth(); _rcRenderDay(); try{toast("けしたよ");}catch(_){}
+}catch(_){}}
+function _rcCopyFallback(rid){ try{ var ta=document.createElement("textarea"); ta.value=rid; ta.style.position="fixed"; ta.style.opacity="0"; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); document.body.removeChild(ta); try{toast("IDを コピーしたよ");}catch(_){} }catch(_){} }
+function _rcCopyId(rid){ if(!rid)return; try{ if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(rid).then(function(){try{toast("IDを コピーしたよ");}catch(_){}},function(){_rcCopyFallback(rid);}); } else _rcCopyFallback(rid); }catch(_){ _rcCopyFallback(rid); } }
+try{ document.addEventListener("click",function(e){ var t=e.target; if(!t||!t.closest)return;
+  var tab=t.closest(".rcTabBar .rcTab"); if(tab){ e.stopPropagation(); try{playClick();}catch(_){} if(tab.dataset.tab==="cal"){ try{$("galleryScreen").hidden=true;}catch(_){} _rcOpen(); } else { _rcClose(); try{openGallery();}catch(_){} } return; }
+  if(t.closest("#rcPrev")){ e.stopPropagation(); if(_rcMonthOff>0){_rcMonthOff--; _rcRenderMonth(); if(_rcSel)_rcRenderDay();} return; }
+  if(t.closest("#rcNext")){ e.stopPropagation(); if(_rcMonthOff<1){_rcMonthOff++; _rcRenderMonth(); if(_rcSel)_rcRenderDay();} return; }
+  var cell=t.closest("#rcGrid .rcCell"); if(cell&&cell.dataset.d){ e.stopPropagation(); try{playPop();}catch(_){} _rcSelectDay(cell.dataset.d); return; }
+  if(t.closest("#rcSAmpm")){ e.stopPropagation(); var b=$("rcSAmpm"); _rcSetAmpm(b,!_rcAmpm(b)); return; }
+  if(t.closest("#rcEAmpm")){ e.stopPropagation(); var b2=$("rcEAmpm"); _rcSetAmpm(b2,!_rcAmpm(b2)); return; }
+  if(t.closest("#rcSave")){ e.stopPropagation(); _rcSave(); return; }
+  if(t.closest("#rcDel")){ e.stopPropagation(); _rcDelEntry(); return; }
+  var tli=t.closest("#rcTimeline .rcTlItem"); if(tli){ e.stopPropagation(); _rcCopyId(tli.dataset.rid); return; }
+}); }catch(_){}
 try{ document.addEventListener("click",function(e){
   var t=e.target; if(!t||!t.closest)return;
   if(t.closest("#tsPhotoAdd")){ try{$("tsPhotoIn").click();}catch(_){} return; }
@@ -40689,9 +40846,34 @@ function _gpStreetHTML(){
   </div>
 </div>
 <div id="galleryScreen" hidden aria-hidden="true">
+  <div class="rcTabBar"><button class="rcTab active" data-tab="photo" type="button">📷 フォトおきば</button><button class="rcTab" data-tab="cal" type="button">📅 お部屋カレンダー</button></div>
   <div id="glTop"><span id="glTtl">フォトおきば</span><span id="glCount"></span><button id="glSort" type="button">🆕 新着</button></div>
   <div id="glGrid"></div>
   <div id="glMore"><button id="glMoreBtn" type="button" hidden>もっと 見る</button><span id="glEmpty" hidden>まだ しゃしんが ないよ</span></div>
+</div>
+<div id="roomCalScreen" hidden aria-hidden="true">
+  <div class="rcTabBar"><button class="rcTab" data-tab="photo" type="button">📷 フォトおきば</button><button class="rcTab active" data-tab="cal" type="button">📅 お部屋カレンダー</button></div>
+  <div id="rcMonthBar"><button id="rcPrev" type="button" aria-label="前の月">◀</button><span id="rcMonthTtl"></span><button id="rcNext" type="button" aria-label="次の月">▶</button></div>
+  <div id="rcBody">
+    <div id="rcCalPane">
+      <div id="rcWeekHead"></div>
+      <div id="rcGrid"></div>
+      <div id="rcHint">日を タップして「お部屋が あく 予定」を いれよう</div>
+    </div>
+    <div id="rcDayPane">
+      <div id="rcDayTtl">← 日を えらんでね</div>
+      <div id="rcDayForm" hidden>
+        <div class="rcFormRow"><span class="rcLbl">はじまり</span><div class="rcTime"><button class="rcAmpm" id="rcSAmpm" type="button">午前</button><select id="rcSHour" aria-label="はじまりの時"></select><span class="rcColon">:</span><select id="rcSMin" aria-label="はじまりの分"></select></div></div>
+        <div class="rcFormRow"><span class="rcLbl">おわり</span><div class="rcTime"><button class="rcAmpm" id="rcEAmpm" type="button">午後</button><select id="rcEHour" aria-label="おわりの時"></select><span class="rcColon">:</span><select id="rcEMin" aria-label="おわりの分"></select></div></div>
+        <div class="rcFormRow"><span class="rcLbl">お部屋ID</span><input id="rcRoomId" type="text" maxlength="80" placeholder="部屋の IDを 入力（コピーされる）"></div>
+        <div class="rcFormBtns"><button id="rcSave" type="button">この日に とうろく</button><button id="rcDel" type="button" hidden>けす</button></div>
+      </div>
+      <div id="rcTlWrap" hidden>
+        <div id="rcTlTtl">この日の 予定（四角を タップで ID コピー）</div>
+        <div id="rcTlBox"><div id="rcTlHours"></div><div id="rcTimeline"></div></div>
+      </div>
+    </div>
+  </div>
 </div>
 <div id="photoView" hidden aria-hidden="true">
   <div id="pvTop"><button id="pvClose" type="button">✕</button><span id="pvName"></span></div>

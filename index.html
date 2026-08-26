@@ -12849,6 +12849,7 @@ async function unpostToday(){
     var{ref,remove}=await import(FB_DB);
     await remove(ref(db,"posts/"+getUid()+"_"+jstKey()));
     try{ await remove(ref(db,"photos/"+getUid()+"_"+jstKey())); }catch(_){}
+    try{ await remove(ref(db,"photoidx/"+getUid()+"_"+jstKey())); }catch(_){}
     try{ _tsPhotos=[]; _phPaintList(); }catch(_){}
     try{localStorage.removeItem(POSTED_KEY);}catch(_){}
     try{localStorage.setItem("radio_cat_only","0");}catch(_){}   /* 猫だけの じどう投稿も 止める */
@@ -33163,7 +33164,7 @@ try{
    ・本体は photos/<uid>_<日付> に 置き、ホームの posts には
      「枚数」と「ちいさい みほん」だけ 入れる＝丘の 読みこみを 重くしない
    ========================================================= */
-var PH_MAX=1000, PH_Q=0.62, PH_TH=260, PH_THQ=0.5, _tsPhotos=[];
+var PH_MAX=1000, PH_Q=0.62, PH_TH=260, PH_THQ=0.5, PH_GL=340, PH_GLQ=0.48, _tsPhotos=[];
 function _phLoad(file){
   return new Promise(function(res){
     try{
@@ -33198,7 +33199,8 @@ async function _phAddFiles(files){
     /* 大きすぎたら もう一段 おとす */
     if(big.url.length>200000){ var b2=_phShrink(im,760,0.55); if(b2)big=b2; }
     var th=_phShrink(im,PH_TH,PH_THQ);
-    _tsPhotos.push({u:big.url,w:big.w,h:big.h,t:th?th.url:big.url});
+    var gth=_phShrink(im,PH_GL,PH_GLQ);
+    _tsPhotos.push({u:big.url,w:big.w,h:big.h,t:th?th.url:big.url,g:gth?gth.url:(th?th.url:big.url)});
   }
   if(btn){btn.disabled=false;btn.textContent="📷 しゃしんを ついか";}
   _phPaintList();
@@ -33221,8 +33223,14 @@ async function _phSave(){
     var{ref,set}=await import(FB_DB);
     var key=getUid()+"_"+jstKey();
     var _pf=(typeof getProfile==="function"&&getProfile())||{};
-    await set(ref(db,"photos/"+key),{uid:getUid(),name:_pf.name||"匿名さん",at:Date.now(),
+    var nm=_pf.name||"匿名さん", at=Date.now();
+    await set(ref(db,"photos/"+key),{uid:getUid(),name:nm,at:at,
       imgs:_tsPhotos.map(function(q){return {u:q.u,w:q.w,h:q.h};})});
+    /* ★ギャラリー用＝みほんだけの かるい さくいん（本体は 開いた時だけ 読む） */
+    try{
+      await set(ref(db,"photoidx/"+key),{uid:getUid(),name:nm,at:at,
+        ts:_tsPhotos.map(function(q){return {t:q.g||q.t,w:q.w,h:q.h};})});
+    }catch(_){}
     return {n:_tsPhotos.length,th:_tsPhotos[0].t};
   }catch(e){
     console.warn("photo save failed",e);
@@ -33265,21 +33273,8 @@ async function openGallery(){
     try{playClick();}catch(_){}
     var db=await getDB();
     if(!db){ if(grid)grid.innerHTML=""; $("glEmpty").hidden=false; return; }
-    var{ref,query,orderByKey,limitToLast,get}=await import(FB_DB);
-    var sn=await get(query(ref(db,"photos"),orderByKey(),limitToLast(120)));
-    _glItems=[];
-    if(sn.exists()){
-      var v=sn.val();
-      Object.keys(v).forEach(function(k){
-        var e=v[k]; if(!e||!e.imgs||!e.imgs.length)return;
-        e.imgs.forEach(function(q,i){
-          _glItems.push({u:q.u,w:q.w,h:q.h,name:e.name||"匿名さん",at:(e.at||0)+i,uid:e.uid,key:k});
-        });
-      });
-      _glItems.sort(function(a,b){return b.at-a.at;});
-    }
-    _glShown=0;
-    _glPaint();
+    _glItems=[]; _glOldest=null; _glDone=false;
+    await _glLoadMore();
   }catch(e){ console.warn("gallery",e); }
 }
 function _glPaint(){
@@ -33296,9 +33291,37 @@ function _glPaint(){
     }).join("");
     if(_glShown===0)grid.innerHTML=add; else grid.insertAdjacentHTML("beforeend",add);
     _glShown=next;
-    $("glMoreBtn").hidden=(_glShown>=_glItems.length);
+    $("glMoreBtn").hidden=(_glShown>=_glItems.length&&_glDone);
     $("glCount").textContent=_glItems.length+"まい";
   }catch(_){}
+}
+var _glOldest=null,_glDone=false,_glBusy=false;
+/* ★さくいん（みほんだけ）を 30件ずつ。本体は 開いた時に だけ 読む＝通信を 小さく */
+async function _glLoadMore(){
+  if(_glBusy||_glDone)return;
+  _glBusy=true;
+  try{
+    var db=await getDB(); if(!db){_glDone=true;return;}
+    var{ref,query,orderByKey,limitToLast,endBefore,get}=await import(FB_DB);
+    var q=_glOldest? query(ref(db,"photoidx"),orderByKey(),endBefore(_glOldest),limitToLast(30))
+                   : query(ref(db,"photoidx"),orderByKey(),limitToLast(30));
+    var sn=await get(q);
+    var got=0;
+    if(sn.exists()){
+      var v=sn.val(), ks=Object.keys(v).sort();
+      if(ks.length)_glOldest=ks[0];
+      got=ks.length;
+      ks.forEach(function(k){
+        var e=v[k]; if(!e||!e.ts||!e.ts.length)return;
+        e.ts.forEach(function(t,i){
+          _glItems.push({u:t.t,w:t.w,h:t.h,name:e.name||"匿名さん",at:(e.at||0)-i,uid:e.uid,key:k,idx:i});
+        });
+      });
+      _glItems.sort(function(a,b){return b.at-a.at;});
+    }
+    if(got<30)_glDone=true;
+  }catch(e){ console.warn("gallery",e); _glDone=true; }
+  _glBusy=false;
 }
 function closeGallery(){ try{var el=$("galleryScreen"); if(el)el.hidden=true;}catch(_){} }
 try{ document.addEventListener("click",function(e){
@@ -33308,15 +33331,32 @@ try{ document.addEventListener("click",function(e){
   if(del){ _tsPhotos.splice(parseInt(del.dataset.i,10),1); _phPaintList(); return; }
   if(t.closest("#pvClose")||(t.closest("#photoView")&&!t.closest("#pvBody")&&!t.closest("#pvTop"))){ closePhotoView(); return; }
   if(t.closest("#glClose")){ closeGallery(); return; }
-  if(t.closest("#glMoreBtn")){ try{playClick();}catch(_){} _glPaint(); return; }
+  if(t.closest("#glMoreBtn")){ try{playClick();}catch(_){}
+    if(_glShown>=_glItems.length){ var b2=$("glMoreBtn"); if(b2)b2.textContent="よみこみ中…";
+      _glLoadMore().then(function(){ if(b2)b2.textContent="もっと 見る"; _glPaint(); }); }
+    else _glPaint();
+    return; }
   if(t.closest("#fabGallery")){ openGallery(); return; }
   var cell=t.closest("#glGrid .glCell");
   if(cell){ var q=_glItems[parseInt(cell.dataset.gi,10)]; if(!q)return;
     try{playPop();}catch(_){}
     var el2=$("photoView"), body=$("pvBody");
     $("pvName").textContent=q.name||"";
-    body.innerHTML='<img src="'+q.u+'" alt=""/>';
-    el2.hidden=false; return; }
+    body.innerHTML='<img src="'+q.u+'" alt=""/>';   /* まず みほんを 出す */
+    el2.hidden=false;
+    /* そのあと 本体に 差しかえる */
+    try{
+      var kk=(q.key||"").split("_");
+      if(kk.length>=2){
+        _phFetch(kk[0],kk.slice(1).join("_")).then(function(v){
+          try{ if(!v||!v.imgs)return; var full=v.imgs[q.idx||0]; if(!full)return;
+            if($("photoView").hidden)return;
+            body.innerHTML='<img src="'+full.u+'" alt=""/>';
+          }catch(_){}
+        });
+      }
+    }catch(_){}
+    return; }
 }); }catch(_){}
 try{ document.addEventListener("change",function(e){
   try{ if(!e.target||e.target.id!=="tsPhotoIn")return;

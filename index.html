@@ -372,6 +372,24 @@ html.lite #likeAllBtn{background:rgba(255,255,255,.95);}
 
 /* 挨拶 */
 #lobbyHead{text-align:center;}
+/* 冒険＋ユメっ子：左＝ユメっ子の丸アイコン／右＝冒険の長いテキスト（参考画像風） */
+#homeBtnRow{display:inline-flex;align-items:center;gap:6px;margin:7px 0 0;position:relative;z-index:7;pointer-events:auto;background:rgba(255,255,255,.93);border-radius:999px;box-shadow:0 6px 16px rgba(120,170,210,.26);padding:3px 15px 3px 3px;border:1.5px solid rgba(255,255,255,.85);vertical-align:middle;}
+#lobbyHead #homeBtnRow:has(#homeLoc[hidden]){background:none !important;box-shadow:none !important;border:none !important;padding:0 !important;}
+#lobbyHead #homeBtnRow #homeZZ{position:static !important;top:auto !important;left:auto !important;right:auto !important;bottom:auto !important;margin:0 !important;transform:none !important;z-index:2 !important;box-shadow:0 3px 8px rgba(79,196,187,.38) !important;pointer-events:auto !important;width:36px !important;height:36px !important;min-width:36px;padding:0 !important;border-radius:50% !important;background:linear-gradient(135deg,#5fd0c6,#3bb3aa) !important;color:#fff !important;display:inline-flex !important;align-items:center;justify-content:center;font-size:0 !important;border:2px solid rgba(255,255,255,.9) !important;flex:0 0 auto;}
+#lobbyHead #homeBtnRow #homeZZ .zzIco{width:22px;height:22px;display:block;color:#fff;}
+#lobbyHead #homeBtnRow #homeZZ .zzIco svg{width:100%;height:100%;display:block;}
+#lobbyHead #homeBtnRow #homeZZ:active{transform:scale(.92) !important;}
+#lobbyHead #homeBtnRow #homeLoc,#lobbyHead #homeBtnRow #homeLoc.homeAdv,#lobbyHead #homeBtnRow #homeLoc.homeBoss{position:static !important;top:auto !important;left:auto !important;right:auto !important;bottom:auto !important;margin:0 !important;transform:none !important;z-index:1 !important;box-shadow:none !important;background:none !important;pointer-events:auto !important;display:inline-flex !important;align-items:center;gap:5px;font-size:12.5px !important;font-weight:900 !important;color:#ef8a2e !important;padding:0 2px !important;border-radius:0 !important;white-space:nowrap !important;max-width:none !important;letter-spacing:.03em;}
+#lobbyHead #homeBtnRow #homeLoc.homeAdv:after{display:none !important;}
+#lobbyHead #homeBtnRow #homeLoc .hlIco{width:19px !important;height:19px !important;filter:none !important;}
+#lobbyHead #homeBtnRow #homeLoc .hlTx{font-size:12.5px !important;color:#ef8a2e !important;text-shadow:none !important;font-weight:900 !important;}
+#lobbyHead #homeBtnRow #homeLoc #homeLocBadge{top:-3px !important;right:-3px !important;}
+#lobbyHead #homeBtnRow #homeLoc[hidden]{display:none !important;}
+#lobbyHead #homeBtnRow #locToggle{position:static !important;margin:0 0 0 2px !important;flex:0 0 auto;width:26px;height:26px;min-width:26px;padding:0;border:none;border-radius:50%;background:rgba(120,150,175,.16);color:#7c93ad;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;pointer-events:auto !important;transition:transform .12s,background .15s;}
+#lobbyHead #homeBtnRow #locToggle svg{width:16px;height:16px;display:block;}
+#lobbyHead #homeBtnRow #locToggle:active{transform:scale(.85) rotate(20deg);}
+#lobbyHead #homeBtnRow:has(#homeLoc[hidden]) #locToggle{display:none;}
+body.exercising #homeBtnRow{opacity:0 !important;pointer-events:none !important;}
 #selectTitle{font-family:"Yomogi","Kosugi Maru",cursive;font-size:40px;font-weight:700;color:#4f88a4;
   letter-spacing:.04em;line-height:1.08;text-shadow:0 2px 0 rgba(255,255,255,.65);}
 #lobbySub{font-size:44px;font-weight:900;color:#2f6d86;letter-spacing:.02em;margin-top:2px;line-height:1;}
@@ -434,7 +452,7 @@ body.exercising #randomModeBtn{animation:none !important;}
   box-shadow:0 5px 12px rgba(120,180,220,.22);}
 
 /* ===================== HOME CHIPS（連続記録・図鑑・今日） ===================== */
-#homeTopRight{position:fixed;top:max(12px,env(safe-area-inset-top));right:16px;left:auto;z-index:121;display:flex;align-items:center;gap:9px;}
+#homeTopRight{position:fixed;top:max(12px,env(safe-area-inset-top));right:16px;left:auto;z-index:121;display:flex;align-items:center;gap:9px;pointer-events:auto;}
 .topRoundBtn{width:40px;height:40px;border:1.5px solid rgba(255,255,255,.85);border-radius:50%;background:rgba(255,255,255,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 7px 18px rgba(120,180,220,.16);font-size:19px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .2s,box-shadow .2s;padding:0;}
 .topRoundBtn:hover{transform:translateY(-2px);box-shadow:0 11px 24px rgba(120,180,220,.26);}
 #streakBadge{position:fixed;z-index:106;width:42px;height:49px;filter:drop-shadow(0 4px 8px rgba(255,120,50,.3));animation:homeStatIn .5s ease-out both;pointer-events:none;}
@@ -7499,8 +7517,7 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
     <div id="lobbyHead">
       <div id="selectTitle">おはよう</div>
       <div id="lobbySub"></div>
-      <button id="homeLoc" type="button" hidden></button>
-      <button id="homeZZ" type="button" aria-label="ユメっ子">🐾 ユメっ子</button>
+      <div id="homeBtnRow"><button id="homeZZ" type="button" aria-label="ユメっ子"><span class="zzIco"><svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><polygon points="6,3 13,12 7,13"/><polygon points="26,3 19,12 25,13"/><ellipse cx="16" cy="18" rx="8.7" ry="7.8"/></svg></span></button><button id="homeLoc" type="button" hidden></button><button id="locToggle" type="button" aria-label="ボスと冒険をきりかえ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8 L18 8 M14 4 L18 8 L14 12"/><path d="M20 16 L6 16 M10 12 L6 16 L10 20"/></svg></button></div>
     </div>
     <div id="homeGateTop">
       <div id="homeGateText">朝 6:00〜8:00 にひらくよ</div>
@@ -7772,7 +7789,7 @@ body.tutFreezeBtn #randomModeBtn{animation:none !important;transform:none !impor
       <div id="bossLvTag" hidden></div>
       <div id="bossTimeNote"></div>
       <div class="bsRow"><span class="bsLbl">じぶんの ユメっ子</span><div class="bsSlots" id="bossMine"></div></div>
-      <div class="bsRow"><span class="bsLbl">たすっと（ほかの人）</span><div class="bsSlots" id="bossHelp"></div></div>
+      <div class="bsRow"><span class="bsLbl">助っ人（ほかの人）</span><div class="bsSlots" id="bossHelp"></div></div>
       <button id="bossFightBtn" type="button">おいはらう</button></div>
   </div>
   <div id="bossPick" hidden><div class="bpBox"><div class="bpTtl" id="bossPickTtl">えらぶ</div><div class="bpList" id="bossPickList"></div><button id="bossPickClose" type="button">とじる</button></div></div>
@@ -18984,6 +19001,7 @@ $("helpBtn").addEventListener("click",()=>{playClick();showTutorial("help");});
 try{const _ht=$("htrToggle");if(_ht)_ht.addEventListener("click",e=>{e.stopPropagation();try{playClick();}catch(_){}const c=$("homeTopRight");if(c)c.classList.toggle("htrOpen");});}catch(_){}
 try{document.addEventListener("click",e=>{const c=$("homeTopRight");if(c&&c.classList.contains("htrOpen")&&!c.contains(e.target))c.classList.remove("htrOpen");});}catch(_){}
 try{const _hz=$("homeZZ");if(_hz)_hz.addEventListener("click",e=>{e.stopPropagation();try{openYumeLab();}catch(_){}});}catch(_){}
+try{const _lt=$("locToggle");if(_lt)_lt.addEventListener("click",e=>{e.stopPropagation();try{_locModeToggle();}catch(_){}});}catch(_){}
 try{let _hl=$("homeLoc");if(_hl){
       /* 古い 配線を 落とすため、ボタンを 作りなおす */
       const _n=_hl.cloneNode(false);_hl.parentNode.replaceChild(_n,_hl);_hl=_n;
@@ -33042,8 +33060,9 @@ function _bossBtnHTML(){
   return '<span class="hlIco'+(seen?"":" moji")+'">'+_oniIconSVG()+'</span>'
     +tx+'<span id="homeLocBadge" hidden></span>';
 }
-/* いまは ボスの 時間？（23時〜4時。全衣装モード中は いつでも） */
-function _homeLocMode(){ try{ return _bossInWindow()?"boss":"adv"; }catch(_){ return "adv"; } }
+/* ★時間ではなく ボタンで いつでも きりかえ（localStorageに 保存） */
+function _homeLocMode(){ try{ return (localStorage.getItem("radio_locmode")==="boss")?"boss":"adv"; }catch(_){ return "adv"; } }
+function _locModeToggle(){ try{ var nx=(_homeLocMode()==="boss")?"adv":"boss"; localStorage.setItem("radio_locmode",nx); _homeLocCur=""; try{playClick();}catch(_){} _homeLocPaint(true); try{var t=$("locToggle"); if(t)t.title=(nx==="boss")?"冒険にきりかえ":"ボスにきりかえ";}catch(_){} }catch(_){} }
 /* ホームの ボタンを いまの じかんに 合わせて ぬりなおす */
 var _homeLocCur="";
 function _homeLocPaint(force){
@@ -33081,7 +33100,7 @@ function _myYume1(){try{
   var dex=_yumeDex()||[]; if(!dex.length)return null;
   if(_advSel&&_advSel.length){ var id=_advSel[0]; for(var i=0;i<dex.length;i++) if(dex[i].id===id) return dex[i]; }
   /* ★1の子が いなければ いちばん つよい子を 自動で 出す */
-  var best=null,bv=-1; dex.forEach(function(y){ var v=(typeof _yumeMaxLv==="function")?_yumeMaxLv(y):0; if(v>bv){bv=v;best=y;} });
+  var best=null,bv=-1; dex.forEach(function(y){ var v=((y&&y.hp||0)+(y&&y.atk||0)+(y&&y.spd||0))|0; if(v>bv){bv=v;best=y;} });
   return best||dex[0]||null;
 }catch(_){return null;}}
 function _yume1Payload(){try{var y=_myYume1();if(!y)return null;return {img:y.img||"",name:y.name||"",star:y.star||1,shiny:y.shiny?1:0,hue:y.hue||0,big:y.big?1:0,hp:y.hp||0,atk:y.atk||0,spd:y.spd||0,lv:_yumeLv(y)||0};}catch(_){return null;}}
@@ -34011,8 +34030,7 @@ function _bossPickImg(){
   var r=(seed*9301+49297)%233280;
   return list[Math.floor((r/233280)*list.length)%list.length];
 }
-function _bossInWindow(){ try{ if(typeof _devUnlockAll!=="undefined" && _devUnlockAll)return true; }catch(_){}   /* ★全衣装モード中は テスト用に いつでも */
-  var h=new Date().getHours(); return (h>=23||h<4); }
+function _bossInWindow(){ return true; }
 function _bossLoadTeam(){ try{var v=JSON.parse(localStorage.getItem(BOSS_TEAM_KEY)||"null"); if(v&&v.mine)_bossTeam=v;}catch(_){} }
 function _bossSaveTeam(){ try{localStorage.setItem(BOSS_TEAM_KEY,JSON.stringify(_bossTeam));}catch(_){} }
 function _bossHelperPool(){ var out=[]; try{ var owned={}; (_yumeDex()||[]).forEach(function(y){owned[y.img]=1;});
@@ -34034,7 +34052,7 @@ function _bossEnter(){ try{$("bossWarn").hidden=true;}catch(_){} var mn=$("bossM
     var bi=$("bossImg"); if(bi){ bi.src=f; bi.style.display=_bossInWindow()?"":"none"; }
     var bw=$("bossWholeImg"); if(bw){ bw.src=f; bw.style.display=_bossInWindow()?"":"none"; }
   }catch(_){} });
-  try{var tn=$("bossTimeNote"); if(tn)tn.textContent=_bossInWindow()?"いま たたかえる（23時〜4時）":"よる 23時〜あさ 4時 だけ あらわれる…";}catch(_){}
+  try{var tn=$("bossTimeNote"); if(tn)tn.textContent=_bossInWindow()?"いつでも たたかえる":"よる 23時〜あさ 4時 だけ あらわれる…";}catch(_){}
   try{var fb=$("bossFightBtn"); if(fb)fb.disabled=!_bossInWindow();}catch(_){}
   _bossPaintSlots();
   try{_bossPanWire();}catch(_){}
@@ -34324,8 +34342,8 @@ function _bossPaintSlots(){ var dex=_yumeDex()||[]; var mine=$("bossMine"), help
   function cell(y,kind,idx){ if(!y)return '<button class="bsAdd" data-k="'+kind+'" type="button">＋</button>';
     var _lv=(typeof _yumeMaxLv==="function")?_yumeMaxLv(y):(y.lv||0);
     return '<button class="bsCell" data-k="'+kind+'" data-i="'+idx+'" type="button"><img src="'+y.img+'" alt=""><b class="bsStat">'+_lv+'</b><span>'+escHtml(y.name||"")+'</span></button>'; }
-  var mh="",i; for(i=0;i<1;i++){ var mid=_bossTeam.mine[i]; var my=mid?dex.filter(function(d){return d.id===mid;})[0]:null; mh+=cell(my,"mine",i); } mine.innerHTML=mh;
-  var hh="",pool=_bossHelperPool(); for(i=0;i<3;i++){ var hid=_bossTeam.help[i]; var hy=hid?pool.filter(function(p){return p.uid===hid;})[0]:null; hh+=cell(hy,"help",i); } help.innerHTML=hh; }
+  var mh="",i; for(i=0;i<3;i++){ var mid=_bossTeam.mine[i]; var my=mid?dex.filter(function(d){return d.id===mid;})[0]:null; mh+=cell(my,"mine",i); } mine.innerHTML=mh;
+  var hh="",pool=_bossHelperPool(); for(i=0;i<1;i++){ var hid=_bossTeam.help[i]; var hy=hid?pool.filter(function(p){return p.uid===hid;})[0]:null; hh+=cell(hy,"help",i); } help.innerHTML=hh; }
 function _bossOpenPick(kind){ var list=$("bossPickList"), box=$("bossPick"); if(!list||!box)return; var html="";
   function _st(y){ var v=(typeof _yumeMaxLv==="function")?_yumeMaxLv(y):(y.lv||0); return '<b class="bpStat">'+v+'</b>'; }
   if(kind==="mine"){ (_yumeDex()||[]).forEach(function(y){ html+='<button class="bpItem" data-k="mine" data-id="'+y.id+'" type="button"><img src="'+y.img+'" alt="">'+_st(y)+'<span>'+escHtml(y.name||"")+'</span></button>'; }); $("bossPickTtl").textContent="じぶんの ユメっ子"; }
@@ -34652,7 +34670,7 @@ try{ document.addEventListener("click",function(e){ var t=e.target; if(!t||!t.cl
   var cel=t.closest(".bsCell"); if(cel){ try{playClick();}catch(_){} var k=cel.getAttribute("data-k"),ix=parseInt(cel.getAttribute("data-i"),10);
     if(k==="mine")_bossTeam.mine.splice(ix,1); else _bossTeam.help.splice(ix,1); _bossSaveTeam(); _bossPaintSlots(); return; }
   var it=t.closest(".bpItem"); if(it){ try{playClick();}catch(_){} var kk=it.getAttribute("data-k"),id=it.getAttribute("data-id");
-    if(kk==="mine"){ _bossTeam.mine=[id]; } else { if(_bossTeam.help.indexOf(id)<0&&_bossTeam.help.length<3)_bossTeam.help.push(id); }
+    if(kk==="mine"){ if(_bossTeam.mine.indexOf(id)<0&&_bossTeam.mine.length<3)_bossTeam.mine.push(id); } else { if(_bossTeam.help.indexOf(id)<0&&_bossTeam.help.length<1)_bossTeam.help.push(id); }
     _bossSaveTeam(); _bossPaintSlots(); try{$("bossPick").hidden=true;}catch(_){} return; }
 }); }catch(_){}
 function _advStartBattle(){

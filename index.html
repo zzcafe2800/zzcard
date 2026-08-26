@@ -33220,10 +33220,15 @@ async function _phSave(){
     var db=await getDB(); if(!db)return null;
     var{ref,set}=await import(FB_DB);
     var key=getUid()+"_"+jstKey();
-    await set(ref(db,"photos/"+key),{uid:getUid(),name:profileName(),at:Date.now(),
+    var _pf=(typeof getProfile==="function"&&getProfile())||{};
+    await set(ref(db,"photos/"+key),{uid:getUid(),name:_pf.name||"匿名さん",at:Date.now(),
       imgs:_tsPhotos.map(function(q){return {u:q.u,w:q.w,h:q.h};})});
     return {n:_tsPhotos.length,th:_tsPhotos[0].t};
-  }catch(e){ console.warn("photo save failed",e); return null; }
+  }catch(e){
+    console.warn("photo save failed",e);
+    try{ toast((""+e).indexOf("permission")>=0?"しゃしんの ルールが まだ みたい":"しゃしんを おくれなかった…"); }catch(_){}
+    return null;
+  }
 }
 async function _phFetch(uid,date){
   try{

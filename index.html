@@ -6091,6 +6091,33 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
   font-size:13px;font-weight:900;color:#fff;background:linear-gradient(135deg,#8fd3f0,#5eb0da);
   box-shadow:0 5px 14px rgba(94,176,218,.35);}
 #glEmpty{font-size:13px;font-weight:800;color:#9ab8ca;padding:40px 0;}
+body.galOpen #fabWrap{z-index:3450 !important;}
+/* ホーム写真吹き出し：ホバー時は重なる文字と影を消して写真だけに */
+@media (hover:hover){
+  .catLabel.bub.hasPhoto:hover .catNameRow,.catLabel.bub.hasPhoto:hover .catRise,.catLabel.bub.hasPhoto:hover .catCmtWrap,.catLabel.bub.hasPhoto:hover .cwMore,.catLabel.bub.hasPhoto:hover .cmtLike{opacity:0 !important;transition:opacity .14s;pointer-events:none;}
+  .catLabel.bub.hasPhoto:hover svg.bubPhoto g rect{opacity:0;transition:opacity .18s;}
+}
+/* フォトおきば：WORLD FRAME風ダーク */
+#galleryScreen{background:linear-gradient(180deg,#15181d,#0d0f12 45%,#111318) !important;}
+#glTop{background:linear-gradient(180deg,rgba(18,20,25,.96),rgba(18,20,25,.82)) !important;}
+#glTtl{color:#f2f5f8 !important;}
+#glCount{color:#8b95a0 !important;}
+#glSort{background:rgba(255,255,255,.1) !important;color:#e6ebf0 !important;box-shadow:none !important;}
+.glCell{background:#1b1e24 !important;box-shadow:0 4px 14px rgba(0,0,0,.4) !important;}
+.glCell::after{content:"";position:absolute;left:0;right:0;bottom:0;height:58%;z-index:1;pointer-events:none;border-radius:inherit;background:linear-gradient(180deg,rgba(8,10,13,0),rgba(8,10,13,.86));opacity:0;transition:opacity .18s;}
+.glCell .glNm{top:auto !important;bottom:8px;left:9px;right:auto !important;background:none !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important;padding:0;font-size:11.5px;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.95);z-index:2;max-width:74%;opacity:0;}
+.glCell .glNm .glDate{opacity:.7;font-weight:700;}
+.glCell .glCap{left:9px;right:auto;bottom:26px;background:none !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important;padding:0;font-size:13px;font-weight:900;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.95);max-width:80%;opacity:0;}
+.glCell .glCapAdd{background:rgba(255,255,255,.14) !important;color:#e3eaf0 !important;padding:2px 8px !important;border-radius:7px;border:1px dashed rgba(255,255,255,.32) !important;text-shadow:none !important;}
+.glCell .glLike{background:rgba(0,0,0,.52) !important;}
+@media (hover:hover){
+  .glCell:hover::after{opacity:1;}
+  .glCell:hover .glNm,.glCell:hover .glCap{opacity:1;}
+}
+@media (hover:none){
+  .glCell::after{opacity:1;}
+  .glCell .glNm,.glCell .glCap{opacity:1;}
+}
 #glEmpty[hidden],#glMoreBtn[hidden]{display:none;}
 /* フォトおきば：並び替え・下ナビ・いいね・ホーム吹き出し拡大 */
 #glTop{padding-bottom:10px;}
@@ -12545,7 +12572,7 @@ function renderHillPage(){
       `<span class="catNameRow"><span class="catName${_isGold?" catNameGold":""}">${escHtml(po.name||"匿名さん")}</span>${fireBadge}</span>`+   /* なまえ＋🔥連続（名前の右・③風火色） */
       `<span class="catRise" data-cat="${_riseCat(po)}"${riseTxt?"":' style="visibility:hidden"'}>（${riseTxt?escHtml(riseTxt):"・"}）</span>`+   /* カテゴリ（色＋形で区別） */
       `<div class="catCmtWrap">${comment?`<span class="catCmt">${(typeof emoHTML==="function"?emoHTML(comment,15):escHtml(comment))}</span>`+((!po.isSelf&&po.uid&&po.pid)?`<button class="cmtLike${likedPost(po.uid,po.pid)?" done":""}" type="button" data-uid="${escHtml(po.uid)}" data-pid="${escHtml(po.pid)}" aria-label="いいね">${likedPost(po.uid,po.pid)?"\u2764":"\u2661"}</button>`:""):((!po.isSelf&&po.uid&&po.pid)?`<button class="cmtLike noCmt${likedPost(po.uid,po.pid)?" done":""}" type="button" data-uid="${escHtml(po.uid)}" data-pid="${escHtml(po.pid)}" aria-label="いいね">${likedPost(po.uid,po.pid)?"\u2764":"\u2661"}</button>`:"")}</div>`;   /* コメント枠：高さを最長に揃える */
-    if(_hasPh){lab.classList.add("hasPhoto");el.classList.add("hcPhoto");}
+    if(_hasPh){lab.classList.add("hasPhoto");el.classList.add("hcPhoto");lab.addEventListener("mouseenter",function(){try{_bubLoadFull(lab,po);}catch(_){}});}
     const riseEl=lab.querySelector(".catRise")||null;
     if(comment||_hasPh){   /* クリックで全文表示／しゃしんを 見る */
       lab.title=_hasPh?"しゃしんを 見る":"コメントを見る";
@@ -18424,13 +18451,14 @@ function refreshDock(){
   const ppProfMode=vis("profilePanel")&&!$("profilePanel").classList.contains("bagMode");   /* 匿名さんから開くプロフ画面ではバーを出さない */
   const setOpen=$("settingsScreen")&&$("settingsScreen").classList.contains("show");   /* 設定・詳細設定・図鑑でもバーを出さない */
   const blocked=ppProfMode||setOpen||vis("profileSetup")||vis("dexPopup")||roomEdit||vis("friendScreen")||vis("clubScreen")||vis("tutorial")||vis("titleScreen")||vis("rouletteScreen")||vis("taisoScreen")||vis("firstMeet")||_firstMeetActive||($("catRoom")&&($("catRoom").classList.contains("guideGo")||$("catRoom").classList.contains("guideBack")))||vis("gachaReveal")||($("outingIntro")&&$("outingIntro").classList.contains("show"))||($("nyanShot")&&$("nyanShot").classList.contains("capmode"))||($("photoCancelBtn")&&!$("photoCancelBtn").hidden);
-  const show=(onHome||onMain||onShop)&&!blocked;
+  const onGal=$("galleryScreen")&&!$("galleryScreen").hidden;
+  const show=(onHome||onMain||onShop||onGal)&&!blocked;
   d.style.display=show?"flex":"none";
   try{d.style.zIndex=onShop?"3300":"";}catch(_){}   /* 商店街(z3200)の上に出す */
   if(show){
     /* いま開いてるアイコンをハイライト（ぱっと見で分かるように） */
-    const active=vis("catRoom")?"fabRoom":vis("recordScreen")?"fabRecord":vis("profilePanel")?"fabCloset":onShop?"fabDex":(onHome&&!vis("dexPopup")?"fabHome":null);
-    ["fabHome","fabRoom","fabDex","fabCloset","fabRecord"].forEach(id=>{const e=$(id);if(e)e.classList.toggle("active",id===active);});
+    const active=($("galleryScreen")&&!$("galleryScreen").hidden)?"fabGallery":vis("catRoom")?"fabRoom":vis("recordScreen")?"fabRecord":vis("profilePanel")?"fabCloset":onShop?"fabDex":(onHome&&!vis("dexPopup")?"fabHome":null);
+    ["fabHome","fabRoom","fabDex","fabCloset","fabRecord","fabGallery"].forEach(id=>{const e=$(id);if(e)e.classList.toggle("active",id===active);});
     try{const ae=active?$(active):null;if(ae){d.style.setProperty("--nx",(ae.offsetLeft+ae.offsetWidth/2)+"px");}else{d.style.setProperty("--nx","-999px");}}catch(_){}
     try{const ic=$("fabRoomIcon");if(ic&&ic.dataset.k!==(profileBody()+profileColor())){ic.innerHTML=catFaceSvg(profileBody(),profileColor(),null);ic.dataset.k=profileBody()+profileColor();}}catch(_){}
     try{const rb=$("roomReadyBadge");if(rb)rb.hidden=true;}catch(_){}   /* おでかけ廃止で 用ずみ */
@@ -18447,6 +18475,7 @@ function refreshDock(){
   }catch(_){}
 })();
 function dockGo(t){
+  try{var _gs=$("galleryScreen"); if(_gs&&!_gs.hidden){_gs.hidden=true;document.body.classList.remove("galOpen");}}catch(_){}
   try{ if(typeof roomVisible==="function"&&roomVisible())closeRoom(); }catch(_){}
   try{$("recordScreen").classList.remove("visible");}catch(_){}
   try{$("profilePanel").classList.remove("visible");}catch(_){}
@@ -33256,7 +33285,7 @@ try{
    ・本体は photos/<uid>_<日付> に 置き、ホームの posts には
      「枚数」と「ちいさい みほん」だけ 入れる＝丘の 読みこみを 重くしない
    ========================================================= */
-var PH_MAX=1000, PH_Q=0.62, PH_TH=260, PH_THQ=0.5, PH_GL=480, PH_GLQ=0.62, _tsPhotos=[];
+var PH_MAX=1000, PH_Q=0.62, PH_TH=260, PH_THQ=0.5, PH_GL=640, PH_GLQ=0.66, _tsPhotos=[];
 function _phLoad(file){
   return new Promise(function(res){
     try{
@@ -33339,6 +33368,19 @@ async function _phFetch(uid,date){
   }catch(_){ return null; }
 }
 /* ===== ビューア ===== */
+var _bubFullCache={};
+async function _bubLoadFull(lab,po){
+  try{
+    if(!lab||lab._bubFull)return;
+    lab._bubFull=1;
+    var img=lab.querySelector("svg.bubPhoto image"); if(!img)return;
+    var uid=(po&&po.uid)||"", date=(po&&po.date)||jstKey(), ck=uid+"_"+date;
+    if(_bubFullCache[ck]){ img.setAttribute("href",_bubFullCache[ck]); img.setAttribute("xlink:href",_bubFullCache[ck]); return; }
+    var v=await _phFetch(uid,date);
+    if(v&&v.imgs&&v.imgs[0]&&v.imgs[0].u){ _bubFullCache[ck]=v.imgs[0].u; img.setAttribute("href",v.imgs[0].u); img.setAttribute("xlink:href",v.imgs[0].u); }
+    else{ lab._bubFull=0; }
+  }catch(_){ try{lab._bubFull=0;}catch(e){} }
+}
 function openPhotoView(po){
   try{
     var el=$("photoView"), body=$("pvBody"); if(!el||!body)return;
@@ -33361,6 +33403,7 @@ async function openGallery(){
   try{
     var el=$("galleryScreen"); if(!el)return;
     el.hidden=false; try{el.scrollTop=0;}catch(_){}
+    try{document.body.classList.add("galOpen");}catch(_){} try{refreshDock();}catch(_){}
     var grid=$("glGrid"); if(grid&&!_glItems.length)grid.innerHTML='<div class="pvCap" style="color:#9ab8ca">よみこみ中…</div>';
     try{playClick();}catch(_){}
     var db=await getDB();
@@ -33483,7 +33526,7 @@ async function _glEditTitle(gi){
     try{toast(t?"タイトルを つけたよ":"タイトルを けしたよ");}catch(_){}
   }catch(e){ console.warn("glCap",e); try{toast("できなかった…");}catch(_){} }
 }
-function closeGallery(){ try{var el=$("galleryScreen"); if(el)el.hidden=true;}catch(_){} }
+function closeGallery(){ try{var el=$("galleryScreen"); if(el)el.hidden=true;}catch(_){} try{document.body.classList.remove("galOpen");}catch(_){} try{refreshDock();}catch(_){} }
 try{ document.addEventListener("click",function(e){
   var t=e.target; if(!t||!t.closest)return;
   if(t.closest("#tsPhotoAdd")){ try{$("tsPhotoIn").click();}catch(_){} return; }
@@ -33497,7 +33540,6 @@ try{ document.addEventListener("click",function(e){
     else _glPaint();
     return; }
   if(t.closest("#fabGallery")){ openGallery(); return; }
-  var _gNav=t.closest("#glNav .glNavBtn"); if(_gNav){ e.stopPropagation(); try{playClick();}catch(_){} var _nv=_gNav.dataset.gnav; if(_nv==="home"){ closeGallery(); try{dockGo("home");}catch(_){} } else if(_nv==="record"){ closeGallery(); try{openRecord();}catch(_){} } return; }
   if(t.closest("#glSort")){ e.stopPropagation(); try{playClick();}catch(_){} _glToggleSort(); return; }
   var _gLk=t.closest("#glGrid .glLike"); if(_gLk){ e.stopPropagation(); _glToggleLike(parseInt(_gLk.dataset.gi,10)); return; }
   var _gDel=t.closest("#glGrid .glDel"); if(_gDel){ e.stopPropagation(); _glDeleteImg(parseInt(_gDel.dataset.gi,10)); return; }
@@ -40630,7 +40672,6 @@ function _gpStreetHTML(){
   <div id="glTop"><span id="glTtl">フォトおきば</span><span id="glCount"></span><button id="glSort" type="button">🆕 新着</button></div>
   <div id="glGrid"></div>
   <div id="glMore"><button id="glMoreBtn" type="button" hidden>もっと 見る</button><span id="glEmpty" hidden>まだ しゃしんが ないよ</span></div>
-  <div id="glNav"><button class="glNavBtn" data-gnav="home" type="button"><span class="gnIco">🏠</span><span>ラジオ体操</span></button><button class="glNavBtn active" data-gnav="gallery" type="button"><span class="gnIco">🖼</span><span>フォトおきば</span></button><button class="glNavBtn" data-gnav="record" type="button"><span class="gnIco">📖</span><span>きろく</span></button></div>
 </div>
 <div id="photoView" hidden aria-hidden="true">
   <div id="pvTop"><button id="pvClose" type="button">✕</button><span id="pvName"></span></div>

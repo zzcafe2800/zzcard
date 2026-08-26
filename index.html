@@ -6086,7 +6086,7 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
   .glCell .glCapAdd{opacity:1;}
 }
 /* ===== お部屋カレンダー ===== */
-#roomCalScreen{position:fixed;inset:0;z-index:3400;background:linear-gradient(180deg,#fdeef2,#f7e3ea 45%,#fdeef2);overflow-y:auto;display:flex;flex-direction:column;-webkit-overflow-scrolling:touch;}
+#roomCalScreen{position:fixed;inset:0;z-index:3400;background:linear-gradient(180deg,#fdeef2,#f7e3ea 45%,#fdeef2);overflow:hidden;display:flex;flex-direction:column;-webkit-overflow-scrolling:touch;}
 #roomCalScreen[hidden]{display:none;}
 .rcTabBar{display:flex;gap:6px;padding:10px 12px 4px;flex:0 0 auto;position:relative;z-index:2;}
 .rcTab{flex:1 1 0;border:none;border-radius:999px 999px 0 0;padding:9px 6px;font-family:inherit;font-size:13px;font-weight:900;cursor:pointer;background:rgba(255,255,255,.5);color:#b58aa0;transition:background .15s,color .15s;}
@@ -6097,16 +6097,16 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 #rcMonthBar button{border:none;background:rgba(255,255,255,.7);color:#d46a8b;width:38px;height:38px;border-radius:50%;font-size:16px;font-weight:900;cursor:pointer;box-shadow:0 3px 8px rgba(200,120,150,.18);}
 #rcMonthBar button:disabled{opacity:.35;cursor:default;}
 #rcMonthTtl{font-size:19px;font-weight:900;color:#c05379;min-width:150px;text-align:center;letter-spacing:.02em;}
-#rcBody{flex:1 1 auto;display:flex;gap:14px;padding:0 14px 24px;align-items:flex-start;}
-#rcCalPane{flex:1 1 58%;min-width:0;background:#fff;border-radius:16px;padding:10px;box-shadow:0 8px 22px rgba(200,120,150,.14);}
-#rcDayPane{flex:1 1 40%;min-width:0;background:#fff;border-radius:16px;padding:14px;box-shadow:0 8px 22px rgba(200,120,150,.14);position:sticky;top:8px;}
+#rcBody{flex:1 1 auto;display:flex;gap:14px;padding:0 14px 14px;align-items:stretch;min-height:0;overflow:hidden;}
+#rcCalPane{flex:1 1 58%;min-width:0;background:#fff;border-radius:16px;padding:10px;box-shadow:0 8px 22px rgba(200,120,150,.14);display:flex;flex-direction:column;min-height:0;}
+#rcDayPane{flex:1 1 40%;min-width:0;background:#fff;border-radius:16px;padding:14px;box-shadow:0 8px 22px rgba(200,120,150,.14);overflow-y:auto;min-height:0;}
 #rcWeekHead{display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:4px;}
 #rcWeekHead span{text-align:center;font-size:11px;font-weight:900;color:#b98ba0;padding:3px 0;}
 #rcWeekHead span.sun{color:#e0708f;}
 #rcWeekHead span.sat{color:#6fa8d8;}
-#rcGrid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
-.rcCell{min-height:74px;border-radius:8px;background:#faf5f7;padding:3px 3px 2px;cursor:pointer;display:flex;flex-direction:column;gap:2px;overflow:hidden;transition:background .12s;border:2px solid transparent;}
-.rcCell:hover{background:#f4e9ee;}
+#rcGrid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;flex:1 1 auto;min-height:0;grid-auto-rows:1fr;}
+#roomCalScreen .rcCell{min-height:0;border-radius:8px;background:#faf5f7;padding:3px 3px 2px;cursor:pointer;display:flex;flex-direction:column;gap:2px;overflow:hidden;transition:background .12s;border:2px solid transparent;}
+#roomCalScreen .rcCell:hover{background:#f4e9ee;}
 .rcCell.rcOther{background:#f3f3f5;opacity:.55;}
 .rcCell.rcToday{border-color:#f0a8c0;}
 .rcCell.rcSel{border-color:#d46a8b;background:#fdeef2;}
@@ -6115,6 +6115,11 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 .rcCell.rcSat .rcNum{color:#6fa8d8;}
 .rcCell .rcBar{font-size:9px;font-weight:800;color:#fff;border-radius:4px;padding:1px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.35;}
 .rcCell .rcMore{font-size:9px;font-weight:800;color:#b58aa0;padding:0 2px;}
+#roomCalScreen .rcBars{display:flex;flex-direction:column;gap:1.5px;flex:1 1 auto;min-height:0;overflow:hidden;margin-top:2px;}
+#roomCalScreen .rcCell .rcBar{align-self:flex-start;box-sizing:border-box;min-width:0;font-size:8.5px;padding:0 3px;line-height:1.5;flex:0 0 auto;}
+#roomCalScreen .rcNextDay{border:none;background:#2a2e37;color:#9aa2b0;font-weight:800;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;font-family:inherit;white-space:nowrap;}
+#roomCalScreen .rcNextDay.on{background:#4a3652;color:#f0a8c0;}
+#roomCalScreen .rcTlItem .rcNdArrow{position:absolute;bottom:1px;right:5px;font-style:normal;font-size:8px;opacity:.9;}
 #rcHint{font-size:11px;color:#bfa0ac;font-weight:700;text-align:center;padding:8px 4px 2px;}
 #rcDayTtl{font-size:16px;font-weight:900;color:#c05379;margin-bottom:8px;}
 .rcFormRow{display:flex;align-items:center;gap:8px;margin-bottom:9px;flex-wrap:wrap;}
@@ -6141,9 +6146,11 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 .rcTlItem span{display:block;font-size:8.5px;opacity:.92;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .rcTlEmpty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#c9b3bd;font-size:12px;font-weight:800;}
 @media (max-width:760px){
-  #rcBody{flex-direction:column;padding:0 10px 30px;}
-  #rcCalPane,#rcDayPane{flex:1 1 auto;width:100%;position:static;}
-  .rcCell{min-height:56px;}
+  #roomCalScreen{overflow-y:auto;}
+  #rcBody{flex-direction:column;padding:0 10px 24px;overflow:visible;min-height:auto;}
+  #rcCalPane,#rcDayPane{flex:0 0 auto;width:100%;}
+  #roomCalScreen #rcGrid{flex:0 0 auto;grid-auto-rows:auto;}
+  #roomCalScreen .rcCell{min-height:52px;}
   #rcTlBox{height:300px;}
 }
 /* お部屋カレンダー：ダークテーマ＋日未選択で全画面 */
@@ -6156,8 +6163,8 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 #rcWeekHead span{color:#9aa2b0 !important;}
 #rcWeekHead span.sun{color:#f08a9e !important;}
 #rcWeekHead span.sat{color:#7fb0e0 !important;}
-.rcCell{background:#282c35 !important;border-color:transparent !important;}
-.rcCell:hover{background:#31353f !important;}
+#roomCalScreen .rcCell{background:#282c35 !important;border-color:transparent !important;}
+#roomCalScreen .rcCell:hover{background:#31353f !important;}
 .rcCell.rcOther{background:#1c1f26 !important;}
 .rcCell.rcToday{border-color:#5a6270 !important;}
 .rcCell.rcSel{border-color:#f0f2f5 !important;background:#33373f !important;}
@@ -6183,7 +6190,7 @@ body.exercising #roomGoal,#catRoom.editing #roomGoal,#catRoom.decoing #roomGoal{
 #rcDayPane{display:none;}
 #roomCalScreen.rcSelMode #rcDayPane{display:block;}
 #roomCalScreen:not(.rcSelMode) #rcCalPane{flex-basis:100%;flex-grow:1;}
-#roomCalScreen:not(.rcSelMode) .rcCell{min-height:92px;}
+#roomCalScreen:not(.rcSelMode) .rcCell{min-height:0;}
 #galleryScreen{position:fixed;inset:0;z-index:3400;overflow-y:auto;
   background:linear-gradient(180deg,#eaf7fd,#dff0fa 40%,#eef8fd);
   font-family:"Yomogi","Kosugi Maru",sans-serif;-webkit-overflow-scrolling:touch;}
@@ -33669,8 +33676,17 @@ function _rcSetAmpm(btn,pm){ if(!btn)return; btn.classList.toggle("pm",pm); btn.
 function _rcReadTime(ampmId,hId,mId){ try{ var pm=_rcAmpm($(ampmId)); var h=parseInt($(hId).value,10)||12; var m=parseInt($(mId).value,10)||0; h=h%12; if(pm)h+=12; return h*60+m; }catch(_){return 0;} }
 function _rcWriteTime(ampmId,hId,mId,min){ try{ min=((min%1440)+1440)%1440; var h=Math.floor(min/60),m=min%60; var pm=h>=12; var h12=h%12; if(h12===0)h12=12; _rcSetAmpm($(ampmId),pm); var hs=$(hId); if(hs)hs.value=String(h12); var ms=$(mId); if(ms){ var m5=Math.round(m/5)*5; if(m5>55)m5=55; ms.value=String(m5); } }catch(_){} }
 async function _rcLoad(){ try{ var db=await getDB(); if(!db){_rcData={};return;} var m=await import(FB_DB); var snap=await m.get(m.ref(db,RC_DB)); _rcData=snap.exists()?(snap.val()||{}):{}; }catch(_){ _rcData={}; } }
+var RC_ROOMS_KEY="radio_rc_rooms";
+function _rcRoomsGet(){ try{var a=JSON.parse(localStorage.getItem(RC_ROOMS_KEY)||"[]"); return Array.isArray(a)?a:[];}catch(_){return [];} }
+function _rcRoomsAdd(id,rn){ try{ id=(id||"").trim(); if(!id)return; rn=(rn||"").trim(); var a=_rcRoomsGet().filter(function(x){return x&&x.id!==id;}); a.unshift({id:id,rn:rn}); a=a.slice(0,20); localStorage.setItem(RC_ROOMS_KEY,JSON.stringify(a)); }catch(_){} }
+function _rcRoomNameFor(id){ try{ id=(id||"").trim(); var a=_rcRoomsGet(); for(var i=0;i<a.length;i++)if(a[i].id===id)return a[i].rn||""; }catch(_){} return ""; }
+function _rcFillRoomLists(){ try{ var a=_rcRoomsGet(); var il=$("rcIdList"),rl=$("rcRnList");
+  if(il){ il.innerHTML=a.map(function(x){return '<option value="'+escHtml(x.id)+'">'+(x.rn?escHtml(x.rn):"")+'</option>';}).join(""); }
+  if(rl){ var seen={},o=""; a.forEach(function(x){ if(x.rn&&!seen[x.rn]){seen[x.rn]=1;o+='<option value="'+escHtml(x.rn)+'"></option>';} }); rl.innerHTML=o; }
+}catch(_){} }
+try{ document.addEventListener("change",function(e){ try{ var t=e.target; if(t&&t.id==="rcRoomId"){ var rn=_rcRoomNameFor(t.value); if(rn){ var f=$("rcRoomName"); if(f&&!f.value.trim())f.value=rn; } } }catch(_){} }); }catch(_){}
 function _rcOpen(){ try{
-  var el=$("roomCalScreen"); if(!el)return; _rcFillSelects();
+  var el=$("roomCalScreen"); if(!el)return; _rcFillSelects(); _rcFillRoomLists();
   el.hidden=false; try{el.scrollTop=0;}catch(_){}
   try{document.body.classList.add("galOpen");}catch(_){} try{refreshDock();}catch(_){}
   _rcMonthOff=0; _rcSel=null; try{$("roomCalScreen").classList.remove("rcSelMode");}catch(_){} _rcRenderMonth();
@@ -33688,10 +33704,10 @@ function _rcRenderMonth(){ try{
   for(d=1;d<=info.days;d++){
     var ds=_rcDateStr(info.y,info.m,d), dow=(info.first+d-1)%7;
     var day=_rcData[ds]||{}, uids=Object.keys(day), bars="";
-    uids.slice(0,3).forEach(function(u){ var e=day[u]; if(!e)return; bars+='<div class="rcBar" style="background:'+_rcColor(u)+'">'+escHtml(String(e.name||"？"))+'</div>'; });
-    if(uids.length>3)bars+='<div class="rcMore">+'+(uids.length-3)+'</div>';
+    uids.slice(0,4).forEach(function(u){ var e=day[u]; if(!e)return; var _s=e.s||0, _en=(e.e||0)+(e.nd?1440:0); if(_en<=_s)_en=_s+30; var _et=Math.min(_en,1440), _lf=_s/1440*100, _wd=Math.max(12,(_et-_s)/1440*100); if(_lf+_wd>100)_wd=100-_lf; bars+='<div class="rcBar" style="margin-left:'+_lf.toFixed(1)+'%;width:'+_wd.toFixed(1)+'%;background:'+(e.col||_rcColor(u))+'">'+escHtml(String(e.name||"？"))+(e.nd?'→':'')+'</div>'; });
+    if(uids.length>4)bars+='<div class="rcMore">+'+(uids.length-4)+'</div>';
     var cls="rcCell"+(dow===0?" rcSun":dow===6?" rcSat":"")+(ds===todayStr?" rcToday":"")+(ds===_rcSel?" rcSel":"");
-    html+='<div class="'+cls+'" data-d="'+ds+'"><span class="rcNum">'+d+'</span>'+bars+'</div>'; cellN++;
+    html+='<div class="'+cls+'" data-d="'+ds+'"><span class="rcNum">'+d+'</span>'+(bars?'<div class="rcBars">'+bars+'</div>':'')+'</div>'; cellN++;
   }
   while(cellN%7!==0){ html+='<div class="rcCell rcOther"></div>'; cellN++; }
   grid.innerHTML=html;
@@ -33702,8 +33718,8 @@ function _rcRenderDay(){ try{
   var parts=_rcSel.split("-"); var ttl=$("rcDayTtl"); if(ttl)ttl.textContent=(parseInt(parts[1],10))+"月"+(parseInt(parts[2],10))+"日 の 予定";
   var form=$("rcDayForm"); if(form)form.hidden=false; var tlw=$("rcTlWrap"); if(tlw)tlw.hidden=false;
   var me=getUid(); var mine=(_rcData[_rcSel]||{})[me];
-  if(mine){ _rcWriteTime("rcSAmpm","rcSHour","rcSMin",mine.s||0); _rcWriteTime("rcEAmpm","rcEHour","rcEMin",mine.e||0); var ri=$("rcRoomId"); if(ri)ri.value=mine.rid||""; var db=$("rcDel"); if(db)db.hidden=false; }
-  else{ _rcWriteTime("rcSAmpm","rcSHour","rcSMin",20*60); _rcWriteTime("rcEAmpm","rcEHour","rcEMin",22*60); var ri2=$("rcRoomId"); if(ri2)ri2.value=""; var db2=$("rcDel"); if(db2)db2.hidden=true; }
+  if(mine){ _rcWriteTime("rcSAmpm","rcSHour","rcSMin",mine.s||0); _rcWriteTime("rcEAmpm","rcEHour","rcEMin",mine.e||0); var ri=$("rcRoomId"); if(ri)ri.value=mine.rid||""; var _rnI=$("rcRoomName"); if(_rnI)_rnI.value=mine.rn||""; var db=$("rcDel"); if(db)db.hidden=false; var _en=$("rcEndNext"); if(_en){_en.classList.toggle("on",!!mine.nd);_en.textContent=mine.nd?"翌日":"当日";} }
+  else{ _rcWriteTime("rcSAmpm","rcSHour","rcSMin",20*60); _rcWriteTime("rcEAmpm","rcEHour","rcEMin",22*60); var ri2=$("rcRoomId"); if(ri2)ri2.value=""; var _rnI2=$("rcRoomName"); if(_rnI2)_rnI2.value=""; var db2=$("rcDel"); if(db2)db2.hidden=true; var _en2=$("rcEndNext"); if(_en2){_en2.classList.remove("on");_en2.textContent="当日";} }
   _rcRenderTimeline();
 }catch(_){}}
 function _rcRenderTimeline(){ try{
@@ -33712,20 +33728,24 @@ function _rcRenderTimeline(){ try{
   var day=_rcData[_rcSel]||{}, uids=Object.keys(day);
   if(!uids.length){ tl.innerHTML='<div class="rcTlEmpty">まだ 予定が ないよ</div>'; return; }
   var html="";
-  uids.forEach(function(u){ var e=day[u]; if(!e)return; var s=e.s||0, en=e.e||0; if(en<=s)en=s+30; var top=s/1440*100, hgt=Math.max(2,(en-s)/1440*100);
-    html+='<div class="rcTlItem" data-rid="'+escHtml(String(e.rid||""))+'" style="top:'+top+'%;height:'+hgt+'%;background:'+_rcColor(u)+'"><b>'+escHtml(String(e.name||"？"))+'</b><span>'+_rcFmt(s)+'〜'+_rcFmt(en)+(e.rid?(' · '+escHtml(String(e.rid))):"")+'</span></div>';
+  uids.forEach(function(u){ var e=day[u]; if(!e)return; var s=e.s||0, enRaw=(e.e||0)+(e.nd?1440:0); if(enRaw<=s)enRaw=s+30; var enVis=Math.min(enRaw,1440); var top=s/1440*100, hgt=Math.max(3,(enVis-s)/1440*100);
+    html+='<div class="rcTlItem" data-rid="'+escHtml(String(e.rid||""))+'" style="top:'+top+'%;height:'+hgt+'%;background:'+(e.col||_rcColor(u))+'"><b>'+escHtml(String(e.name||"？"))+(e.rn?(' · '+escHtml(String(e.rn))):"")+'</b><span>'+_rcFmt(s)+'〜'+(e.nd?'翌':'')+_rcFmt(e.e||0)+(e.rid?(' · '+escHtml(String(e.rid))):"")+'</span>'+(e.nd?'<i class="rcNdArrow">▾翌日</i>':'')+'</div>';
   });
   tl.innerHTML=html;
 }catch(_){}}
 async function _rcSave(){ try{
   if(!_rcSel){ try{toast("日を えらんでね");}catch(_){} return; }
   var s=_rcReadTime("rcSAmpm","rcSHour","rcSMin"), e=_rcReadTime("rcEAmpm","rcEHour","rcEMin");
+  var nd=($("rcEndNext")&&$("rcEndNext").classList.contains("on"))?1:0;
   var rid=((($("rcRoomId")||{}).value)||"").trim();
   if(!rid){ try{toast("お部屋IDを 入力してね");}catch(_){} return; }
+  var rn=((($("rcRoomName")||{}).value)||"").trim();
   var db=await getDB(); if(!db){ try{toast("いま つながって ないみたい");}catch(_){} return; }
   var m=await import(FB_DB); var me=getUid(); var p=getProfile()||{};
-  var rec={s:s,e:e,rid:rid.slice(0,80),name:String(p.name||"匿名さん").slice(0,20),at:Date.now()};
+  var _prev=(_rcData[_rcSel]||{})[me]; var col=(_prev&&_prev.col)||("hsl("+Math.floor(Math.random()*360)+",65%,60%)");
+  var rec={s:s,e:e,nd:nd,rid:rid.slice(0,80),rn:rn.slice(0,40),name:String(p.name||"匿名さん").slice(0,20),col:col,at:Date.now()};
   await m.set(m.ref(db,RC_DB+"/"+_rcSel+"/"+me),rec);
+  try{_rcRoomsAdd(rid,rn); _rcFillRoomLists();}catch(_){}
   if(!_rcData[_rcSel])_rcData[_rcSel]={}; _rcData[_rcSel][me]=rec;
   _rcRenderMonth(); _rcRenderDay(); try{toast("とうろく したよ");}catch(_){}
 }catch(err){ console.warn("rcSave",err); try{toast("とうろく できなかった…");}catch(_){} }}
@@ -33745,6 +33765,7 @@ try{ document.addEventListener("click",function(e){ var t=e.target; if(!t||!t.cl
   var cell=t.closest("#rcGrid .rcCell"); if(cell&&cell.dataset.d){ e.stopPropagation(); try{playPop();}catch(_){} _rcSelectDay(cell.dataset.d); return; }
   if(t.closest("#rcSAmpm")){ e.stopPropagation(); var b=$("rcSAmpm"); _rcSetAmpm(b,!_rcAmpm(b)); return; }
   if(t.closest("#rcEAmpm")){ e.stopPropagation(); var b2=$("rcEAmpm"); _rcSetAmpm(b2,!_rcAmpm(b2)); return; }
+  if(t.closest("#rcEndNext")){ e.stopPropagation(); var _nb=$("rcEndNext"); if(_nb){ var _on=!_nb.classList.contains("on"); _nb.classList.toggle("on",_on); _nb.textContent=_on?"翌日":"当日"; } return; }
   if(t.closest("#rcSave")){ e.stopPropagation(); _rcSave(); return; }
   if(t.closest("#rcDel")){ e.stopPropagation(); _rcDelEntry(); return; }
   var tli=t.closest("#rcTimeline .rcTlItem"); if(tli){ e.stopPropagation(); _rcCopyId(tli.dataset.rid); return; }
@@ -40908,8 +40929,10 @@ function _gpStreetHTML(){
       <div id="rcDayTtl">← 日を えらんでね</div>
       <div id="rcDayForm" hidden>
         <div class="rcFormRow"><span class="rcLbl">はじまり</span><div class="rcTime"><button class="rcAmpm" id="rcSAmpm" type="button">午前</button><select id="rcSHour" aria-label="はじまりの時"></select><span class="rcColon">:</span><select id="rcSMin" aria-label="はじまりの分"></select></div></div>
-        <div class="rcFormRow"><span class="rcLbl">おわり</span><div class="rcTime"><button class="rcAmpm" id="rcEAmpm" type="button">午後</button><select id="rcEHour" aria-label="おわりの時"></select><span class="rcColon">:</span><select id="rcEMin" aria-label="おわりの分"></select></div></div>
-        <div class="rcFormRow"><span class="rcLbl">お部屋ID</span><input id="rcRoomId" type="text" maxlength="80" placeholder="部屋の IDを 入力（コピーされる）"></div>
+        <div class="rcFormRow"><span class="rcLbl">おわり</span><div class="rcTime"><button class="rcAmpm" id="rcEAmpm" type="button">午後</button><select id="rcEHour" aria-label="おわりの時"></select><span class="rcColon">:</span><select id="rcEMin" aria-label="おわりの分"></select><button class="rcNextDay" id="rcEndNext" type="button">当日</button></div></div>
+        <div class="rcFormRow"><span class="rcLbl">お部屋ID</span><input id="rcRoomId" type="text" maxlength="80" list="rcIdList" placeholder="部屋の IDを 入力（コピーされる）"></div>
+        <div class="rcFormRow"><span class="rcLbl">ルーム名</span><input id="rcRoomName" type="text" maxlength="40" list="rcRnList" placeholder="お店・部屋の 名前"></div>
+        <datalist id="rcIdList"></datalist><datalist id="rcRnList"></datalist>
         <div class="rcFormBtns"><button id="rcSave" type="button">この日に とうろく</button><button id="rcDel" type="button" hidden>けす</button></div>
       </div>
       <div id="rcTlWrap" hidden>

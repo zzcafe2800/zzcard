@@ -11,8 +11,8 @@ jobs:
   windows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
       - name: PC版の ファイルを 組み立てる
@@ -37,7 +37,7 @@ jobs:
               "protocols": [{ "name": "zzcard", "schemes": ["zzcard"] }],
               "win": { "target": "nsis", "icon": "icon.png" },
               "nsis": { "oneClick": true, "perMachine": false, "createDesktopShortcut": true, "shortcutName": "ズズラジオ体操部" },
-              "publish": [{ "provider": "github", "owner": "zzcafe2800", "repo": "zzcard", "releaseType": "release" }]
+              "publish": [{ "provider": "github", "owner": "zzcafe2800", "repo": "zzcard" }]
             }
           }
           ZZEOF
@@ -157,11 +157,19 @@ jobs:
           $bmp.Save("$PWD\desktop\icon.png", [System.Drawing.Imaging.ImageFormat]::Png)
           $g.Dispose(); $bmp.Dispose(); $src.Dispose()
           Remove-Item "$PWD\desktop\icon192.png"
-      - name: インストーラーを 作って Releases に のせる
+      - name: インストーラーを 作る
         working-directory: desktop
         shell: bash
         run: |
           npm install
-          npx electron-builder --win --publish always
+          npx electron-builder --win --publish never
+          ls dist
+      - name: Releases に のせる（先に 版の 目印＝タグを 作ってから 公開）
+        shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VER="0.1.${{ github.run_number }}"
+          git tag "v$VER"
+          git push origin "v$VER"
+          gh release create "v$VER" desktop/dist/zzcard-setup.exe desktop/dist/zzcard-setup.exe.blockmap desktop/dist/latest.yml --title "PC版 $VER" --notes "ズズラジオ体操部 PC版 $VER" --latest

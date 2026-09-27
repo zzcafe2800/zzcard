@@ -120,6 +120,7 @@ jobs:
               seq: Mutex<u32>,
               bar_shown: Mutex<bool>,
               tab: Mutex<Option<String>>,
+              wall: Mutex<String>,
           }
           type St = Arc<Zz>;
 
@@ -136,7 +137,7 @@ jobs:
               }
           }
           fn load_state(app: &AppHandle) -> Value {
-              let def = json!({"uid":"","mode":"wall","setupDone":false,"wakeDay":"","hideSleep":false,"noEmo":false,"noShare":false,"autoStart":true,"lowQ":false,"catScale":1.0,"cardWall":true,"cardBar":false,"noTapShow":false,"sleepMode":"show"});
+              let def = json!({"uid":"","mode":"wall","setupDone":false,"wakeDay":"","hideSleep":false,"noEmo":false,"noShare":false,"autoStart":true,"lowQ":false,"catScale":1.0,"cardWall":true,"cardBar":false,"noTapShow":false,"sleepMode":"show","wallOn":false});
               let mut v = std::fs::read_to_string(data_path(app, "state.json")).ok().and_then(|t| serde_json::from_str::<Value>(&t).ok()).unwrap_or(json!({}));
               if !v.is_object() { v = json!({}); }
               if let (Some(o), Some(d)) = (v.as_object_mut(), def.as_object()) {
@@ -313,6 +314,8 @@ jobs:
           fn open_cats(app: &AppHandle, st: &St) {
               let old = cats_label(st);
               if let Some(w) = app.get_webview_window(&old) { let _ = w.destroy(); }
+              let oldw = st.wall.lock().unwrap().clone();
+              if !oldw.is_empty() { if let Some(w) = app.get_webview_window(&oldw) { let _ = w.destroy(); } *st.wall.lock().unwrap() = String::new(); win::redraw(); }
               let n = { let mut q = st.seq.lock().unwrap(); *q += 1; *q };
               let label = format!("cats{}", n);
               *st.cats.lock().unwrap() = label.clone();
@@ -366,7 +369,36 @@ jobs:
                   }
                   _ => { place_bar(app, st); }
               }
+              if mode != "wall" && sbool(st, "wallOn") { open_wall_scene(app, st, n); }
               open_panel(app, false);
+          }
+          /* うしろの 景色の 壁紙（猫なし）。猫は タスクバー／全画面の まどに 出す */
+          fn open_wall_scene(app: &AppHandle, st: &St, n: u32) {
+              let label = format!("wall{}", n);
+              let q = json!({ "mode": "wall", "nocats": "1", "uid": sstr(st, "uid"), "q": if sbool(st, "lowQ") { "lo" } else { "hi" }, "card": "0", "tp": "0" });
+              let r = WebviewWindowBuilder::new(app, &label, WebviewUrl::App("cats.html".into()))
+                  .initialization_script(&format!("window.__ZZQ={};", q))
+                  .title("zz").transparent(true).decorations(false).shadow(false).skip_taskbar(true)
+                  .resizable(false).focused(false).visible(false).always_on_top(false).build();
+              let w = match r { Ok(w) => w, Err(e) => { log(app, &format!("wall scene window {}", e)); return; } };
+              *st.wall.lock().unwrap() = label.clone();
+              let _ = w.set_ignore_cursor_events(true);
+              let Some((mx, my, mw, mh, _sc)) = primary(app) else { return };
+              let _ = w.set_position(PhysicalPosition::new(mx, my));
+              let _ = w.set_size(PhysicalSize::new(mw as u32, mh as u32));
+              let _ = w.show();
+              let a = app.clone();
+              std::thread::spawn(move || {
+                  std::thread::sleep(Duration::from_millis(700));
+                  let Some(w) = a.get_webview_window(&label) else { return };
+                  let h = w.hwnd().map(|h| h.0 as isize).unwrap_or(0);
+                  let r = if h != 0 { win::attach(h, mw, mh) } else { Err("hwnd".into()) };
+                  log(&a, &format!("wall scene attach {:?}", r));
+                  if r.is_err() {
+                      let _ = w.destroy();
+                      let _ = a.notification().builder().title("ズズラジオ体操部").body("景色の 壁紙を 出せなかったよ").show();
+                  }
+              });
           }
           /* タスクバーモード：猫の 足を タスクバーの 上の ふちに。タスクバーが 消えたら 猫も 消える */
           fn place_bar(app: &AppHandle, st: &St) {
@@ -415,7 +447,7 @@ jobs:
                   if let Some(a) = s.as_object_mut() {
                       let mode = o.get("mode").and_then(|m| m.as_str()).unwrap_or("wall");
                       a.insert("mode".into(), json!(if ["wall", "bar", "full"].contains(&mode) { mode } else { "wall" }));
-                      for k in ["hideSleep", "noEmo", "noShare", "noTapShow", "lowQ"] { a.insert(k.into(), json!(o.get(k).and_then(|v| v.as_bool()).unwrap_or(false))); }
+                      for k in ["hideSleep", "noEmo", "noShare", "noTapShow", "lowQ", "wallOn"] { a.insert(k.into(), json!(o.get(k).and_then(|v| v.as_bool()).unwrap_or(false))); }
                       let hide = o.get("hideSleep").and_then(|v| v.as_bool()).unwrap_or(false);
                       let slm = o.get("sleepMode").and_then(|v| v.as_str()).unwrap_or(if hide { "hide" } else { "show" });
                       a.insert("sleepMode".into(), json!(if ["show", "wake", "hide"].contains(&slm) { slm } else { "show" }));   /* 寝ている子：出す／起こす／出さない */
@@ -457,7 +489,7 @@ jobs:
           fn main() {
               let st: St = Arc::new(Zz {
                   s: Mutex::new(json!({})), taps: Mutex::new((today(), 0)), sent: Mutex::new(-1), paused: Mutex::new(false),
-                  wake: Mutex::new(None), link: Mutex::new(None), cats: Mutex::new(String::new()), seq: Mutex::new(0), bar_shown: Mutex::new(false), tab: Mutex::new(None),
+                  wake: Mutex::new(None), link: Mutex::new(None), cats: Mutex::new(String::new()), seq: Mutex::new(0), bar_shown: Mutex::new(false), tab: Mutex::new(None), wall: Mutex::new(String::new()),
               });
               tauri::Builder::default()
                   .plugin(tauri_plugin_single_instance::init(|app, argv, _cwd| {
@@ -760,12 +792,13 @@ jobs:
            </div>
            <div class="bd" id="pS" hidden>
             <div id="sNg" class="sec warn"><div class="lb">まず つなぐ</div><div class="row"><input type="text" id="sCode" maxlength="9" placeholder="つなぎコード" autocomplete="off" spellcheck="false"><button id="sLink" class="sbtn" type="button">つなぐ</button></div></div>
-            <div class="sec"><div class="lb">どこに 出す？</div>
+            <div class="sec"><div class="lb">猫を 出す 場所</div>
              <div class="row tiles">
               <button class="tile" data-m="wall" type="button"><svg viewBox="0 0 250 140"><rect width="250" height="140" fill="#cfe6f6"/><path d="M0 92 L40 60 L70 76 L110 40 L150 70 L190 50 L250 84 V140 H0Z" fill="#9fb1c4"/><path d="M0 110 Q125 92 250 108 V140 H0Z" fill="#a8c49a"/><rect y="128" width="250" height="12" fill="#2b3242"/><circle cx="92" cy="112" r="6" fill="#1c1c1c"/><circle cx="118" cy="112" r="6" fill="#c98b5b"/></svg>壁紙</button>
               <button class="tile" data-m="bar" type="button"><svg viewBox="0 0 250 140"><rect width="250" height="140" fill="#b8c7e6"/><rect x="34" y="16" width="150" height="84" rx="6" fill="#fff"/><rect y="128" width="250" height="12" fill="#2b3242"/><circle cx="80" cy="122" r="6" fill="#1c1c1c"/><circle cx="104" cy="122" r="6" fill="#c98b5b"/></svg>タスクバー</button>
               <button class="tile" data-m="full" type="button"><svg viewBox="0 0 250 140"><rect width="250" height="140" fill="#1f2433"/><path d="M110 50 L140 70 L110 90 Z" fill="#fff" opacity=".7"/><circle cx="80" cy="134" r="6" fill="#efe8dc"/><circle cx="104" cy="134" r="6" fill="#c98b5b"/></svg>全画面</button>
              </div>
+               <div class="opt" id="wallRow">うしろに 景色の 壁紙<div class="sw" data-k="wallOn"><button type="button" data-v="1">使う</button><button type="button" data-v="0">使わない</button></div></div>
             </div>
             <div class="sec"><div class="lb">ねこ</div>
              <div class="opt">寝ている子<div class="sw sw3" data-k="sleepMode"><button type="button" data-v="show">出す</button><button type="button" data-v="wake">起こす</button><button type="button" data-v="hide">出さない</button></div></div>
@@ -858,14 +891,14 @@ jobs:
           /* せってい（タブで 切りかえ） */
           let sm = 'wall', so = {}, ssz = 100, suid = '', cw = true, cb = false, slm = 'show';
           function paintS() {
-            $('sOk').hidden = !suid; $('sNg').hidden = !!suid; so.card = sm === 'wall' ? cw : cb;
+            $('sOk').hidden = !suid; $('sNg').hidden = !!suid; $('wallRow').hidden = sm === 'wall'; so.card = sm === 'wall' ? cw : cb;
             $('cardSub').textContent = sm === 'wall' ? 'ひとこと・写真（壁紙）' : 'ひとこと・写真（画面の 左に 小さく）';
             document.querySelectorAll('#pS .tile').forEach((t) => t.classList.toggle('on', t.dataset.m === sm));
             document.querySelectorAll('#pS .sw:not(.sw3)').forEach((w) => w.querySelectorAll('button').forEach((b) => b.classList.toggle('on', String(+!!so[w.dataset.k]) === b.dataset.v)));
             document.querySelectorAll('#pS .sw3 button').forEach((b) => b.classList.toggle('on', b.dataset.v === slm));
             $('sz').value = ssz; $('szV').textContent = ssz;
           }
-          async function loadS() { const st = await zz.state(); suid = st.uid || ''; sm = st.mode || 'wall'; so = { noEmo: !!st.noEmo, noShare: !!st.noShare, noTapShow: !!st.noTapShow, autoStart: st.autoStart !== false, lowQ: !!st.lowQ }; cw = st.cardWall !== false; cb = !!st.cardBar; slm = st.sleepMode || (st.hideSleep ? 'hide' : 'show'); ssz = Math.round((st.catScale || 1) * 100); paintS(); }
+          async function loadS() { const st = await zz.state(); suid = st.uid || ''; sm = st.mode || 'wall'; so = { wallOn: !!st.wallOn, noEmo: !!st.noEmo, noShare: !!st.noShare, noTapShow: !!st.noTapShow, autoStart: st.autoStart !== false, lowQ: !!st.lowQ }; cw = st.cardWall !== false; cb = !!st.cardBar; slm = st.sleepMode || (st.hideSleep ? 'hide' : 'show'); ssz = Math.round((st.catScale || 1) * 100); paintS(); }
           document.querySelectorAll('#pS .tile').forEach((t) => t.addEventListener('click', () => { sm = t.dataset.m; paintS(); }));
           document.querySelectorAll('#pS .sw3 button').forEach((b) => b.addEventListener('click', () => { slm = b.dataset.v; paintS(); }));
           document.querySelectorAll('#pS .sw:not(.sw3) button').forEach((b) => b.addEventListener('click', () => { const k = b.parentNode.dataset.k, v = b.dataset.v === '1'; if (k === 'card') { if (sm === 'wall') cw = v; else cb = v; } else so[k] = v; paintS(); }));
@@ -922,6 +955,7 @@ jobs:
           #hint{position:absolute;font:700 12px/1 "Yu Gothic UI","Meiryo",system-ui,sans-serif;color:rgba(255,255,255,.62);letter-spacing:.04em;text-shadow:0 1px 2px rgba(0,0,0,.35);pointer-events:none;z-index:40000;}
           #card{position:absolute;width:220px;background:rgba(255,255,255,.93);border-radius:14px;box-shadow:0 8px 24px rgba(20,26,40,.25);overflow:hidden;display:flex;transition:opacity .6s;z-index:40000;font-family:"Yu Gothic UI","Meiryo",system-ui,sans-serif;color:#2b3242;}
           #card[hidden]{display:none;}
+          #hint[hidden]{display:none;}
           #card img{width:84px;height:120px;object-fit:cover;display:block;flex:none;}
           #card .cb{padding:10px 12px;display:flex;flex-direction:column;gap:6px;min-width:0;}
           #card .cn{font-size:12px;font-weight:700;color:#8a93a3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -961,7 +995,8 @@ jobs:
           import { hill, pubTaps, allTaps } from './fb.js';
           const Q = window.__ZZQ || Object.fromEntries(new URLSearchParams(location.search)), P = { get: (k) => (Q[k] != null ? String(Q[k]) : null) }, MODE = P.get('mode') || 'wall', UID = P.get('uid') || '', SHOW_SLEEP = P.get('sleep') !== '0', WAKE = P.get('sleep') === '2', EMO = P.get('emo') !== '0', SHARE = P.get('share') !== '0', CARD = P.get('card') === '1', TAPS = P.get('tp') !== '0', LOWQ = P.get('q') === 'lo', SIZE = Math.max(.5, Math.min(2, +P.get('sz') || 1));
           const FPH0 = Object.assign({}, FP_H);   /* サイトの 大きさ（ここに 大きさの バーを かける） */
-          const FLAT = MODE !== 'wall';   /* タスクバー・全画面：画面の 下を 歩く */
+          const FLAT = MODE !== 'wall', NOCATS = P.get('nocats') === '1';   /* NOCATS：うしろの 景色だけ（猫は タスクバー／全画面の 方に 出す） */
+          if (NOCATS) { document.getElementById('hint').hidden = true; document.getElementById('card').hidden = true; }   /* タスクバー・全画面：画面の 下を 歩く */
           if (!EMO) window._fpEmo = function () {};   /* 気持ちの 絵 なし */
           if (LOWQ) {   /* 画質 低：1秒 30回・霧と 土ぼこり なし（かるい）。高は ふつうの なめらかさ */
             window.requestAnimationFrame = (cb) => setTimeout(() => cb(performance.now()), 33);
@@ -1023,7 +1058,7 @@ jobs:
           }
           function showCard() {
             const c = $('card');
-            if (!CARD || !cards.length) { c.hidden = true; return; }
+            if (NOCATS || !CARD || !cards.length) { c.hidden = true; return; }
             const d = cards[ci % cards.length]; ci++;
             c.style.opacity = '0';
             setTimeout(() => {
@@ -1033,6 +1068,7 @@ jobs:
             }, cards.length > 1 ? 600 : 0);
           }
           function restart() {
+            if (NOCATS) { try { layout(); } catch (_) {} return; }
             try { _fpStop(); } catch (_) {}
             setTimeout(() => {
               if (!data || !data.cats.length) return;
@@ -1088,7 +1124,7 @@ jobs:
             });
             Object.keys(oEl).forEach((u) => { if (!seen[u]) oEl[u].hidden = true; });
           }
-          async function syncTaps() { try { if (UID) await pubTaps(UID, taps, SHARE); oTaps = await allTaps(); } catch (_) {} }
+          async function syncTaps() { if (NOCATS) return; try { if (UID) await pubTaps(UID, taps, SHARE); oTaps = await allTaps(); } catch (_) {} }
           setInterval(syncTaps, 30000); setTimeout(syncTaps, 4000);
           setInterval(tapPos, LOWQ ? 100 : 50);
           setInterval(showCard, 8000);

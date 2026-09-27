@@ -1706,25 +1706,31 @@ jobs:
           grep '"version"' pc/src-tauri/tauri.conf.json
           node pc/prep.js
           rm pc/prep.js
-      - name: アイコンを 大きくする（1024px）
+      - name: アイコンを 大きくする（1024px・角を 丸く）
         shell: pwsh
         run: |
           Add-Type -AssemblyName System.Drawing
-          $src = [System.Drawing.Image]::FromFile("$PWD\pc\dist\icon192.png")
+          $bytes = [System.IO.File]::ReadAllBytes("$PWD\pc\dist\icon192.png")
+          $ms = New-Object System.IO.MemoryStream(,$bytes)
+          $src = [System.Drawing.Image]::FromStream($ms)
           $bmp = New-Object System.Drawing.Bitmap 1024, 1024
           $g = [System.Drawing.Graphics]::FromImage($bmp)
           $g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
           $g.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
           $g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
           $g.Clear([System.Drawing.Color]::Transparent)
-          $r = 200; $path = New-Object System.Drawing.Drawing2D.GraphicsPath
-          $path.AddArc(0, 0, $r * 2, $r * 2, 180, 90); $path.AddArc(1024 - $r * 2, 0, $r * 2, $r * 2, 270, 90)
-          $path.AddArc(1024 - $r * 2, 1024 - $r * 2, $r * 2, $r * 2, 0, 90); $path.AddArc(0, 1024 - $r * 2, $r * 2, $r * 2, 90, 90); $path.CloseFigure()
+          $r = 200
+          $path = New-Object System.Drawing.Drawing2D.GraphicsPath
+          $path.AddArc(0, 0, $r * 2, $r * 2, 180, 90)
+          $path.AddArc(1024 - $r * 2, 0, $r * 2, $r * 2, 270, 90)
+          $path.AddArc(1024 - $r * 2, 1024 - $r * 2, $r * 2, $r * 2, 0, 90)
+          $path.AddArc(0, 1024 - $r * 2, $r * 2, $r * 2, 90, 90)
+          $path.CloseFigure()
           $brush = New-Object System.Drawing.TextureBrush($src)
           $brush.ScaleTransform(1024 / $src.Width, 1024 / $src.Height)
-          $g.FillPath($brush, $path)   # アイコンの 角を 丸く（アプリの アイコンと 同じ 形）
+          $g.FillPath($brush, $path)
           $bmp.Save("$PWD\pc\app-icon.png", [System.Drawing.Imaging.ImageFormat]::Png)
-          $g.Dispose(); $bmp.Dispose(); $src.Dispose()
+          $brush.Dispose(); $path.Dispose(); $g.Dispose(); $bmp.Dispose(); $src.Dispose(); $ms.Dispose()
           Remove-Item "$PWD\pc\dist\icon192.png"
       - name: PC版を 作る
         working-directory: pc

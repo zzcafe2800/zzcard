@@ -35,7 +35,7 @@ jobs:
               "artifactName": "zzcard-setup.${ext}",
               "npmRebuild": false,
               "asarUnpack": ["node_modules/koffi/**", "node_modules/uiohook-napi/**"],
-              "files": ["main.js", "preload.js", "setup.html", "panel.html", "cats.html", "cats.js", "fb.js", "engine.js", "scene.js", "fbconfig.js", "rec.js", "icon.png"],
+              "files": ["main.js", "preload.js", "setup.html", "panel.html", "cats.html", "cats.js", "fb.js", "engine.js", "scene.js", "fbconfig.js", "rec.js", "graph.js", "icon.png"],
               "protocols": [{ "name": "zzcard", "schemes": ["zzcard"] }],
               "win": { "target": "nsis", "icon": "icon.png" },
               "nsis": { "oneClick": true, "perMachine": false, "createDesktopShortcut": true, "shortcutName": "ズズラジオ体操部" },
@@ -428,8 +428,8 @@ jobs:
           .go{height:50px;border-radius:999px;border:0;background:#2b3242;color:#fff;font:inherit;font-size:17px;font-weight:800;cursor:pointer}.go:disabled{opacity:.4;cursor:default}
           .lk{display:flex;justify-content:space-between}.lk button{border:0;background:none;color:#8a93a3;font:inherit;font-size:12px;font-weight:700;cursor:pointer;padding:2px}
           .msg{font-size:13px;font-weight:800;color:#3f9c6a;text-align:center;min-height:1em}
-          .avg{display:flex;align-items:baseline;gap:4px}.avg b{font-size:34px;font-variant-numeric:tabular-nums}.avg small{font-size:12px;font-weight:700;color:#8a93a3}
-          .gr svg{width:100%;height:auto;display:block}
+          .gms{display:flex;gap:6px}.gm{flex:1;height:34px;border-radius:12px;border:0;background:#e3eef6;color:#6d8aa3;font:inherit;font-size:13px;font-weight:800;cursor:pointer}.gm.on{background:linear-gradient(#8ecdf0,#5fb4e6);color:#fff}
+          .gr{min-height:260px}.gr svg{width:100%;height:auto;display:block}
           button:focus-visible,input:focus-visible{outline:2px solid #2b3242;outline-offset:2px}
           </style></head><body>
           <div class="p">
@@ -449,16 +449,18 @@ jobs:
             <input id="phIn" type="file" accept="image/*" multiple hidden>
            </div>
            <div class="bd" id="pG" hidden>
-            <div><div class="lb">すいみん じかん（14日）</div><div class="avg"><small>へいきん</small><b id="avg">-</b><small>時間</small></div></div>
+            <div class="gms"><button class="gm on" data-m="wake" type="button">☑ 起床</button><button class="gm on" data-m="bed" type="button">☑ 就寝</button><button class="gm" data-m="mood" type="button">☐ 気分</button></div>
             <div class="gr" id="gr"></div>
            </div>
            <div class="ft"><div id="msg" class="msg"></div><button id="go" class="go" type="button">きろく</button><div class="lk"><button id="setup" type="button">せってい</button><button id="quit" type="button">おわる</button></div></div>
           </div>
           <script src="fbconfig.js"></script>
           <script src="rec.js"></script>
+          <script>var $=function(id){ return document.getElementById(id); };</script>
+          <script src="graph.js"></script>
           <script type="module">
-          import { record, history } from './fb.js';
-          const $ = (id) => document.getElementById(id), R = window.ZZREC || { mood: [], slpy: [] };
+          import { record, recData } from './fb.js';
+          const R = window.ZZREC || { mood: [], slpy: [] };
           let W = 0, Bd = 0, done = true, edited = false, photos = [], md = null, sq = null, sy = 3;
           const fmt = (h) => { h = ((h % 24) + 24) % 24; let hh = Math.floor(h), mm = Math.round((h - hh) * 60); if (mm === 60) { hh = (hh + 1) % 24; mm = 0; } return hh + ':' + String(mm).padStart(2, '0'); };
           $('md').innerHTML = R.mood.map((m, i) => '<button class="ch" data-v="' + i + '" type="button"><b>' + m.e + '</b><i>' + m.l + '</i></button>').join('');
@@ -490,24 +492,26 @@ jobs:
             } catch (e) { $('msg').style.color = '#c9546b'; $('msg').textContent = 'きろく できなかったよ'; setTimeout(() => { $('msg').style.color = ''; }, 3000); }
             $('go').disabled = false;
           });
-          /* うつりかわり：すいみん じかんの 棒グラフ */
+          /* うつりかわり：サイトと 同じ 折れ線グラフ（サイトの きろく＋PC版の きろく） */
+          let gModes = ['wake', 'bed'];
           async function graph() {
             const st = await zz.state(); if (!st.uid) return;
-            let h = []; try { h = await history(st.uid, 14); } catch (_) {}
-            const W0 = 400, H0 = 190, pl = 22, pb = 22, pt = 14, bw = (W0 - pl) / 14, top = 12;
-            const y = (v) => pt + (1 - Math.min(top, v) / top) * (H0 - pt - pb);
-            let s = '<svg viewBox="0 0 ' + W0 + ' ' + H0 + '">';
-            [0, 4, 8, 12].forEach((v) => { s += '<line x1="' + pl + '" x2="' + W0 + '" y1="' + y(v).toFixed(1) + '" y2="' + y(v).toFixed(1) + '" stroke="#eef1f5"/><text x="' + (pl - 4) + '" y="' + (y(v) + 3).toFixed(1) + '" font-size="9" text-anchor="end" fill="#a3acb9">' + v + '</text>'; });
-            const vals = [];
-            h.forEach((d, i) => {
-              const x = pl + i * bw + bw * .18, w = bw * .64;
-              if (d.hrs != null) { vals.push(d.hrs); const col = d.hrs >= 7 ? '#6fb38a' : d.hrs >= 5.5 ? '#e0b85a' : '#e0806a'; s += '<rect x="' + x.toFixed(1) + '" y="' + y(d.hrs).toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + (H0 - pb - y(d.hrs)).toFixed(1) + '" rx="3" fill="' + col + '"/>'; }
-              if (i % 2 === 1 || i === 13) s += '<text x="' + (x + w / 2).toFixed(1) + '" y="' + (H0 - 6) + '" font-size="9" text-anchor="middle" fill="#8a93a3">' + (+d.d.slice(5, 7)) + '/' + (+d.d.slice(8)) + '</text>';
-            });
-            s += '</svg>';
-            $('gr').innerHTML = s;
-            $('avg').textContent = vals.length ? (vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(1) : '-';
+            try {
+              const { data, pcrec } = await recData(st.uid);
+              ['radio_wakelog', 'radio_sleeplog', 'radio_moods', 'radio_profile', 'radio_sleepts'].forEach((k) => { if (data[k] != null) localStorage.setItem(k, data[k]); else localStorage.removeItem(k); });
+              const wl = JSON.parse(localStorage.getItem('radio_wakelog') || '{}'), sl = JSON.parse(localStorage.getItem('radio_sleeplog') || '{}'), mm = JSON.parse(localStorage.getItem('radio_moods') || '{}');
+              Object.keys(pcrec).forEach((d) => { const r = pcrec[d]; if (!r || r.m) return; if (Number.isFinite(r.w)) wl[d] = r.w; if (Number.isFinite(r.b)) sl[d] = r.b; if (Number.isFinite(r.md) && R.mood[r.md]) mm[d] = { e: R.mood[r.md].e, l: R.mood[r.md].l }; });
+              localStorage.setItem('radio_wakelog', JSON.stringify(wl)); localStorage.setItem('radio_sleeplog', JSON.stringify(sl)); localStorage.setItem('radio_moods', JSON.stringify(mm));
+            } catch (_) {}
+            try { _recGraphModes = gModes.slice(); buildRecGraph($('gr')); } catch (e) { $('gr').textContent = ''; }
           }
+          document.querySelectorAll('.gm').forEach((b) => b.addEventListener('click', () => {
+            const m = b.dataset.m, on = gModes.includes(m);
+            if (on && gModes.length === 1) return;
+            gModes = on ? gModes.filter((x) => x !== m) : gModes.concat(m);
+            document.querySelectorAll('.gm').forEach((x) => { const o = gModes.includes(x.dataset.m); x.classList.toggle('on', o); x.textContent = (o ? '☑ ' : '☐ ') + x.textContent.slice(2); });
+            graph();
+          }));
           function tab(g) { $('tR').classList.toggle('on', !g); $('tG').classList.toggle('on', g); $('pR').hidden = g; $('pG').hidden = !g; $('go').hidden = g; $('msg').hidden = g; if (g) graph(); }
           $('tR').addEventListener('click', () => tab(false)); $('tG').addEventListener('click', () => tab(true));
           $('x').addEventListener('click', () => zz.hidePanel());
@@ -802,22 +806,13 @@ jobs:
             await D.set(D.ref(db, key), post);
           }
 
-          /* うつりかわり：サイトの きろく（クラウドの sync）＋ PC版の きろく から、すいみん じかん */
-          export async function history(uid, days) {
+          /* うつりかわり：サイトの きろく（クラウドの sync）と PC版の きろく（pcrec） */
+          export async function recData(uid) {
             const { db, D } = await fb();
             const get = (p) => D.get(D.ref(db, p)).then((s) => s.val()).catch(() => null);
             const [sy, pr] = await Promise.all([get('sync/' + uid), get('pcrec/' + uid)]);
-            let wl = {}, sl = {};
-            try { const d = JSON.parse((sy && sy.data) || '{}'); wl = JSON.parse(d.radio_wakelog || '{}') || {}; sl = JSON.parse(d.radio_sleeplog || '{}') || {}; } catch (_) {}
-            Object.keys(pr || {}).forEach((k) => { const r = pr[k]; if (!r) return; if (Number.isFinite(r.w)) wl[k] = r.w; if (Number.isFinite(r.b)) sl[k] = r.b; });
-            const out = [], t = jstKey();
-            for (let i = days - 1; i >= 0; i--) {
-              const d = new Date(Date.parse(t + 'T00:00:00Z') - i * 864e5).toISOString().slice(0, 10);
-              const w = wl[d], b = sl[d];
-              let hrs = null; if (Number.isFinite(w) && Number.isFinite(b)) { hrs = ((w - b) % 24 + 24) % 24; if (hrs === 0 || hrs > 16) hrs = null; }
-              out.push({ d, hrs });
-            }
-            return out;
+            let data = {}; try { data = JSON.parse((sy && sy.data) || '{}') || {}; } catch (_) {}
+            return { data, pcrec: pr || {} };
           }
           /* タップ数：PC版を 開いている 人どうしで 共有（見せる 設定の 人だけ） */
           export async function pubTaps(uid, n, share) {
@@ -853,6 +848,25 @@ jobs:
           const Y = vm.runInNewContext('(' + stmt('var KR_SLPY=') + ')');
           fs.writeFileSync('desktop/rec.js', 'window.ZZREC=' + JSON.stringify({ mood: M, slpy: Y }) + ';\n' + fn('_krFace') + '\n');
           console.log('prep ok');
+          /* サイトの「きろくの うつりかわり」グラフを そのまま 取り出す（PC版の グラフ用） */
+          function graphJS(s) {
+            const FN = ['buildRecGraph','_buildBedGraph','_buildMoodGraph','_buildWakeGraph','_circMean','_dayMid','_floatHM','_graphAnchorCalc','_graphCont','_graphHourLines','_graphRange','_graphSpan','_graphWrap','_graphYf','_moodMap','_moodVal','_recDot','_recHM','_sleepDurColor','_sleepDurOf','dk','fmtHM','getProfile','getSleepLog','getSleepTs','getWakeLog','hx','lsGet','profileWake','profileWakeHM','rgb','jstKey','addDays'];
+            const VARS = ['DEFAULT_WAKE','GRAPH_ANCHOR','MMOOD_KEY','PROF_KEY','SLEEPTS_KEY','SLEEP_KEY','_MOOD_VAL','_recGraphModes','WAKELOG_KEY'];
+            function fn(name) { const i = s.indexOf('function ' + name + '('); if (i < 0) throw new Error('graph fn not found: ' + name); let d = 0, k = i, st = false; for (; k < s.length; k++) { const c = s[k]; if (c === '{') { d++; st = true; } else if (c === '}') { d--; if (st && d === 0) break; } } return s.slice(i, k + 1); }
+            function stmt(name) {
+              const re = new RegExp('(^|\\n)[ \\t]*(var|const|let)\\s[^;\\n]*?\\b' + name.replace(/\$/g, '\\$') + '\\s*=', 'g'); const m = re.exec(s);
+              if (!m) throw new Error('graph var not found: ' + name);
+              const st = m.index + m[1].length; let d = 0, q = null, k = st;
+              for (; k < s.length; k++) { const c = s[k]; if (q) { if (c === '\\') { k++; continue; } if (c === q) q = null; continue; } if (c === '"' || c === "'" || c === '`') { q = c; continue; } if ('([{'.includes(c)) d++; else if (')]}'.includes(c)) d--; else if (c === ';' && d === 0) break; }
+              return s.slice(st, k + 1).replace(/^\s*(const|let)\s/, 'var ');
+            }
+            const seen = new Set(); let out = '';
+            VARS.forEach((v) => { const t = stmt(v); if (!seen.has(t)) { seen.add(t); out += t + '\n'; } });
+            FN.forEach((f) => { out += fn(f) + '\n'; });
+            return out;
+          }
+          fs.writeFileSync('desktop/graph.js', graphJS(s));
+          console.log('graph ok');
           ZZEOF
           sed -i "s/0\.2\.RUNNUM/0.2.$GITHUB_RUN_NUMBER/" desktop/package.json
           grep '"version"' desktop/package.json

@@ -8859,6 +8859,13 @@ html.lite #fabNews{display:none !important;}
 #newsScreen .nwDl{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;height:62px;border-radius:999px;background:#2b3242;color:#fff;text-decoration:none;font-size:19px;font-weight:800;}
 #newsScreen .nwDl small{font-size:11px;font-weight:700;opacity:.75;}
 #newsScreen .nwHow{margin-top:12px;font-size:13px;color:#5d6778;}
+#newsScreen .nwConn{display:flex;align-items:center;justify-content:center;width:100%;height:52px;margin-top:10px;border-radius:999px;border:2px solid #2b3242;background:#fff;color:#2b3242;font:inherit;font-size:17px;font-weight:800;cursor:pointer;}
+#newsScreen .nwConn:disabled{opacity:.5;cursor:default;}
+#newsScreen .nwConn:focus-visible{outline:2px solid #2b3242;outline-offset:3px;}
+#newsScreen .nwCodeRow{display:flex;align-items:baseline;justify-content:center;gap:12px;margin-top:10px;color:#5d6778;}
+#newsScreen .nwCodeRow[hidden]{display:none;}
+#newsScreen .nwCodeRow small{font-size:12px;font-weight:700;}
+#newsScreen .nwCodeRow b{font-size:26px;letter-spacing:.12em;color:#2b3242;font-variant-numeric:tabular-nums;}
 #newsScreen .nwHow summary{cursor:pointer;font-weight:800;}
 #newsScreen .nwHow ol{margin:8px 0 0;padding-left:20px;line-height:1.8;}
 #newsScreen .nwX:focus-visible,#newsScreen .nwDl:focus-visible,#newsScreen summary:focus-visible{outline:2px solid #2b3242;outline-offset:3px;}
@@ -20842,6 +20849,8 @@ function setAmbVol(i,v){ var t=AMB_TRACKS[i]; if(!t)return; t.vol=Math.max(0,Mat
   function open(e){ if(e){ e.stopPropagation(); e.preventDefault(); } try{playClick();}catch(_){} sc.hidden=false; try{ localStorage.setItem(K,ID); }catch(_){} paint(); try{ $("newsX").focus(); }catch(_){} }
   function close(){ sc.hidden=true; try{ b.focus(); }catch(_){} }
   b.addEventListener("click",open,true);
+  var cb=$("nwCodeBtn"); if(cb)cb.addEventListener("click",async function(){ try{playClick();}catch(_){} cb.disabled=true;
+    try{ var c=await _pcMakeCode(); $("nwCode").textContent=c.slice(0,4)+" "+c.slice(4); $("nwCodeRow").hidden=false; location.href="zzcard://link?c="+c; }catch(e){ try{toast("コードを 作れなかったよ");}catch(_){} } cb.disabled=false; });
   $("newsX").addEventListener("click",function(){ try{playClick();}catch(_){} close(); });
   sc.addEventListener("click",function(e){ if(e.target===sc)close(); });
   document.addEventListener("keydown",function(e){ if(e.key==="Escape"&&!sc.hidden)close(); });
@@ -20891,6 +20900,25 @@ async function _pcPublishFig(force){ try{
   await m.set(m.ref(db,"pcfig/"+getUid()),o);
   localStorage.setItem(TK,String(Date.now()));
 }catch(e){ console.warn("pcfig",e); } }
+/* PC版用：丘に いる 猫 全員の 絵（サイトと 同じ 見た目）を 置く。新しく 投稿した 子だけ 30分に 1回まで */
+async function _pcPublishAllFigs(){ try{
+  if(_isCrawler)return;
+  var TK="radio_pcfigs_t",last=+(localStorage.getItem(TK)||0); if(Date.now()-last<30*60*1000)return;
+  var list=(_hillAllCats||[]).slice(0,40); if(!list.length)return;
+  var db=await getDB(); if(!db)return; var m=await import(FB_DB);
+  var cur={}; try{ cur=(await m.get(m.ref(db,"pcfigs"))).val()||{}; }catch(_){}
+  var dom={}; document.querySelectorAll("#hillCats .hillCat").forEach(function(el){ var f=el.querySelector(".catFig"); if(f&&el.dataset.uid)dom[el.dataset.uid]=f; });
+  var ups={};
+  list.forEach(function(po){ if(!po||!po.uid)return; var pt=+po.createdAt||0,c=cur[po.uid]; if(c&&c.s&&(c.pt||0)>=pt)return;
+    var body=po.catBody||"#1c1c1c",ear=po.color||"#a6bfd2",st=null,sl=null,d=dom[po.uid];
+    try{ if(po.isSelf){ _selfCosOn(); try{ st=d?d.cloneNode(true):buildCatFig(body,ear,getEquippedCostume(),getEquippedPose()); sl=buildCatFig(body,ear,getEquippedCostume(),"sleep"); }finally{ try{_selfCosOff();}catch(_){} } }
+      else{ var ov=""; try{ ov=acosSVG(po.acos); }catch(_){} try{ _artCosOverride=ov||null; st=d?d.cloneNode(true):buildCatFig(body,ear,po.cos||null,po.pose||"sit"); sl=buildCatFig(body,ear,po.cos||null,"sleep"); }finally{ _artCosOverride=null; } } }catch(_){}
+    if(!st)return;
+    ups[po.uid]={s:st.outerHTML.slice(0,60000),z:sl?sl.outerHTML.slice(0,60000):"",h:(d&&d.offsetHeight)||60,w:(d&&d.offsetWidth)||74,pt:pt,t:Date.now()};
+  });
+  var ks=Object.keys(ups); for(var i=0;i<ks.length;i++){ try{ await m.set(m.ref(db,"pcfigs/"+ks[i]),ups[ks[i]]); }catch(_){} }
+  localStorage.setItem(TK,String(Date.now()));
+}catch(e){ console.warn("pcfigs",e); } }
 /* PC版で した きろくを とりこむ（体操した 日・起きた／寝た 時間・その日の スタンプ） */
 async function _pcMergeRec(){ try{
   if(_isCrawler)return;
@@ -20898,11 +20926,15 @@ async function _pcMergeRec(){ try{
   var sn=await m.get(m.ref(db,"pcrec/"+getUid())); var v=sn.exists()?sn.val():null; if(!v)return;
   var today=jstKey(),changed=false;
   Object.keys(v).forEach(function(d){ var r=v[d]; if(!r||r.m||!/^\d{4}-\d{2}-\d{2}$/.test(d))return;
-    if(d===today){ try{markTodayDone();}catch(_){} }
-    try{ var dd=getDoneDates(); if(dd.indexOf(d)<0){ dd.push(d); dd.sort(); localStorage.setItem(DONE_KEY,JSON.stringify(dd)); } }catch(_){}
+    var dn=(r.dn!==false);   /* 「体操した」を オフで きろくした 日は、体操した 日・スタンプに しない */
+    if(dn&&d===today){ try{markTodayDone();}catch(_){} }
+    if(dn){ try{ var dd=getDoneDates(); if(dd.indexOf(d)<0){ dd.push(d); dd.sort(); localStorage.setItem(DONE_KEY,JSON.stringify(dd)); } }catch(_){} }
     try{ if(Number.isFinite(r.w)){ var wl=getWakeLog(); wl[d]=r.w; localStorage.setItem(WAKELOG_KEY,JSON.stringify(wl)); } }catch(_){}
     try{ if(Number.isFinite(r.b)){ var sl=getSleepLog(); sl[d]=r.b; localStorage.setItem(SLEEP_KEY,JSON.stringify(sl)); } }catch(_){}
-    try{ var p=d.split("-"),lb=(+p[1])+"/"+(+p[2]),rr=autoAddStamp(POOL[Math.floor(Math.random()*POOL.length)],lb); if(rr&&rr.added){ try{syncStampCardsFB();}catch(_){} } }catch(_){}
+    try{ if(Number.isFinite(r.md)&&MOOD3[r.md])_saveMood(d,{e:MOOD3[r.md].e,l:MOOD3[r.md].l}); }catch(_){}
+    try{ if(r.sq>=1&&r.sq<=3)setSlpFor(d,r.sq); }catch(_){}
+    try{ if(r.sy>=1&&r.sy<=5)setSlpyFor(d,r.sy); }catch(_){}
+    if(dn)try{ var p=d.split("-"),lb=(+p[1])+"/"+(+p[2]),rr=autoAddStamp(POOL[Math.floor(Math.random()*POOL.length)],lb); if(rr&&rr.added){ try{syncStampCardsFB();}catch(_){} } }catch(_){}
     if(d===today){ try{ _askMark("wake",1); _askMark("bed",1); _askMark("all",1); }catch(_){} }
     changed=true; m.update(m.ref(db,"pcrec/"+getUid()+"/"+d),{m:true}).catch(function(){});
   });
@@ -20930,7 +20962,7 @@ function _sessCover(dev){
   const go=$("pcCodeGo"); if(go)go.addEventListener("click",function(){ try{playClick();}catch(_){} const i=$("pcCodeIn"); _pcRedeem(i?i.value:""); });
   if(PC_DESK){ try{ window.zzDesktop.onLink(function(code){ _pcRedeem(code); }); }catch(_){} }
   setTimeout(function(){ _sessClaim().then(_sessWatch); },1200);   /* ★あとから 開いた 方で あそぶ（前の 場所には カバーが 出る） */
-  setTimeout(function(){ _pcMergeRec(); _pcPublishFig(false); },6000); setInterval(function(){ _pcPublishFig(false); },30*60*1000);
+  setTimeout(function(){ _pcMergeRec(); _pcPublishFig(false); _pcPublishAllFigs(); },6000); setInterval(_pcPublishAllFigs,30*60*1000+5000); setInterval(function(){ _pcPublishFig(false); },30*60*1000);
   if(PC_DESK&&window.zzDesktop.setCats){ setTimeout(_pcSendCats,5000); setInterval(_pcSendCats,5*60*1000); document.addEventListener("visibilitychange",function(){ if(!document.hidden)setTimeout(_pcSendCats,2500); }); }
 }catch(e){ console.warn("pc init",e); } })();
 /* ===== ラジオ（猫の 下の ♡の 下）：BGMの えらびと 音量 ===== */
@@ -42759,7 +42791,9 @@ function _gpStreetHTML(){
     </div>
     <div class="nwChips"><span>今日の タップ数を 猫が おしえてくれる</span><span>サイトと 同じ データ</span><span>みんなの 写真と ひとこと</span></div>
     <a class="nwDl" href="https://github.com/zzcafe2800/zzcard/releases/latest/download/zzcard-setup.exe" target="_blank" rel="noopener">ダウンロード<small>Windows・無料</small></a>
-    <details class="nwHow"><summary>はじめかた</summary><ol><li>ダウンロードして 開く（「PCが 保護されました」が 出たら 詳細情報 → 実行）</li><li>サイトの 設定 → PC版 →「アプリで ひらく」で つなぐ</li><li>出す 場所を えらんで はじめる</li></ol></details>
+    <button id="nwCodeBtn" class="nwConn" type="button">アプリと つなぐ</button>
+    <div class="nwCodeRow" id="nwCodeRow" hidden><small>つなぎコード</small><b id="nwCode"></b></div>
+    <details class="nwHow"><summary>はじめかた</summary><ol><li>ダウンロードして 開く（「PCが 保護されました」が 出たら 詳細情報 → 実行）</li><li>上の「アプリと つなぐ」を おす（出た コードを アプリに 入れても OK）</li><li>出す 場所を えらんで はじめる</li></ol></details>
   </div>
 </div>
 <div id="settingsScreen">

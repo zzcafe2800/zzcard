@@ -1184,7 +1184,8 @@ jobs:
           <style>
           html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent;}
           #homeScenery{position:absolute;inset:0;}
-          #sceneBg{position:absolute;inset:0;}#sceneBg svg{width:100%;height:100%;display:block;}
+          #sceneBg{position:absolute;inset:0;z-index:0;}
+          #farPlay{z-index:1;}   /* 景色は 下・猫の 層は 上 */#sceneBg svg{width:100%;height:100%;display:block;}
           #sceneBg img{width:100%;height:100%;display:block;}
           body.zzPaused *{animation-play-state:paused !important;}
           body.zzHide #farPlay,body.zzHide #tap,body.zzHide .tapO,body.zzHide .hcm{visibility:hidden;}
@@ -1305,7 +1306,15 @@ jobs:
             var lie = c.pose === 'lie', sw = hp * (lie ? .8 : .56 - Math.min(.5, c.hop) * .22), shh = Math.max(1, hp * .12);
             c.sh.style.left = (-sw / 2).toFixed(1) + 'px'; c.sh.style.top = (jump - shh / 2).toFixed(1) + 'px'; c.sh.style.width = sw.toFixed(1) + 'px'; c.sh.style.height = shh.toFixed(1) + 'px'; c.sh.style.opacity = Math.max(.08, .34 - c.hop * .16).toFixed(2);
           };
-          function figEl(c, sleep) { const f = c.fig || {}; const d = document.createElement('div'); d.innerHTML = (sleep ? f.z : f.s) || simpleFig(c.body, c.ear, sleep); return d.firstElementChild; }
+          let figSeq = 0;
+          function uniqIds(html, tag) {
+            const ids = new Set([...String(html).matchAll(/\bid="([^"]+)"/g)].map((m) => m[1])); if (!ids.size) return html;
+            const sfx = '_' + tag + (++figSeq);
+            ids.forEach((id) => { const e = id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+              html = html.replace(new RegExp('id="' + e + '"', 'g'), 'id="' + id + sfx + '"').replace(new RegExp('url\\(#' + e + '\\)', 'g'), 'url(#' + id + sfx + ')').replace(new RegExp('href="#' + e + '"', 'g'), 'href="#' + id + sfx + '"'); });
+            return html;
+          }
+          function figEl(c, sleep) { const f = c.fig || {}; const d = document.createElement('div'); d.innerHTML = uniqIds((sleep ? f.z : f.s) || simpleFig(c.body, c.ear, sleep), 'c'); return d.firstElementChild; }
           window._fpTodayFigs = function () {
             if (!data) return [];
             return data.cats.filter((c) => SHOW_SLEEP || c.today).map((c) => { const sleep = !c.today && !WAKE, el = figEl(c, sleep);   /* 起こす：自分の 画面だけ 起きて いる あつかい */ return el ? { fig: el, h: (c.fig && c.fig.h) || 60, w: (c.fig && c.fig.w) || 74, sleep, self: c.self } : null; }).filter(Boolean);
@@ -1315,28 +1324,13 @@ jobs:
           let sceneUrl = '';
           function sceneImg(svg, w, h) {
             const el = $('sceneBg');
-            el.innerHTML = svg;   /* まず いつもの 景色（失敗しても 景色が 消えない） */
             try {
               const src = svg.indexOf('xmlns=') > 0 ? svg : svg.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
-              const im = new Image();
-              im.onload = () => {
-                try {
-                  const dpr = Math.min(2, window.devicePixelRatio || 1), c = document.createElement('canvas');
-                  c.width = Math.round(w * dpr); c.height = Math.round(h * dpr);
-                  const g = c.getContext('2d'); g.drawImage(im, 0, 0, c.width, c.height);
-                  let ink = 0; const d = g.getImageData(0, Math.round(c.height * .55), c.width, 4).data;   /* 絵が 入って いるか（まっさらなら 入れかえない） */
-                  for (let q = 3; q < d.length; q += 16) if (d[q] > 0) ink++;
-                  if (ink < 10) { try { zz.log('scene png blank, keep svg'); } catch (_) {} return; }
-                  c.toBlob((b) => {
-                    if (!b) return;
-                    const u = URL.createObjectURL(b), old = sceneUrl; sceneUrl = u;
-                    const img = new Image(); img.alt = ''; img.onload = () => { el.innerHTML = ''; el.appendChild(img); if (old) setTimeout(() => URL.revokeObjectURL(old), 2000); }; img.src = u;
-                  }, 'image/png');
-                } catch (e) { try { zz.log('scene png ' + e); } catch (_) {} }
-              };
-              im.onerror = () => { try { zz.log('scene svg image error'); } catch (_) {} };
+              const im = new Image(); im.alt = ''; im.decoding = 'async';
+              im.onerror = () => { try { zz.log('scene img error, inline'); } catch (_) {} el.innerHTML = uniqIds(svg, 's'); };
               im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(src);
-            } catch (_) {}
+              el.innerHTML = ''; el.appendChild(im);
+            } catch (e) { el.innerHTML = uniqIds(svg, 's'); }
           }
           function layout() {
             const lay = $('farPlay'), bw = lay.clientWidth || innerWidth, bh = lay.clientHeight || innerHeight;
@@ -1379,7 +1373,7 @@ jobs:
             setTimeout(() => {
               if (!data || !data.cats.length) return;
               layout();
-              if (_fpStart()) { setTimeout(kick, 120); setTimeout(kick, 1500); data.cats.filter((c) => SHOW_SLEEP || c.today).forEach((c, i) => { if (_fpCats[i]) { _fpCats[i].isSelf = !!c.self; _fpCats[i].uid = c.uid; } }); if (paused) pause(true);
+              if (_fpStart()) { if (MODE === 'wall') setTimeout(diag, 3000); setTimeout(kick, 120); setTimeout(kick, 1500); data.cats.filter((c) => SHOW_SLEEP || c.today).forEach((c, i) => { if (_fpCats[i]) { _fpCats[i].isSelf = !!c.self; _fpCats[i].uid = c.uid; } }); if (paused) pause(true);
                 if (MV === 'still') _fpCats.forEach((c) => { c.q = [{ a: 'wait', d: 1e9, pose: c.pose || 'sit' }]; }); }   /* 止める：その場で 座った まま */
             }, 80);
           }
@@ -1564,6 +1558,14 @@ jobs:
               kick();
             }
           }, 3000);
+
+          /* 壁紙で 猫が 見えない 時の ための 記録（log.txt） */
+          function diag() { try {
+            const c = _fpCats[0]; if (!c) { zz.log('diag: no cats'); return; }
+            const fr = c.fig.getBoundingClientRect(), fp = $('farPlay').getBoundingClientRect(), cs = getComputedStyle(c.fig), es = getComputedStyle(c.el);
+            zz.log('diag wall: cats=' + _fpCats.length + ' hidden=' + _fpCats.filter((x) => x.hidden).length + ' fig=' + Math.round(fr.width) + 'x' + Math.round(fr.height) + '@' + Math.round(fr.left) + ',' + Math.round(fr.top) +
+              ' op=' + cs.opacity + '/' + es.opacity + ' vis=' + cs.visibility + ' farPlay=' + Math.round(fp.width) + 'x' + Math.round(fp.height) + ' svg=' + !!c.fig.querySelector('svg') + ' on=' + _fpOn + ' paused=' + paused + ' body=' + document.body.className);
+          } catch (e) { try { zz.log('diag err ' + e); } catch (_) {} } }
           ZZEOF
           cat > pc/dist/fb.js << 'ZZEOF'
           /* PC版：クラウド（Firebase）との やりとり。サイトと 同じ データを 読み書きする */

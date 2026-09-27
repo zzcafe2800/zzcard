@@ -16449,6 +16449,21 @@ function _fpStart(){
       q:[{a:"wait",d:Math.random()*1.6,pose:"sit"}],at:0,pose:"sit",sx:1,sy:1,rot:0,hop:0,gp:Math.random()*2,jp:0,pause:0,ph:Math.random()*6.28,
       E:.3+Math.random()*.7,S:.2+Math.random()*.8,last:[],soc:false,ds:1,px:null,py:null,sleep:!!f.sleep,zt:1+Math.random()*3});
   });
+  try{ var sl=_fpCats.filter(function(c){ return c.sleep; });
+    if(sl.length){
+      for(var si=sl.length-1;si>0;si--){ var sj=Math.floor(Math.random()*(si+1)),tmp=sl[si]; sl[si]=sl[sj]; sl[sj]=tmp; }
+      var groups=[],cur=null; sl.forEach(function(c){ if(!cur||Math.random()<.18){ cur=[]; groups.push(cur); } cur.push(c); });   /* ★なるべく いっしょ（ぜったい では ない） */
+      var Lp=0; for(var li=1;li<z.line.length;li++)Lp+=Math.hypot((z.line[li][0]-z.line[li-1][0])/z.W*bw,(z.line[li][1]-z.line[li-1][1])*k); Lp=Math.max(1,Lp);
+      var hpx=(FP_H[z.tier]||10)*k;
+      groups.forEach(function(g,gi){
+        var ct=(groups.length>1)?(.1+.8*(gi+.5)/groups.length+(Math.random()-.5)*.08):(.3+Math.random()*.4),cz=Math.random()*1.2-.6,mid=Math.floor((g.length-1)/2);
+        g.forEach(function(c,ci){ var wpx=c.fw*(hpx/Math.max(1,c.fh))*.6;
+          c.t=Math.max(.03,Math.min(.97,ct+(ci-(g.length-1)/2)*wpx/Lp)); c.zo=Math.max(-1,Math.min(1,cz+((ci%2)?.18:-.12)));
+          c.zzLead=(ci===mid); c.zt=.5+Math.random()*1.5;
+          try{ c.fig.querySelectorAll("text").forEach(function(tx){ tx.remove(); }); }catch(_){}   /* 絵の 中の 小さな zZ は けす（Zzz は かたまりに 1つ） */
+        });
+      });
+    } }catch(_){}
   try{ var tk=_devUnlockAll?_DEV_SKY[_devSkyIdx%_DEV_SKY.length]:currentSkyKey(),pal=_hs2Pal(tk),nt=(tk==="sky-night");
     var pa=parseInt(pal.haze.slice(1),16),mixc=function(sh2){ var a2=(pa>>sh2)&255; return Math.round(a2+(255-a2)*(nt?.25:.5)); },rgb=mixc(16)+","+mixc(8)+","+mixc(0);
     var hp0=(FP_H[z.tier]||10)*k,nb=3;
@@ -16463,7 +16478,7 @@ function _fpStart(){
 function _fpStop(){ _fpOn=false; cancelAnimationFrame(_fpRaf); var lay=$("farPlay"); if(lay)lay.classList.remove("on"); document.body.classList.remove("farPlayOn"); _fpBf=null; setTimeout(function(){ if(!_fpOn&&lay)lay.innerHTML=""; },900); }
 function _fpStep(c,dt){
   if(c.sleep){ c.q=[]; c.hop=0; c.rot=0; c.pose="stand"; c.sx+=(1-c.sx)*Math.min(1,dt*10); c.sy+=(1-c.sy)*Math.min(1,dt*10);
-    c.zt-=dt; if(c.zt<=0){ c.zt=3+Math.random()*2.5; _fpEmo(c,"zzz"); } return; }   /* ★今日 やって いない 子は ずっと ねている */
+    if(c.zzLead){ c.zt-=dt; if(c.zt<=0){ c.zt=2+Math.random()*1.2; _fpEmo(c,"zzz"); } } return; }   /* ★今日 やって いない 子は ずっと ねている（Zzz は かたまりの まんなかの 子だけ） */
   c.at+=dt; var a=c.q[0];
   if(!a){ _fpPlan(c); a=c.q[0]; if(!a)return; }
   if(!a._s){ a._s=1; c.at=0; if(a.pose)c.pose=a.pose; else if(a.a!=="nap")c.pose="stand"; if(a.emo)_fpEmo(c,a.emo); }
@@ -20932,7 +20947,7 @@ function _uiActive(){
   if(_uiRest1Timer)clearTimeout(_uiRest1Timer);
   const ok=()=>{ try{ const ss=$("selectScreen"); const onHome=ss&&!ss.classList.contains("hidden");
     const typing=document.activeElement&&/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName); return onHome&&!typing; }catch(_){ return false; } };
-  _uiRest1Timer=setTimeout(()=>{ if(ok())b.classList.add("uiRest1"); },3000);   /* 1段目（3秒）：猫の UIだけ 消えて 奥で あそぶ */
+  _uiRest1Timer=setTimeout(()=>{ if(ok())b.classList.add("uiRest1"); },2300);   /* 1段目（2.3秒）：猫の UIだけ 消えて 奥で あそぶ */
   _uiRestTimer=setTimeout(()=>{ if(ok()){ b.classList.add("uiRest1"); b.classList.add("uiRest"); } },5000);   /* 2段目：まわりの UIも 消える */
 }
 ["pointerdown","touchstart","mousemove","wheel","keydown"].forEach(ev=>window.addEventListener(ev,_uiActive,{passive:true}));

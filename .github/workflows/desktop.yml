@@ -845,8 +845,8 @@ jobs:
           .sub{display:block;font-size:10px;font-weight:700;color:#a3acb9}
           .more{border-top:1px solid #eef1f5;padding-top:8px}.more summary{cursor:pointer;font-size:12px;font-weight:800;color:#8a93a3;list-style:none;display:flex;align-items:center;gap:6px}.more summary::before{content:"▸";font-size:10px}.more[open] summary::before{content:"▾"}
           .sokS{font-size:12px;font-weight:800;color:#3f9c6a}
-          .opt.col{flex-direction:column;align-items:stretch;gap:6px}
-          .seg{display:flex;background:#eef1f5;border-radius:10px;padding:3px;gap:2px}.seg button{flex:1;border:0;background:none;border-radius:8px;padding:5px 0;font:inherit;font-size:12px;font-weight:800;color:#8a93a3;cursor:pointer}.seg button.on{background:#2b3242;color:#fff}
+          .sels{display:flex;gap:6px}.sels select{height:30px;border-radius:999px;border:0;background:#eef1f5;padding:0 10px;font:inherit;font-size:12px;font-weight:800;color:#2b3242;cursor:pointer}
+          .tv{width:100%;aspect-ratio:250/140;border-radius:7px;overflow:hidden;position:relative}.tv svg{position:absolute;inset:0;width:100%;height:100%;display:block}
           button:focus-visible,input:focus-visible{outline:2px solid #2b3242;outline-offset:2px}
           </style></head><body>
           <div class="p">
@@ -873,15 +873,12 @@ jobs:
             <div id="sNg" class="sec warn"><div class="lb">まず つなぐ</div><div class="row"><input type="text" id="sCode" maxlength="9" placeholder="つなぎコード" autocomplete="off" spellcheck="false"><button id="sLink" class="sbtn" type="button">つなぐ</button></div></div>
             <div class="sec"><div class="lb">猫を 出す 場所</div>
              <div class="row tiles">
-              <button class="tile" data-m="wall" type="button"><svg viewBox="0 0 250 140"><rect width="250" height="140" fill="#cfe6f6"/><path d="M0 92 L40 60 L70 76 L110 40 L150 70 L190 50 L250 84 V140 H0Z" fill="#9fb1c4"/><path d="M0 110 Q125 92 250 108 V140 H0Z" fill="#a8c49a"/><rect y="128" width="250" height="12" fill="#2b3242"/><circle cx="92" cy="112" r="6" fill="#1c1c1c"/><circle cx="118" cy="112" r="6" fill="#c98b5b"/></svg>壁紙</button>
+              <button class="tile" data-m="wall" type="button"><div class="tv" id="wallPrev"></div>壁紙</button>
               <button class="tile" data-m="bar" type="button"><svg viewBox="0 0 250 140"><rect width="250" height="140" fill="#b8c7e6"/><rect x="34" y="16" width="150" height="84" rx="6" fill="#fff"/><rect y="128" width="250" height="12" fill="#2b3242"/><circle cx="80" cy="122" r="6" fill="#1c1c1c"/><circle cx="104" cy="122" r="6" fill="#c98b5b"/></svg>タスクバー</button>
               <button class="tile" data-m="full" type="button"><svg viewBox="0 0 250 140"><rect width="250" height="140" fill="#1f2433"/><path d="M110 50 L140 70 L110 90 Z" fill="#fff" opacity=".7"/><circle cx="80" cy="134" r="6" fill="#efe8dc"/><circle cx="104" cy="134" r="6" fill="#c98b5b"/></svg>全画面</button>
              </div>
-               <div class="opt" id="wallRow">うしろに 景色の 壁紙<div class="sw" data-k="wallOn"><button type="button" data-v="1">使う</button><button type="button" data-v="0">使わない</button></div></div>
-            </div>
-            <div class="sec" id="sceneSec"><div class="lb">景色</div>
-             <div class="opt col"><span>合目</span><div class="seg" id="segT"><button type="button" data-v="0">自動</button><button type="button" data-v="1">1</button><button type="button" data-v="2">2</button><button type="button" data-v="3">3</button><button type="button" data-v="4">4</button><button type="button" data-v="5">5</button><button type="button" data-v="6">6</button><button type="button" data-v="7">7</button></div></div>
-             <div class="opt col"><span>時間帯</span><div class="seg" id="segM"><button type="button" data-v="auto">自動</button><button type="button" data-v="sky-dawn">早朝</button><button type="button" data-v="sky-morning">朝</button><button type="button" data-v="sky-day">昼</button><button type="button" data-v="sky-evening">夕方</button><button type="button" data-v="sky-night">夜</button></div></div>
+               <div class="opt" id="sceneRow">景色<span class="sels"><select id="selT" aria-label="合目"><option value="0">自動</option><option value="1">1合目</option><option value="2">2合目</option><option value="3">3合目</option><option value="4">4合目</option><option value="5">5合目</option><option value="6">6合目</option><option value="7">7合目</option></select><select id="selM" aria-label="時間帯"><option value="auto">自動</option><option value="sky-dawn">早朝</option><option value="sky-morning">朝</option><option value="sky-day">昼</option><option value="sky-evening">夕方</option><option value="sky-night">夜</option></select></span></div>
+             <div class="opt" id="wallRow">うしろに 景色の 壁紙<div class="sw" data-k="wallOn"><button type="button" data-v="1">使う</button><button type="button" data-v="0">使わない</button></div></div>
             </div>
             <div class="sec"><div class="lb">ねこ</div>
              <div class="opt">寝ている子<div class="sw sw3" data-k="sleepMode"><button type="button" data-v="show">出す</button><button type="button" data-v="wake">起こす</button><button type="button" data-v="hide">出さない</button></div></div>
@@ -907,6 +904,7 @@ jobs:
           <script src="rec.js"></script>
           <script>var $=function(id){ return document.getElementById(id); };</script>
           <script src="graph.js"></script>
+          <script src="scene.js"></script>
           <script type="module">
           import { record, recData, redeem } from './fb.js';
           const R = window.ZZREC || { mood: [], slpy: [] };
@@ -975,9 +973,8 @@ jobs:
           let sm = 'wall', so = {}, ssz = 100, suid = '', cw = true, cb = false, slm = 'show', stT = 0, stM = 'auto';
           function paintS() {
             $('sOk').hidden = !suid; $('sNg').hidden = !!suid; $('wallRow').hidden = sm === 'wall';
-            $('sceneSec').hidden = !(sm === 'wall' || so.wallOn);   /* 景色は 壁紙を 使う 時だけ */
-            document.querySelectorAll('#segT button').forEach((b) => b.classList.toggle('on', +b.dataset.v === stT));
-            document.querySelectorAll('#segM button').forEach((b) => b.classList.toggle('on', b.dataset.v === stM)); so.card = sm === 'wall' ? cw : cb;
+            $('sceneRow').hidden = !(sm === 'wall' || so.wallOn);   /* 景色は 壁紙を 使う 時だけ */
+            $('selT').value = String(stT); $('selM').value = stM; paintPrev(); so.card = sm === 'wall' ? cw : cb;
             $('cardSub').textContent = sm === 'wall' ? 'ひとこと・写真（壁紙）' : 'ひとこと・写真（画面の 左に 小さく）';
             document.querySelectorAll('#pS .tile').forEach((t) => t.classList.toggle('on', t.dataset.m === sm));
             document.querySelectorAll('#pS .sw:not(.sw3)').forEach((w) => w.querySelectorAll('button').forEach((b) => b.classList.toggle('on', String(+!!so[w.dataset.k]) === b.dataset.v)));
@@ -987,8 +984,21 @@ jobs:
           async function loadS() { const st = await zz.state(); suid = st.uid || ''; sm = st.mode || 'wall'; so = { wallOn: !!st.wallOn, noEmo: !!st.noEmo, noShare: !!st.noShare, noTapShow: !!st.noTapShow, autoStart: st.autoStart !== false, lowQ: !!st.lowQ }; cw = st.cardWall !== false; cb = !!st.cardBar; slm = st.sleepMode || (st.hideSleep ? 'hide' : 'show'); stT = +st.sceneTier || 0; stM = st.sceneTime || 'auto'; ssz = Math.round((st.catScale || 1) * 100); paintS(); }
           document.querySelectorAll('#pS .tile').forEach((t) => t.addEventListener('click', () => { sm = t.dataset.m; paintS(); }));
           document.querySelectorAll('#pS .sw3 button').forEach((b) => b.addEventListener('click', () => { slm = b.dataset.v; paintS(); }));
-          document.querySelectorAll('#segT button').forEach((b) => b.addEventListener('click', () => { stT = +b.dataset.v; paintS(); }));
-          document.querySelectorAll('#segM button').forEach((b) => b.addEventListener('click', () => { stM = b.dataset.v; paintS(); }));
+          $('selT').addEventListener('change', () => { stT = +$('selT').value; paintS(); });
+          $('selM').addEventListener('change', () => { stM = $('selM').value; paintS(); });
+          /* 壁紙の ボタンの 絵：選んだ 合目・時間帯の 景色（自動＝今の 自分の 合目・今の 時間帯） */
+          const TMH = { 'sky-dawn': 6, 'sky-morning': 9, 'sky-day': 13, 'sky-evening': 17, 'sky-night': 22 };
+          /* 自動の 時間帯（猫の 画面と 同じ 決め方） */
+          function skyNow() { const h = new Date().getHours(); return (h >= 5 && h < 9) ? 'sky-dawn' : (h >= 9 && h < 10) ? 'sky-morning' : (h >= 10 && h < 16) ? 'sky-day' : (h >= 16 && h < 19) ? 'sky-evening' : 'sky-night'; }
+          let prevKey = '';
+          function paintPrev() {
+            try {
+              const t = stT || Math.max(1, Math.min(7, +localStorage.getItem('zz_tier') || 1)), tk = stM !== 'auto' ? stM : skyNow(), key = t + tk;
+              if (key === prevKey) return; prevKey = key;
+              const el = $('wallPrev'); el.style.background = skyGradientForHour(TMH[tk] != null ? TMH[tk] : new Date().getHours());
+              el.innerHTML = _hs2(t, tk, Math.round(640 * 250 / 140));
+            } catch (_) {}
+          }
           document.querySelectorAll('#pS .sw:not(.sw3) button').forEach((b) => b.addEventListener('click', () => { const k = b.parentNode.dataset.k, v = b.dataset.v === '1'; if (k === 'card') { if (sm === 'wall') cw = v; else cb = v; } else so[k] = v; paintS(); }));
           $('sz').addEventListener('input', () => { ssz = +$('sz').value; $('szV').textContent = ssz; });
           $('sLink').addEventListener('click', async () => { $('sLink').disabled = true; try { const uid = await redeem($('sCode').value); await zz.set({ uid }); suid = uid; paintS(); } catch (e) { $('msg').style.color = '#c9546b'; $('msg').textContent = 'つなげなかったよ'; setTimeout(() => { $('msg').style.color = ''; }, 3000); } $('sLink').disabled = false; });
@@ -1198,6 +1208,7 @@ jobs:
             try {
               data = await hill(UID);
               tier = FIXT || Math.max(1, Math.min(7, (data.myfig && data.myfig.tier) || 1));
+              try { localStorage.setItem('zz_tier', String(Math.max(1, Math.min(7, (data.myfig && data.myfig.tier) || 1)))); } catch (_) {}
               cards = data.cards || []; ci = 0; showCard();
               const me = data.me, mf = data.myfig; const wk = (mf && Number.isFinite(mf.wake)) ? mf.wake : ((me && Number.isFinite(me.wakeHour)) ? me.wakeHour + (me.wakeMin || 0) / 60 : null);
               if (wk !== null && window.zz) zz.setWake(wk);

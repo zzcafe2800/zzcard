@@ -353,8 +353,7 @@ jobs:
                               if let Some(o) = st2.s.lock().unwrap().as_object_mut() { o.insert("mode".into(), json!("bar")); }
                               save_state(&a, &st2);
                               let _ = a.notification().builder().title("ズズラジオ体操部").body("壁紙に 出せなかったので、タスクバーに したよ").show();
-                              let a2 = a.clone();
-                              let _ = a.run_on_main_thread(move || { let st3 = a2.state::<St>().inner().clone(); open_cats(&a2, &st3); });
+                              open_cats(&a, &st2);
                           }
                       });
                   }
@@ -406,9 +405,10 @@ jobs:
               let v = st.s.lock().unwrap().clone();
               v
           }
+          /* ★Windows では ボタンの 処理（同期）の 中で まどを 作ると 固まるので、async で 別の 作業に する */
           #[tauri::command]
-          fn zz_start(app: AppHandle, st: tauri::State<'_, St>, o: Value) {
-              let st = st.inner().clone();
+          async fn zz_start(app: AppHandle, o: Value) -> Result<(), String> {
+              let st = app.state::<St>().inner().clone();
               {
                   let mut s = st.s.lock().unwrap();
                   if let Some(a) = s.as_object_mut() {
@@ -426,10 +426,13 @@ jobs:
               apply_autostart(&app, &st);
               open_cats(&app, &st);
               if let Some(w) = app.get_webview_window("setup") { let _ = w.destroy(); }
+              Ok(())
           }
           #[tauri::command]
-          fn zz_open_setup(app: AppHandle, st: tauri::State<'_, St>) {
-              if sstr(st.inner(), "uid").is_empty() { open_setup(&app); } else { show_panel_tab(&app, "settings"); }
+          async fn zz_open_setup(app: AppHandle) -> Result<(), String> {
+              let st = app.state::<St>().inner().clone();
+              if sstr(&st, "uid").is_empty() { open_setup(&app); } else { show_panel_tab(&app, "settings"); }
+              Ok(())
           }
           #[tauri::command]
           fn zz_panel_tab(st: tauri::State<'_, St>) -> Option<String> { st.tab.lock().unwrap().take() }
@@ -453,20 +456,28 @@ jobs:
               });
               tauri::Builder::default()
                   .plugin(tauri_plugin_single_instance::init(|app, argv, _cwd| {
-                      if let Some(c) = link_from(&argv) {
-                          let st = app.state::<St>().inner().clone();
-                          *st.link.lock().unwrap() = Some(c.clone());
-                          open_setup(app);
-                          let _ = app.emit_to("setup", "zz-link", c);
-                      } else { open_panel(app, true); }
+                      let a = app.clone();
+                      std::thread::spawn(move || {
+                          if let Some(c) = link_from(&argv) {
+                              let st = a.state::<St>().inner().clone();
+                              *st.link.lock().unwrap() = Some(c.clone());
+                              open_setup(&a);
+                              let _ = a.emit_to("setup", "zz-link", c);
+                          } else { open_panel(&a, true); }
+                      });
                   }))
                   .plugin(tauri_plugin_deep_link::init())
                   .plugin(tauri_plugin_global_shortcut::Builder::new().with_handler(|app, sc, ev| {
                       if ev.state() != ShortcutState::Pressed { return; }
-                      if sc.matches(Modifiers::CONTROL | Modifiers::ALT | Modifiers::SHIFT, Code::KeyP) {
-                          let st = app.state::<St>().inner().clone();
-                          if sstr(&st, "uid").is_empty() { open_setup(app); } else { show_panel_tab(app, "settings"); }
-                      } else if sc.matches(Modifiers::CONTROL | Modifiers::ALT, Code::KeyP) { open_panel(app, true); }
+                      let settings = sc.matches(Modifiers::CONTROL | Modifiers::ALT | Modifiers::SHIFT, Code::KeyP);
+                      let record = sc.matches(Modifiers::CONTROL | Modifiers::ALT, Code::KeyP);
+                      let a = app.clone();
+                      std::thread::spawn(move || {
+                          if settings {
+                              let st = a.state::<St>().inner().clone();
+                              if sstr(&st, "uid").is_empty() { open_setup(&a); } else { show_panel_tab(&a, "settings"); }
+                          } else if record { open_panel(&a, true); }
+                      });
                   }).build())
                   .plugin(tauri_plugin_autostart::init(MacosLauncher::LaunchAgent, None))
                   .plugin(tauri_plugin_updater::Builder::new().build())

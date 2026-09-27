@@ -920,7 +920,7 @@ jobs:
           .pgh button{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--nv);background:#fff;color:var(--nv);cursor:pointer;font-size:11px}
           .pgh button:hover{background:var(--pc2)}
           .dots{display:flex;gap:4px;justify-content:center;margin-top:4px}.dots i{width:6px;height:6px;border-radius:50%;background:var(--ln)}.dots i.on{background:var(--nv)}
-          .pg{min-height:150px}
+          .pg{height:184px;overflow:auto}   /* ページを 切りかえても カードの 大きさを 変えない */
           .dl{display:flex;flex-direction:column}.de{display:flex;align-items:flex-start;gap:10px;padding:9px 2px;border-top:1px solid var(--ln);font-size:13px;font-weight:700;line-height:1.45}.de:first-child{border-top:0}.de time{flex:none;width:38px;font-size:11px;font-weight:800;color:var(--mu);padding-top:2px;font-variant-numeric:tabular-nums}.de i{flex:none;width:24px;height:24px;border-radius:50%;background:var(--pc2);display:flex;align-items:center;justify-content:center;font-style:normal;font-size:12px}.dn0{text-align:center;color:var(--mu);font-size:12px;padding:24px 0}
           .dic{position:absolute;left:5%;top:8%;display:flex;flex-direction:column;gap:6px;height:72%}.tv .dic svg,.pv .dic svg{position:static;inset:auto;width:auto;height:18%;min-height:12px;display:block;filter:drop-shadow(0 1px 1px rgba(0,0,0,.3))}
           /* 下の タブバー */
@@ -1255,7 +1255,7 @@ jobs:
           ZZEOF
           cat > pc/dist/cats.js << 'ZZEOF'
           /* 猫を 出す 画面：壁紙（景色＋猫＋みんなの カード）／タスクバー（猫だけ）。うごきは サイトの「奥で あそぶ 猫」と 同じ */
-          import { hill, pubTaps, allTaps, sendPet, sendItem, onPets, onItems, diaryAdd } from './fb.js';
+          import { hill, pubTaps, allTaps, sendPet, sendItem, onPets, onItems, diaryAdd, setOnline } from './fb.js';
           const Q = window.__ZZQ || Object.fromEntries(new URLSearchParams(location.search)), P = { get: (k) => (Q[k] != null ? String(Q[k]) : null) }, MODE = P.get('mode') || 'wall', UID = P.get('uid') || '', SHOW_SLEEP = P.get('sleep') !== '0', WAKE = P.get('sleep') === '2', EMO = P.get('emo') !== '0', SHARE = P.get('share') !== '0', CARD = P.get('card') === '1', HEADC = P.get('card') === 'h', TAPS = P.get('tp') !== '0', LOWQ = P.get('q') === 'lo', SIZE = Math.max(.5, Math.min(2, +P.get('sz') || 1));
           const FPH0 = Object.assign({}, FP_H);   /* サイトの 大きさ（ここに 大きさの バーを かける） */
           const FLAT = MODE !== 'wall', NOCATS = P.get('nocats') === '1';
@@ -1265,11 +1265,12 @@ jobs:
           if (NOCATS) { document.getElementById('hint').hidden = true; document.getElementById('card').hidden = true; }   /* タスクバー・全画面：画面の 下を 歩く */
           if (!EMO) window._fpEmo = function () {};   /* 気持ちの 絵 なし */
           const MV = P.get('mv') || 'normal';
-          if (MV === 'calm') { window.requestAnimationFrame = (cb) => setTimeout(() => cb(performance.now()), 66); window.cancelAnimationFrame = (id) => clearTimeout(id); window._fpDust = function () {}; window._hs2Pal = null; }
+          if (MV === 'still') { window.requestAnimationFrame = (cb) => setTimeout(() => cb(performance.now()), 200); window.cancelAnimationFrame = (id) => clearTimeout(id); window._fpDust = function () {}; window._fpEvStart = function () {}; }
+          if (MV === 'calm') { window.requestAnimationFrame = (cb) => setTimeout(() => cb(performance.now()), 66); window.cancelAnimationFrame = (id) => clearTimeout(id); window._fpDust = function () {}; }
           if (LOWQ && MV !== 'calm') {   /* 画質 低：1秒 30回・霧と 土ぼこり なし（かるい）。高は ふつうの なめらかさ */
             window.requestAnimationFrame = (cb) => setTimeout(() => cb(performance.now()), 33);
             window.cancelAnimationFrame = (id) => clearTimeout(id);
-            window._hs2Pal = null; window._fpDust = function () {};
+            window._fpDust = function () {};
           }
           if (FLAT) window._hs2Pal = null;   /* タスクバーは 霧なし */
           let data = null, tier = 1, tk = '', paused = false, cards = [], ci = 0, taps = 0, hintX = 20, hintY = 100;
@@ -1331,7 +1332,7 @@ jobs:
             const lay = $('farPlay'), bw = lay.clientWidth || innerWidth, bh = lay.clientHeight || innerHeight;
             if (MODE === 'wall') {
               tk = currentSkyKey(); document.body.style.background = skyGrad();
-              sceneImg(_hs2(tier, tk, Math.round(640 * bw / bh)), bw, bh);
+              try { sceneImg(_hs2(tier, tk, Math.round(640 * bw / bh)), bw, bh); } catch (e) { try { zz.log('scene ' + e); } catch (_) {} }
               FP_H[tier] = (FPH0[tier] || 10) * SIZE;
               try { _sceneCur = tier; } catch (_) {} if (window._hsZone) window._hsZone.tier = tier;
             } else {
@@ -1369,7 +1370,7 @@ jobs:
               if (!data || !data.cats.length) return;
               layout();
               if (_fpStart()) { data.cats.filter((c) => SHOW_SLEEP || c.today).forEach((c, i) => { if (_fpCats[i]) { _fpCats[i].isSelf = !!c.self; _fpCats[i].uid = c.uid; } }); if (paused) pause(true);
-                if (MV === 'still') setTimeout(() => { _fpOn = false; try { cancelAnimationFrame(_fpRaf); } catch (_) {} document.body.classList.remove('uiRest1'); document.body.classList.add('zzPaused'); }, 600); }   /* 止める：並んだ ところで 止まる */
+                if (MV === 'still') _fpCats.forEach((c) => { c.q = [{ a: 'wait', d: 1e9, pose: c.pose || 'sit' }]; }); }   /* 止める：その場で 座った まま */
             }, 80);
           }
           async function load() {
@@ -1479,7 +1480,7 @@ jobs:
           /* ===== なでなで・アイテム・キーに 反応・カーソルを 追いかける ===== */
           const ITEMS = ['ball', 'mouse', 'bug', 'balloon', 'gift', 'box'], MS = [1000, 2000, 5000, 10000, 20000, 50000];
           let rub = null, lastCur = { x: -1, y: -1, t: 0 }, petCool = 0, backCool = 0, tN = -1, tT = 0, fastN = 0, idleAt = Date.now(), slept = false, exCool = 0;
-          const alive = () => !paused && !autoRest && !NOCATS && typeof _fpCats !== 'undefined' && _fpCats.length > 0 && typeof _fpG !== 'undefined' && _fpG && _fpG.z;
+          const alive = () => MV !== 'still' && !paused && !autoRest && !NOCATS && typeof _fpCats !== 'undefined' && _fpCats.length > 0 && typeof _fpG !== 'undefined' && _fpG && _fpG.z;
           const nameOf = (uid) => { const c = ((data && data.cats) || []).find((x) => x.uid === uid); return (c && c.name) || ''; };
           const catOf = (uid) => _fpCats.find((c) => c.uid === uid);
           const awake = () => _fpCats.filter((c) => !c.ev && !c.sleep && !c.hidden);
@@ -1527,6 +1528,9 @@ jobs:
           function tAtX(x) { let bt = .5, bd = 1e9; for (let i = 0; i <= 40; i++) { const t = i / 40, q = _fpPoint(_fpG.z.line, t), px = q[0] / _fpG.z.W * _fpG.bw, d = Math.abs(px - x); if (d < bd) { bd = d; bt = t; } } return bt; }
           (function chase() { setTimeout(() => { try { if (alive() && Date.now() - lastCur.t < 8000) { const cs = awake(); if (cs.length) { const c = cs.sort((a, b) => Math.abs(a.px - lastCur.x) - Math.abs(b.px - lastCur.x))[0]; c.q = [{ a: 'go', t: tAtX(lastCur.x), z: c.zo, sp: 1.9, to: 5, pose: 'stand4' }]; _fpEmo(c, 'excl'); } } } catch (_) {} chase(); }, 180000 + Math.random() * 180000); })();
           window.__zzFun = { onCursor, playItem, typingReact };
+
+          /* 今 PC版を 開いて いる（自分の 猫は このアプリでは 起きて いる あつかい・みんなの 画面でも） */
+          if (UID && !NOCATS) { const ping = () => setOnline(UID).catch(() => {}); ping(); setInterval(ping, 60000); }
           ZZEOF
           cat > pc/dist/fb.js << 'ZZEOF'
           /* PC版：クラウド（Firebase）との やりとり。サイトと 同じ データを 読み書きする */
@@ -1571,13 +1575,17 @@ jobs:
             Object.keys(val).forEach((pid) => { const v = val[pid]; if (!v || !v.uid || !(v.createdAt >= since)) return; if (!by[v.uid] || v.createdAt > by[v.uid].createdAt) by[v.uid] = v; });
             const all = Object.values(by), isT = (v) => v.date === today, nw = (a, b) => (b.createdAt || 0) - (a.createdAt || 0);
             const me = by[uid] || null;
-            let list = all.filter((v) => isT(v) && v.uid !== uid).sort(nw).concat(all.filter((v) => !isT(v) && v.uid !== uid).sort(nw));
-            if (me) list.unshift(me);
-            list = list.slice(0, 10);
             const get = (p) => D.get(D.ref(db, p)).then((s) => s.val()).catch(() => null);
+            /* 今 PC版を 開いて いる 人（3分 以内）は 起きて いる あつかい。自分の 猫は いつも 先頭に 必ず 出す */
+            const onl = (await get('pconline')) || {}, nowT = Date.now(), on = new Set(Object.keys(onl).filter((u) => nowT - ((onl[u] && onl[u].t) || 0) < 180000));
+            if (uid) on.add(uid);
+            let list = all.filter((v) => (isT(v) || on.has(v.uid)) && v.uid !== uid).sort(nw).concat(all.filter((v) => !isT(v) && !on.has(v.uid) && v.uid !== uid).sort(nw));
+            list = [...on].filter((u) => u !== uid && !all.some((v) => v.uid === u)).map((u) => ({ uid: u, name: '', createdAt: 0 })).concat(list);
+            if (uid) list.unshift(me || { uid, name: '', createdAt: 0 });
+            list = list.slice(0, 10);
             const figs = await Promise.all(list.map(async (v) => { const a = await get('pcfigs/' + v.uid); if (a && a.s) return a; return await get('pcfig/' + v.uid); }));
             const myfig = uid ? await get('pcfig/' + uid) : null;   /* 合目・起きる 時刻 */
-            const cats = list.map((v, i) => ({ uid: v.uid, name: v.name || '', today: isT(v), self: v.uid === uid, body: v.catBody || '#1c1c1c', ear: v.color || '#a6bfd2', fig: figs[i] }));
+            const cats = list.map((v, i) => ({ uid: v.uid, name: v.name || '', today: isT(v) || on.has(v.uid), self: v.uid === uid, body: v.catBody || '#1c1c1c', ear: v.color || '#a6bfd2', fig: figs[i] }));
             const cards = all.filter((v) => (v.comment && String(v.comment).trim()) || v.phT).sort(nw).slice(0, 30).map((v) => ({ uid: v.uid, name: v.name || '', c: v.comment || '', ph: v.phT || null, body: v.catBody || '#1c1c1c', ear: v.color || '#a6bfd2' }));
             return { cats, cards, me, myfig, today };
           }
@@ -1662,6 +1670,8 @@ jobs:
             if (rec && rec.t && rec.dn !== false) out.push({ k: 'taiso', t: rec.t });
             return out.sort((a, b) => a.t - b.t);
           }
+
+          export async function setOnline(uid) { const { db, D } = await fb(); await D.set(D.ref(db, 'pconline/' + uid), { t: Date.now() }); }
           ZZEOF
           cat > pc/prep.js << 'ZZEOF'
           /* サイトの index.html から PC版に いる 部品だけを 取り出す：アイコン・景色・空の色・猫の うごき・Firebaseの 設定 */

@@ -957,7 +957,7 @@ jobs:
             <section id="pB" hidden>
              <div class="card warn" id="sNg"><div class="lb">まず つなぐ</div><div class="row"><input type="text" id="sCode" maxlength="9" placeholder="つなぎコード" autocomplete="off" spellcheck="false"><button id="sLink" class="sbtn" type="button">つなぐ</button></div></div>
              <div class="card"><div class="lb">出す 場所</div><div class="tiles">
-               <div class="tile" data-m="wall" role="button" tabindex="0"><div class="tv" id="wallPrev"></div><span class="alw" id="alw" title="いつも 壁紙を 出す"><i></i>いつも</span><span class="nm">壁紙</span></div>
+               <div class="tile" data-m="wall" role="button" tabindex="0"><div class="tv" id="wallPrev"></div><span class="alw" id="alw" role="switch" tabindex="0" title="ほかの 場所に 出して いる 時も 壁紙を 出す"><i></i>随時</span><span class="nm">壁紙</span></div>
                <div class="tile" data-m="bar" role="button" tabindex="0"><div class="tv"><svg viewBox="0 0 160 100"><rect width="160" height="100" fill="#b8c7e6"/><rect x="22" y="12" width="96" height="58" rx="6" fill="#fff"/><rect y="88" width="160" height="12" fill="#2b3242"/><circle cx="52" cy="83" r="5" fill="#2b3242"/><circle cx="68" cy="83" r="5" fill="#ffb27d"/></svg></div><span class="nm">タスクバー</span></div>
                <div class="tile" data-m="full" role="button" tabindex="0"><div class="tv"><svg viewBox="0 0 160 100"><rect width="160" height="100" fill="#26233d"/><path d="M70 36l24 14-24 14z" fill="#fff" opacity=".7"/><circle cx="52" cy="94" r="5" fill="#efe8dc"/><circle cx="68" cy="94" r="5" fill="#ffb27d"/></svg></div><span class="nm">全画面</span></div>
               </div></div>
@@ -1063,7 +1063,7 @@ jobs:
           function paintS() {
             $('sNg').hidden = !!S.uid; $('sOk').hidden = !S.uid;
             document.querySelectorAll('.tile').forEach((t) => t.classList.toggle('on', t.dataset.m === S.mode));
-            $('alw').classList.toggle('on', S.mode === 'wall' || S.wallOn);
+            $('alw').classList.toggle('on', !!S.wallOn); $('alw').setAttribute('aria-checked', String(!!S.wallOn));
             $('selT').value = String(S.stT); $('selM').value = S.stM; $('scnRow').hidden = !(S.mode === 'wall' || S.wallOn);   /* 壁紙を 使う 時だけ */
             const cardV = S.mode === 'wall' ? S.cardW : S.cardB;
             document.querySelectorAll('.sg').forEach((g) => { const k = g.dataset.k; const v = k === 'card' ? cardV : (typeof S[k] === 'boolean' ? String(+S[k]) : String(S[k])); g.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.v === v)); });
@@ -1073,7 +1073,8 @@ jobs:
             preview();
           }
           document.querySelectorAll('.tile').forEach((t) => t.addEventListener('click', (e) => { if (e.target.closest('select,.alw')) return; S.mode = t.dataset.m; paintS(); }));
-          $('alw').addEventListener('click', (e) => { e.stopPropagation(); if (S.mode === 'wall') return; S.wallOn = !S.wallOn; paintS(); });
+          $('alw').addEventListener('click', (e) => { e.stopPropagation(); S.wallOn = !S.wallOn; paintS(); });   /* いつでも 押せる */
+          $('alw').addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); S.wallOn = !S.wallOn; paintS(); } });
           $('selT').addEventListener('change', () => { S.stT = +$('selT').value; paintS(); });
           $('selM').addEventListener('change', () => { S.stM = $('selM').value; paintS(); });
           document.querySelectorAll('.sg button').forEach((b) => b.addEventListener('click', () => {
@@ -1265,6 +1266,7 @@ jobs:
           if (NOCATS) { document.getElementById('hint').hidden = true; document.getElementById('card').hidden = true; }   /* タスクバー・全画面：画面の 下を 歩く */
           if (!EMO) window._fpEmo = function () {};   /* 気持ちの 絵 なし */
           const MV = P.get('mv') || 'normal';
+          const EV0 = window._fpEvStart;
           if (MV === 'still') { window.requestAnimationFrame = (cb) => setTimeout(() => cb(performance.now()), 200); window.cancelAnimationFrame = (id) => clearTimeout(id); window._fpDust = function () {}; window._fpEvStart = function () {}; }
           if (MV === 'calm') { window.requestAnimationFrame = (cb) => setTimeout(() => cb(performance.now()), 66); window.cancelAnimationFrame = (id) => clearTimeout(id); window._fpDust = function () {}; }
           if (LOWQ && MV !== 'calm') {   /* 画質 低：1秒 30回・霧と 土ぼこり なし（かるい）。高は ふつうの なめらかさ */
@@ -1480,6 +1482,7 @@ jobs:
           /* ===== なでなで・アイテム・キーに 反応・カーソルを 追いかける ===== */
           const ITEMS = ['ball', 'mouse', 'bug', 'balloon', 'gift', 'box'], MS = [1000, 2000, 5000, 10000, 20000, 50000];
           let rub = null, lastCur = { x: -1, y: -1, t: 0 }, petCool = 0, backCool = 0, tN = -1, tT = 0, fastN = 0, idleAt = Date.now(), slept = false, exCool = 0;
+          const canPlay = () => !paused && !NOCATS && typeof _fpCats !== 'undefined' && _fpCats.length > 0 && typeof _fpG !== 'undefined' && _fpG && _fpG.z;
           const alive = () => MV !== 'still' && !paused && !autoRest && !NOCATS && typeof _fpCats !== 'undefined' && _fpCats.length > 0 && typeof _fpG !== 'undefined' && _fpG && _fpG.z;
           const nameOf = (uid) => { const c = ((data && data.cats) || []).find((x) => x.uid === uid); return (c && c.name) || ''; };
           const catOf = (uid) => _fpCats.find((c) => c.uid === uid);
@@ -1493,7 +1496,7 @@ jobs:
           /* なでなで：猫の 上で カーソルを 左右に 6回 往復（クリック なし） → ハート。みんなの 画面にも */
           function onCursor(p) {
             if (!p) return; const x = +p.x, y = +p.y, now = Date.now(); lastCur = { x, y, t: now };
-            if (!alive()) return;
+            if (!canPlay()) return;
             const c = catAt(x, y);
             if (!c) { rub = null; return; }
             if (!rub || rub.c !== c || now - rub.t0 > 3000) { rub = { c, x, dir: 0, flips: 0, t0: now }; return; }
@@ -1502,7 +1505,7 @@ jobs:
             if (rub.flips >= 6 && now > petCool) { petCool = now + 2500; rub = null; hearts(c); if (UID && c.uid) sendPet({ to: c.uid, by: UID, tn: nameOf(c.uid), bn: nameOf(UID) }).catch(() => {}); }
           }
           /* アイテム：2〜4匹が その アイテムで 遊ぶ */
-          function playItem(k) { try { if (!FP_EV[k]) return; const cs = awake().sort(() => Math.random() - .5), n = Math.min(cs.length, 2 + Math.floor(Math.random() * 3)); if (n) _fpEvStart(k, cs.slice(0, n)); } catch (e) { try { zz.log('item ' + e); } catch (_) {} } }
+          function playItem(k) { try { if (!FP_EV[k]) return; const cs = awake().sort(() => Math.random() - .5), n = Math.min(cs.length, 2 + Math.floor(Math.random() * 3)); if (n) { EV0(k, cs.slice(0, n)); if (MV === 'still') setTimeout(() => _fpCats.forEach((c) => { if (!c.ev) c.q = [{ a: 'wait', d: 1e9, pose: 'sit' }]; }), 17000); } } catch (e) { try { zz.log('item ' + e); } catch (_) {} } }
           /* キーに 反応：速く 打つ → キラキラ 走る／タイピングの 節目を 日記に */
           function typingReact(n) {
             n = +n || 0; const now = Date.now();
@@ -1518,9 +1521,9 @@ jobs:
             zz.on('zz-cursor', onCursor);
             zz.on('zz-taps', typingReact);
             zz.on('zz-back', () => { if (!alive()) return; const me = _fpCats.find((c) => c.isSelf); if (me && Date.now() > backCool) { backCool = Date.now() + 6000; try { _fpEmo(me, 'ques'); } catch (_) {} } });
-            zz.on('zz-item', () => { if (!alive()) return; const ks = ITEMS.filter((k) => FP_EV[k]), k = ks[Math.floor(Math.random() * ks.length)]; if (!k) return; playItem(k); if (UID) { sendItem(k, UID).catch(() => {}); diaryAdd(UID, { k: 'item', a: k }).catch(() => {}); } });
-            onPets((v) => { if (!alive() || v.by === UID) return; const c = catOf(v.to); if (c) hearts(c); }).catch(() => {});
-            onItems((v) => { if (!alive() || v.by === UID) return; playItem(v.k); }).catch(() => {});
+            zz.on('zz-item', () => { if (!canPlay()) return; const ks = ITEMS.filter((k) => FP_EV[k]), k = ks[Math.floor(Math.random() * ks.length)]; if (!k) return; playItem(k); if (UID) { sendItem(k, UID).catch(() => {}); diaryAdd(UID, { k: 'item', a: k }).catch(() => {}); } });
+            onPets((v) => { if (!canPlay() || v.by === UID) return; const c = catOf(v.to); if (c) hearts(c); }).catch(() => {});
+            onItems((v) => { if (!canPlay() || v.by === UID) return; playItem(v.k); }).catch(() => {});
           }
           /* しばらく 打たない → 自分の 猫が 寝る */
           setInterval(() => { if (!alive() || slept || Date.now() - idleAt < 180000) return; const me = _fpCats.find((c) => c.isSelf && !c.ev); if (!me) return; slept = true; try { me.q = [{ a: 'wait', d: 60, pose: 'lie' }]; _fpEmo(me, 'zzz'); } catch (_) {} }, 20000);

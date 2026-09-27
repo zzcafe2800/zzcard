@@ -23,7 +23,7 @@ jobs:
           {
             "name": "zzcard-desktop",
             "productName": "ズズラジオ体操部",
-            "version": "0.1.${{ github.run_number }}",
+            "version": "0.1.RUNNUM",
             "description": "ズズラジオ体操部 PC版",
             "author": "zzcafe2800",
             "main": "main.js",
@@ -412,6 +412,8 @@ jobs:
           fs.writeFileSync('desktop/pet-engine.js', s.slice(a, b));
           console.log('icon + cat engine ok', b - a);
           ZZEOF
+          sed -i "s/0\.1\.RUNNUM/0.1.$GITHUB_RUN_NUMBER/" desktop/package.json
+          grep '"version"' desktop/package.json
           node desktop/prep.js
           rm desktop/prep.js
       - name: アイコンを 大きくする（512px）
@@ -439,7 +441,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          VER="0.1.${{ github.run_number }}"
+          VER="0.1.$GITHUB_RUN_NUMBER"
           git tag "v$VER"
           git push origin "v$VER"
           gh release create "v$VER" desktop/dist/zzcard-setup.exe desktop/dist/zzcard-setup.exe.blockmap desktop/dist/latest.yml --title "PC版 $VER" --notes "ズズラジオ体操部 PC版 $VER" --latest

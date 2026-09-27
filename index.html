@@ -16326,12 +16326,12 @@ function _fpTodayFigs(){ var out=[]; try{
   tod.concat(rec).slice(0,10).forEach(function(po){
     var sleep=!isToday(po);
     var fig=(!sleep&&po.uid)?domBy[po.uid]:null;
-    if(fig){ out.push({fig:fig,h:fig.offsetHeight||refH,w:fig.offsetWidth||refW,sleep:false}); return; }
+    if(fig){ out.push({fig:fig,h:fig.offsetHeight||refH,w:fig.offsetWidth||refW,sleep:false,self:!!po.isSelf}); return; }
     /* 絵を 作る（今日 やって いない 子は「まるね」で ねている 形） */
     var body=po.catBody||"#1c1c1c",ear=po.color||"#a6bfd2",pose=sleep?"sleep":(po.isSelf?getEquippedPose():(po.pose||"sit")),nf=null;
     try{ if(po.isSelf){ try{ _selfCosOn(); nf=buildCatFig(body,ear,getEquippedCostume(),pose); }finally{ try{_selfCosOff();}catch(_){} } }
       else{ var ov="";try{ ov=acosSVG(po.acos); }catch(_){} try{ _artCosOverride=ov||null; nf=buildCatFig(body,ear,po.cos||null,pose); }finally{ _artCosOverride=null; } } }catch(_){}
-    if(nf)out.push({fig:nf,h:refH,w:refW,sleep:sleep});
+    if(nf)out.push({fig:nf,h:refH,w:refW,sleep:sleep,self:!!po.isSelf});
   }); }catch(_){} return out; }
 function _fpPoint(line,t){ if(!line||!line.length)return [0,0]; if(line.length===1)return line[0];
   var L=[],tot=0; for(var i=1;i<line.length;i++){ var d=Math.hypot(line[i][0]-line[i-1][0],line[i][1]-line[i-1][1]); L.push(d); tot+=d; }
@@ -16688,6 +16688,7 @@ function _fpTick(now){
   mo.observe(document.body,{attributes:true,attributeFilter:["class"]});
 }catch(_){} })();
 
+/* ===== /奥で あそぶ 猫 ===== */
 function _applyDevSky(){
   const cls=_DEV_SKY[_devSkyIdx%_DEV_SKY.length];
   const s=$("selectScreen");if(!s)return;
@@ -20825,6 +20826,14 @@ async function _pcRedeem(code){
     try{ await cloudSyncPull(true); }catch(_){}
     toast("つながったよ！"); setTimeout(function(){ location.reload(); },900); return true;
   }catch(e){ console.warn("pc link",e); toast("つなげなかったよ"); return false; } }
+/* PC版：タスクバー／壁紙の 猫たちに、今日の 猫たちの 絵を 送る（うごきは 奥で あそぶ 猫と 同じ） */
+function _pcSendCats(){ try{
+  if(!PC_DESK||!window.zzDesktop||!window.zzDesktop.setCats)return;
+  if(!document.querySelector("#hillCats .hillCat"))return;
+  var figs=_fpTodayFigs(),cats=figs.map(function(f){ return {svg:f.fig.outerHTML,h:f.h,w:f.w,sleep:!!f.sleep,self:!!f.self}; });
+  var me=null; try{ var el=Array.prototype.find.call(document.querySelectorAll("#hillCats .hillCat"),function(e){ return e.dataset.uid===getUid(); }),fg=el&&el.querySelector(".catFig"); if(fg)me={svg:fg.outerHTML,h:fg.offsetHeight||60,w:fg.offsetWidth||74}; }catch(_){}
+  window.zzDesktop.setCats({cats:cats,me:me,wake:(typeof profileWake==="function")?profileWake():null,t:Date.now()});
+}catch(e){ console.warn("pc cats",e); } }
 function _sessDev(){ return PC_DESK?"PC版":(/iPhone|iPad|Android/i.test(navigator.userAgent||"")?"スマホ":"ブラウザ"); }
 async function _sessClaim(){ try{ const db=await getDB(); if(!db)return; await claimOwner(); const {ref,set}=await import(FB_DB);
   await set(ref(db,"session/"+getUid()),{id:_sessId,t:Date.now(),dev:_sessDev()}); _sessInactive=false; }catch(e){ console.warn("sess",e); } }
@@ -20847,6 +20856,7 @@ function _sessCover(dev){
   const go=$("pcCodeGo"); if(go)go.addEventListener("click",function(){ try{playClick();}catch(_){} const i=$("pcCodeIn"); _pcRedeem(i?i.value:""); });
   if(PC_DESK){ try{ window.zzDesktop.onLink(function(code){ _pcRedeem(code); }); }catch(_){} }
   setTimeout(function(){ _sessClaim().then(_sessWatch); },1200);   /* ★あとから 開いた 方で あそぶ（前の 場所には カバーが 出る） */
+  if(PC_DESK&&window.zzDesktop.setCats){ setTimeout(_pcSendCats,5000); setInterval(_pcSendCats,5*60*1000); document.addEventListener("visibilitychange",function(){ if(!document.hidden)setTimeout(_pcSendCats,2500); }); }
 }catch(e){ console.warn("pc init",e); } })();
 /* ===== ラジオ（猫の 下の ♡の 下）：BGMの えらびと 音量 ===== */
 (function _radioInit(){ try{

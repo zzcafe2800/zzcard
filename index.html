@@ -20919,26 +20919,46 @@ async function _pcPublishAllFigs(){ try{
   var ks=Object.keys(ups); for(var i=0;i<ks.length;i++){ try{ await m.set(m.ref(db,"pcfigs/"+ks[i]),ups[ks[i]]); }catch(_){} }
   localStorage.setItem(TK,String(Date.now()));
 }catch(e){ console.warn("pcfigs",e); } }
-/* PC版で した きろくを とりこむ（体操した 日・起きた／寝た 時間・その日の スタンプ） */
+/* PC版で した きろくを とりこむ。体操した 日は、何日 あとに サイトを 開いても その日ごとに サイトで 体操した 時と 同じ ごほうび
+   （zz・チェックイン・パーティー登山・世界樹・スタンプ・旅・一覧の 連続日数）＋ ユメっ子ガチャを 日数ぶん。すでに 体操した 日は 二重に しない */
 async function _pcMergeRec(){ try{
   if(_isCrawler)return;
   var db=await getDB(); if(!db)return; await claimOwner(); var m=await import(FB_DB);
   var sn=await m.get(m.ref(db,"pcrec/"+getUid())); var v=sn.exists()?sn.val():null; if(!v)return;
-  var today=jstKey(),changed=false;
-  Object.keys(v).forEach(function(d){ var r=v[d]; if(!r||r.m||!/^\d{4}-\d{2}-\d{2}$/.test(d))return;
-    var dn=(r.dn!==false);   /* 「体操した」を オフで きろくした 日は、体操した 日・スタンプに しない */
-    if(dn&&d===today){ try{markTodayDone();}catch(_){} }
-    if(dn){ try{ var dd=getDoneDates(); if(dd.indexOf(d)<0){ dd.push(d); dd.sort(); localStorage.setItem(DONE_KEY,JSON.stringify(dd)); } }catch(_){} }
-    try{ if(Number.isFinite(r.w)){ var wl=getWakeLog(); wl[d]=r.w; localStorage.setItem(WAKELOG_KEY,JSON.stringify(wl)); } }catch(_){}
+  var today=jstKey(),days=Object.keys(v).filter(function(d){ var r=v[d]; return r&&!r.m&&/^\d{4}-\d{2}-\d{2}$/.test(d); }).sort();
+  if(!days.length)return;
+  var gachas=0,zzSum=0,newDays=0,code=null; try{ code=_partyId(); }catch(_){}
+  for(var i=0;i<days.length;i++){
+    var d=days[i],r=v[d],dn=(r.dn!==false),was=false;
+    try{ was=getDoneDates().indexOf(d)>=0; }catch(_){}
+    /* きろく（時間・気分・ねつき・ねむけ）は いつも。今日の 分は PC版の 起きた 時間で 早起きスコアを 出す */
+    try{ if(Number.isFinite(r.w)){ var wl=getWakeLog(); wl[d]=r.w; localStorage.setItem(WAKELOG_KEY,JSON.stringify(wl)); if(d===today)localStorage.setItem("radio_wake_manual",today); } }catch(_){}
     try{ if(Number.isFinite(r.b)){ var sl=getSleepLog(); sl[d]=r.b; localStorage.setItem(SLEEP_KEY,JSON.stringify(sl)); } }catch(_){}
     try{ if(Number.isFinite(r.md)&&MOOD3[r.md])_saveMood(d,{e:MOOD3[r.md].e,l:MOOD3[r.md].l}); }catch(_){}
     try{ if(r.sq>=1&&r.sq<=3)setSlpFor(d,r.sq); }catch(_){}
     try{ if(r.sy>=1&&r.sy<=5)setSlpyFor(d,r.sy); }catch(_){}
-    if(dn)try{ var p=d.split("-"),lb=(+p[1])+"/"+(+p[2]),rr=autoAddStamp(POOL[Math.floor(Math.random()*POOL.length)],lb); if(rr&&rr.added){ try{syncStampCardsFB();}catch(_){} } }catch(_){}
-    if(d===today){ try{ _askMark("wake",1); _askMark("bed",1); _askMark("all",1); }catch(_){} }
-    changed=true; m.update(m.ref(db,"pcrec/"+getUid()+"/"+d),{m:true}).catch(function(){});
-  });
-  if(changed){ try{syncSoon();}catch(_){} try{ if(typeof _renderTodayRec==="function")_renderTodayRec(); }catch(_){} try{ toast("PC版の きろくを とりこんだよ"); }catch(_){} }
+    if(dn&&!was){
+      newDays++;
+      if(d===today){ try{markTodayDone();}catch(_){} try{_wtAdd();}catch(_){} }   /* zz・旅・パーティー登山・チェックイン・一覧 は markTodayDone の 中 */
+      else{
+        try{ var dd=getDoneDates(); if(dd.indexOf(d)<0){ dd.push(d); dd.sort(); localStorage.setItem(DONE_KEY,JSON.stringify(dd)); } }catch(_){}
+        try{ var sc=_dayScore(d),pay=zzFromScore(sc); addZZ(pay); zzSum+=pay; try{addIncome("taiso",pay,{sc:Math.round(sc),d:d});}catch(_){} }catch(_){}
+        try{ await m.set(m.ref(db,"checkins/"+d+"/"+getUid()),Date.now()); }catch(_){}
+        try{ if(code){ var me=getProfile()||{}; await m.set(m.ref(db,"parties/"+code+"/days/"+d+"/"+getUid()),{name:me.name||"匿名さん",score:_dayScore(d),at:Date.now()}); } }catch(_){}
+        try{ if(!tutOn()){ _wtCount++; _wtApplyScene(); try{localStorage.setItem(WT_CACHE_KEY,String(_wtCount));}catch(_){} await m.runTransaction(m.ref(db,"worldtree/n"),function(cur){ return (parseInt(cur,10)||0)+1; }); } }catch(_){}
+      }
+      try{ var p=d.split("-"),lb=(+p[1])+"/"+(+p[2]),rr=autoAddStamp(POOL[Math.floor(Math.random()*POOL.length)],lb); if(rr&&rr.added){ try{syncStampCardsFB();}catch(_){} } }catch(_){}
+      if(d===today){ try{ if(localStorage.getItem(YUME_GACHA_KEY)!==today){ localStorage.setItem(YUME_GACHA_KEY,today); gachas++; } }catch(_){} }
+      else gachas++;
+    }
+    if(dn&&d===today){ try{ _askMark("wake",1); _askMark("bed",1); _askMark("all",1); }catch(_){} }
+    m.update(m.ref(db,"pcrec/"+getUid()+"/"+d),{m:true}).catch(function(){});
+  }
+  if(newDays){ try{_tvAdvance();}catch(_){} try{publishProfile();}catch(_){} try{_wtFetch();}catch(_){} }
+  try{syncSoon();}catch(_){} try{ if(typeof _renderTodayRec==="function")_renderTodayRec(); }catch(_){} try{refreshHome();}catch(_){}
+  try{ toast(newDays?("PC版の "+newDays+"日ぶんを とりこんだよ"+(zzSum?("（+"+zzSum+" zz）"):"")):"PC版の きろくを とりこんだよ"); }catch(_){}
+  /* ユメっ子の ガチャを 日数ぶん じゅんばんに */
+  if(gachas>0){ var left=gachas; var next=function(){ if(left--<=0)return; _ygThen=next; _yumeProbeImgs().then(function(){ try{_yumeGachaStart();}catch(_){ var f=_ygThen; _ygThen=null; if(f)f(); } }); }; setTimeout(next,1500); }
 }catch(e){ console.warn("pcrec",e); } }
 function _sessDev(){ return PC_DESK?"PC版":(/iPhone|iPad|Android/i.test(navigator.userAgent||"")?"スマホ":"ブラウザ"); }
 async function _sessClaim(){ try{ const db=await getDB(); if(!db)return; await claimOwner(); const {ref,set}=await import(FB_DB);

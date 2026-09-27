@@ -35,7 +35,7 @@ jobs:
               "artifactName": "zzcard-setup.${ext}",
               "npmRebuild": false,
               "asarUnpack": ["node_modules/koffi/**", "node_modules/uiohook-napi/**"],
-              "files": ["main.js", "preload.js", "setup.html", "panel.html", "cats.html", "cats.js", "fb.js", "engine.js", "scene.js", "fbconfig.js", "icon.png"],
+              "files": ["main.js", "preload.js", "setup.html", "panel.html", "cats.html", "cats.js", "fb.js", "engine.js", "scene.js", "fbconfig.js", "rec.js", "icon.png"],
               "protocols": [{ "name": "zzcard", "schemes": ["zzcard"] }],
               "win": { "target": "nsis", "icon": "icon.png" },
               "nsis": { "oneClick": true, "perMachine": false, "createDesktopShortcut": true, "shortcutName": "ズズラジオ体操部" },
@@ -58,7 +58,7 @@ jobs:
           const KEY = 'Control+Alt+P', KEY2 = 'Control+Alt+Shift+P';
           const ICON = path.join(__dirname, 'icon.png');
           let setupWin = null, catsWin = null, panelWin = null, pendingLink = null, paused = false, locked = false, wakeH = null, quitting = false;
-          let S = { uid: '', mode: 'wall', setupDone: false, wakeDay: '', hideSleep: false, noEmo: false, noTaps: false, catScale: 1, taps: { day: '', n: 0 } };
+          let S = { uid: '', mode: 'wall', setupDone: false, wakeDay: '', hideSleep: false, noEmo: false, noShare: false, autoStart: false, lowQ: false, catScale: 1, taps: { day: '', n: 0 } };
 
           function stFile() { return path.join(app.getPath('userData'), 'state.json'); }
           function loadS() { try { Object.assign(S, JSON.parse(fs.readFileSync(stFile(), 'utf8'))); } catch (_) {} }
@@ -91,7 +91,7 @@ jobs:
               skipTaskbar: true, focusable: false, hasShadow: false, show: false, backgroundColor: '#00000000', webPreferences: prefs({ backgroundThrottling: false })
             }, opts));
             w.setIgnoreMouseEvents(true);
-            w.loadURL(url('cats.html', Object.assign({ uid: S.uid, sleep: S.hideSleep ? '0' : '1', emo: S.noEmo ? '0' : '1', tap: S.noTaps ? '0' : '1', sz: String(S.catScale || 1) }, q)));
+            w.loadURL(url('cats.html', Object.assign({ uid: S.uid, sleep: S.hideSleep ? '0' : '1', emo: S.noEmo ? '0' : '1', share: S.noShare ? '0' : '1', q: S.lowQ ? 'lo' : 'hi', sz: String(S.catScale || 1) }, q)));
             return w;
           }
           function openCats() {
@@ -101,7 +101,8 @@ jobs:
               const H = 170, full = S.mode === 'full';   /* 全画面：画面の いちばん 下（タスクバーにも 重なる）で、ゲームや 動画の 時も 出しつづける */
               catsWin = petWin({ x: full ? b.x : wa.x, y: full ? b.y + b.height - H : wa.y + wa.height - H, width: full ? b.width : wa.width, height: H, alwaysOnTop: true }, { mode: S.mode });
               catsWin.setAlwaysOnTop(true, full ? 'screen-saver' : 'floating');
-              catsWin.once('ready-to-show', () => { if (catsWin && (full || !paused)) catsWin.showInactive(); });
+              barShown = false;
+              catsWin.once('ready-to-show', () => { if (!catsWin) return; if (full) catsWin.showInactive(); else placeBar(); });
             } else {
               catsWin = petWin(Object.assign({ alwaysOnTop: false }, b), { mode: 'wall' });
               catsWin.once('ready-to-show', () => {
@@ -140,7 +141,7 @@ jobs:
           ipcMain.on('zz-start', (_e, o) => {
             o = (typeof o === 'string') ? { mode: o } : (o || {});
             S.mode = ['wall', 'bar', 'full'].includes(o.mode) ? o.mode : 'wall';
-            S.hideSleep = !!o.hideSleep; S.noEmo = !!o.noEmo; S.noTaps = !!o.noTaps;
+            S.hideSleep = !!o.hideSleep; S.noEmo = !!o.noEmo; S.noShare = !!o.noShare; S.lowQ = !!o.lowQ; S.autoStart = !!o.autoStart; applyAutoStart();
             S.catScale = Math.max(0.5, Math.min(2, +o.catScale || 1)); S.setupDone = true; saveS();
             openCats();
             if (setupWin) { const w = setupWin; setupWin = null; w.destroy(); }
@@ -162,6 +163,7 @@ jobs:
               const koffi = require('koffi');
               const u = koffi.load('user32.dll'), sh = koffi.load('shell32.dll');
               const EnumProc = koffi.proto('bool __stdcall EnumProc(intptr_t hwnd, intptr_t lp)');
+              koffi.struct('RECT', { left: 'int32', top: 'int32', right: 'int32', bottom: 'int32' });
               K = {
                 FindWindowW: u.func('intptr_t __stdcall FindWindowW(str16 cls, str16 name)'),
                 FindWindowExW: u.func('intptr_t __stdcall FindWindowExW(intptr_t parent, intptr_t after, str16 cls, str16 name)'),
@@ -170,6 +172,8 @@ jobs:
                 SetWindowPos: u.func('bool __stdcall SetWindowPos(intptr_t hwnd, intptr_t after, int x, int y, int cx, int cy, uint32 flags)'),
                 EnumWindows: u.func('bool __stdcall EnumWindows(EnumProc *cb, intptr_t lp)'),
                 RedrawWindow: u.func('bool __stdcall RedrawWindow(intptr_t hwnd, void *rect, void *rgn, uint32 flags)'),
+                GetWindowRect: u.func('bool __stdcall GetWindowRect(intptr_t hwnd, _Out_ RECT *r)'),
+                IsWindowVisible: u.func('bool __stdcall IsWindowVisible(intptr_t hwnd)'),
                 SHQueryUserNotificationState: sh.func('int32 __stdcall SHQueryUserNotificationState(_Out_ int32 *state)')
               };
             } catch (e) { log('koffi ' + (e && e.message)); K = false; }
@@ -199,11 +203,35 @@ jobs:
               return { ok: true, how: 'classic' };
             } catch (e) { return { ok: false, why: String(e && e.message) }; }
           }
+          /* タスクバーの 本当の 位置（見えて いる 部分）。自動で かくれて いる 時は vis=false */
+          function taskbar() {
+            const K2 = k(); if (!K2) return null;
+            try {
+              const h = big(K2.FindWindowW('Shell_TrayWnd', null)); if (!h) return null;
+              const r = {}; if (!K2.GetWindowRect(h, r)) return null;
+              const d = screen.screenToDipRect(null, { x: r.left, y: r.top, width: r.right - r.left, height: r.bottom - r.top });
+              const b = screen.getPrimaryDisplay().bounds, bottom = d.width >= b.width * 0.5 && d.y > b.y + b.height * 0.5;
+              const seen = Math.min(d.y + d.height, b.y + b.height) - Math.max(d.y, b.y);
+              return { top: d.y, bottom, vis: !!K2.IsWindowVisible(h) && seen >= 10 };
+            } catch (_) { return null; }
+          }
+          let barShown = false;
+          function placeBar() {   /* タスクバーモード：猫の 足を タスクバーの 上の ふちに。タスクバーが 消えたら 猫も 消える */
+            if (S.mode !== 'bar' || !catsWin || catsWin.isDestroyed()) return;
+            const b = screen.getPrimaryDisplay().bounds, wa = screen.getPrimaryDisplay().workArea, H = 170, tb = taskbar();
+            let top = wa.y + wa.height, show = !paused;
+            if (tb) { if (tb.bottom) { top = tb.top; if (!tb.vis) show = false; } else top = b.y + b.height; }
+            const nb = { x: b.x, y: Math.round(top - H), width: b.width, height: H }, cur = catsWin.getBounds();
+            if (cur.x !== nb.x || cur.y !== nb.y || cur.width !== nb.width || cur.height !== nb.height) catsWin.setBounds(nb);
+            if (show && !barShown) { catsWin.showInactive(); barShown = true; }
+            if (!show && barShown) { catsWin.hide(); barShown = false; }
+          }
+          function applyAutoStart() { try { app.setLoginItemSettings({ openAtLogin: !!S.autoStart }); } catch (_) {} }
           function redrawDesktop() { const K2 = k(); if (!K2) return; try { const pm = big(K2.FindWindowW('Progman', null)); if (pm) K2.RedrawWindow(pm, null, null, 0x0001 | 0x0004 | 0x0080 | 0x0100); } catch (_) {} }
           function fullscreenBusy() { const K2 = k(); if (!K2) return false; try { const st = [0]; K2.SHQueryUserNotificationState(st); return st[0] >= 1 && st[0] <= 4; } catch (_) { return false; } }
           function setPaused(p) {
             if (p === paused) return; paused = p;
-            if (catsWin && !catsWin.isDestroyed()) { catsWin.webContents.send('zz-pause', p); if (S.mode === 'bar') { if (p) catsWin.hide(); else catsWin.showInactive(); } }
+            if (catsWin && !catsWin.isDestroyed()) { catsWin.webContents.send('zz-pause', p); if (S.mode === 'bar') placeBar(); }
           }
           function busyNow() { return locked || (S.mode !== 'full' && fullscreenBusy()); }   /* 全画面モードは ロック中だけ 止める */
           /* ===== 今日の キーボードの タップ数（押した 回数だけ。どの キーかは 記録しない） ===== */
@@ -256,6 +284,8 @@ jobs:
               if (!globalShortcut.register(KEY, () => openPanel(true))) log('shortcut failed');
               if (!globalShortcut.register(KEY2, () => { if (panelWin) panelWin.minimize(); openSetup(); })) log('shortcut2 failed');
               startTaps();
+              applyAutoStart();
+              setInterval(placeBar, 700);
               setInterval(() => setPaused(busyNow()), 3000);
               setInterval(checkWake, 20000);
               powerMonitor.on('lock-screen', () => { locked = true; setPaused(true); });
@@ -290,7 +320,7 @@ jobs:
           <!doctype html><html lang="ja"><head><meta charset="utf-8"><title>ズズラジオ体操部</title>
           <style>
           *{box-sizing:border-box}html,body{margin:0;height:100%}[hidden]{display:none !important}
-          body{font-family:"Yu Gothic UI","Meiryo",system-ui,sans-serif;color:#2b3242;background:#eef1f5;display:flex;align-items:center;justify-content:center}
+          body{overflow:auto;font-family:"Yu Gothic UI","Meiryo",system-ui,sans-serif;color:#2b3242;background:#eef1f5;display:flex;align-items:flex-start;justify-content:center}
           .card{width:560px;display:flex;flex-direction:column;gap:14px;padding:20px 30px}
           .top{display:flex;align-items:center;gap:10px;font-size:19px;font-weight:800}
           .lb{font-size:13px;font-weight:800;color:#8a93a3;margin-bottom:8px}
@@ -306,6 +336,7 @@ jobs:
           .tile svg{width:100%;height:auto;display:block;border-radius:10px}
           .opt{display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:14px;padding:8px 12px 8px 16px;font-weight:800;margin-top:6px}
           .sw{display:flex;background:#eef1f5;border-radius:999px;padding:3px}.sw button{border:0;background:none;border-radius:999px;padding:6px 14px;font-weight:800;color:#8a93a3}.sw button.on{background:#2b3242;color:#fff}
+          .emo{display:flex;gap:2px;align-items:center}
           .sz{display:flex;align-items:center;gap:8px}.sz input{width:170px;accent-color:#2b3242}.sz b{font-size:18px;min-width:36px;text-align:right;font-variant-numeric:tabular-nums}.sz small{font-size:11px;color:#8a93a3;font-weight:700}
           .go{height:58px;border-radius:999px;border:0;background:#2b3242;color:#fff;font-size:18px;font-weight:800}
           .go:disabled{opacity:.35;cursor:default}
@@ -327,8 +358,10 @@ jobs:
             </div></div>
            <div><div class="lb">③ 出す もの</div>
             <div class="opt">寝ている子<div class="sw" data-k="hideSleep"><button type="button" data-v="0">出す</button><button type="button" data-v="1">出さない</button></div></div>
-            <div class="opt">気持ちの 絵<div class="sw" data-k="noEmo"><button type="button" data-v="0">出す</button><button type="button" data-v="1">出さない</button></div></div>
-            <div class="opt">タップ数<div class="sw" data-k="noTaps"><button type="button" data-v="0">出す</button><button type="button" data-v="1">出さない</button></div></div>
+            <div class="opt"><span class="emo" aria-label="気持ちの 絵"><svg viewBox="0 0 20 20" width="22" height="22"><path d="M10 16.6C5.4 13.3 3 10.8 3 8.1 3 6 4.6 4.5 6.5 4.5c1.4 0 2.6.8 3.5 2 .9-1.2 2.1-2 3.5-2C15.4 4.5 17 6 17 8.1c0 2.7-2.4 5.2-7 8.5z" fill="#e8798f"/></svg><svg viewBox="0 0 20 20" width="22" height="22"><rect x="8.4" y="3" width="3.2" height="10" rx="1.6" fill="#f2a65a"/><circle cx="10" cy="16" r="1.8" fill="#f2a65a"/></svg><svg viewBox="0 0 20 20" width="22" height="22"><path d="M4 8h5l-5 6h5M11 4h5l-5 6h5" fill="none" stroke="#7d8fb8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="sw" data-k="noEmo"><button type="button" data-v="0">出す</button><button type="button" data-v="1">出さない</button></div></div>
+            <div class="opt">タップ数を みんなに<div class="sw" data-k="noShare"><button type="button" data-v="0">見せる</button><button type="button" data-v="1">見せない</button></div></div>
+            <div class="opt">PCを つけたら 開く<div class="sw" data-k="autoStart"><button type="button" data-v="1">する</button><button type="button" data-v="0">しない</button></div></div>
+            <div class="opt">画質<div class="sw" data-k="lowQ"><button type="button" data-v="0">高（なめらか）</button><button type="button" data-v="1">低（かるい）</button></div></div>
             <div class="opt">猫の 大きさ<span class="sz"><input id="sz" type="range" min="50" max="200" step="10" aria-label="猫の 大きさ"><b id="szV">100</b><small>%</small></span></div>
            </div>
            <button id="go" class="go" type="button" disabled>はじめる</button>
@@ -337,7 +370,7 @@ jobs:
           <script src="fbconfig.js"></script>
           <script type="module">
           import { redeem } from './fb.js';
-          let st = await zz.state(), mode = st.mode || 'wall', opt = { hideSleep: !!st.hideSleep, noEmo: !!st.noEmo, noTaps: !!st.noTaps }, size = Math.round((st.catScale || 1) * 100);
+          let st = await zz.state(), mode = st.mode || 'wall', opt = { hideSleep: !!st.hideSleep, noEmo: !!st.noEmo, noShare: !!st.noShare, autoStart: !!st.autoStart, lowQ: !!st.lowQ }, size = Math.round((st.catScale || 1) * 100);
           const $ = (id) => document.getElementById(id);
           function paint() {
             $('ok').hidden = !st.uid; $('ng').hidden = !!st.uid;
@@ -355,7 +388,7 @@ jobs:
           $('link').addEventListener('click', () => doLink($('code').value));
           $('code').addEventListener('keydown', (e) => { if (e.key === 'Enter') doLink($('code').value); });
           document.querySelectorAll('.tile').forEach((t) => t.addEventListener('click', () => { mode = t.dataset.m; paint(); }));
-          $('go').addEventListener('click', () => zz.start({ mode, hideSleep: opt.hideSleep, noEmo: opt.noEmo, noTaps: opt.noTaps, catScale: size / 100 }));
+          $('go').addEventListener('click', () => zz.start({ mode, hideSleep: opt.hideSleep, noEmo: opt.noEmo, noShare: opt.noShare, autoStart: opt.autoStart, lowQ: opt.lowQ, catScale: size / 100 }));
           $('sz').addEventListener('input', () => { size = +$('sz').value; $('szV').textContent = size; });
           document.querySelectorAll('.sw button').forEach((b) => b.addEventListener('click', () => { opt[b.parentNode.dataset.k] = b.dataset.v === '1'; paint(); }));
           zz.on('zz-link', (code) => { $('code').value = code; doLink(code); });
@@ -366,76 +399,123 @@ jobs:
           cat > desktop/panel.html << 'ZZEOF'
           <!doctype html><html lang="ja"><head><meta charset="utf-8"><title>ズズラジオ体操部</title>
           <style>
-          *{box-sizing:border-box}html,body{margin:0;height:100%;background:transparent}
+          *{box-sizing:border-box}[hidden]{display:none !important}html,body{margin:0;height:100%;background:transparent}
           body{font-family:"Yu Gothic UI","Meiryo",system-ui,sans-serif;color:#2b3242;padding:10px}
-          .p{height:100%;background:#fff;border-radius:18px;box-shadow:0 10px 30px rgba(20,26,40,.28);padding:20px 22px;display:flex;flex-direction:column;gap:14px}
-          .hd{display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:800;color:#8a93a3;-webkit-app-region:drag}
-          .hd button{-webkit-app-region:no-drag;border:0;background:none;font-size:22px;color:#b6bfcb;cursor:pointer;line-height:1;vertical-align:middle;padding:2px 4px}
-          .done{height:62px;border-radius:18px;border:2px solid #d6dee8;background:#fff;font:inherit;font-size:20px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:12px;cursor:pointer;color:#8a93a3}
-          .done i{width:30px;height:30px;border-radius:50%;border:2px solid #d6dee8;display:inline-flex;align-items:center;justify-content:center;font-style:normal;font-size:16px;color:transparent}
+          .p{height:100%;background:#fff;border-radius:18px;box-shadow:0 10px 30px rgba(20,26,40,.28);display:flex;flex-direction:column;overflow:hidden}
+          .hd{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 8px;-webkit-app-region:drag}
+          .tabs{display:flex;background:#eef1f5;border-radius:999px;padding:3px;-webkit-app-region:no-drag}
+          .tabs button{border:0;background:none;border-radius:999px;padding:6px 14px;font:inherit;font-size:13px;font-weight:800;color:#8a93a3;cursor:pointer}.tabs button.on{background:#2b3242;color:#fff}
+          .ic{-webkit-app-region:no-drag;display:flex;gap:2px}.ic button{border:0;background:none;cursor:pointer;color:#b6bfcb;font-size:22px;line-height:1;padding:2px 5px}
+          .bd{flex:1;overflow:auto;padding:4px 18px 10px;display:flex;flex-direction:column;gap:12px}
+          .lb{font-size:12px;font-weight:800;color:#8a93a3;margin-bottom:6px}
+          .done{height:52px;border-radius:16px;border:2px solid #d6dee8;background:#fff;font:inherit;font-size:18px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;color:#8a93a3;width:100%}
+          .done i{width:26px;height:26px;border-radius:50%;border:2px solid #d6dee8;display:inline-flex;align-items:center;justify-content:center;font-style:normal;font-size:14px;color:transparent}
           .done.on{background:#e6f4ec;border-color:#3f9c6a;color:#2b3242}.done.on i{background:#3f9c6a;border-color:#3f9c6a;color:#fff}
-          .tm{display:flex;gap:12px}
-          .t{flex:1;border:1.5px solid #e1e6ec;border-radius:16px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;cursor:ns-resize}
-          .t small{display:block;font-size:12px;color:#8a93a3}.t b{font-size:32px;letter-spacing:.02em;font-variant-numeric:tabular-nums}
-          .st{display:flex;flex-direction:column;gap:2px}.st button{border:0;background:#f3f5f8;border-radius:8px;width:30px;height:24px;cursor:pointer;color:#5d6778;font-size:11px}
-          input{height:46px;border-radius:14px;border:0;background:#f3f5f8;padding:0 14px;font:inherit;font-size:15px}
-          .go{height:54px;border-radius:999px;border:0;background:#2b3242;color:#fff;font:inherit;font-size:18px;font-weight:800;cursor:pointer;margin-top:auto}
-          .go:disabled{opacity:.4;cursor:default}
-          .ft{display:flex;justify-content:space-between}
-          .ft button{border:0;background:none;color:#8a93a3;font:inherit;font-size:13px;font-weight:700;cursor:pointer;padding:4px 2px}
+          .row{display:flex;gap:6px}
+          .ch{flex:1;border:1.5px solid #e1e6ec;background:#fff;border-radius:14px;padding:6px 2px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;font:inherit;color:#8a93a3}
+          .ch b{font-size:20px;line-height:1.1;color:#2b3242}.ch i{font-style:normal;font-size:10px;font-weight:800;white-space:nowrap}
+          .ch.on{border-color:#2b3242;background:#f3f5f8;color:#2b3242}.ch svg{display:block}
+          .tm{display:flex;gap:10px}
+          .t{flex:1;border:1.5px solid #e1e6ec;border-radius:14px;padding:6px 10px;display:flex;align-items:center;justify-content:space-between;cursor:ns-resize}
+          .t small{display:block;font-size:11px;color:#8a93a3}.t b{font-size:28px;font-variant-numeric:tabular-nums}
+          .st{display:flex;flex-direction:column;gap:2px}.st button{border:0;background:#f3f5f8;border-radius:8px;width:28px;height:22px;cursor:pointer;color:#5d6778;font-size:10px}
+          input[type=text]{width:100%;height:42px;border-radius:12px;border:0;background:#f3f5f8;padding:0 14px;font:inherit;font-size:14px}
           .ph{display:flex;gap:8px;align-items:center}
-          .ph .add{width:56px;height:56px;border-radius:12px;border:1.5px dashed #c3ccd8;background:#f7f9fb;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#8a93a3}
-          .ph .th{position:relative;width:56px;height:56px;border-radius:12px;overflow:hidden;flex:none}
-          .ph .th img{width:100%;height:100%;object-fit:cover;display:block}
-          .ph .th button{position:absolute;right:2px;top:2px;width:20px;height:20px;border-radius:50%;border:0;background:rgba(20,26,40,.6);color:#fff;font-size:12px;line-height:20px;padding:0;cursor:pointer}
+          .ph .add{width:50px;height:50px;border-radius:12px;border:1.5px dashed #c3ccd8;background:#f7f9fb;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#8a93a3}
+          .ph .th{position:relative;width:50px;height:50px;border-radius:12px;overflow:hidden;flex:none}.ph .th img{width:100%;height:100%;object-fit:cover;display:block}
+          .ph .th button{position:absolute;right:2px;top:2px;width:18px;height:18px;border-radius:50%;border:0;background:rgba(20,26,40,.6);color:#fff;font-size:11px;line-height:18px;padding:0;cursor:pointer}
+          .ft{padding:10px 18px 14px;display:flex;flex-direction:column;gap:8px;border-top:1px solid #eef1f5}
+          .go{height:50px;border-radius:999px;border:0;background:#2b3242;color:#fff;font:inherit;font-size:17px;font-weight:800;cursor:pointer}.go:disabled{opacity:.4;cursor:default}
+          .lk{display:flex;justify-content:space-between}.lk button{border:0;background:none;color:#8a93a3;font:inherit;font-size:12px;font-weight:700;cursor:pointer;padding:2px}
           .msg{font-size:13px;font-weight:800;color:#3f9c6a;text-align:center;min-height:1em}
+          .avg{display:flex;align-items:baseline;gap:4px}.avg b{font-size:34px;font-variant-numeric:tabular-nums}.avg small{font-size:12px;font-weight:700;color:#8a93a3}
+          .gr svg{width:100%;height:auto;display:block}
           button:focus-visible,input:focus-visible{outline:2px solid #2b3242;outline-offset:2px}
           </style></head><body>
           <div class="p">
-           <div class="hd"><span>きょうの きろく</span><span><button id="gear" type="button" aria-label="せってい" title="せってい（Ctrl+Alt+Shift+P）"><svg viewBox="0 0 24 24" width="20" height="20" fill="none"><circle cx="12" cy="12" r="3.1" stroke="#8a93a3" stroke-width="1.9"/><path d="M12 2.5l1.5 2.2 2.6-.6.6 2.6 2.5.9-.9 2.5 1.7 2-1.7 2 .9 2.5-2.5.9-.6 2.6-2.6-.6L12 21.5l-1.5-2.2-2.6.6-.6-2.6-2.5-.9.9-2.5L4 12l1.7-2-.9-2.5 2.5-.9.6-2.6 2.6.6z" stroke="#8a93a3" stroke-width="1.6" stroke-linejoin="round"/></svg></button><button id="x" type="button" aria-label="とじる">×</button></span></div>
-           <button id="done" class="done on" type="button"><i>✓</i>体操した！</button>
-           <div class="tm">
-            <div class="t" id="tw"><div><small>おきた</small><b id="vw">--:--</b></div><div class="st"><button data-t="w" data-d="1" type="button">▲</button><button data-t="w" data-d="-1" type="button">▼</button></div></div>
-            <div class="t" id="tb"><div><small>ねた</small><b id="vb">--:--</b></div><div class="st"><button data-t="b" data-d="1" type="button">▲</button><button data-t="b" data-d="-1" type="button">▼</button></div></div>
+           <div class="hd"><div class="tabs"><button id="tR" class="on" type="button">きろく</button><button id="tG" type="button">うつりかわり</button></div>
+            <div class="ic"><button id="gear" type="button" aria-label="せってい" title="せってい（Ctrl+Alt+Shift+P）"><svg viewBox="0 0 24 24" width="20" height="20" fill="none"><circle cx="12" cy="12" r="3.1" stroke="#8a93a3" stroke-width="1.9"/><path d="M12 2.5l1.5 2.2 2.6-.6.6 2.6 2.5.9-.9 2.5 1.7 2-1.7 2 .9 2.5-2.5.9-.6 2.6-2.6-.6L12 21.5l-1.5-2.2-2.6.6-.6-2.6-2.5-.9.9-2.5L4 12l1.7-2-.9-2.5 2.5-.9.6-2.6 2.6.6z" stroke="#8a93a3" stroke-width="1.6" stroke-linejoin="round"/></svg></button><button id="x" type="button" aria-label="とじる">×</button></div></div>
+           <div class="bd" id="pR">
+            <button id="done" class="done on" type="button"><i>✓</i>体操した！</button>
+            <div><div class="lb">きぶん</div><div class="row" id="md"></div></div>
+            <div class="tm">
+             <div class="t" id="tb"><div><small>ねた</small><b id="vb">--:--</b></div><div class="st"><button data-t="b" data-d="1" type="button">▲</button><button data-t="b" data-d="-1" type="button">▼</button></div></div>
+             <div class="t" id="tw"><div><small>おきた</small><b id="vw">--:--</b></div><div class="st"><button data-t="w" data-d="1" type="button">▲</button><button data-t="w" data-d="-1" type="button">▼</button></div></div>
+            </div>
+            <div><div class="lb">ねつき</div><div class="row" id="sq"><button class="ch" data-v="1" type="button"><b>○</b><i>すぐ</i></button><button class="ch" data-v="2" type="button"><b>△</b><i>ふつう</i></button><button class="ch" data-v="3" type="button"><b>×</b><i>なかなか</i></button></div></div>
+            <div><div class="lb">ねむけ</div><div class="row" id="sy"></div></div>
+            <input type="text" id="cm" maxlength="30" placeholder="ひとこと">
+            <div class="ph" id="ph"><button class="add" id="phAdd" type="button" aria-label="写真を 入れる"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="3"/><circle cx="12" cy="12.5" r="3.2"/><path d="M8.5 6l1.4-2h4.2l1.4 2"/></svg></button></div>
+            <input id="phIn" type="file" accept="image/*" multiple hidden>
            </div>
-           <input id="cm" maxlength="30" placeholder="ひとこと">
-           <div class="ph" id="ph"><button class="add" id="phAdd" type="button" aria-label="写真を 入れる"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="3"/><circle cx="12" cy="12.5" r="3.2"/><path d="M8.5 6l1.4-2h4.2l1.4 2"/></svg></button></div>
-           <input id="phIn" type="file" accept="image/*" multiple hidden>
-           <div id="msg" class="msg"></div>
-           <button id="go" class="go" type="button">きろく</button>
-           <div class="ft"><button id="setup" type="button">せってい</button><button id="quit" type="button">おわる</button></div>
+           <div class="bd" id="pG" hidden>
+            <div><div class="lb">すいみん じかん（14日）</div><div class="avg"><small>へいきん</small><b id="avg">-</b><small>時間</small></div></div>
+            <div class="gr" id="gr"></div>
+           </div>
+           <div class="ft"><div id="msg" class="msg"></div><button id="go" class="go" type="button">きろく</button><div class="lk"><button id="setup" type="button">せってい</button><button id="quit" type="button">おわる</button></div></div>
           </div>
           <script src="fbconfig.js"></script>
+          <script src="rec.js"></script>
           <script type="module">
-          import { record } from './fb.js';
-          const $ = (id) => document.getElementById(id);
-          let W = 0, Bd = 0, done = true, edited = false, photos = [];
-          /* 写真：大きい 画像（1280px まで）と 小さい 見本（240px） */
+          import { record, history } from './fb.js';
+          const $ = (id) => document.getElementById(id), R = window.ZZREC || { mood: [], slpy: [] };
+          let W = 0, Bd = 0, done = true, edited = false, photos = [], md = null, sq = null, sy = 3;
+          const fmt = (h) => { h = ((h % 24) + 24) % 24; let hh = Math.floor(h), mm = Math.round((h - hh) * 60); if (mm === 60) { hh = (hh + 1) % 24; mm = 0; } return hh + ':' + String(mm).padStart(2, '0'); };
+          $('md').innerHTML = R.mood.map((m, i) => '<button class="ch" data-v="' + i + '" type="button"><b>' + m.e + '</b><i>' + m.l + '</i></button>').join('');
+          $('sy').innerHTML = R.slpy.map((q, i) => '<button class="ch" data-v="' + (5 - i) + '" type="button">' + (typeof _krFace === 'function' ? _krFace(q.k, 26) : '') + '<i>' + q.l.replace('とても', 'とても<br>') + '</i></button>').join('');
           function shrink(img, max, q) { const s = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight)), c = document.createElement('canvas'); c.width = Math.round(img.naturalWidth * s); c.height = Math.round(img.naturalHeight * s); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); return { d: c.toDataURL('image/jpeg', q), w: c.width, h: c.height }; }
           function loadImg(f) { return new Promise((ok, ng) => { const r = new FileReader(); r.onload = () => { const im = new Image(); im.onload = () => ok(im); im.onerror = ng; im.src = r.result; }; r.onerror = ng; r.readAsDataURL(f); }); }
           function paintPh() { const box = $('ph'); box.querySelectorAll('.th').forEach((e) => e.remove()); photos.forEach((q, i) => { const d = document.createElement('div'); d.className = 'th'; d.innerHTML = '<img alt=""><button type="button" aria-label="けす">×</button>'; d.querySelector('img').src = q.t; d.querySelector('button').onclick = () => { photos.splice(i, 1); paintPh(); }; box.insertBefore(d, $('phAdd')); }); $('phAdd').hidden = photos.length >= 4; }
-          const fmt = (h) => { h = ((h % 24) + 24) % 24; let hh = Math.floor(h), mm = Math.round((h - hh) * 60); if (mm === 60) { hh = (hh + 1) % 24; mm = 0; } return hh + ':' + String(mm).padStart(2, '0'); };
           function defaults() { if (edited) return; const n = new Date(); W = n.getHours() + n.getMinutes() / 60; Bd = ((W - 7) % 24 + 24) % 24; paint(); }
-          function paint() { $('vw').textContent = fmt(W); $('vb').textContent = fmt(Bd); $('done').classList.toggle('on', done); $('go').disabled = !done; }
+          function paint() {
+            $('vw').textContent = fmt(W); $('vb').textContent = fmt(Bd); $('done').classList.toggle('on', done);
+            [['md', md], ['sq', sq], ['sy', sy]].forEach(([id, v]) => $(id).querySelectorAll('.ch').forEach((b) => b.classList.toggle('on', String(v) === b.dataset.v)));
+          }
           function step(t, d) { edited = true; const q = 0.25 * d; if (t === 'w') W = ((W + q) % 24 + 24) % 24; else Bd = ((Bd + q) % 24 + 24) % 24; paint(); }
           document.querySelectorAll('.st button').forEach((b) => b.addEventListener('click', () => step(b.dataset.t, +b.dataset.d)));
           [['tw', 'w'], ['tb', 'b']].forEach(([id, t]) => $(id).addEventListener('wheel', (e) => { e.preventDefault(); step(t, e.deltaY < 0 ? 1 : -1); }, { passive: false }));
           $('done').addEventListener('click', () => { done = !done; paint(); });
+          $('md').addEventListener('click', (e) => { const b = e.target.closest('.ch'); if (b) { md = +b.dataset.v; paint(); } });
+          $('sq').addEventListener('click', (e) => { const b = e.target.closest('.ch'); if (b) { sq = +b.dataset.v; paint(); } });
+          $('sy').addEventListener('click', (e) => { const b = e.target.closest('.ch'); if (b) { sy = +b.dataset.v; paint(); } });
           $('phAdd').addEventListener('click', () => $('phIn').click());
           $('phIn').addEventListener('change', async () => { for (const f of Array.from($('phIn').files || [])) { if (photos.length >= 4) break; try { const im = await loadImg(f), big = shrink(im, 1280, .82), sm = shrink(im, 240, .72); photos.push({ u: big.d, t: sm.d, w: big.w, h: big.h }); } catch (_) {} } $('phIn').value = ''; paintPh(); });
           $('go').addEventListener('click', async () => {
             const st = await zz.state(); if (!st.uid) { $('msg').textContent = 'せってい で つないでね'; return; }
             $('go').disabled = true; $('msg').textContent = '';
-            try { await record(st.uid, { wake: +W.toFixed(3), bed: +Bd.toFixed(3), comment: $('cm').value.trim(), photos }); $('msg').textContent = 'きろく できたよ！'; zz.recorded(); setTimeout(() => zz.hidePanel(), 1200); $('cm').value = ''; edited = false; photos = []; paintPh(); }
-            catch (e) { $('msg').style.color = '#c9546b'; $('msg').textContent = 'きろく できなかったよ'; setTimeout(() => { $('msg').style.color = ''; }, 3000); }
-            $('go').disabled = !done;
+            try {
+              await record(st.uid, { done, wake: +W.toFixed(3), bed: +Bd.toFixed(3), md, sq, sy, comment: $('cm').value.trim(), photos });
+              $('msg').textContent = 'きろく できたよ！'; zz.recorded(); setTimeout(() => zz.hidePanel(), 1200);
+              $('cm').value = ''; edited = false; photos = []; paintPh();
+            } catch (e) { $('msg').style.color = '#c9546b'; $('msg').textContent = 'きろく できなかったよ'; setTimeout(() => { $('msg').style.color = ''; }, 3000); }
+            $('go').disabled = false;
           });
+          /* うつりかわり：すいみん じかんの 棒グラフ */
+          async function graph() {
+            const st = await zz.state(); if (!st.uid) return;
+            let h = []; try { h = await history(st.uid, 14); } catch (_) {}
+            const W0 = 400, H0 = 190, pl = 22, pb = 22, pt = 14, bw = (W0 - pl) / 14, top = 12;
+            const y = (v) => pt + (1 - Math.min(top, v) / top) * (H0 - pt - pb);
+            let s = '<svg viewBox="0 0 ' + W0 + ' ' + H0 + '">';
+            [0, 4, 8, 12].forEach((v) => { s += '<line x1="' + pl + '" x2="' + W0 + '" y1="' + y(v).toFixed(1) + '" y2="' + y(v).toFixed(1) + '" stroke="#eef1f5"/><text x="' + (pl - 4) + '" y="' + (y(v) + 3).toFixed(1) + '" font-size="9" text-anchor="end" fill="#a3acb9">' + v + '</text>'; });
+            const vals = [];
+            h.forEach((d, i) => {
+              const x = pl + i * bw + bw * .18, w = bw * .64;
+              if (d.hrs != null) { vals.push(d.hrs); const col = d.hrs >= 7 ? '#6fb38a' : d.hrs >= 5.5 ? '#e0b85a' : '#e0806a'; s += '<rect x="' + x.toFixed(1) + '" y="' + y(d.hrs).toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + (H0 - pb - y(d.hrs)).toFixed(1) + '" rx="3" fill="' + col + '"/>'; }
+              if (i % 2 === 1 || i === 13) s += '<text x="' + (x + w / 2).toFixed(1) + '" y="' + (H0 - 6) + '" font-size="9" text-anchor="middle" fill="#8a93a3">' + (+d.d.slice(5, 7)) + '/' + (+d.d.slice(8)) + '</text>';
+            });
+            s += '</svg>';
+            $('gr').innerHTML = s;
+            $('avg').textContent = vals.length ? (vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(1) : '-';
+          }
+          function tab(g) { $('tR').classList.toggle('on', !g); $('tG').classList.toggle('on', g); $('pR').hidden = g; $('pG').hidden = !g; $('go').hidden = g; $('msg').hidden = g; if (g) graph(); }
+          $('tR').addEventListener('click', () => tab(false)); $('tG').addEventListener('click', () => tab(true));
           $('x').addEventListener('click', () => zz.hidePanel());
-          $('setup').addEventListener('click', () => zz.openSetup());
           $('gear').addEventListener('click', () => zz.openSetup());
+          $('setup').addEventListener('click', () => zz.openSetup());
           $('quit').addEventListener('click', () => zz.quit());
           document.addEventListener('keydown', (e) => { if (e.key === 'Escape') zz.hidePanel(); });
-          zz.on('zz-panel-open', () => { $('msg').textContent = ''; defaults(); });
+          zz.on('zz-panel-open', () => { $('msg').textContent = ''; defaults(); if (!$('pG').hidden) graph(); });
           defaults();
           </script></body></html>
           ZZEOF
@@ -471,6 +551,10 @@ jobs:
           #tap{position:absolute;left:0;top:0;transform:translate(-50%,-100%);display:flex;align-items:baseline;gap:3px;background:rgba(255,255,255,.94);border-radius:999px;padding:4px 10px;font-family:"Yu Gothic UI","Meiryo",system-ui,sans-serif;color:#2b3242;box-shadow:0 3px 10px rgba(20,26,40,.2);white-space:nowrap;pointer-events:none;z-index:45000;}
           #tap[hidden]{display:none;}
           #tap b{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;}
+          .tapO{position:absolute;left:0;top:0;transform:translate(-50%,-100%);display:flex;align-items:baseline;gap:2px;background:rgba(255,255,255,.82);border-radius:999px;padding:2px 8px;font-family:"Yu Gothic UI","Meiryo",system-ui,sans-serif;color:#2b3242;box-shadow:0 2px 8px rgba(20,26,40,.16);white-space:nowrap;pointer-events:none;z-index:44000;}
+          .tapO[hidden]{display:none;}
+          .tapO b{font-size:12px;font-weight:800;font-variant-numeric:tabular-nums;}
+          .tapO small{font-size:9px;font-weight:700;color:#8a93a3;}
           #tap small{font-size:10px;font-weight:700;color:#8a93a3;}
           #hint{position:absolute;font:700 12px/1 "Yu Gothic UI","Meiryo",system-ui,sans-serif;color:rgba(255,255,255,.62);letter-spacing:.04em;text-shadow:0 1px 2px rgba(0,0,0,.35);pointer-events:none;z-index:40000;}
           #card{position:absolute;width:220px;background:rgba(255,255,255,.93);border-radius:14px;box-shadow:0 8px 24px rgba(20,26,40,.25);overflow:hidden;display:flex;transition:opacity .6s;z-index:40000;font-family:"Yu Gothic UI","Meiryo",system-ui,sans-serif;color:#2b3242;}
@@ -501,13 +585,16 @@ jobs:
           ZZEOF
           cat > desktop/cats.js << 'ZZEOF'
           /* 猫を 出す 画面：壁紙（景色＋猫＋みんなの カード）／タスクバー（猫だけ）。うごきは サイトの「奥で あそぶ 猫」と 同じ */
-          import { hill } from './fb.js';
-          const P = new URLSearchParams(location.search), MODE = P.get('mode') || 'wall', UID = P.get('uid') || '', SHOW_SLEEP = P.get('sleep') !== '0', EMO = P.get('emo') !== '0', SHOW_TAP = P.get('tap') !== '0', SIZE = Math.max(.5, Math.min(2, +P.get('sz') || 1));
+          import { hill, pubTaps, allTaps } from './fb.js';
+          const P = new URLSearchParams(location.search), MODE = P.get('mode') || 'wall', UID = P.get('uid') || '', SHOW_SLEEP = P.get('sleep') !== '0', EMO = P.get('emo') !== '0', SHARE = P.get('share') !== '0', LOWQ = P.get('q') === 'lo', SIZE = Math.max(.5, Math.min(2, +P.get('sz') || 1));
           const FPH0 = Object.assign({}, FP_H);   /* サイトの 大きさ（ここに 大きさの バーを かける） */
           const FLAT = MODE !== 'wall';   /* タスクバー・全画面：画面の 下を 歩く */
           if (!EMO) window._fpEmo = function () {};   /* 気持ちの 絵 なし */
-          window.requestAnimationFrame = (cb) => setTimeout(() => cb(performance.now()), 33);   /* 1秒 30回まで */
-          window.cancelAnimationFrame = (id) => clearTimeout(id);
+          if (LOWQ) {   /* 画質 低：1秒 30回・霧と 土ぼこり なし（かるい）。高は ふつうの なめらかさ */
+            window.requestAnimationFrame = (cb) => setTimeout(() => cb(performance.now()), 33);
+            window.cancelAnimationFrame = (id) => clearTimeout(id);
+            window._hs2Pal = null; window._fpDust = function () {};
+          }
           if (FLAT) window._hs2Pal = null;   /* タスクバーは 霧なし */
           let data = null, tier = 1, tk = '', paused = false, cards = [], ci = 0, taps = 0, hintX = 20, hintY = 100;
           const light = (hex) => { const m = /^#?([0-9a-f]{6})$/i.exec(hex || ''); if (!m) return false; const n = parseInt(m[1], 16); return ((n >> 16) * 299 + ((n >> 8) & 255) * 587 + (n & 255) * 114) / 255000 > 0.62; };
@@ -561,7 +648,7 @@ jobs:
             setTimeout(() => {
               if (!data || !data.cats.length) return;
               layout();
-              if (_fpStart()) { data.cats.filter((c) => SHOW_SLEEP || c.today).forEach((c, i) => { if (_fpCats[i]) _fpCats[i].isSelf = !!c.self; }); if (paused) pause(true); }
+              if (_fpStart()) { data.cats.filter((c) => SHOW_SLEEP || c.today).forEach((c, i) => { if (_fpCats[i]) { _fpCats[i].isSelf = !!c.self; _fpCats[i].uid = c.uid; } }); if (paused) pause(true); }
             }, 80);
           }
           async function load() {
@@ -593,13 +680,28 @@ jobs:
           window.__zzCats = { setData: (d) => { data = d; tier = Math.max(1, Math.min(7, (d.myfig && d.myfig.tier) || 1)); cards = d.cards || []; ci = 0; showCard(); restart(); }, wake, pause };
           /* 今日の キーボードの タップ数：自分の 猫の 上に ふきだし */
           function tapPos() {
-            const t = $('tap'); if (!taps || !SHOW_TAP) { t.hidden = true; return; }
+            others();
+            const t = $('tap'); if (!taps) { t.hidden = true; return; }
             t.hidden = false;
             const c = (typeof _fpCats !== 'undefined') && _fpCats.find((x) => x.isSelf && x.px != null);
             if (c && !c.hidden) { const hp = (_fpG && _fpG.hp) || 30; t.style.left = c.px + 'px'; t.style.top = (c.py - hp * 1.25 - (c.lift || 0) - (c.hop || 0) * hp * .55) + 'px'; }
             else { t.style.left = (hintX + 50) + 'px'; t.style.top = (hintY - 6) + 'px'; }
           }
-          setInterval(tapPos, 100);
+          /* ほかの 人の タップ数（PC版を 開いている 人どうし・見せる 設定の 人だけ） */
+          let oTaps = {}; const oEl = {};
+          function others() {
+            const seen = {};
+            if (typeof _fpCats !== 'undefined') _fpCats.forEach((c) => {
+              if (c.isSelf || !c.uid || !(oTaps[c.uid] > 0) || c.px == null || c.hidden) return;
+              let e = oEl[c.uid]; if (!e) { e = oEl[c.uid] = document.createElement('div'); e.className = 'tapO'; e.innerHTML = '<b></b><small>タップ</small>'; document.body.appendChild(e); }
+              e.firstChild.textContent = oTaps[c.uid].toLocaleString('ja-JP');
+              const hp = (_fpG && _fpG.hp) || 30; e.style.left = c.px + 'px'; e.style.top = (c.py - hp * 1.2 - (c.lift || 0) - (c.hop || 0) * hp * .55) + 'px'; e.hidden = false; seen[c.uid] = 1;
+            });
+            Object.keys(oEl).forEach((u) => { if (!seen[u]) oEl[u].hidden = true; });
+          }
+          async function syncTaps() { try { if (UID) await pubTaps(UID, taps, SHARE); oTaps = await allTaps(); } catch (_) {} }
+          setInterval(syncTaps, 30000); setTimeout(syncTaps, 4000);
+          setInterval(tapPos, LOWQ ? 100 : 50);
           setInterval(showCard, 8000);
           setInterval(() => { if (MODE === 'wall' && currentSkyKey() !== tk) restart(); }, 60000);
           setInterval(load, 10 * 60 * 1000);
@@ -653,9 +755,9 @@ jobs:
             let list = all.filter((v) => isT(v) && v.uid !== uid).sort(nw).concat(all.filter((v) => !isT(v) && v.uid !== uid).sort(nw));
             if (me) list.unshift(me);
             list = list.slice(0, 10);
-            const figs = await Promise.all(list.map((v) => D.get(D.ref(db, 'pcfig/' + v.uid)).then((s) => s.val()).catch(() => null)));
-            let myfig = me ? figs[0] : null;
-            if (!me && uid) myfig = await D.get(D.ref(db, 'pcfig/' + uid)).then((s) => s.val()).catch(() => null);
+            const get = (p) => D.get(D.ref(db, p)).then((s) => s.val()).catch(() => null);
+            const figs = await Promise.all(list.map(async (v) => { const a = await get('pcfigs/' + v.uid); if (a && a.s) return a; return await get('pcfig/' + v.uid); }));
+            const myfig = uid ? await get('pcfig/' + uid) : null;   /* 合目・起きる 時刻 */
             const cats = list.map((v, i) => ({ uid: v.uid, today: isT(v), self: v.uid === uid, body: v.catBody || '#1c1c1c', ear: v.color || '#a6bfd2', fig: figs[i] }));
             const cards = all.filter((v) => isT(v) && ((v.comment && String(v.comment).trim()) || v.phT)).sort(nw).map((v) => ({ name: v.name || '', c: v.comment || '', ph: v.phT || null, body: v.catBody || '#1c1c1c', ear: v.color || '#a6bfd2' }));
             return { cats, cards, me, myfig, today };
@@ -664,7 +766,10 @@ jobs:
           export async function record(uid, o) {
             const { db, D } = await fb();
             const today = jstKey(), now = Date.now();
-            await D.set(D.ref(db, 'pcrec/' + uid + '/' + today), { w: o.wake, b: o.bed, c: o.comment || '', t: now });
+            const rec = { w: o.wake, b: o.bed, c: o.comment || '', t: now, dn: o.done !== false };
+            if (Number.isFinite(o.md)) rec.md = o.md; if (o.sq >= 1 && o.sq <= 3) rec.sq = o.sq; if (o.sy >= 1 && o.sy <= 5) rec.sy = o.sy;
+            await D.set(D.ref(db, 'pcrec/' + uid + '/' + today), rec);
+            if (o.done === false) return;   /* 体操して いない 日は 丘に 出さない */
             const key = 'posts/' + uid + '_' + today;
             const cur = await D.get(D.ref(db, key)).then((s) => s.val()).catch(() => null);
             let ph = null;   /* 写真：サイトと 同じ 形（photos＝本体・photoidx＝見本）。その日の 写真が あれば うしろに たす（4まいまで） */
@@ -696,6 +801,37 @@ jobs:
             if (ph) { post.phN = ph.n; post.phT = ph.th; }
             await D.set(D.ref(db, key), post);
           }
+
+          /* うつりかわり：サイトの きろく（クラウドの sync）＋ PC版の きろく から、すいみん じかん */
+          export async function history(uid, days) {
+            const { db, D } = await fb();
+            const get = (p) => D.get(D.ref(db, p)).then((s) => s.val()).catch(() => null);
+            const [sy, pr] = await Promise.all([get('sync/' + uid), get('pcrec/' + uid)]);
+            let wl = {}, sl = {};
+            try { const d = JSON.parse((sy && sy.data) || '{}'); wl = JSON.parse(d.radio_wakelog || '{}') || {}; sl = JSON.parse(d.radio_sleeplog || '{}') || {}; } catch (_) {}
+            Object.keys(pr || {}).forEach((k) => { const r = pr[k]; if (!r) return; if (Number.isFinite(r.w)) wl[k] = r.w; if (Number.isFinite(r.b)) sl[k] = r.b; });
+            const out = [], t = jstKey();
+            for (let i = days - 1; i >= 0; i--) {
+              const d = new Date(Date.parse(t + 'T00:00:00Z') - i * 864e5).toISOString().slice(0, 10);
+              const w = wl[d], b = sl[d];
+              let hrs = null; if (Number.isFinite(w) && Number.isFinite(b)) { hrs = ((w - b) % 24 + 24) % 24; if (hrs === 0 || hrs > 16) hrs = null; }
+              out.push({ d, hrs });
+            }
+            return out;
+          }
+          /* タップ数：PC版を 開いている 人どうしで 共有（見せる 設定の 人だけ） */
+          export async function pubTaps(uid, n, share) {
+            const { db, D } = await fb();
+            if (!share) { await D.remove(D.ref(db, 'pctaps/' + uid)).catch(() => {}); return; }
+            await D.set(D.ref(db, 'pctaps/' + uid), { n: n | 0, day: jstKey(), t: Date.now() });
+          }
+          export async function allTaps() {
+            const { db, D } = await fb();
+            const v = (await D.get(D.ref(db, 'pctaps')).catch(() => null));
+            const o = (v && v.val()) || {}, now = Date.now(), day = jstKey(), out = {};
+            Object.keys(o).forEach((u) => { const x = o[u]; if (x && x.day === day && now - (x.t || 0) < 120000) out[u] = x.n | 0; });
+            return out;
+          }
           ZZEOF
           cat > desktop/prep.js << 'ZZEOF'
           /* サイトの index.html から PC版に いる 部品だけを 取り出す：アイコン・景色・空の色・猫の うごき・Firebaseの 設定 */
@@ -710,6 +846,12 @@ jobs:
           fs.writeFileSync('desktop/scene.js', cut('function _scPal(tk){', 'function renderHomeScenery(', 'scene') + '\n' + fn('skyGradientForHour') + '\n');
           const cfg = cut('const firebaseConfig={', '};', 'firebaseConfig').replace('const firebaseConfig=', 'window.FBCFG=') + '};\n';
           fs.writeFileSync('desktop/fbconfig.js', cfg);
+          /* きろく用：気分（いちばん上の 3つ）・ねむけ・顔の イラスト */
+          function stmt(a) { const i = s.indexOf(a); if (i < 0) { console.error('not found: ' + a); process.exit(1); } let d = 0, k = s.indexOf('[', i); for (; k < s.length; k++) { if (s[k] === '[') d++; else if (s[k] === ']') { d--; if (d === 0) break; } } return s.slice(s.indexOf('[', i), k + 1); }
+          const vm = require('vm');
+          const M = vm.runInNewContext('(' + stmt('var MOOD3=') + ')').map((x) => ({ e: x.e, l: x.l }));
+          const Y = vm.runInNewContext('(' + stmt('var KR_SLPY=') + ')');
+          fs.writeFileSync('desktop/rec.js', 'window.ZZREC=' + JSON.stringify({ mood: M, slpy: Y }) + ';\n' + fn('_krFace') + '\n');
           console.log('prep ok');
           ZZEOF
           sed -i "s/0\.2\.RUNNUM/0.2.$GITHUB_RUN_NUMBER/" desktop/package.json

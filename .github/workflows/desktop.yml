@@ -262,7 +262,8 @@ jobs:
                       if ["Progman", "WorkerW", "Shell_TrayWnd", "Shell_SecondaryTrayWnd"].contains(&cls.as_str()) { return (false, false); }
                       let mut r = Rect::default(); if GetWindowRect(h, &mut r) == 0 { return (false, false); }
                       let full = r.left <= mx && r.top <= my && r.right >= mx + mw && r.bottom >= my + mh;
-                      let iw = (r.right.min(mx + mw) - r.left.max(mx)).max(0) as i64, ih = (r.bottom.min(my + mh) - r.top.max(my)).max(0) as i64;
+                      let iw = (r.right.min(mx + mw) - r.left.max(mx)).max(0) as i64;
+                      let ih = (r.bottom.min(my + mh) - r.top.max(my)).max(0) as i64;
                       let big = iw * ih * 100 >= (mw as i64) * (mh as i64) * 85;   /* メインの 画面の 85%以上を おおって いる */
                       let _ = IsZoomed;
                       (full, full || big)

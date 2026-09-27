@@ -1,7 +1,7 @@
-# ズズラジオ体操部 PC版（Windows・専用の 軽い アプリ）を つくる
-# Actions の「PC版をつくる」→「Run workflow」で、Releases に zzcard-setup.exe が できる。
-# 景色・猫の うごき・Firebaseの 設定は、作る時に サイトの index.html から 取り出す。
-# サイトの 景色や 猫の うごきを かえた 時は、もう一度 Run workflow する（版の 番号は 自動で 上がる）。
+# ズズラジオ体操部 PC版（Windows・かるい Tauri 版）を つくる
+# Actions の「PC版をつくる」→「Run workflow」で、Releases に zzcard-setup.exe（数MB）と latest.json（自動アップデート用）が できる。
+# 景色・猫の うごき・グラフ・Firebaseの 設定は、作る時に サイトの index.html から 取り出す。
+# 自動アップデートの 署名には、リポジトリの Secrets の TAURI_SIGNING_PRIVATE_KEY を 使う。
 name: PC版をつくる
 on:
   workflow_dispatch:
@@ -15,308 +15,576 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "pc/src-tauri -> target"
       - name: PC版の ファイルを 組み立てる
         shell: bash
         run: |
-          mkdir -p desktop
-          cat > desktop/package.json << 'ZZEOF'
+          mkdir -p pc/dist pc/src-tauri/src pc/src-tauri/capabilities
+          cat > pc/package.json << 'ZZEOF'
+          { "name": "zzcard-pc", "private": true, "devDependencies": { "@tauri-apps/cli": "^2.12.0" } }
+          ZZEOF
+          cat > pc/src-tauri/Cargo.toml << 'ZZEOF'
+          [package]
+          name = "zzcard"
+          version = "0.3.0"
+          edition = "2021"
+
+          [build-dependencies]
+          tauri-build = { version = "2", features = [] }
+
+          [dependencies]
+          tauri = { version = "2", features = [] }
+          tauri-plugin-single-instance = { version = "2", features = ["deep-link"] }
+          tauri-plugin-deep-link = "2"
+          tauri-plugin-global-shortcut = "2"
+          tauri-plugin-autostart = "2"
+          tauri-plugin-updater = "2"
+          tauri-plugin-notification = "2"
+          serde = { version = "1", features = ["derive"] }
+          serde_json = "1"
+          chrono = "0.4"
+          rdev = "0.5"
+
+          [profile.release]
+          codegen-units = 1
+          lto = true
+          opt-level = "s"
+          panic = "abort"
+          strip = true
+          ZZEOF
+          cat > pc/src-tauri/build.rs << 'ZZEOF'
+          fn main() {
+              tauri_build::build()
+          }
+          ZZEOF
+          cat > pc/src-tauri/tauri.conf.json << 'ZZEOF'
           {
-            "name": "zzcard-desktop",
+            "$schema": "https://schema.tauri.app/config/2",
             "productName": "ズズラジオ体操部",
-            "version": "0.2.RUNNUM",
-            "description": "ズズラジオ体操部 PC版",
-            "author": "zzcafe2800",
-            "main": "main.js",
-            "dependencies": { "electron-updater": "^6.8.9", "koffi": "^3.3.1", "uiohook-napi": "^1.5.5" },
-            "devDependencies": { "electron": "^44.4.5", "electron-builder": "^26.15.3" },
-            "build": {
-              "appId": "io.github.zzcafe2800.zzcard",
-              "productName": "ズズラジオ体操部",
-              "artifactName": "zzcard-setup.${ext}",
-              "npmRebuild": false,
-              "asarUnpack": ["node_modules/koffi/**", "node_modules/uiohook-napi/**"],
-              "files": ["main.js", "preload.js", "setup.html", "panel.html", "cats.html", "cats.js", "fb.js", "engine.js", "scene.js", "fbconfig.js", "rec.js", "graph.js", "icon.png"],
-              "protocols": [{ "name": "zzcard", "schemes": ["zzcard"] }],
-              "win": { "target": "nsis", "icon": "icon.png" },
-              "nsis": { "oneClick": true, "perMachine": false, "createDesktopShortcut": true, "shortcutName": "ズズラジオ体操部" },
-              "publish": [{ "provider": "github", "owner": "zzcafe2800", "repo": "zzcard" }]
+            "mainBinaryName": "zzcard",
+            "version": "0.3.RUNNUM",
+            "identifier": "io.github.zzcafe2800.zzcard",
+            "build": { "frontendDist": "../dist" },
+            "app": { "withGlobalTauri": true, "security": { "csp": null }, "windows": [] },
+            "bundle": {
+              "active": true,
+              "targets": ["nsis"],
+              "createUpdaterArtifacts": true,
+              "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.ico"],
+              "windows": { "nsis": { "installMode": "currentUser" } }
+            },
+            "plugins": {
+              "updater": { "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDlBMzA2MEI0OTUyMDdGQzkKUldUSmZ5Q1Z0R0F3bXJoWWJSZGUvdnJ3Qlp0Vi9iT3c5Z2xiOFkyUlU0NEVLV2dBVklHRWFXUnoK", "endpoints": ["https://github.com/zzcafe2800/zzcard/releases/latest/download/latest.json"], "windows": { "installMode": "passive" } },
+              "deep-link": { "desktop": { "schemes": ["zzcard"] } }
             }
           }
           ZZEOF
-          cat > desktop/main.js << 'ZZEOF'
-          /* ズズラジオ体操部 PC版（専用の 軽い アプリ・サイトは 開かない）
-             ・はじめての 時だけ 設定（つなぐ → 壁紙 か タスクバー → はじめる）
-             ・Ctrl+Alt+P で きろくの 画面。この 画面は タスクバーにも いて、ここから 閉じると PC版ごと おわる（猫も 消える）
-             ・全画面の 時・画面ロック中は 猫を 止める。起きる 時刻に 自分の 猫が 知らせる */
-          const { app, BrowserWindow, ipcMain, globalShortcut, screen, powerMonitor, Notification, protocol, net } = require('electron');
-          const path = require('path');
-          const fs = require('fs');
-          const os = require('os');
-          const { pathToFileURL } = require('url');
-
-          protocol.registerSchemesAsPrivileged([{ scheme: 'app', privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true } }]);
-          const KEY = 'Control+Alt+P', KEY2 = 'Control+Alt+Shift+P';
-          const ICON = path.join(__dirname, 'icon.png');
-          let setupWin = null, catsWin = null, panelWin = null, pendingLink = null, paused = false, locked = false, wakeH = null, quitting = false;
-          let S = { uid: '', mode: 'wall', setupDone: false, wakeDay: '', hideSleep: false, noEmo: false, noShare: false, autoStart: false, lowQ: false, catScale: 1, taps: { day: '', n: 0 } };
-
-          function stFile() { return path.join(app.getPath('userData'), 'state.json'); }
-          function loadS() { try { Object.assign(S, JSON.parse(fs.readFileSync(stFile(), 'utf8'))); } catch (_) {} }
-          function saveS() { try { fs.writeFileSync(stFile(), JSON.stringify(S)); } catch (_) {} }
-          function log(m) { try { fs.appendFileSync(path.join(app.getPath('userData'), 'log.txt'), new Date().toISOString() + ' ' + m + '\n'); } catch (_) {} }
-          function url(p, q) { const u = new URL('app://zz/' + p); Object.keys(q || {}).forEach((k) => u.searchParams.set(k, q[k])); return u.href; }
-          function prefs(extra) { return Object.assign({ preload: path.join(__dirname, 'preload.js'), contextIsolation: true, sandbox: true }, extra || {}); }
-          function notify(body) { try { const n = new Notification({ title: 'ズズラジオ体操部', body, icon: ICON }); n.show(); return n; } catch (_) { return null; } }
-
-          if (process.defaultApp && process.argv.length >= 2) app.setAsDefaultProtocolClient('zzcard', process.execPath, [path.resolve(process.argv[1])]);
-          else app.setAsDefaultProtocolClient('zzcard');
-          function linkFrom(argv) {
-            const u = (argv || []).find((a) => typeof a === 'string' && a.startsWith('zzcard://'));
-            if (!u) return null;
-            try { return new URL(u).searchParams.get('c'); } catch (_) { return null; }
+          cat > pc/src-tauri/capabilities/default.json << 'ZZEOF'
+          {
+            "$schema": "../gen/schemas/desktop-schema.json",
+            "identifier": "default",
+            "windows": ["*"],
+            "permissions": ["core:default", "core:window:allow-start-dragging"]
           }
+          ZZEOF
+          cat > pc/src-tauri/src/main.rs << 'ZZEOF'
+          // ズズラジオ体操部 PC版（Tauri・かるい 版）
+          // ・はじめての 時だけ 設定（つなぐ → 壁紙／タスクバー／全画面 → はじめる）
+          // ・Ctrl+Alt+P で きろく（この まどは タスクバーにも いて、閉じると PC版ごと おわる）・Ctrl+Alt+Shift+P で 設定
+          // ・タスクバーの 位置を 本当に 調べて、猫の 足を タスクバーの 上の ふちに。タスクバーが 消えたら 猫も 消える
+          // ・全画面の 時・画面ロック中は 止める（全画面モードは ロック中だけ）。起きる 時刻に 知らせる。今日の タップ数を 数える
+          #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-          /* ===== 設定 ===== */
-          function openSetup() {
-            if (setupWin) { setupWin.show(); setupWin.focus(); return; }
-            setupWin = new BrowserWindow({ width: 620, height: 720, resizable: false, maximizable: false, title: 'ズズラジオ体操部', icon: ICON, backgroundColor: '#eef1f5', webPreferences: prefs() });
-            setupWin.setMenu(null);
-            setupWin.loadURL(url('setup.html'));
-            setupWin.on('closed', () => { setupWin = null; if (!catsWin && !quitting) app.quit(); });
-          }
-          /* ===== 猫 ===== */
-          function petWin(opts, q) {
-            const w = new BrowserWindow(Object.assign({
-              transparent: true, frame: false, resizable: false, movable: false, minimizable: false, maximizable: false, fullscreenable: false,
-              skipTaskbar: true, focusable: false, hasShadow: false, show: false, backgroundColor: '#00000000', webPreferences: prefs({ backgroundThrottling: false })
-            }, opts));
-            w.setIgnoreMouseEvents(true);
-            w.loadURL(url('cats.html', Object.assign({ uid: S.uid, sleep: S.hideSleep ? '0' : '1', emo: S.noEmo ? '0' : '1', share: S.noShare ? '0' : '1', q: S.lowQ ? 'lo' : 'hi', sz: String(S.catScale || 1) }, q)));
-            return w;
-          }
-          function openCats() {
-            if (catsWin) { const w = catsWin; catsWin = null; try { w.destroy(); } catch (_) {} }
-            const d = screen.getPrimaryDisplay(), b = d.bounds, wa = d.workArea;
-            if (S.mode === 'bar' || S.mode === 'full') {
-              const H = 170, full = S.mode === 'full';   /* 全画面：画面の いちばん 下（タスクバーにも 重なる）で、ゲームや 動画の 時も 出しつづける */
-              catsWin = petWin({ x: full ? b.x : wa.x, y: full ? b.y + b.height - H : wa.y + wa.height - H, width: full ? b.width : wa.width, height: H, alwaysOnTop: true }, { mode: S.mode });
-              catsWin.setAlwaysOnTop(true, full ? 'screen-saver' : 'floating');
-              barShown = false;
-              catsWin.once('ready-to-show', () => { if (!catsWin) return; if (full) catsWin.showInactive(); else placeBar(); });
-            } else {
-              catsWin = petWin(Object.assign({ alwaysOnTop: false }, b), { mode: 'wall' });
-              catsWin.once('ready-to-show', () => {
-                if (!catsWin) return;
-                catsWin.showInactive();
-                setTimeout(() => {
-                  if (!catsWin) return;
-                  const r = attachToDesktop(catsWin);
-                  log('windows ' + os.release() + ' attach ' + JSON.stringify(r));
-                  if (!r.ok) { S.mode = 'bar'; saveS(); notify('壁紙に 出せなかったので、タスクバーに したよ'); openCats(); }
-                }, 500);
-              });
-            }
-            const me = catsWin;
-            me.on('closed', () => { if (catsWin === me) catsWin = null; redrawDesktop(); });
-            me.webContents.once('did-finish-load', () => { tapsSent = -1; });
-            openPanel(false);
-          }
-          /* ===== きろくの 画面（タスクバーにも いる） ===== */
-          function openPanel(show) {
-            if (!panelWin) {
-              const wa = screen.getPrimaryDisplay().workArea, W = 440, H = 630;
-              panelWin = new BrowserWindow({ width: W, height: H, x: wa.x + 24, y: wa.y + wa.height - H - 24, frame: false, resizable: false, maximizable: false, alwaysOnTop: true, transparent: true, backgroundColor: '#00000000', show: false, title: 'ズズラジオ体操部', icon: ICON, webPreferences: prefs() });
-              panelWin.loadURL(url('panel.html'));
-              panelWin.once('ready-to-show', () => { if (!panelWin) return; if (show) { panelWin.show(); panelWin.focus(); } else { panelWin.showInactive(); panelWin.minimize(); } });
-              panelWin.on('close', () => { quitting = true; app.quit(); });   /* タスクバーから 閉じたら おわる */
-              return;
-            }
-            if (show === false) return;
-            if (panelWin.isMinimized() || !panelWin.isVisible() || !panelWin.isFocused()) { panelWin.restore(); panelWin.show(); panelWin.focus(); panelWin.webContents.send('zz-panel-open'); }
-            else panelWin.minimize();
-          }
+          use std::sync::{Arc, Mutex};
+          use std::time::Duration;
 
-          ipcMain.handle('zz-state', () => S);
-          ipcMain.handle('zz-set', (_e, o) => { Object.assign(S, o || {}); saveS(); return S; });
-          ipcMain.on('zz-start', (_e, o) => {
-            o = (typeof o === 'string') ? { mode: o } : (o || {});
-            S.mode = ['wall', 'bar', 'full'].includes(o.mode) ? o.mode : 'wall';
-            S.hideSleep = !!o.hideSleep; S.noEmo = !!o.noEmo; S.noShare = !!o.noShare; S.lowQ = !!o.lowQ; S.autoStart = !!o.autoStart; applyAutoStart();
-            S.catScale = Math.max(0.5, Math.min(2, +o.catScale || 1)); S.setupDone = true; saveS();
-            openCats();
-            if (setupWin) { const w = setupWin; setupWin = null; w.destroy(); }
-          });
-          ipcMain.on('zz-open-setup', () => { if (panelWin) panelWin.minimize(); openSetup(); });
-          ipcMain.on('zz-quit', () => { quitting = true; app.quit(); });
-          ipcMain.on('zz-hide-panel', () => { if (panelWin) panelWin.minimize(); });
-          ipcMain.on('zz-recorded', () => { if (catsWin) catsWin.webContents.send('zz-refresh'); });
-          ipcMain.on('zz-wake-time', (_e, h) => { if (typeof h === 'number' && isFinite(h)) wakeH = h; });
-          ipcMain.on('zz-log', (_e, m) => log(String(m).slice(0, 500)));
-          ipcMain.on('zz-ready', (e) => { if (pendingLink && setupWin && e.sender === setupWin.webContents) { e.sender.send('zz-link', pendingLink); pendingLink = null; } });
+          use chrono::Timelike;
+          use serde_json::{json, Value};
+          use tauri::{AppHandle, Emitter, Manager, PhysicalPosition, PhysicalSize, WebviewUrl, WebviewWindowBuilder, WindowEvent};
+          use tauri_plugin_autostart::{MacosLauncher, ManagerExt};
+          use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut, ShortcutState};
+          use tauri_plugin_notification::NotificationExt;
+          use tauri_plugin_updater::UpdaterExt;
 
-          /* ===== Windows の 部品（壁紙の うしろに 入れる・全画面の 判定） ===== */
-          let K = null;
-          function k() {
-            if (K !== null) return K;
-            try {
-              if (process.platform !== 'win32') throw new Error('not windows');
-              const koffi = require('koffi');
-              const u = koffi.load('user32.dll'), sh = koffi.load('shell32.dll');
-              const EnumProc = koffi.proto('bool __stdcall EnumProc(intptr_t hwnd, intptr_t lp)');
-              koffi.struct('RECT', { left: 'int32', top: 'int32', right: 'int32', bottom: 'int32' });
-              K = {
-                FindWindowW: u.func('intptr_t __stdcall FindWindowW(str16 cls, str16 name)'),
-                FindWindowExW: u.func('intptr_t __stdcall FindWindowExW(intptr_t parent, intptr_t after, str16 cls, str16 name)'),
-                SendMessageTimeoutW: u.func('intptr_t __stdcall SendMessageTimeoutW(intptr_t hwnd, uint32 msg, uintptr_t wp, intptr_t lp, uint32 flags, uint32 timeout, _Out_ uintptr_t *res)'),
-                SetParent: u.func('intptr_t __stdcall SetParent(intptr_t child, intptr_t parent)'),
-                SetWindowPos: u.func('bool __stdcall SetWindowPos(intptr_t hwnd, intptr_t after, int x, int y, int cx, int cy, uint32 flags)'),
-                EnumWindows: u.func('bool __stdcall EnumWindows(EnumProc *cb, intptr_t lp)'),
-                RedrawWindow: u.func('bool __stdcall RedrawWindow(intptr_t hwnd, void *rect, void *rgn, uint32 flags)'),
-                GetWindowRect: u.func('bool __stdcall GetWindowRect(intptr_t hwnd, _Out_ RECT *r)'),
-                IsWindowVisible: u.func('bool __stdcall IsWindowVisible(intptr_t hwnd)'),
-                SHQueryUserNotificationState: sh.func('int32 __stdcall SHQueryUserNotificationState(_Out_ int32 *state)')
-              };
-            } catch (e) { log('koffi ' + (e && e.message)); K = false; }
-            return K;
+          struct Zz {
+              s: Mutex<Value>,
+              taps: Mutex<(String, u64)>,
+              sent: Mutex<i64>,
+              paused: Mutex<bool>,
+              wake: Mutex<Option<f64>>,
+              link: Mutex<Option<String>>,
+              cats: Mutex<String>,
+              seq: Mutex<u32>,
+              bar_shown: Mutex<bool>,
           }
-          function big(v) { try { return BigInt(v || 0); } catch (_) { return 0n; } }
-          function hwndOf(w) { const b = w.getNativeWindowHandle(); return b.length >= 8 ? b.readBigUInt64LE(0) : BigInt(b.readUInt32LE(0)); }
-          function attachToDesktop(w) {
-            const K2 = k(); if (!K2) return { ok: false, why: 'koffi' };
-            try {
-              const h = hwndOf(w), b = screen.getPrimaryDisplay().bounds;
-              const progman = big(K2.FindWindowW('Progman', null)); if (!progman) return { ok: false, why: 'progman' };
-              K2.SendMessageTimeoutW(progman, 0x052C, 0xD, 0x1, 0, 1000, [0]);
-              K2.SendMessageTimeoutW(progman, 0x052C, 0, 0, 0, 1000, [0]);
-              const defIn = big(K2.FindWindowExW(progman, 0, 'SHELLDLL_DefView', null));
-              const wkIn = big(K2.FindWindowExW(progman, 0, 'WorkerW', null));
-              if (defIn && wkIn) {   /* Windows 11 24H2 から：Progman の 中で、アイコンの すぐ 下へ */
-                K2.SetParent(h, progman);
-                K2.SetWindowPos(h, defIn, 0, 0, b.width, b.height, 0x0010 | 0x0040);
-                return { ok: true, how: '24h2' };
+          type St = Arc<Zz>;
+
+          fn today() -> String { chrono::Local::now().format("%Y-%m-%d").to_string() }
+          fn data_path(app: &AppHandle, f: &str) -> std::path::PathBuf {
+              let d = app.path().app_data_dir().unwrap_or_else(|_| std::env::temp_dir());
+              let _ = std::fs::create_dir_all(&d);
+              d.join(f)
+          }
+          fn log(app: &AppHandle, m: &str) {
+              use std::io::Write;
+              if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(data_path(app, "log.txt")) {
+                  let _ = writeln!(f, "{} {}", chrono::Local::now().format("%Y-%m-%d %H:%M:%S"), m);
               }
-              let worker = 0n;   /* それより 前：アイコンの 窓の つぎの WorkerW の 中へ */
-              K2.EnumWindows((top) => { const dv = big(K2.FindWindowExW(top, 0, 'SHELLDLL_DefView', null)); if (dv) worker = big(K2.FindWindowExW(0, top, 'WorkerW', null)); return true; }, 0);
-              if (!worker) return { ok: false, why: 'workerw', defIn: !!defIn, wkIn: !!wkIn };
-              K2.SetParent(h, worker);
-              K2.SetWindowPos(h, 0, 0, 0, b.width, b.height, 0x0010 | 0x0040);
-              return { ok: true, how: 'classic' };
-            } catch (e) { return { ok: false, why: String(e && e.message) }; }
           }
-          /* タスクバーの 本当の 位置（見えて いる 部分）。自動で かくれて いる 時は vis=false */
-          function taskbar() {
-            const K2 = k(); if (!K2) return null;
-            try {
-              const h = big(K2.FindWindowW('Shell_TrayWnd', null)); if (!h) return null;
-              const r = {}; if (!K2.GetWindowRect(h, r)) return null;
-              const d = screen.screenToDipRect(null, { x: r.left, y: r.top, width: r.right - r.left, height: r.bottom - r.top });
-              const b = screen.getPrimaryDisplay().bounds, bottom = d.width >= b.width * 0.5 && d.y > b.y + b.height * 0.5;
-              const seen = Math.min(d.y + d.height, b.y + b.height) - Math.max(d.y, b.y);
-              return { top: d.y, bottom, vis: !!K2.IsWindowVisible(h) && seen >= 10 };
-            } catch (_) { return null; }
+          fn load_state(app: &AppHandle) -> Value {
+              let def = json!({"uid":"","mode":"wall","setupDone":false,"wakeDay":"","hideSleep":false,"noEmo":false,"noShare":false,"autoStart":false,"lowQ":false,"catScale":1.0});
+              let mut v = std::fs::read_to_string(data_path(app, "state.json")).ok().and_then(|t| serde_json::from_str::<Value>(&t).ok()).unwrap_or(json!({}));
+              if !v.is_object() { v = json!({}); }
+              if let (Some(o), Some(d)) = (v.as_object_mut(), def.as_object()) {
+                  for (k, x) in d { if !o.contains_key(k) { o.insert(k.clone(), x.clone()); } }
+              }
+              v
           }
-          let barShown = false;
-          function placeBar() {   /* タスクバーモード：猫の 足を タスクバーの 上の ふちに。タスクバーが 消えたら 猫も 消える */
-            if (S.mode !== 'bar' || !catsWin || catsWin.isDestroyed()) return;
-            const b = screen.getPrimaryDisplay().bounds, wa = screen.getPrimaryDisplay().workArea, H = 170, tb = taskbar();
-            let top = wa.y + wa.height, show = !paused;
-            if (tb) { if (tb.bottom) { top = tb.top; if (!tb.vis) show = false; } else top = b.y + b.height; }
-            const nb = { x: b.x, y: Math.round(top - H), width: b.width, height: H }, cur = catsWin.getBounds();
-            if (cur.x !== nb.x || cur.y !== nb.y || cur.width !== nb.width || cur.height !== nb.height) catsWin.setBounds(nb);
-            if (show && !barShown) { catsWin.showInactive(); barShown = true; }
-            if (!show && barShown) { catsWin.hide(); barShown = false; }
+          fn save_state(app: &AppHandle, st: &St) {
+              let mut v = st.s.lock().unwrap().clone();
+              let t = st.taps.lock().unwrap().clone();
+              if let Some(o) = v.as_object_mut() { o.insert("taps".into(), json!({"day": t.0, "n": t.1})); }
+              let _ = std::fs::write(data_path(app, "state.json"), v.to_string());
           }
-          function applyAutoStart() { try { app.setLoginItemSettings({ openAtLogin: !!S.autoStart }); } catch (_) {} }
-          function redrawDesktop() { const K2 = k(); if (!K2) return; try { const pm = big(K2.FindWindowW('Progman', null)); if (pm) K2.RedrawWindow(pm, null, null, 0x0001 | 0x0004 | 0x0080 | 0x0100); } catch (_) {} }
-          function fullscreenBusy() { const K2 = k(); if (!K2) return false; try { const st = [0]; K2.SHQueryUserNotificationState(st); return st[0] >= 1 && st[0] <= 4; } catch (_) { return false; } }
-          function setPaused(p) {
-            if (p === paused) return; paused = p;
-            if (catsWin && !catsWin.isDestroyed()) { catsWin.webContents.send('zz-pause', p); if (S.mode === 'bar') placeBar(); }
+          fn sget(st: &St, k: &str) -> Value { st.s.lock().unwrap().get(k).cloned().unwrap_or(Value::Null) }
+          fn sbool(st: &St, k: &str) -> bool { sget(st, k).as_bool().unwrap_or(false) }
+          fn sstr(st: &St, k: &str) -> String { sget(st, k).as_str().unwrap_or("").to_string() }
+          fn cats_label(st: &St) -> String { st.cats.lock().unwrap().clone() }
+          fn link_from(a: &[String]) -> Option<String> {
+              a.iter().find(|x| x.starts_with("zzcard://")).and_then(|u| u.split("c=").nth(1)).map(|c| c.chars().take_while(|ch| ch.is_ascii_alphanumeric()).collect::<String>()).filter(|c| !c.is_empty())
           }
-          function busyNow() { return locked || (S.mode !== 'full' && fullscreenBusy()); }   /* 全画面モードは ロック中だけ 止める */
-          /* ===== 今日の キーボードの タップ数（押した 回数だけ。どの キーかは 記録しない） ===== */
-          function dayKey() { const n = new Date(); return n.getFullYear() + '-' + (n.getMonth() + 1) + '-' + n.getDate(); }
-          let tapsSent = -1;
-          function startTaps() {
-            try {
-              const { uIOhook } = require('uiohook-napi');
-              const down = new Set();
-              uIOhook.on('keydown', (e) => {
-                if (down.has(e.keycode)) return;   /* おしっぱなしの くりかえしは 数えない */
-                down.add(e.keycode);
-                const d = dayKey(); if (S.taps.day !== d) S.taps = { day: d, n: 0 };
-                S.taps.n++;
-              });
-              uIOhook.on('keyup', (e) => { down.delete(e.keycode); });
-              uIOhook.start();
-              setInterval(() => {
-                const d = dayKey(); if (S.taps.day !== d) S.taps = { day: d, n: 0 };
-                if (S.taps.n !== tapsSent && catsWin && !catsWin.isDestroyed()) { tapsSent = S.taps.n; catsWin.webContents.send('zz-taps', S.taps.n); }
-              }, 1500);
-              setInterval(saveS, 30000);
-              app.on('will-quit', () => { try { uIOhook.stop(); } catch (_) {} });
-            } catch (e) { log('taps ' + (e && e.message)); }
-          }
-          function checkWake() {
-            if (wakeH === null) return;
-            const n = new Date(), day = n.toDateString(), h = n.getHours() + n.getMinutes() / 60;
-            if (S.wakeDay === day || !(h >= wakeH && h < wakeH + 0.25)) return;
-            S.wakeDay = day; saveS();
-            if (catsWin && !catsWin.isDestroyed()) { setPaused(false); catsWin.webContents.send('zz-wake'); }
-            const nt = notify('おはよう！ 体操の 時間だよ'); if (nt) nt.on('click', () => openPanel(true));
+          fn primary(app: &AppHandle) -> Option<(i32, i32, i32, i32, f64)> {
+              let m = app.primary_monitor().ok().flatten()?;
+              Some((m.position().x, m.position().y, m.size().width as i32, m.size().height as i32, m.scale_factor()))
           }
 
-          if (!app.requestSingleInstanceLock()) {
-            app.quit();
-          } else {
-            app.on('second-instance', (_e, argv) => { const c = linkFrom(argv); if (c) { pendingLink = c; openSetup(); if (setupWin) setupWin.webContents.send('zz-link', c); } else openPanel(true); });
-            app.whenReady().then(() => {
-              app.setAppUserModelId('io.github.zzcafe2800.zzcard');
-              protocol.handle('app', (req) => {
-                const u = new URL(req.url);
-                const f = path.normalize(path.join(__dirname, decodeURIComponent(u.pathname)));
-                if (!f.startsWith(__dirname)) return new Response('no', { status: 403 });
-                return net.fetch(pathToFileURL(f).href);
+          /* ===== Windows の 部品（タスクバーの 位置・壁紙の うしろ・全画面の 判定） ===== */
+          #[cfg(windows)]
+          mod win {
+              #[repr(C)]
+              #[derive(Default, Clone, Copy)]
+              pub struct Rect { pub left: i32, pub top: i32, pub right: i32, pub bottom: i32 }
+              #[link(name = "user32")]
+              extern "system" {
+                  fn FindWindowW(cls: *const u16, name: *const u16) -> isize;
+                  fn FindWindowExW(parent: isize, after: isize, cls: *const u16, name: *const u16) -> isize;
+                  fn SendMessageTimeoutW(h: isize, msg: u32, wp: usize, lp: isize, flags: u32, timeout: u32, res: *mut usize) -> isize;
+                  fn SetParent(child: isize, parent: isize) -> isize;
+                  fn SetWindowPos(h: isize, after: isize, x: i32, y: i32, cx: i32, cy: i32, flags: u32) -> i32;
+                  fn EnumWindows(cb: extern "system" fn(isize, isize) -> i32, lp: isize) -> i32;
+                  fn GetWindowRect(h: isize, r: *mut Rect) -> i32;
+                  fn IsWindowVisible(h: isize) -> i32;
+                  fn RedrawWindow(h: isize, r: *const Rect, rgn: isize, flags: u32) -> i32;
+              }
+              #[link(name = "shell32")]
+              extern "system" {
+                  fn SHQueryUserNotificationState(state: *mut i32) -> i32;
+              }
+              fn w(s: &str) -> Vec<u16> { s.encode_utf16().chain(std::iter::once(0)).collect() }
+              /* タスクバー：上の ふちの y・画面の 下に あるか・見えて いるか（自動で かくれて いる 時は false） */
+              pub fn taskbar(mx: i32, my: i32, mw: i32, mh: i32) -> Option<(i32, bool, bool)> {
+                  unsafe {
+                      let c = w("Shell_TrayWnd");
+                      let h = FindWindowW(c.as_ptr(), std::ptr::null());
+                      if h == 0 { return None; }
+                      let mut r = Rect::default();
+                      if GetWindowRect(h, &mut r) == 0 { return None; }
+                      let width = r.right - r.left;
+                      let bottom = width >= mw / 2 && r.top > my + mh / 2;
+                      let seen = r.bottom.min(my + mh) - r.top.max(my);
+                      let _ = mx;
+                      Some((r.top, bottom, IsWindowVisible(h) != 0 && seen >= 10))
+                  }
+              }
+              extern "system" fn find_worker(top: isize, lp: isize) -> i32 {
+                  unsafe {
+                      let dv = w("SHELLDLL_DefView");
+                      if FindWindowExW(top, 0, dv.as_ptr(), std::ptr::null()) != 0 {
+                          let wk = w("WorkerW");
+                          let out = lp as *mut isize;
+                          *out = FindWindowExW(0, top, wk.as_ptr(), std::ptr::null());
+                      }
+                  }
+                  1
+              }
+              /* 壁紙：アイコンの うしろに まどを 入れる（Windows 11 24H2 と それより 前の 両方） */
+              pub fn attach(h: isize, width: i32, height: i32) -> Result<&'static str, String> {
+                  unsafe {
+                      let pm = w("Progman");
+                      let progman = FindWindowW(pm.as_ptr(), std::ptr::null());
+                      if progman == 0 { return Err("progman".into()); }
+                      let mut res: usize = 0;
+                      SendMessageTimeoutW(progman, 0x052C, 0xD, 0x1, 0, 1000, &mut res);
+                      SendMessageTimeoutW(progman, 0x052C, 0, 0, 0, 1000, &mut res);
+                      let dv = w("SHELLDLL_DefView");
+                      let wk = w("WorkerW");
+                      let def_in = FindWindowExW(progman, 0, dv.as_ptr(), std::ptr::null());
+                      let wk_in = FindWindowExW(progman, 0, wk.as_ptr(), std::ptr::null());
+                      if def_in != 0 && wk_in != 0 {
+                          SetParent(h, progman);
+                          SetWindowPos(h, def_in, 0, 0, width, height, 0x0010 | 0x0040);
+                          return Ok("24h2");
+                      }
+                      let mut worker: isize = 0;
+                      EnumWindows(find_worker, &mut worker as *mut isize as isize);
+                      if worker == 0 { return Err(format!("workerw def_in={} wk_in={}", def_in != 0, wk_in != 0)); }
+                      SetParent(h, worker);
+                      SetWindowPos(h, 0, 0, 0, width, height, 0x0010 | 0x0040);
+                      Ok("classic")
+                  }
+              }
+              pub fn redraw() {
+                  unsafe {
+                      let pm = w("Progman");
+                      let p = FindWindowW(pm.as_ptr(), std::ptr::null());
+                      if p != 0 { RedrawWindow(p, std::ptr::null(), 0, 0x0001 | 0x0004 | 0x0080 | 0x0100); }
+                  }
+              }
+              /* 1=ロック・スクリーンセーバー 2=全画面 3=全画面ゲーム 4=プレゼン */
+              pub fn quns() -> i32 { unsafe { let mut s: i32 = 0; if SHQueryUserNotificationState(&mut s) == 0 { s } else { 0 } } }
+          }
+          #[cfg(not(windows))]
+          mod win {
+              pub fn taskbar(_: i32, _: i32, _: i32, _: i32) -> Option<(i32, bool, bool)> { None }
+              pub fn attach(_: isize, _: i32, _: i32) -> Result<&'static str, String> { Err("not windows".into()) }
+              pub fn redraw() {}
+              pub fn quns() -> i32 { 0 }
+          }
+
+          /* ===== まど ===== */
+          fn open_setup(app: &AppHandle) {
+              if let Some(w) = app.get_webview_window("setup") { let _ = w.unminimize(); let _ = w.show(); let _ = w.set_focus(); return; }
+              let r = WebviewWindowBuilder::new(app, "setup", WebviewUrl::App("setup.html".into()))
+                  .title("ズズラジオ体操部").inner_size(620.0, 800.0).resizable(false).maximizable(false).build();
+              match r {
+                  Ok(w) => {
+                      let a = app.clone();
+                      w.on_window_event(move |e| {
+                          if let WindowEvent::Destroyed = e {
+                              let st = a.state::<St>().inner().clone();
+                              let lb = cats_label(&st);
+                              if lb.is_empty() || a.get_webview_window(&lb).is_none() { a.exit(0); }
+                          }
+                      });
+                  }
+                  Err(e) => log(app, &format!("setup window {}", e)),
+              }
+          }
+          fn open_panel(app: &AppHandle, show: bool) {
+              if let Some(w) = app.get_webview_window("panel") {
+                  if !show { return; }
+                  let min = w.is_minimized().unwrap_or(false);
+                  let vis = w.is_visible().unwrap_or(false);
+                  let foc = w.is_focused().unwrap_or(false);
+                  if min || !vis || !foc {
+                      let _ = w.unminimize(); let _ = w.show(); let _ = w.set_focus();
+                      let _ = app.emit_to("panel", "zz-panel-open", ());
+                  } else { let _ = w.minimize(); }
+                  return;
+              }
+              let Some((mx, my, _mw, mh, sc)) = primary(app) else { return };
+              let lh = ((mh as f64) / sc - 150.0).min(800.0).max(520.0);
+              let r = WebviewWindowBuilder::new(app, "panel", WebviewUrl::App("panel.html".into()))
+                  .title("ズズラジオ体操部").inner_size(460.0, lh).resizable(false).maximizable(false)
+                  .decorations(false).transparent(true).shadow(false).always_on_top(true).visible(false).build();
+              match r {
+                  Ok(w) => {
+                      let _ = w.set_position(PhysicalPosition::new(mx + (24.0 * sc) as i32, my + mh - ((lh + 80.0) * sc) as i32));
+                      let a = app.clone();
+                      w.on_window_event(move |e| { if let WindowEvent::CloseRequested { .. } = e { a.exit(0); } });
+                      let _ = w.show();
+                      if show { let _ = w.set_focus(); } else { let _ = w.minimize(); }
+                  }
+                  Err(e) => log(app, &format!("panel window {}", e)),
+              }
+          }
+          fn open_cats(app: &AppHandle, st: &St) {
+              let old = cats_label(st);
+              if let Some(w) = app.get_webview_window(&old) { let _ = w.destroy(); }
+              let n = { let mut q = st.seq.lock().unwrap(); *q += 1; *q };
+              let label = format!("cats{}", n);
+              *st.cats.lock().unwrap() = label.clone();
+              *st.bar_shown.lock().unwrap() = false;
+              *st.sent.lock().unwrap() = -1;
+              let mode = sstr(st, "mode");
+              let q = json!({
+                  "mode": mode, "uid": sstr(st, "uid"),
+                  "sleep": if sbool(st, "hideSleep") { "0" } else { "1" },
+                  "emo": if sbool(st, "noEmo") { "0" } else { "1" },
+                  "share": if sbool(st, "noShare") { "0" } else { "1" },
+                  "q": if sbool(st, "lowQ") { "lo" } else { "hi" },
+                  "sz": sget(st, "catScale").as_f64().unwrap_or(1.0).to_string()
               });
-              loadS();
-              pendingLink = linkFrom(process.argv);
-              if (!S.setupDone || !S.uid || pendingLink) openSetup(); else openCats();
-              if (!globalShortcut.register(KEY, () => openPanel(true))) log('shortcut failed');
-              if (!globalShortcut.register(KEY2, () => { if (panelWin) panelWin.minimize(); openSetup(); })) log('shortcut2 failed');
-              startTaps();
-              applyAutoStart();
-              setInterval(placeBar, 700);
-              setInterval(() => setPaused(busyNow()), 3000);
-              setInterval(checkWake, 20000);
-              powerMonitor.on('lock-screen', () => { locked = true; setPaused(true); });
-              powerMonitor.on('unlock-screen', () => { locked = false; setPaused(busyNow()); });
-              screen.on('display-metrics-changed', () => { if (catsWin) openCats(); });
-              try { require('electron-updater').autoUpdater.checkForUpdatesAndNotify(); } catch (_) {}
-            });
-            app.on('before-quit', () => { quitting = true; saveS(); });
-            app.on('will-quit', () => { try { globalShortcut.unregisterAll(); } catch (_) {} });
-            app.on('window-all-closed', () => app.quit());
+              let r = WebviewWindowBuilder::new(app, &label, WebviewUrl::App("cats.html".into()))
+                  .initialization_script(&format!("window.__ZZQ={};", q))
+                  .title("zz").transparent(true).decorations(false).shadow(false).skip_taskbar(true)
+                  .resizable(false).focused(false).visible(false).always_on_top(mode != "wall").build();
+              let w = match r { Ok(w) => w, Err(e) => { log(app, &format!("cats window {}", e)); return; } };
+              let _ = w.set_ignore_cursor_events(true);
+              let Some((mx, my, mw, mh, sc)) = primary(app) else { return };
+              match mode.as_str() {
+                  "wall" => {
+                      let _ = w.set_position(PhysicalPosition::new(mx, my));
+                      let _ = w.set_size(PhysicalSize::new(mw as u32, mh as u32));
+                      let _ = w.show();
+                      let a = app.clone();
+                      let st2 = st.clone();
+                      let lb = label.clone();
+                      std::thread::spawn(move || {
+                          std::thread::sleep(Duration::from_millis(700));
+                          let Some(w) = a.get_webview_window(&lb) else { return };
+                          let h = w.hwnd().map(|h| h.0 as isize).unwrap_or(0);
+                          let r = if h != 0 { win::attach(h, mw, mh) } else { Err("hwnd".into()) };
+                          log(&a, &format!("wallpaper attach {:?}", r));
+                          if r.is_err() {
+                              if let Some(o) = st2.s.lock().unwrap().as_object_mut() { o.insert("mode".into(), json!("bar")); }
+                              save_state(&a, &st2);
+                              let _ = a.notification().builder().title("ズズラジオ体操部").body("壁紙に 出せなかったので、タスクバーに したよ").show();
+                              let a2 = a.clone();
+                              let _ = a.run_on_main_thread(move || { let st3 = a2.state::<St>().inner().clone(); open_cats(&a2, &st3); });
+                          }
+                      });
+                  }
+                  "full" => {
+                      let h = (170.0 * sc) as i32;
+                      let _ = w.set_position(PhysicalPosition::new(mx, my + mh - h));
+                      let _ = w.set_size(PhysicalSize::new(mw as u32, h as u32));
+                      let _ = w.show();
+                  }
+                  _ => { place_bar(app, st); }
+              }
+              open_panel(app, false);
+          }
+          /* タスクバーモード：猫の 足を タスクバーの 上の ふちに。タスクバーが 消えたら 猫も 消える */
+          fn place_bar(app: &AppHandle, st: &St) {
+              if sstr(st, "mode") != "bar" { return; }
+              let Some(w) = app.get_webview_window(&cats_label(st)) else { return };
+              let Some((mx, my, mw, mh, sc)) = primary(app) else { return };
+              let h = (170.0 * sc) as i32;
+              let mut top = my + mh - (48.0 * sc) as i32;
+              let mut show = !*st.paused.lock().unwrap();
+              if let Some((t, bottom, vis)) = win::taskbar(mx, my, mw, mh) {
+                  if bottom { top = t; if !vis { show = false; } } else { top = my + mh; }
+              }
+              let want = PhysicalPosition::new(mx, top - h);
+              if w.outer_position().map(|p| p != want).unwrap_or(true) { let _ = w.set_position(want); }
+              if w.outer_size().map(|s| s.width as i32 != mw || s.height as i32 != h).unwrap_or(true) { let _ = w.set_size(PhysicalSize::new(mw as u32, h as u32)); }
+              let mut sh = st.bar_shown.lock().unwrap();
+              if show && !*sh { let _ = w.show(); *sh = true; }
+              if !show && *sh { let _ = w.hide(); *sh = false; }
+          }
+          fn apply_autostart(app: &AppHandle, st: &St) {
+              let al = app.autolaunch();
+              let r = if sbool(st, "autoStart") { al.enable() } else { al.disable() };
+              if let Err(e) = r { log(app, &format!("autostart {}", e)); }
+          }
+
+          /* ===== 画面から よばれる もの ===== */
+          #[tauri::command]
+          fn zz_state(st: tauri::State<'_, St>) -> Value { st.s.lock().unwrap().clone() }
+          #[tauri::command]
+          fn zz_set(app: AppHandle, st: tauri::State<'_, St>, o: Value) -> Value {
+              let st = st.inner().clone();
+              {
+                  let mut s = st.s.lock().unwrap();
+                  if let (Some(a), Some(b)) = (s.as_object_mut(), o.as_object()) { for (k, v) in b { a.insert(k.clone(), v.clone()); } }
+              }
+              save_state(&app, &st);
+              let v = st.s.lock().unwrap().clone();
+              v
+          }
+          #[tauri::command]
+          fn zz_start(app: AppHandle, st: tauri::State<'_, St>, o: Value) {
+              let st = st.inner().clone();
+              {
+                  let mut s = st.s.lock().unwrap();
+                  if let Some(a) = s.as_object_mut() {
+                      let mode = o.get("mode").and_then(|m| m.as_str()).unwrap_or("wall");
+                      a.insert("mode".into(), json!(if ["wall", "bar", "full"].contains(&mode) { mode } else { "wall" }));
+                      for k in ["hideSleep", "noEmo", "noShare", "autoStart", "lowQ"] { a.insert(k.into(), json!(o.get(k).and_then(|v| v.as_bool()).unwrap_or(false))); }
+                      let sc = o.get("catScale").and_then(|v| v.as_f64()).unwrap_or(1.0).max(0.5).min(2.0);
+                      a.insert("catScale".into(), json!(sc));
+                      a.insert("setupDone".into(), json!(true));
+                  }
+              }
+              save_state(&app, &st);
+              apply_autostart(&app, &st);
+              open_cats(&app, &st);
+              if let Some(w) = app.get_webview_window("setup") { let _ = w.destroy(); }
+          }
+          #[tauri::command]
+          fn zz_open_setup(app: AppHandle) { if let Some(w) = app.get_webview_window("panel") { let _ = w.minimize(); } open_setup(&app); }
+          #[tauri::command]
+          fn zz_quit(app: AppHandle) { app.exit(0); }
+          #[tauri::command]
+          fn zz_hide_panel(app: AppHandle) { if let Some(w) = app.get_webview_window("panel") { let _ = w.minimize(); } }
+          #[tauri::command]
+          fn zz_recorded(app: AppHandle, st: tauri::State<'_, St>) { let lb = cats_label(st.inner()); let _ = app.emit_to(lb.as_str(), "zz-refresh", ()); }
+          #[tauri::command]
+          fn zz_set_wake(st: tauri::State<'_, St>, h: f64) { if h.is_finite() { *st.wake.lock().unwrap() = Some(h); } }
+          #[tauri::command]
+          fn zz_log(app: AppHandle, m: String) { log(&app, &m.chars().take(500).collect::<String>()); }
+          #[tauri::command]
+          fn zz_ready(app: AppHandle, st: tauri::State<'_, St>) { if let Some(c) = st.link.lock().unwrap().take() { let _ = app.emit_to("setup", "zz-link", c); } }
+
+          fn main() {
+              let st: St = Arc::new(Zz {
+                  s: Mutex::new(json!({})), taps: Mutex::new((today(), 0)), sent: Mutex::new(-1), paused: Mutex::new(false),
+                  wake: Mutex::new(None), link: Mutex::new(None), cats: Mutex::new(String::new()), seq: Mutex::new(0), bar_shown: Mutex::new(false),
+              });
+              tauri::Builder::default()
+                  .plugin(tauri_plugin_single_instance::init(|app, argv, _cwd| {
+                      if let Some(c) = link_from(&argv) {
+                          let st = app.state::<St>().inner().clone();
+                          *st.link.lock().unwrap() = Some(c.clone());
+                          open_setup(app);
+                          let _ = app.emit_to("setup", "zz-link", c);
+                      } else { open_panel(app, true); }
+                  }))
+                  .plugin(tauri_plugin_deep_link::init())
+                  .plugin(tauri_plugin_global_shortcut::Builder::new().with_handler(|app, sc, ev| {
+                      if ev.state() != ShortcutState::Pressed { return; }
+                      if sc.matches(Modifiers::CONTROL | Modifiers::ALT | Modifiers::SHIFT, Code::KeyP) {
+                          if let Some(w) = app.get_webview_window("panel") { let _ = w.minimize(); }
+                          open_setup(app);
+                      } else if sc.matches(Modifiers::CONTROL | Modifiers::ALT, Code::KeyP) { open_panel(app, true); }
+                  }).build())
+                  .plugin(tauri_plugin_autostart::init(MacosLauncher::LaunchAgent, None))
+                  .plugin(tauri_plugin_updater::Builder::new().build())
+                  .plugin(tauri_plugin_notification::init())
+                  .manage(st.clone())
+                  .invoke_handler(tauri::generate_handler![zz_state, zz_set, zz_start, zz_open_setup, zz_quit, zz_hide_panel, zz_recorded, zz_set_wake, zz_log, zz_ready])
+                  .setup(move |app| {
+                      let h = app.handle().clone();
+                      {
+                          let v = load_state(&h);
+                          if let Some(t) = v.get("taps") { if t.get("day").and_then(|d| d.as_str()) == Some(today().as_str()) { *st.taps.lock().unwrap() = (today(), t.get("n").and_then(|n| n.as_u64()).unwrap_or(0)); } }
+                          *st.s.lock().unwrap() = v;
+                      }
+                      #[cfg(desktop)]
+                      {
+                          use tauri_plugin_deep_link::DeepLinkExt;
+                          let _ = app.deep_link().register_all();
+                      }
+                      *st.link.lock().unwrap() = link_from(&std::env::args().collect::<Vec<_>>());
+                      let _ = app.global_shortcut().register(Shortcut::new(Some(Modifiers::CONTROL | Modifiers::ALT), Code::KeyP));
+                      let _ = app.global_shortcut().register(Shortcut::new(Some(Modifiers::CONTROL | Modifiers::ALT | Modifiers::SHIFT), Code::KeyP));
+                      apply_autostart(&h, &st);
+                      let first = !sbool(&st, "setupDone") || sstr(&st, "uid").is_empty() || st.link.lock().unwrap().is_some();
+                      if first { open_setup(&h); } else { open_cats(&h, &st); }
+
+                      /* 今日の キーボードの タップ数（押した 回数だけ。どの キーかは 記録しない） */
+                      let st_k = st.clone();
+                      std::thread::spawn(move || {
+                          let mut down: Vec<rdev::Key> = Vec::new();
+                          let _ = rdev::listen(move |ev: rdev::Event| {
+                              match ev.event_type {
+                                  rdev::EventType::KeyPress(k) => {
+                                      if down.contains(&k) { return; }
+                                      down.push(k);
+                                      let mut t = st_k.taps.lock().unwrap();
+                                      let d = today(); if t.0 != d { *t = (d, 0); }
+                                      t.1 += 1;
+                                  }
+                                  rdev::EventType::KeyRelease(k) => { down.retain(|x| *x != k); }
+                                  _ => {}
+                              }
+                          });
+                      });
+                      /* タップ数を 猫の 画面へ（1.5秒ごと）・ときどき 保存 */
+                      let (a1, st1) = (h.clone(), st.clone());
+                      std::thread::spawn(move || {
+                          let mut i = 0u32;
+                          loop {
+                              std::thread::sleep(Duration::from_millis(1500));
+                              let n = { let mut t = st1.taps.lock().unwrap(); let d = today(); if t.0 != d { *t = (d, 0); } t.1 as i64 };
+                              let mut s = st1.sent.lock().unwrap();
+                              if n != *s { *s = n; let lb = cats_label(&st1); let _ = a1.emit_to(lb.as_str(), "zz-taps", n); }
+                              drop(s);
+                              i += 1; if i % 20 == 0 { save_state(&a1, &st1); }
+                          }
+                      });
+                      /* 止める／うごかす（3秒ごと）・タスクバーに あわせる（0.7秒ごと） */
+                      let (a2, st2) = (h.clone(), st.clone());
+                      std::thread::spawn(move || {
+                          let mut k = 0u32;
+                          loop {
+                              std::thread::sleep(Duration::from_millis(700));
+                              k += 1;
+                              if k % 4 == 0 {
+                                  let q = win::quns();
+                                  let busy = if sstr(&st2, "mode") == "full" { q == 1 } else { (1..=4).contains(&q) };
+                                  let mut p = st2.paused.lock().unwrap();
+                                  if busy != *p { *p = busy; let lb = cats_label(&st2); let _ = a2.emit_to(lb.as_str(), "zz-pause", busy); }
+                              }
+                              let (a3, st3) = (a2.clone(), st2.clone());
+                              let _ = a2.run_on_main_thread(move || place_bar(&a3, &st3));
+                          }
+                      });
+                      /* 起きる 時刻（20秒ごと） */
+                      let (a4, st4) = (h.clone(), st.clone());
+                      std::thread::spawn(move || loop {
+                          std::thread::sleep(Duration::from_secs(20));
+                          let Some(wk) = *st4.wake.lock().unwrap() else { continue };
+                          let now = chrono::Local::now();
+                          let hh = now.hour() as f64 + now.minute() as f64 / 60.0;
+                          let d = today();
+                          if sstr(&st4, "wakeDay") == d || !(hh >= wk && hh < wk + 0.25) { continue; }
+                          if let Some(o) = st4.s.lock().unwrap().as_object_mut() { o.insert("wakeDay".into(), json!(d)); }
+                          save_state(&a4, &st4);
+                          let lb = cats_label(&st4);
+                          let _ = a4.emit_to(lb.as_str(), "zz-wake", ());
+                          let _ = a4.notification().builder().title("おはよう！").body("体操の 時間だよ").show();
+                      });
+                      /* 自動アップデート */
+                      let a5 = h.clone();
+                      tauri::async_runtime::spawn(async move {
+                          if let Ok(up) = a5.updater() {
+                              match up.check().await {
+                                  Ok(Some(u)) => {
+                                      log(&a5, &format!("update {}", u.version));
+                                      if u.download_and_install(|_, _| {}, || {}).await.is_ok() { a5.restart(); }
+                                  }
+                                  Ok(None) => {}
+                                  Err(e) => log(&a5, &format!("update check {}", e)),
+                              }
+                          }
+                      });
+                      let _ = win::redraw;
+                      Ok(())
+                  })
+                  .run(tauri::generate_context!())
+                  .expect("zzcard failed");
           }
           ZZEOF
-          cat > desktop/preload.js << 'ZZEOF'
-          /* 画面と PC版本体の つなぎ */
-          const { contextBridge, ipcRenderer } = require('electron');
-          const CH = ['zz-link', 'zz-wake', 'zz-pause', 'zz-refresh', 'zz-panel-open', 'zz-taps'];
-          contextBridge.exposeInMainWorld('zz', {
-            state: () => ipcRenderer.invoke('zz-state'),
-            set: (o) => ipcRenderer.invoke('zz-set', o),
-            start: (o) => ipcRenderer.send('zz-start', o),
-            openSetup: () => ipcRenderer.send('zz-open-setup'),
-            quit: () => ipcRenderer.send('zz-quit'),
-            hidePanel: () => ipcRenderer.send('zz-hide-panel'),
-            recorded: () => ipcRenderer.send('zz-recorded'),
-            setWake: (h) => ipcRenderer.send('zz-wake-time', h),
-            log: (m) => ipcRenderer.send('zz-log', String(m)),
-            ready: () => ipcRenderer.send('zz-ready'),
-            on: (ch, cb) => { if (CH.includes(ch)) ipcRenderer.on(ch, (_e, v) => { try { cb(v); } catch (_) {} }); }
-          });
+          cat > pc/dist/zz.js << 'ZZEOF'
+          /* 画面と PC版本体（Tauri）の つなぎ：Electron 版と 同じ 形の window.zz を 用意する */
+          (function () {
+            var T = window.__TAURI__;
+            function inv(c, a) { try { return T.core.invoke(c, a || {}); } catch (e) { return Promise.reject(e); } }
+            var CH = ['zz-link', 'zz-wake', 'zz-pause', 'zz-refresh', 'zz-panel-open', 'zz-taps'];
+            window.zz = {
+              state: function () { return inv('zz_state'); },
+              set: function (o) { return inv('zz_set', { o: o }); },
+              start: function (o) { return inv('zz_start', { o: o }); },
+              openSetup: function () { return inv('zz_open_setup'); },
+              quit: function () { return inv('zz_quit'); },
+              hidePanel: function () { return inv('zz_hide_panel'); },
+              recorded: function () { return inv('zz_recorded'); },
+              setWake: function (h) { return inv('zz_set_wake', { h: +h }); },
+              log: function (m) { return inv('zz_log', { m: String(m) }); },
+              ready: function () { return inv('zz_ready'); },
+              on: function (ch, cb) {
+                if (CH.indexOf(ch) < 0) return;
+                try { T.webviewWindow.getCurrentWebviewWindow().listen(ch, function (e) { try { cb(e.payload); } catch (_) {} }); } catch (_) {}
+              }
+            };
+          })();
           ZZEOF
-          cat > desktop/setup.html << 'ZZEOF'
+          cat > pc/dist/setup.html << 'ZZEOF'
           <!doctype html><html lang="ja"><head><meta charset="utf-8"><title>ズズラジオ体操部</title>
           <style>
           *{box-sizing:border-box}html,body{margin:0;height:100%}[hidden]{display:none !important}
@@ -367,6 +635,7 @@ jobs:
            <button id="go" class="go" type="button" disabled>はじめる</button>
            <div class="hint">Ctrl+Alt+P きろく ・ Ctrl+Alt+Shift+P せってい</div>
           </div>
+          <script src="zz.js"></script>
           <script src="fbconfig.js"></script>
           <script type="module">
           import { redeem } from './fb.js';
@@ -396,7 +665,7 @@ jobs:
           paint();
           </script></body></html>
           ZZEOF
-          cat > desktop/panel.html << 'ZZEOF'
+          cat > pc/dist/panel.html << 'ZZEOF'
           <!doctype html><html lang="ja"><head><meta charset="utf-8"><title>ズズラジオ体操部</title>
           <style>
           *{box-sizing:border-box}[hidden]{display:none !important}html,body{margin:0;height:100%;background:transparent}
@@ -433,7 +702,7 @@ jobs:
           button:focus-visible,input:focus-visible{outline:2px solid #2b3242;outline-offset:2px}
           </style></head><body>
           <div class="p">
-           <div class="hd"><div class="tabs"><button id="tR" class="on" type="button">きろく</button><button id="tG" type="button">うつりかわり</button></div>
+           <div class="hd" data-tauri-drag-region><div class="tabs"><button id="tR" class="on" type="button">きろく</button><button id="tG" type="button">うつりかわり</button></div>
             <div class="ic"><button id="gear" type="button" aria-label="せってい" title="せってい（Ctrl+Alt+Shift+P）"><svg viewBox="0 0 24 24" width="20" height="20" fill="none"><circle cx="12" cy="12" r="3.1" stroke="#8a93a3" stroke-width="1.9"/><path d="M12 2.5l1.5 2.2 2.6-.6.6 2.6 2.5.9-.9 2.5 1.7 2-1.7 2 .9 2.5-2.5.9-.6 2.6-2.6-.6L12 21.5l-1.5-2.2-2.6.6-.6-2.6-2.5-.9.9-2.5L4 12l1.7-2-.9-2.5 2.5-.9.6-2.6 2.6.6z" stroke="#8a93a3" stroke-width="1.6" stroke-linejoin="round"/></svg></button><button id="x" type="button" aria-label="とじる">×</button></div></div>
            <div class="bd" id="pR">
             <button id="done" class="done on" type="button"><i>✓</i>体操した！</button>
@@ -454,6 +723,7 @@ jobs:
            </div>
            <div class="ft"><div id="msg" class="msg"></div><button id="go" class="go" type="button">きろく</button><div class="lk"><button id="setup" type="button">せってい</button><button id="quit" type="button">おわる</button></div></div>
           </div>
+          <script src="zz.js"></script>
           <script src="fbconfig.js"></script>
           <script src="rec.js"></script>
           <script>var $=function(id){ return document.getElementById(id); };</script>
@@ -523,7 +793,7 @@ jobs:
           defaults();
           </script></body></html>
           ZZEOF
-          cat > desktop/cats.html << 'ZZEOF'
+          cat > pc/dist/cats.html << 'ZZEOF'
           <!doctype html><html lang="ja"><head><meta charset="utf-8"><title>zz</title>
           <style>
           html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent;}
@@ -581,16 +851,17 @@ jobs:
           var _devUnlockAll=false,_DEV_SKY=["sky-day"],_devSkyIdx=0;
           function currentSkyKey(){ var h=new Date().getHours(); return (h>=5&&h<9)?"sky-dawn":(h>=9&&h<10)?"sky-morning":(h>=10&&h<16)?"sky-day":(h>=16&&h<19)?"sky-evening":"sky-night"; }
           </script>
+          <script src="zz.js"></script>
           <script src="fbconfig.js"></script>
           <script src="scene.js"></script>
           <script src="engine.js"></script>
           <script type="module" src="cats.js"></script>
           </body></html>
           ZZEOF
-          cat > desktop/cats.js << 'ZZEOF'
+          cat > pc/dist/cats.js << 'ZZEOF'
           /* 猫を 出す 画面：壁紙（景色＋猫＋みんなの カード）／タスクバー（猫だけ）。うごきは サイトの「奥で あそぶ 猫」と 同じ */
           import { hill, pubTaps, allTaps } from './fb.js';
-          const P = new URLSearchParams(location.search), MODE = P.get('mode') || 'wall', UID = P.get('uid') || '', SHOW_SLEEP = P.get('sleep') !== '0', EMO = P.get('emo') !== '0', SHARE = P.get('share') !== '0', LOWQ = P.get('q') === 'lo', SIZE = Math.max(.5, Math.min(2, +P.get('sz') || 1));
+          const Q = window.__ZZQ || Object.fromEntries(new URLSearchParams(location.search)), P = { get: (k) => (Q[k] != null ? String(Q[k]) : null) }, MODE = P.get('mode') || 'wall', UID = P.get('uid') || '', SHOW_SLEEP = P.get('sleep') !== '0', EMO = P.get('emo') !== '0', SHARE = P.get('share') !== '0', LOWQ = P.get('q') === 'lo', SIZE = Math.max(.5, Math.min(2, +P.get('sz') || 1));
           const FPH0 = Object.assign({}, FP_H);   /* サイトの 大きさ（ここに 大きさの バーを かける） */
           const FLAT = MODE !== 'wall';   /* タスクバー・全画面：画面の 下を 歩く */
           if (!EMO) window._fpEmo = function () {};   /* 気持ちの 絵 なし */
@@ -713,7 +984,7 @@ jobs:
           if (window.zz) { zz.on('zz-pause', pause); zz.on('zz-wake', wake); zz.on('zz-refresh', load); zz.on('zz-taps', (n) => { taps = +n || 0; $('tapN').textContent = taps.toLocaleString('ja-JP'); }); load(); }
           window.__zzCats.setTaps = (n) => { taps = +n || 0; $('tapN').textContent = taps.toLocaleString('ja-JP'); };
           ZZEOF
-          cat > desktop/fb.js << 'ZZEOF'
+          cat > pc/dist/fb.js << 'ZZEOF'
           /* PC版：クラウド（Firebase）との やりとり。サイトと 同じ データを 読み書きする */
           const B = 'https://www.gstatic.com/firebasejs/12.15.0/';
           let _p = null;
@@ -828,7 +1099,7 @@ jobs:
             return out;
           }
           ZZEOF
-          cat > desktop/prep.js << 'ZZEOF'
+          cat > pc/prep.js << 'ZZEOF'
           /* サイトの index.html から PC版に いる 部品だけを 取り出す：アイコン・景色・空の色・猫の うごき・Firebaseの 設定 */
           const fs = require('fs');
           const s = fs.readFileSync('index.html', 'utf8');
@@ -836,17 +1107,17 @@ jobs:
           function fn(name) { const i = s.indexOf('function ' + name + '('); if (i < 0) { console.error('not found: ' + name); process.exit(1); } let d = 0, k = i, st = false; for (; k < s.length; k++) { const c = s[k]; if (c === '{') { d++; st = true; } else if (c === '}') { d--; if (st && d === 0) break; } } return s.slice(i, k + 1); }
           const m = s.match(/rel="apple-touch-icon" href="data:image\/png;base64,([^"]+)"/);
           if (!m) { console.error('icon not found'); process.exit(1); }
-          fs.writeFileSync('desktop/icon192.png', Buffer.from(m[1], 'base64'));
-          fs.writeFileSync('desktop/engine.js', cut('/* ===== UIが 消えている 間：今日 体操した 子たちが 奥で あそぶ', '/* ===== /奥で あそぶ 猫 ===== */', 'engine'));
-          fs.writeFileSync('desktop/scene.js', cut('function _scPal(tk){', 'function renderHomeScenery(', 'scene') + '\n' + fn('skyGradientForHour') + '\n');
+          fs.writeFileSync('pc/dist/icon192.png', Buffer.from(m[1], 'base64'));
+          fs.writeFileSync('pc/dist/engine.js', cut('/* ===== UIが 消えている 間：今日 体操した 子たちが 奥で あそぶ', '/* ===== /奥で あそぶ 猫 ===== */', 'engine'));
+          fs.writeFileSync('pc/dist/scene.js', cut('function _scPal(tk){', 'function renderHomeScenery(', 'scene') + '\n' + fn('skyGradientForHour') + '\n');
           const cfg = cut('const firebaseConfig={', '};', 'firebaseConfig').replace('const firebaseConfig=', 'window.FBCFG=') + '};\n';
-          fs.writeFileSync('desktop/fbconfig.js', cfg);
+          fs.writeFileSync('pc/dist/fbconfig.js', cfg);
           /* きろく用：気分（いちばん上の 3つ）・ねむけ・顔の イラスト */
           function stmt(a) { const i = s.indexOf(a); if (i < 0) { console.error('not found: ' + a); process.exit(1); } let d = 0, k = s.indexOf('[', i); for (; k < s.length; k++) { if (s[k] === '[') d++; else if (s[k] === ']') { d--; if (d === 0) break; } } return s.slice(s.indexOf('[', i), k + 1); }
           const vm = require('vm');
           const M = vm.runInNewContext('(' + stmt('var MOOD3=') + ')').map((x) => ({ e: x.e, l: x.l }));
           const Y = vm.runInNewContext('(' + stmt('var KR_SLPY=') + ')');
-          fs.writeFileSync('desktop/rec.js', 'window.ZZREC=' + JSON.stringify({ mood: M, slpy: Y }) + ';\n' + fn('_krFace') + '\n');
+          fs.writeFileSync('pc/dist/rec.js', 'window.ZZREC=' + JSON.stringify({ mood: M, slpy: Y }) + ';\n' + fn('_krFace') + '\n');
           console.log('prep ok');
           /* サイトの「きろくの うつりかわり」グラフを そのまま 取り出す（PC版の グラフ用） */
           function graphJS(s) {
@@ -865,39 +1136,49 @@ jobs:
             FN.forEach((f) => { out += fn(f) + '\n'; });
             return out;
           }
-          fs.writeFileSync('desktop/graph.js', graphJS(s));
+          fs.writeFileSync('pc/dist/graph.js', graphJS(s));
           console.log('graph ok');
           ZZEOF
-          sed -i "s/0\.2\.RUNNUM/0.2.$GITHUB_RUN_NUMBER/" desktop/package.json
-          grep '"version"' desktop/package.json
-          node desktop/prep.js
-          rm desktop/prep.js
-      - name: アイコンを 大きくする（512px）
+          sed -i "s/0\.3\.RUNNUM/0.3.$GITHUB_RUN_NUMBER/" pc/src-tauri/tauri.conf.json
+          grep '"version"' pc/src-tauri/tauri.conf.json
+          node pc/prep.js
+          rm pc/prep.js
+      - name: アイコンを 大きくする（1024px）
         shell: pwsh
         run: |
           Add-Type -AssemblyName System.Drawing
-          $src = [System.Drawing.Image]::FromFile("$PWD\desktop\icon192.png")
-          $bmp = New-Object System.Drawing.Bitmap 512, 512
+          $src = [System.Drawing.Image]::FromFile("$PWD\pc\dist\icon192.png")
+          $bmp = New-Object System.Drawing.Bitmap 1024, 1024
           $g = [System.Drawing.Graphics]::FromImage($bmp)
           $g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
           $g.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
-          $g.DrawImage($src, 0, 0, 512, 512)
-          $bmp.Save("$PWD\desktop\icon.png", [System.Drawing.Imaging.ImageFormat]::Png)
+          $g.DrawImage($src, 0, 0, 1024, 1024)
+          $bmp.Save("$PWD\pc\app-icon.png", [System.Drawing.Imaging.ImageFormat]::Png)
           $g.Dispose(); $bmp.Dispose(); $src.Dispose()
-          Remove-Item "$PWD\desktop\icon192.png"
-      - name: インストーラーを 作る
-        working-directory: desktop
+          Remove-Item "$PWD\pc\dist\icon192.png"
+      - name: PC版を 作る
+        working-directory: pc
         shell: bash
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ""
         run: |
           npm install
-          npx electron-builder --win --publish never
-          ls dist
-      - name: Releases に のせる（先に 版の 目印＝タグを 作ってから 公開）
+          npx tauri icon app-icon.png
+          npx tauri build
+          ls src-tauri/target/release/bundle/nsis
+      - name: Releases に のせる（インストーラー と 自動アップデート用の latest.json）
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          VER="0.2.$GITHUB_RUN_NUMBER"
+          VER="0.3.$GITHUB_RUN_NUMBER"
+          EXE=$(ls pc/src-tauri/target/release/bundle/nsis/*-setup.exe | head -n 1)
+          cp "$EXE" zzcard-setup.exe
+          SIG=$(cat "$EXE.sig")
+          printf '{"version":"%s","notes":"PC版 %s","pub_date":"%s","platforms":{"windows-x86_64":{"signature":"%s","url":"https://github.com/zzcafe2800/zzcard/releases/download/v%s/zzcard-setup.exe"}}}\n' "$VER" "$VER" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$SIG" "$VER" > latest.json
+          cat latest.json
+          ls -la zzcard-setup.exe
           git tag "v$VER"
           git push origin "v$VER"
-          gh release create "v$VER" desktop/dist/zzcard-setup.exe desktop/dist/zzcard-setup.exe.blockmap desktop/dist/latest.yml --title "PC版 $VER" --notes "ズズラジオ体操部 PC版 $VER" --latest
+          gh release create "v$VER" zzcard-setup.exe latest.json --title "PC版 $VER" --notes "ズズラジオ体操部 PC版 $VER（かるい 版）" --latest

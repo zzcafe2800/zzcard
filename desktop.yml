@@ -1,3 +1,7 @@
+# ズズラジオ体操部 PC版（Windows）を つくる
+# Actions の「PC版をつくる」→「Run workflow」で、Releases に zzcard-setup.exe が できる。
+# PC版の 中身は いつもの サイトを 開くので、サイトを 更新すれば PC版も 自動で 最新に なる。
+# ここ（PC版の まど・つなぎ・アイコン）を かえた 時だけ、もう一度 Run workflow する。版の 番号は 自動で 上がる。
 name: PC版をつくる
 on:
   workflow_dispatch:
@@ -6,15 +10,158 @@ permissions:
 jobs:
   windows:
     runs-on: windows-latest
-    defaults:
-      run:
-        working-directory: desktop
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-      - run: npm install
-      - run: npx electron-builder --win --publish always
+          node-version: 22
+      - name: PC版の ファイルを 組み立てる
+        shell: bash
+        run: |
+          mkdir -p desktop
+          cat > desktop/package.json << 'ZZEOF'
+          {
+            "name": "zzcard-desktop",
+            "productName": "ズズラジオ体操部",
+            "version": "0.1.${{ github.run_number }}",
+            "description": "ズズラジオ体操部 PC版",
+            "author": "zzcafe2800",
+            "main": "main.js",
+            "dependencies": { "electron-updater": "^6.8.9" },
+            "devDependencies": { "electron": "^44.4.5", "electron-builder": "^26.15.3" },
+            "build": {
+              "appId": "io.github.zzcafe2800.zzcard",
+              "productName": "ズズラジオ体操部",
+              "artifactName": "zzcard-setup.${ext}",
+              "files": ["main.js", "preload.js", "offline.html", "icon.png"],
+              "protocols": [{ "name": "zzcard", "schemes": ["zzcard"] }],
+              "win": { "target": "nsis", "icon": "icon.png" },
+              "nsis": { "oneClick": true, "perMachine": false, "createDesktopShortcut": true, "shortcutName": "ズズラジオ体操部" },
+              "publish": [{ "provider": "github", "owner": "zzcafe2800", "repo": "zzcard", "releaseType": "release" }]
+            }
+          }
+          ZZEOF
+          cat > desktop/main.js << 'ZZEOF'
+          /* ズズラジオ体操部 PC版（Electron）
+             ・中身は いつもの サイトを 開く → サイトを 更新すれば PC版も 自動で 最新
+             ・zzcard://link?c=コード で サイトと つなぐ（つなぎコード）
+             ・音は さいしょから 鳴らせる（サイトの 自動再生の 制限なし） */
+          const { app, BrowserWindow, shell, ipcMain, Menu } = require('electron');
+          const path = require('path');
+
+          const SITE = 'https://zzcafe2800.github.io/zzcard/';
+          let win = null;
+          let pendingLink = null;
+
+          app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
+
+          if (process.defaultApp && process.argv.length >= 2) {
+            app.setAsDefaultProtocolClient('zzcard', process.execPath, [path.resolve(process.argv[1])]);
+          } else {
+            app.setAsDefaultProtocolClient('zzcard');
+          }
+
+          function linkFrom(argv) {
+            const u = (argv || []).find((a) => typeof a === 'string' && a.startsWith('zzcard://'));
+            if (!u) return null;
+            try { return new URL(u).searchParams.get('c'); } catch (_) { return null; }
+          }
+
+          function sendLink(code) {
+            if (!code) return;
+            if (win && !win.isDestroyed()) {
+              if (win.isMinimized()) win.restore();
+              win.show(); win.focus();
+              win.webContents.send('zz-link', code);
+            } else {
+              pendingLink = code;
+            }
+          }
+
+          function createWindow() {
+            Menu.setApplicationMenu(null);
+            win = new BrowserWindow({
+              width: 1280, height: 800, minWidth: 900, minHeight: 600,
+              backgroundColor: '#dfe7ef', title: 'ズズラジオ体操部',
+              icon: path.join(__dirname, 'icon.png'),
+              webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false, sandbox: true }
+            });
+            win.loadURL(SITE);
+            win.webContents.setWindowOpenHandler(({ url }) => {
+              if (url.startsWith(SITE)) return { action: 'allow' };
+              shell.openExternal(url);
+              return { action: 'deny' };
+            });
+            win.webContents.on('will-navigate', (e, url) => {
+              if (!url.startsWith(SITE) && !url.startsWith('zzcard://')) { e.preventDefault(); shell.openExternal(url); }
+            });
+            win.webContents.on('did-fail-load', (_e, code, _d, url, isMain) => {
+              if (isMain && code !== -3) win.loadFile(path.join(__dirname, 'offline.html'));
+            });
+            win.on('closed', () => { win = null; });
+          }
+
+          ipcMain.on('zz-ready', () => {
+            if (pendingLink && win) { win.webContents.send('zz-link', pendingLink); pendingLink = null; }
+          });
+          ipcMain.on('zz-retry', () => { if (win) win.loadURL(SITE); });
+
+          if (!app.requestSingleInstanceLock()) {
+            app.quit();
+          } else {
+            app.on('second-instance', (_e, argv) => {
+              const c = linkFrom(argv);
+              if (c) sendLink(c);
+              else if (win) { if (win.isMinimized()) win.restore(); win.focus(); }
+            });
+            app.on('open-url', (e, url) => { e.preventDefault(); sendLink(linkFrom([url])); });
+            app.whenReady().then(() => {
+              pendingLink = linkFrom(process.argv);
+              createWindow();
+              try { require('electron-updater').autoUpdater.checkForUpdatesAndNotify(); } catch (_) {}
+            });
+            app.on('window-all-closed', () => app.quit());
+          }
+          ZZEOF
+          cat > desktop/preload.js << 'ZZEOF'
+          /* サイトに「PC版で 開いている」ことと、つなぎコードを わたす */
+          const { contextBridge, ipcRenderer } = require('electron');
+          contextBridge.exposeInMainWorld('zzDesktop', {
+            isDesktop: true,
+            platform: process.platform,
+            onLink: (cb) => {
+              ipcRenderer.on('zz-link', (_e, code) => { try { cb(code); } catch (_) {} });
+              ipcRenderer.send('zz-ready');
+            },
+            retry: () => ipcRenderer.send('zz-retry')
+          });
+          ZZEOF
+          cat > desktop/offline.html << 'ZZEOF'
+          <!doctype html><html lang="ja"><head><meta charset="utf-8"><title>ズズラジオ体操部</title>
+          <style>html,body{height:100%;margin:0}body{display:flex;align-items:center;justify-content:center;background:#dfe7ef;font-family:system-ui,sans-serif;color:#2b3242}
+          .b{background:#fff;border-radius:20px;padding:28px 34px;text-align:center;box-shadow:0 14px 40px rgba(43,50,66,.16)}b{display:block;font-size:17px;margin-bottom:14px}
+          button{height:44px;padding:0 26px;border:0;border-radius:999px;background:#2b3242;color:#fff;font-size:15px;font-weight:800;cursor:pointer}</style></head>
+          <body><div class="b"><b>インターネットに つながっていないよ</b><button onclick="window.zzDesktop&&zzDesktop.retry?zzDesktop.retry():location.reload()">もう一度</button></div></body></html>
+          ZZEOF
+          node -e "const fs=require('fs');const s=fs.readFileSync('index.html','utf8');const m=s.match(/rel=\"apple-touch-icon\" href=\"data:image\/png;base64,([^\"]+)\"/);if(!m){console.error('icon not found');process.exit(1);}fs.writeFileSync('desktop/icon192.png',Buffer.from(m[1],'base64'));console.log('icon ok');"
+      - name: アイコンを 大きくする（512px）
+        shell: pwsh
+        run: |
+          Add-Type -AssemblyName System.Drawing
+          $src = [System.Drawing.Image]::FromFile("$PWD\desktop\icon192.png")
+          $bmp = New-Object System.Drawing.Bitmap 512, 512
+          $g = [System.Drawing.Graphics]::FromImage($bmp)
+          $g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+          $g.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
+          $g.DrawImage($src, 0, 0, 512, 512)
+          $bmp.Save("$PWD\desktop\icon.png", [System.Drawing.Imaging.ImageFormat]::Png)
+          $g.Dispose(); $bmp.Dispose(); $src.Dispose()
+          Remove-Item "$PWD\desktop\icon192.png"
+      - name: インストーラーを 作って Releases に のせる
+        working-directory: desktop
+        shell: bash
+        run: |
+          npm install
+          npx electron-builder --win --publish always
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

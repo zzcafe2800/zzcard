@@ -46,7 +46,6 @@ jobs:
           serde = { version = "1", features = ["derive"] }
           serde_json = "1"
           chrono = "0.4"
-          rdev = "0.5"
 
           [profile.release]
           codegen-units = 1
@@ -185,9 +184,81 @@ jobs:
                   fn IsWindowVisible(h: isize) -> i32;
                   fn RedrawWindow(h: isize, r: *const Rect, rgn: isize, flags: u32) -> i32;
               }
+              #[link(name = "user32")]
+              extern "system" {
+                  fn GetForegroundWindow() -> isize;
+                  fn GetClassNameW(h: isize, buf: *mut u16, n: i32) -> i32;
+                  fn IsZoomed(h: isize) -> i32;
+                  fn RegisterClassExW(wc: *const WndClass) -> u16;
+                  fn CreateWindowExW(ex: u32, cls: *const u16, name: *const u16, style: u32, x: i32, y: i32, w: i32, h: i32, parent: isize, menu: isize, inst: isize, param: *mut std::ffi::c_void) -> isize;
+                  fn DefWindowProcW(h: isize, msg: u32, wp: usize, lp: isize) -> isize;
+                  fn GetMessageW(msg: *mut Msg, h: isize, min: u32, max: u32) -> i32;
+                  fn TranslateMessage(msg: *const Msg) -> i32;
+                  fn DispatchMessageW(msg: *const Msg) -> isize;
+                  fn RegisterRawInputDevices(devs: *const RawDev, n: u32, size: u32) -> i32;
+                  fn GetRawInputData(h: isize, cmd: u32, data: *mut std::ffi::c_void, size: *mut u32, hsize: u32) -> u32;
+              }
+              #[link(name = "kernel32")]
+              extern "system" { fn GetModuleHandleW(name: *const u16) -> isize; }
               #[link(name = "shell32")]
               extern "system" {
                   fn SHQueryUserNotificationState(state: *mut i32) -> i32;
+              }
+              #[repr(C)] pub struct WndClass { size: u32, style: u32, proc_: extern "system" fn(isize, u32, usize, isize) -> isize, cls_extra: i32, wnd_extra: i32, inst: isize, icon: isize, cursor: isize, bg: isize, menu: *const u16, name: *const u16, icon_sm: isize }
+              #[repr(C)] pub struct Msg { hwnd: isize, message: u32, wp: usize, lp: isize, time: u32, x: i32, y: i32, private: u32 }
+              #[repr(C)] pub struct RawDev { page: u16, usage: u16, flags: u32, target: isize }
+              #[repr(C)] #[derive(Clone, Copy)] struct RawHeader { kind: u32, size: u32, device: isize, wp: usize }
+              #[repr(C)] #[derive(Clone, Copy)] struct RawKb { make: u16, flags: u16, reserved: u16, vkey: u16, message: u32, extra: u32 }
+              #[repr(C)] #[derive(Clone, Copy)] struct RawInputKb { h: RawHeader, kb: RawKb }
+              /* 今日の タップ数（押した 回数だけ）。押しっぱなしは 数えない */
+              pub static TAPS: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+              static mut DOWN: [bool; 256] = [false; 256];
+              extern "system" fn raw_proc(h: isize, msg: u32, wp: usize, lp: isize) -> isize {
+                  unsafe {
+                      if msg == 0x00FF {
+                          let mut buf: RawInputKb = std::mem::zeroed();
+                          let mut size = std::mem::size_of::<RawInputKb>() as u32;
+                          let r = GetRawInputData(lp, 0x1000_0003, &mut buf as *mut RawInputKb as *mut std::ffi::c_void, &mut size, std::mem::size_of::<RawHeader>() as u32);
+                          if r != u32::MAX && buf.h.kind == 1 {
+                              let vk = (buf.kb.vkey & 0xFF) as usize;
+                              if vk != 0xFF && vk != 0 {
+                                  let d = std::ptr::addr_of_mut!(DOWN);
+                                  if buf.kb.flags & 1 != 0 { (*d)[vk] = false; }
+                                  else if !(*d)[vk] { (*d)[vk] = true; TAPS.fetch_add(1, std::sync::atomic::Ordering::Relaxed); }
+                              }
+                          }
+                      }
+                      DefWindowProcW(h, msg, wp, lp)
+                  }
+              }
+              /* キーボードの 知らせだけを 受け取る（Raw Input）。ほかの アプリの 入力には 割りこまないので ゲームが 遅れない。マウスは 見ない */
+              pub fn keys_loop() {
+                  unsafe {
+                      let inst = GetModuleHandleW(std::ptr::null());
+                      let cls = w("zzRawKeys");
+                      let wc = WndClass { size: std::mem::size_of::<WndClass>() as u32, style: 0, proc_: raw_proc, cls_extra: 0, wnd_extra: 0, inst, icon: 0, cursor: 0, bg: 0, menu: std::ptr::null(), name: cls.as_ptr(), icon_sm: 0 };
+                      RegisterClassExW(&wc);
+                      let hwnd = CreateWindowExW(0, cls.as_ptr(), cls.as_ptr(), 0, 0, 0, 0, 0, -3, 0, inst, std::ptr::null_mut());
+                      if hwnd == 0 { return; }
+                      let dev = RawDev { page: 1, usage: 6, flags: 0x0000_0100, target: hwnd };
+                      if RegisterRawInputDevices(&dev, 1, std::mem::size_of::<RawDev>() as u32) == 0 { return; }
+                      let mut msg: Msg = std::mem::zeroed();
+                      while GetMessageW(&mut msg, 0, 0, 0) > 0 { TranslateMessage(&msg); DispatchMessageW(&msg); }
+                  }
+              }
+              /* 前に 出ている まど：(画面 全部を おおう ＝ ゲームや 動画の 全画面, デスクトップが かくれる ＝ 全画面・最大化・ほぼ 全部) */
+              pub fn fg_state(mx: i32, my: i32, mw: i32, mh: i32) -> (bool, bool) {
+                  unsafe {
+                      let h = GetForegroundWindow(); if h == 0 { return (false, false); }
+                      let mut buf = [0u16; 64]; let n = GetClassNameW(h, buf.as_mut_ptr(), 64);
+                      let cls = String::from_utf16_lossy(&buf[..n.max(0) as usize]);
+                      if ["Progman", "WorkerW", "Shell_TrayWnd", "Shell_SecondaryTrayWnd"].contains(&cls.as_str()) { return (false, false); }
+                      let mut r = Rect::default(); if GetWindowRect(h, &mut r) == 0 { return (false, false); }
+                      let full = r.left <= mx && r.top <= my && r.right >= mx + mw && r.bottom >= my + mh;
+                      let area = ((r.right - r.left).max(0) as i64) * ((r.bottom - r.top).max(0) as i64);
+                      let big = area * 100 >= (mw as i64) * (mh as i64) * 85;
+                      (full, full || IsZoomed(h) != 0 || big)
+                  }
               }
               fn w(s: &str) -> Vec<u16> { s.encode_utf16().chain(std::iter::once(0)).collect() }
               /* タスクバー：上の ふちの y・画面の 下に あるか・見えて いるか（自動で かくれて いる 時は false） */
@@ -258,6 +329,9 @@ jobs:
               pub fn attach(_: isize, _: i32, _: i32) -> Result<&'static str, String> { Err("not windows".into()) }
               pub fn redraw() {}
               pub fn quns() -> i32 { 0 }
+              pub static TAPS: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+              pub fn keys_loop() {}
+              pub fn fg_state(_: i32, _: i32, _: i32, _: i32) -> (bool, bool) { (false, false) }
           }
 
           /* ===== まど ===== */
@@ -341,7 +415,7 @@ jobs:
               });
               let r = WebviewWindowBuilder::new(app, &label, WebviewUrl::App("cats.html".into()))
                   .initialization_script(&format!("window.__ZZQ={};", q))
-                  .title("zz").transparent(true).decorations(false).shadow(false).skip_taskbar(true)
+                  .title("zz").transparent(mode != "wall").decorations(false).shadow(false).skip_taskbar(true)
                   .resizable(false).focused(false).visible(false).always_on_top(mode != "wall").build();
               let w = match r { Ok(w) => w, Err(e) => { log(app, &format!("cats window {}", e)); return; } };
               let _ = w.set_ignore_cursor_events(true);
@@ -386,7 +460,7 @@ jobs:
                   "st": sget(st, "sceneTier").as_i64().unwrap_or(0).to_string(), "tm": sstr(st, "sceneTime") });
               let r = WebviewWindowBuilder::new(app, &label, WebviewUrl::App("cats.html".into()))
                   .initialization_script(&format!("window.__ZZQ={};", q))
-                  .title("zz").transparent(true).decorations(false).shadow(false).skip_taskbar(true)
+                  .title("zz").transparent(false).decorations(false).shadow(false).skip_taskbar(true)
                   .resizable(false).focused(false).visible(false).always_on_top(false).build();
               let w = match r { Ok(w) => w, Err(e) => { log(app, &format!("wall scene window {}", e)); return; } };
               *st.wall.lock().unwrap() = label.clone();
@@ -552,35 +626,21 @@ jobs:
                       let first = !sbool(&st, "setupDone") || sstr(&st, "uid").is_empty() || st.link.lock().unwrap().is_some();
                       if first { open_setup(&h); } else { open_cats(&h, &st); }
 
-                      /* 今日の キーボードの タップ数（押した 回数だけ。どの キーかは 記録しない） */
-                      let st_k = st.clone();
-                      std::thread::spawn(move || {
-                          let mut down: Vec<rdev::Key> = Vec::new();
-                          let _ = rdev::listen(move |ev: rdev::Event| {
-                              match ev.event_type {
-                                  rdev::EventType::KeyPress(k) => {
-                                      if down.contains(&k) { return; }
-                                      down.push(k);
-                                      let mut t = st_k.taps.lock().unwrap();
-                                      let d = today(); if t.0 != d { *t = (d, 0); }
-                                      t.1 += 1;
-                                  }
-                                  rdev::EventType::KeyRelease(k) => { down.retain(|x| *x != k); }
-                                  _ => {}
-                              }
-                          });
-                      });
+                      /* 今日の キーボードの タップ数：Raw Input（割りこまない・マウスは 見ない） */
+                      std::thread::spawn(|| win::keys_loop());
                       /* タップ数を 猫の 画面へ（1.5秒ごと）・ときどき 保存 */
                       let (a1, st1) = (h.clone(), st.clone());
                       std::thread::spawn(move || {
                           let mut saved: i64 = -1;
+                          let mut since = std::time::Instant::now();
                           loop {
                               std::thread::sleep(Duration::from_millis(1500));
-                              let n = { let mut t = st1.taps.lock().unwrap(); let d = today(); if t.0 != d { *t = (d, 0); } t.1 as i64 };
+                              let add = win::TAPS.swap(0, std::sync::atomic::Ordering::Relaxed);
+                              let n = { let mut t = st1.taps.lock().unwrap(); let d = today(); if t.0 != d { *t = (d, 0); } t.1 += add; t.1 as i64 };
                               let mut s = st1.sent.lock().unwrap();
                               if n != *s { *s = n; let lb = cats_label(&st1); let _ = a1.emit_to(lb.as_str(), "zz-taps", n); }
                               drop(s);
-                              if n != saved { saved = n; save_state(&a1, &st1); }   /* ★変わったら すぐ 保存（閉じても 今日の 分が のこる） */
+                              if n != saved && since.elapsed() >= Duration::from_secs(10) { saved = n; since = std::time::Instant::now(); save_state(&a1, &st1); }   /* 10秒ごと（閉じる 時にも 保存） */
                           }
                       });
                       /* 止める／うごかす（3秒ごと）・タスクバーに あわせる（0.7秒ごと） */
@@ -590,9 +650,14 @@ jobs:
                           loop {
                               std::thread::sleep(Duration::from_millis(700));
                               k += 1;
-                              if k % 4 == 0 {
+                              if k % 2 == 0 {
                                   let q = win::quns();
-                                  let busy = if sstr(&st2, "mode") == "full" { q == 1 } else { (1..=4).contains(&q) };
+                                  let (fs, cover) = match primary(&a2) { Some((mx, my, mw, mh, _)) => win::fg_state(mx, my, mw, mh), None => (false, false) };
+                                  let busy = match sstr(&st2, "mode").as_str() {
+                                      "full" => q == 1 || q == 3,                          /* 全画面モード：ロック中・専用の 全画面ゲームの 時だけ */
+                                      "wall" => (1..=4).contains(&q) || cover,             /* 壁紙：デスクトップが かくれて いる 時は 全部 止める */
+                                      _ => (1..=4).contains(&q) || fs,                     /* タスクバー：全画面の ゲームや 動画の 時 */
+                                  };
                                   let mut p = st2.paused.lock().unwrap();
                                   if busy != *p { *p = busy; let lb = cats_label(&st2); let _ = a2.emit_to(lb.as_str(), "zz-pause", busy); }
                               }
@@ -941,6 +1006,9 @@ jobs:
           html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent;}
           #homeScenery{position:absolute;inset:0;}
           #sceneBg{position:absolute;inset:0;}#sceneBg svg{width:100%;height:100%;display:block;}
+          #sceneBg img{width:100%;height:100%;display:block;}
+          body.zzPaused *{animation-play-state:paused !important;}
+          body.zzHide #farPlay{visibility:hidden;}
           #farPlay{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .8s ease;overflow:hidden;}
           #farPlay.on{opacity:1;}
           #farPlay .fpCat{position:absolute;left:0;top:0;width:0;height:0;will-change:transform;}
@@ -1058,11 +1126,35 @@ jobs:
             return data.cats.filter((c) => SHOW_SLEEP || c.today).map((c) => { const sleep = !c.today && !WAKE, el = figEl(c, sleep);   /* 起こす：自分の 画面だけ 起きて いる あつかい */ return el ? { fig: el, h: (c.fig && c.fig.h) || 60, w: (c.fig && c.fig.w) || 74, sleep, self: c.self } : null; }).filter(Boolean);
           };
           function skyGrad() { try { if (typeof skyGradientForHour === 'function') return skyGradientForHour(TM_HOUR[FIXTM] != null ? TM_HOUR[FIXTM] : new Date().getHours()); } catch (_) {} return 'linear-gradient(#8fc3e8,#cfe6f6 55%,#eef6fb)'; }
+          /* 景色を 1枚の 画像（PNG）に する：猫が 動いても 景色は 描き直さない */
+          let sceneUrl = '';
+          function sceneImg(svg, w, h) {
+            const el = $('sceneBg');
+            try {
+              const src = svg.indexOf('xmlns=') > 0 ? svg : svg.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
+              const im = new Image();
+              im.onload = () => {
+                try {
+                  const dpr = Math.min(2, window.devicePixelRatio || 1), c = document.createElement('canvas');
+                  c.width = Math.round(w * dpr); c.height = Math.round(h * dpr);
+                  c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+                  c.toBlob((b) => {
+                    if (!b) { el.innerHTML = svg; return; }
+                    const u = URL.createObjectURL(b), old = sceneUrl; sceneUrl = u;
+                    el.innerHTML = '<img alt="" src="' + u + '">';
+                    if (old) setTimeout(() => URL.revokeObjectURL(old), 2000);
+                  }, 'image/png');
+                } catch (_) { el.innerHTML = svg; }
+              };
+              im.onerror = () => { el.innerHTML = svg; };
+              im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(src);
+            } catch (_) { el.innerHTML = svg; }
+          }
           function layout() {
             const lay = $('farPlay'), bw = lay.clientWidth || innerWidth, bh = lay.clientHeight || innerHeight;
             if (MODE === 'wall') {
               tk = currentSkyKey(); document.body.style.background = skyGrad();
-              $('sceneBg').innerHTML = _hs2(tier, tk, Math.round(640 * bw / bh));
+              sceneImg(_hs2(tier, tk, Math.round(640 * bw / bh)), bw, bh);
               FP_H[tier] = (FPH0[tier] || 10) * SIZE;
               try { _sceneCur = tier; } catch (_) {} if (window._hsZone) window._hsZone.tier = tier;
             } else {
@@ -1112,10 +1204,20 @@ jobs:
               restart();
             } catch (e) { try { zz.log('load ' + (e && e.message)); } catch (_) {} }
           }
+          let autoRest = false, slowT = 0, lastF = 0;
           function pause(p) {
+            lastF = 0;
             paused = !!p;
-            if (paused) { _fpOn = false; try { cancelAnimationFrame(_fpRaf); } catch (_) {} }
-            else if (data && _fpCats.length && !_fpOn) { _fpOn = true; _fpLast = performance.now(); _fpRaf = requestAnimationFrame(_fpTick); }
+            const stop = paused || autoRest, b = document.body;
+            if (stop) {
+              _fpOn = false; try { cancelAnimationFrame(_fpRaf); } catch (_) {}
+              b.classList.remove('uiRest1');   /* サイトの 見張り（_fpWatch）が 動かし直さない ように */
+            } else {
+              if (data && _fpCats.length && !_fpOn) { _fpOn = true; _fpLast = performance.now(); _fpRaf = requestAnimationFrame(_fpTick); }
+              b.classList.add('uiRest1');
+            }
+            b.classList.toggle('zzPaused', stop);   /* CSSの 動きも 止める */
+            b.classList.toggle('zzHide', paused);   /* 見えて いない 時は 猫を 描かない（重い 時は 見せたまま 止める） */
           }
           function wake() {   /* 起きる 時刻：自分の 猫が まんなかまで 歩いてきて 知らせる */
             if (!data) return; if (paused) pause(false);
@@ -1152,7 +1254,25 @@ jobs:
           }
           async function syncTaps() { if (NOCATS) return; try { if (UID) await pubTaps(UID, taps, SHARE); oTaps = await allTaps(); } catch (_) {} }
           setInterval(syncTaps, 30000); setTimeout(syncTaps, 4000);
-          setInterval(tapPos, LOWQ ? 100 : 50);
+          /* 3) 重く なったら 自動で 猫を 休ませる（1秒に 20回を 下回る 状態が 3秒 続いたら 60秒 休む → また ためす） */
+          (function watchFps() {
+            const orig = window._fpTick;
+            if (typeof orig !== 'function') return;
+            window._fpTick = function (now) {
+              if (lastF) {
+                const d = now - lastF, lim = LOWQ ? 75 : 50;
+                if (d > lim && d < 1000) slowT += d; else if (d <= lim) slowT = Math.max(0, slowT - d * 0.5);
+                if (slowT > 3000 && !autoRest) {
+                  autoRest = true; slowT = 0; lastF = 0; pause(paused); try { zz.log('auto rest: slow frames'); } catch (_) {}
+                  setTimeout(() => { autoRest = false; lastF = 0; pause(paused); }, 60000);
+                  return;
+                }
+              }
+              lastF = now;
+              return orig(now);
+            };
+          })();
+          setInterval(() => { if (!paused && !autoRest) tapPos(); }, LOWQ ? 150 : 100);
           setInterval(showCard, 8000);
           setInterval(() => { if (MODE === 'wall' && currentSkyKey() !== tk) restart(); }, 60000);
           setInterval(load, 10 * 60 * 1000);

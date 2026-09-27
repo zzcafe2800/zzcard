@@ -16279,7 +16279,7 @@ function renderHomeScenery(tier){
    ・前後感：猫は 奥行きの 帯の 中を 動き、岩・木・柵などの 部品と 根元の 高さで 前後が 入れかわる
    ・ふるまい：ひとり／ふたり／みんな。猫ごとの 元気さ・人なつこさで 選びかたが 変わり、同じことを くりかえしにくい
    ・気持ち：かんたんな イラストで 頭の 上に（ハート・音符・Zzz・キラキラ・！・？・ぷんぷん・汗・…・花） ===== */
-var FP_H={1:8,2:6.7,3:9.3,4:10.7,5:13.3,6:12,7:15.3};
+var FP_H={1:12,2:10,3:14,4:16,5:20,6:18,7:23};   /* 1.5倍（遠い順 2→1→3→4→6→5→7 は そのまま） */
 var _fpRaf=0,_fpCats=[],_fpOn=false,_fpLast=0,_fpRM=false,_fpG={},_fpBf=null,_fpXT=null;
 try{ _fpRM=window.matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(_){}
 var FP_ICON={
@@ -16299,16 +16299,20 @@ function _fpLayer(){ var hs=$("homeScenery"); if(!hs)return null; var l=$("farPl
 function _fpTodayFigs(){ var out=[]; try{
   var today=jstKey(),sfx="_"+today,domBy={},refH=60,refW=74;
   document.querySelectorAll("#hillCats .hillCat").forEach(function(el){ var f=el.querySelector(".catFig"); if(f&&el.dataset.uid){ domBy[el.dataset.uid]=f; if(f.offsetHeight){ refH=f.offsetHeight; refW=f.offsetWidth||refW; } } });
-  var selfDone=false; try{ selfDone=getDoneDates().indexOf(today)>=0; }catch(_){}
-  (_hillAllCats||[]).forEach(function(po){ if(!po||out.length>=12)return;
-    var ok=po.isSelf?selfDone:((po.pid&&String(po.pid).slice(-sfx.length)===sfx)||po.date===today||(Number.isFinite(po.createdAt)&&po.createdAt>0&&_localDayKey(po.createdAt)===today));
-    if(!ok)return;
-    var fig=po.uid&&domBy[po.uid];
-    if(fig){ out.push({fig:fig,h:fig.offsetHeight||refH,w:fig.offsetWidth||refW}); return; }
-    var body=po.catBody||"#1c1c1c",ear=po.color||"#a6bfd2",pose=po.isSelf?getEquippedPose():(po.pose||"sit"),nf=null;
+  var selfDone=false,selfRecent=false; try{ var dd=getDoneDates(),wk=addDays(today,-6); selfDone=dd.indexOf(today)>=0; selfRecent=dd.some(function(k){ return k>=wk; }); }catch(_){}
+  var isToday=function(po){ return po.isSelf?selfDone:((po.pid&&String(po.pid).slice(-sfx.length)===sfx)||po.date===today||(Number.isFinite(po.createdAt)&&po.createdAt>0&&_localDayKey(po.createdAt)===today)); };
+  var list=(_hillAllCats||[]).filter(function(po){ return po&&(!po.isSelf||selfDone||selfRecent); });
+  /* ★今日 やった 子 → 最近 やった 子（あたらしい 順）で さいだい 10匹 */
+  var tod=list.filter(isToday),rec=list.filter(function(po){ return !isToday(po); }).sort(function(a,b){ return (b.createdAt||0)-(a.createdAt||0); });
+  tod.concat(rec).slice(0,10).forEach(function(po){
+    var sleep=!isToday(po);
+    var fig=(!sleep&&po.uid)?domBy[po.uid]:null;
+    if(fig){ out.push({fig:fig,h:fig.offsetHeight||refH,w:fig.offsetWidth||refW,sleep:false}); return; }
+    /* 絵を 作る（今日 やって いない 子は「まるね」で ねている 形） */
+    var body=po.catBody||"#1c1c1c",ear=po.color||"#a6bfd2",pose=sleep?"sleep":(po.isSelf?getEquippedPose():(po.pose||"sit")),nf=null;
     try{ if(po.isSelf){ try{ _selfCosOn(); nf=buildCatFig(body,ear,getEquippedCostume(),pose); }finally{ try{_selfCosOff();}catch(_){} } }
       else{ var ov="";try{ ov=acosSVG(po.acos); }catch(_){} try{ _artCosOverride=ov||null; nf=buildCatFig(body,ear,po.cos||null,pose); }finally{ _artCosOverride=null; } } }catch(_){}
-    if(nf)out.push({fig:nf,h:refH,w:refW});
+    if(nf)out.push({fig:nf,h:refH,w:refW,sleep:sleep});
   }); }catch(_){} return out; }
 function _fpPoint(line,t){ if(!line||!line.length)return [0,0]; if(line.length===1)return line[0];
   var L=[],tot=0; for(var i=1;i<line.length;i++){ var d=Math.hypot(line[i][0]-line[i-1][0],line[i][1]-line[i-1][1]); L.push(d); tot+=d; }
@@ -16385,7 +16389,7 @@ function _fpPeekProp(c){ var z=window._hsZone; if(!z||!z.props||!z.props.length)
 /* つぎに なにを するか（ひとり・ふたり・みんな） */
 function _fpPlan(c){
   c.soc=false;
-  var others=_fpCats.filter(function(o){ return o!==c&&!o.soc; }),E=c.E,S=c.S;
+  var others=_fpCats.filter(function(o){ return o!==c&&!o.soc&&!o.sleep; }),E=c.E,S=c.S;
   var rt=function(s){ return Math.max(.04,Math.min(.96,c.t+(Math.random()-.5)*2*s)); },rz=function(){ return Math.random()*1.6-.8; },R=Math.random;
   var W=[["wander",3],["trot",1.6*E],["zoomies",.8*E],["hops",1.6*E],["pounce",1*E],["sitlook",1.6*(1.2-E)],["groom",1.1],["stretch",.8],["nap",1.25-E],["roll",.7*E],["sniff",.9],["bfly",_fpBf?0:.6],["peek",_fpPeekProp(c)?1.3:0]];
   if(others.length>=1)W.push(["chase",2.6*E*S],["spar",1.8*E*S],["nuzzle",2*S],["chat",2*S],["napT",S*(1.25-E)]);
@@ -16443,7 +16447,7 @@ function _fpStart(){
     lay.appendChild(w);
     _fpCats.push({el:w,sh:sh,fig:c,fh:f.h,fw:f.w,t:figs.length>1?(.12+.76*i/(figs.length-1)):.5,zo:Math.random()*1.4-.7,dir:Math.random()<.5?-1:1,
       q:[{a:"wait",d:Math.random()*1.6,pose:"sit"}],at:0,pose:"sit",sx:1,sy:1,rot:0,hop:0,gp:Math.random()*2,jp:0,pause:0,ph:Math.random()*6.28,
-      E:.3+Math.random()*.7,S:.2+Math.random()*.8,last:[],soc:false,ds:1,px:null,py:null});
+      E:.3+Math.random()*.7,S:.2+Math.random()*.8,last:[],soc:false,ds:1,px:null,py:null,sleep:!!f.sleep,zt:1+Math.random()*3});
   });
   try{ var tk=_devUnlockAll?_DEV_SKY[_devSkyIdx%_DEV_SKY.length]:currentSkyKey(),pal=_hs2Pal(tk),nt=(tk==="sky-night");
     var pa=parseInt(pal.haze.slice(1),16),mixc=function(sh2){ var a2=(pa>>sh2)&255; return Math.round(a2+(255-a2)*(nt?.25:.5)); },rgb=mixc(16)+","+mixc(8)+","+mixc(0);
@@ -16458,6 +16462,8 @@ function _fpStart(){
 }
 function _fpStop(){ _fpOn=false; cancelAnimationFrame(_fpRaf); var lay=$("farPlay"); if(lay)lay.classList.remove("on"); document.body.classList.remove("farPlayOn"); _fpBf=null; setTimeout(function(){ if(!_fpOn&&lay)lay.innerHTML=""; },900); }
 function _fpStep(c,dt){
+  if(c.sleep){ c.q=[]; c.hop=0; c.rot=0; c.pose="stand"; c.sx+=(1-c.sx)*Math.min(1,dt*10); c.sy+=(1-c.sy)*Math.min(1,dt*10);
+    c.zt-=dt; if(c.zt<=0){ c.zt=3+Math.random()*2.5; _fpEmo(c,"zzz"); } return; }   /* ★今日 やって いない 子は ずっと ねている */
   c.at+=dt; var a=c.q[0];
   if(!a){ _fpPlan(c); a=c.q[0]; if(!a)return; }
   if(!a._s){ a._s=1; c.at=0; if(a.pose)c.pose=a.pose; else if(a.a!=="nap")c.pose="stand"; if(a.emo)_fpEmo(c,a.emo); }

@@ -16392,15 +16392,18 @@ function _fpDust(c,n){ var lay=$("farPlay"); if(!lay||_fpRM||c.px==null)return; 
     d.style.left=(c.px-s/2+(Math.random()-.5)*hp*.7).toFixed(1)+"px"; d.style.top=(c.py-s*.55).toFixed(1)+"px"; d.style.zIndex=String(Math.round(c.py*10)+1); lay.appendChild(d);
     setTimeout(function(e){ return function(){ try{e.remove();}catch(_){} }; }(d),700); } }
 /* うごきの もと */
+/* 向きを 変える（ばたばた しない ように：一度 向いたら 0.38秒は 変えない） */
+function _fpFace(c,d,force){ if(!d||d===c.dir)return; var n=(_fpG&&_fpG.now)||0; if(!force&&n-(c._fT||0)<380)return; c._fT=n; c.dir=d; }
+function _fpFaceTo(c,o){ if(o&&o.t!=null&&_fpG&&Math.abs(o.t-c.t)*_fpG.L>_fpG.hp*.25)_fpFace(c,o.t>c.t?1:-1); }
 function _fpMoveTo(c,tt,tz,bodies,dt){ var G=_fpG,dxp=(tt-c.t)*G.L,dzp=(tz-c.zo)*G.dzPx,dist=Math.hypot(dxp,dzp),step=bodies*G.hp*c.ds*dt;
-  if(Math.abs(dxp)>G.hp*.08)c.dir=dxp<0?-1:1;
+  if(Math.abs(dxp)>G.hp*.2)_fpFace(c,dxp<0?-1:1);
   c.gp+=step/(G.hp*.55); c.hop=Math.abs(Math.sin(c.gp*Math.PI))*(bodies>2.6?.28:bodies>1.5?.2:.12);
   if(dist<=step||dist<.4){ c.t=tt; c.zo=tz; c.hop=0; return true; }
   c.t+=dxp/dist*step/G.L; c.zo+=dzp/dist*step/Math.max(1,G.dzPx); c.t=Math.max(.02,Math.min(.98,c.t)); c.zo=Math.max(-1,Math.min(1,c.zo)); return false; }
 var _fpAct={
   go:function(c,a,dt){ return _fpMoveTo(c,a.t,a.z,a.sp||1.2,dt)||c.at>(a.to||9); },
-  goCat:function(c,a,dt){ var p=a.cat; if(!p)return true; var side=(c.t<p.t)?-1:1,tt=p.t+side*(a.off||1)*_fpG.hp/_fpG.L,ar=_fpMoveTo(c,Math.max(.02,Math.min(.98,tt)),p.zo,a.sp||1.4,dt); if(ar)c.dir=(p.t>c.t)?1:-1; return ar||c.at>8; },
-  face:function(c,a){ if(a.cat)c.dir=(a.cat.t>c.t)?1:-1; return true; },
+  goCat:function(c,a,dt){ var p=a.cat; if(!p)return true; var side=a._side||(a._side=(c.t<p.t)?-1:1),tt=p.t+side*(a.off||1)*_fpG.hp/_fpG.L,ar=_fpMoveTo(c,Math.max(.02,Math.min(.98,tt)),p.zo,a.sp||1.4,dt); if(ar)_fpFaceTo(c,p); return ar||c.at>8; },
+  face:function(c,a){ if(a.cat)_fpFaceTo(c,a.cat); return true; },
   emo:function(c,a){ _fpEmo(c,a.k); return true; },
   dust:function(c,a){ _fpDust(c,3); return true; },
   wait:function(c,a,dt){ c.hop=0;
@@ -16417,9 +16420,9 @@ var _fpAct={
     if(c.t<.02||c.t>.98){ c.dir=-c.dir; c.t=Math.max(.02,Math.min(.98,c.t)); } return false; },
   leap:function(c,a,dt){ a.n=1; a.jt=a.jt||.62; a.big=1; return _fpAct.hops(c,a,dt); },
   roll:function(c,a,dt){ var u=Math.min(1,c.at/.75); c.rot=360*u; c.hop=Math.sin(Math.PI*u)*.35; if(u>=1){ c.rot=0; c.hop=0; _fpDust(c,2); return true; } return false; },
-  talk:function(c,a,dt){ if(a.cat)c.dir=(a.cat.t>c.t)?1:-1; c.hop=(Math.sin(c.at*7+c.ph)>.86)?.12:0;
+  talk:function(c,a,dt){ if(a.cat)_fpFaceTo(c,a.cat); c.hop=(Math.sin(c.at*7+c.ph)>.86)?.12:0;
     if(c.at>(a._e||.35)){ a._e=c.at+.95+Math.random()*.6; var ks=["dots","note","ques","heart","dots"]; _fpEmo(c,ks[Math.floor(Math.random()*ks.length)]); } return c.at>=a.d; },
-  spar:function(c,a,dt){ if(a.cat)c.dir=(a.cat.t>c.t)?1:-1; var ph=(c.at*1.8+(a.off||0))%1; c.hop=ph<.5?Math.sin(ph*2*Math.PI)*.55:0; c.pose=ph<.5?"stand":"crouch";
+  spar:function(c,a,dt){ if(a.cat)_fpFaceTo(c,a.cat); var ph=(c.at*1.8+(a.off||0))%1; c.hop=ph<.5?Math.sin(ph*2*Math.PI)*.55:0; c.pose=ph<.5?"stand":"crouch";
     if(ph<.5)a._d=0; else if(!a._d){ a._d=1; _fpDust(c,1); } return c.at>=a.d; },
   dance:function(c,a,dt){ var ph=(_fpG.now/1000*1.6)%1; c.hop=ph<.5?Math.sin(ph*2*Math.PI)*.7:0; if(ph>.5&&!a._f){ a._f=1; if(Math.random()<.5)c.dir=-c.dir; } if(ph<.5)a._f=0;
     if(c.at>(a._e||.3)){ a._e=c.at+1.1+Math.random()*.7; _fpEmo(c,Math.random()<.8?"note":"spark"); } return c.at>=a.d; },
@@ -16511,13 +16514,13 @@ Object.assign(FP_ICON,{
 });
 var FP_PROP={
   bug:{w:.42,h:.28,svg:'<svg viewBox="0 0 24 16"><ellipse cx="13" cy="10" rx="8" ry="6" fill="#e0625a"/><circle cx="4.6" cy="10" r="3.4" fill="#2b3242"/><path d="M13 4v12" stroke="#2b3242" stroke-width="1"/><circle cx="10" cy="8" r="1.4" fill="#2b3242"/><circle cx="16" cy="12" r="1.4" fill="#2b3242"/></svg>'},
-  ball:{w:.5,h:.5,svg:'<svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" fill="#f2a65a"/><path d="M1.6 7c5.6 2.4 11.2 2.4 16.8 0M1.6 13c5.6-2.4 11.2-2.4 16.8 0" stroke="#fff4e6" stroke-width="1.8" fill="none"/></svg>'},
+  ball:{w:.5,h:.5,svg:'<svg viewBox="0 0 20 20"><path d="M15.6 16.4c1.6.4 2.9 1.3 3.4 2.6" stroke="#d9687c" stroke-width="1.2" fill="none" stroke-linecap="round"/><circle cx="9.6" cy="10.4" r="8.2" fill="#f3a0ae"/><path d="M2.6 12.6a8.2 8.2 0 0 0 14 1.4c-4.6 1.6-9.6 1-14-1.4z" fill="#e88597"/><path d="M2.8 7.6c3.2-2.6 9-3.4 13.6-.6M2 11.6c4-3 10.4-3.6 15.2-.4M4.4 15.4c3-2.2 8-2.8 11.8-.8M7 3.2c-1.2 4-.2 10 2.8 14.6M12.2 2.8c1.4 3.6 1.2 9-.8 14.6" stroke="#d9687c" stroke-width="1.05" fill="none" stroke-linecap="round" opacity=".85"/></svg>'},
   mouse:{w:.62,h:.34,svg:'<svg viewBox="0 0 30 16"><path d="M4 12c-3 1-3.4-3-.6-3.4" stroke="#a9adb6" stroke-width="1.4" fill="none" stroke-linecap="round"/><ellipse cx="14" cy="10" rx="10" ry="5.6" fill="#a9adb6"/><circle cx="22.6" cy="5.8" r="3.6" fill="#c3c7cf"/><circle cx="26.4" cy="10.2" r="1" fill="#2b3242"/></svg>'},
   fish:{w:.5,h:.26,svg:'<svg viewBox="0 0 28 14"><path d="M1 7c4-5.4 12-6 16.4-1.8L22 1.6v10.8l-4.6-3.6C13 13 5 12.4 1 7z" fill="#8fb3cc"/><circle cx="6" cy="6.2" r="1.2" fill="#2b3242"/></svg>'},
   balloon:{w:.62,h:1.6,svg:'<svg viewBox="0 0 20 52"><ellipse cx="10" cy="10" rx="9" ry="10.5" fill="#e8798f"/><path d="M10 20.5l-1.6 2.2h3.2z" fill="#e8798f"/><path d="M10 22.7c2 6-2 10 0 16s-2 8 0 13" stroke="#8a93a3" stroke-width="1" fill="none"/></svg>'},
   cup:{w:.34,h:.44,svg:'<svg viewBox="0 0 18 22"><path d="M7.4 7c-1-1.4 1-2.4 0-4M10.6 7c-1-1.4 1-2.4 0-4" stroke="#c9cfd8" stroke-width="1.2" fill="none" stroke-linecap="round"/><path d="M2 10h11v5.6A5.4 5.4 0 0 1 7.6 21h0A5.6 5.6 0 0 1 2 15.4z" fill="#f4efe6"/><path d="M13 11.4h1.6a2.4 2.4 0 0 1 0 4.8H13" fill="none" stroke="#f4efe6" stroke-width="1.8"/><ellipse cx="7.5" cy="10" rx="5.5" ry="1.4" fill="#8a5a3c"/></svg>'},
   bowl:{w:.6,h:.28,svg:'<svg viewBox="0 0 30 14"><path d="M4 6c6-4.6 16-4.6 22 0z" fill="#b98a5c"/><path d="M1 6h28c-1 5-6 7.6-14 7.6S2 11 1 6z" fill="#7aa7c7"/></svg>'},
-  box:{w:1.25,h:.95,svg:'<svg viewBox="0 0 40 30"><path d="M4 9h32v19H4z" fill="#d6ad76"/><path d="M4 9h32v4H4z" fill="#c49a62"/><path d="M4 9L0 2h12l4 7zM36 9l4-7H28l-4 7z" fill="#e2bd88"/><path d="M20 16v12" stroke="#b58852" stroke-width="1.4"/></svg>'},
+  box:{w:1.25,h:.95,svg:'<svg viewBox="0 0 40 30"><path d="M2.6 11.2 20 15.4v13.8L2.6 25.4z" fill="#cd9a5c"/><path d="M20 15.4l17.4-4.2v14.2L20 29.2z" fill="#dcae73"/><path d="M2.6 11.2 20 7l17.4 4.2L20 15.4z" fill="#e9c792"/><path d="M11.3 13.3 28.7 9.1" stroke="#c79457" stroke-width=".8"/><path d="M9.8 12.9l3-.7 17.4-4.2-3 .7z" fill="#f3e6cc"/><path d="M9.8 12.9l3-.7v3.2l-3-.7z" fill="#e7d6b3"/><path d="M2.6 11.2 20 7l17.4 4.2v14.2L20 29.2 2.6 25.4z" fill="none" stroke="#b27f45" stroke-width=".7" stroke-linejoin="round"/><path d="M20 15.4v13.8" stroke="#b27f45" stroke-width=".6"/><g fill="#b58149" opacity=".5"><ellipse cx="28.6" cy="21.4" rx="2" ry="1.7"/><circle cx="26.4" cy="18.8" r=".75"/><circle cx="28.4" cy="18" r=".75"/><circle cx="30.4" cy="18.4" r=".75"/></g></svg>'},
   book:{w:.72,h:.3,svg:'<svg viewBox="0 0 30 12"><path d="M1 3c5-2 9-2 14 0v8c-5-2-9-2-14 0z" fill="#f4efe6"/><path d="M29 3c-5-2-9-2-14 0v8c5-2 9-2 14 0z" fill="#e7dfd2"/><path d="M15 3v8" stroke="#b9a58a" stroke-width="1"/><path d="M21 2.4l7-1.4" stroke="#e8798f" stroke-width="1.6" stroke-linecap="round"/></svg>'}
 };
 var _fpEv=null,_fpEvT=8,_fpEvLast="",_fpEvQueued=null,_fpProps=[];
@@ -16589,7 +16592,7 @@ var FP_EV={
       ev.st.tp=_fpPick([["fishI","heart","ques","excl","note"],["sun","cupI","dots","heart"],["ballI","excl","note","spark","heart"],["bookI","ques","idea","heart"],["mouseI","excl","sweat","dots","heart"],["rice","heart","note","ques","heart"],["balloonI","excl","sweat","heart"],["flower","heart","note","spark"],["bugI","ques","idea","excl","note"]]); },
     step:function(ev,dt){ ev.st.nt-=dt; if(ev.st.nt>0)return; ev.st.nt=2+Math.random()*1.2; var tp=ev.st.tp;
       if(ev.st.i>=tp.length){ if(!ev.st.end){ ev.st.end=1; ev.cats.forEach(function(c){ if(Math.random()<.7)_fpEmo(c,"heart"); }); ev.dur=Math.min(ev.dur,ev.t+2.5); } return; }
-      var c=ev.cats[ev.st.who%ev.cats.length]; ev.st.who++; var o=ev.cats[ev.st.who%ev.cats.length]; if(o&&o!==c)c.dir=(o.t>c.t)?1:-1; _fpEmo(c,tp[ev.st.i++]); } },
+      var c=ev.cats[ev.st.who%ev.cats.length]; ev.st.who++; var o=ev.cats[ev.st.who%ev.cats.length]; if(o&&o!==c)_fpFaceTo(c,o); _fpEmo(c,tp[ev.st.i++]); } },
   stretch:{min:2,start:function(ev){ ev.dur=12+Math.random()*3; var t0=.25+Math.random()*.5,n=ev.cats.length;
       ev.cats.forEach(function(c,i){ c.q=[{a:"go",t:_fpClamp(t0+(i-(n-1)/2)*_fpDT(1.1)),z:0,sp:.75},{a:"face",cat:{t:.99}},{a:"wait",d:60,pose:"sit"}]; }); ev.st.s=0; },
     step:function(ev,dt){ if(!ev.st.s&&ev.t>4.5){ ev.st.s=1; ev.cats.forEach(function(c){ c.q=[{a:"wait",d:3.4,pose:"stretch"},{a:"wait",d:.9,pose:"stand"},{a:"wait",d:2.8,pose:"stretch"},{a:"wait",d:60,pose:"sit"}]; }); _fpEmo(ev.cats[0],"sun"); }
@@ -16639,14 +16642,14 @@ function _fpEvTick(dt){ if(_fpEv){ _fpEv.t+=dt; try{ FP_EV[_fpEv.kind].step(_fpE
 
 /* できごと用の うごき */
 Object.assign(_fpAct,{
-  emoIdle:function(c,a,dt){ c.hop=0; if(a.face&&a.face.t!=null)c.dir=(a.face.t>c.t)?1:-1;
+  emoIdle:function(c,a,dt){ c.hop=0; if(a.face&&a.face.t!=null)_fpFaceTo(c,a.face);
     if(a.look&&c.at>(a._lk||1.4)){ a._lk=c.at+1.4+Math.random()*1.2; c.dir=-c.dir; }
     if(a.list&&c.at>(a._e!=null?a._e:(a.ev?a.ev[0]*Math.random()+.8:2))){ a._e=c.at+(a.ev?a.ev[0]+Math.random()*(a.ev[1]-a.ev[0]):3); if(Math.random()<.8)_fpEmo(c,_fpPick(a.list)); }
     return c.at>=a.d; },
   chaseP:function(c,a,dt){ var p=a.p; if(!p||!p.alive)return true; var tt=_fpClamp(p.t-((p.t>c.t)?1:-1)*_fpDT(.35)); _fpMoveTo(c,tt,p.zo,a.sp||1.6,dt); return c.at>=a.d; },
   eat:function(c,a,dt){ c.pose="crouch"; c.hop=Math.abs(Math.sin(c.at*5))*.05; if(c.at>(a._e||2.2)){ a._e=c.at+2.6+Math.random()*1.6; if(Math.random()<.6)_fpEmo(c,_fpPick(["heart","note","rice"])); } return c.at>=a.d; },
   flwLow:function(c,a,dt){ var p=a.cat; if(!p)return true; if(!c._side)c._side=(Math.random()<.5?-1:1); _fpMoveTo(c,_fpClamp(p.t+c._side*_fpDT(.7)),p.zo,1.3,dt); return c.at>=a.d; },
-  inBox:function(c,a,dt){ c.hidden=true; if(a.bx){ c.t=a.bx.t; c.zo=a.bx.zo; } c.hop=0; return false; }
+  inBox:function(c,a,dt){ c.hidden=false; if(a.bx){ if(!a._s)a._s=(c.t<a.bx.t)?-1:1; var tt=Math.max(.02,Math.min(.98,a.bx.t+a._s*.95*_fpG.hp/_fpG.L)); if(!a._ar)a._ar=_fpMoveTo(c,tt,a.bx.zo,1.2,dt); if(a._ar){ _fpFace(c,a._s>0?-1:1,1); c.hop=(Math.sin(c.at*6+c.ph)>.72)?.22:0; } } else c.hop=0; return false; }   /* 閉じた 箱の 横で 前足で ちょいちょい */
 });
 function _fpStart(){
   var z=window._hsZone; if(!z||!z.line||!z.line.length||z.tier!==_sceneCur)return false;
@@ -16713,6 +16716,14 @@ function _fpDraw(c){
   var lie=c.pose==="lie",sw=hp*(lie?.8:.56-Math.min(.5,c.hop)*.22),shh=Math.max(1,hp*.12);
   c.sh.style.left=(-sw/2).toFixed(1)+"px"; c.sh.style.top=(jump-shh/2).toFixed(1)+"px"; c.sh.style.width=sw.toFixed(1)+"px"; c.sh.style.height=shh.toFixed(1)+"px"; c.sh.style.opacity=Math.max(.08,.34-c.hop*.16).toFixed(2);
 }
+/* 猫どうしが 重ならない ように：近すぎる 2匹を 少しずつ はなす（寝ている 子は 動かさない・前後に ずれて いれば そのまま） */
+function _fpSep(){ var G=_fpG; if(!G||!G.L)return; var cs=_fpCats,n=cs.length,gap=G.hp*.62/G.L;
+  for(var i=0;i<n;i++){ var a=cs[i]; if(a.hidden)continue;
+    for(var j=i+1;j<n;j++){ var b=cs[j]; if(b.hidden)continue;
+      var d=b.t-a.t,ad=Math.abs(d); if(ad>=gap||Math.abs((a.zo||0)-(b.zo||0))>=.6)continue;
+      var wa=a.sleep?0:1,wb=b.sleep?0:1; if(!wa&&!wb)continue;
+      var sg=d>0?1:d<0?-1:(i%2?1:-1),push=(gap-ad)*.24/(wa+wb);
+      if(wa)a.t=Math.max(.02,Math.min(.98,a.t-sg*push)); if(wb)b.t=Math.max(.02,Math.min(.98,b.t+sg*push)); } } }
 function _fpTick(now){
   if(!_fpOn)return;
   var dt=Math.min(.05,Math.max(0,(now-_fpLast)/1000)); _fpLast=now;
@@ -16720,7 +16731,9 @@ function _fpTick(now){
   var bw=lay.clientWidth||1,bh=lay.clientHeight||1,k=bh/640,hp=(FP_H[z.tier]||14)*k,Lpx=0;
   for(var li=1;li<z.line.length;li++)Lpx+=Math.hypot((z.line[li][0]-z.line[li-1][0])/z.W*bw,(z.line[li][1]-z.line[li-1][1])*k);
   _fpG={z:z,bw:bw,bh:bh,k:k,hp:hp,L:Math.max(1,Lpx),dzPx:(z.dz||8)*k,now:now};
-  _fpCats.forEach(function(c){ try{ _fpStep(c,dt); _fpDraw(c); }catch(err){ c.q=[]; } });
+  _fpCats.forEach(function(c){ try{ _fpStep(c,dt); }catch(err){ c.q=[]; } });
+  try{ _fpSep(); }catch(_){}
+  _fpCats.forEach(function(c){ try{ _fpDraw(c); }catch(err){} });
   if(_fpBf)_fpBfStep(dt);
   try{ _fpEvTick(dt); }catch(err){ console.warn("fp ev",err); }
   _fpRaf=requestAnimationFrame(_fpTick);

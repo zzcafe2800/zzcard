@@ -137,7 +137,7 @@ jobs:
               }
           }
           fn load_state(app: &AppHandle) -> Value {
-              let def = json!({"uid":"","mode":"wall","setupDone":false,"wakeDay":"","hideSleep":false,"noEmo":false,"noShare":false,"autoStart":true,"lowQ":false,"catScale":1.0,"cardWall":true,"cardBar":false,"noTapShow":false,"sleepMode":"show","wallOn":false});
+              let def = json!({"uid":"","mode":"wall","setupDone":false,"wakeDay":"","hideSleep":false,"noEmo":false,"noShare":false,"autoStart":true,"lowQ":false,"catScale":1.0,"cardWall":true,"cardBar":false,"noTapShow":false,"sleepMode":"show","wallOn":false,"sceneTier":0,"sceneTime":"auto"});
               let mut v = std::fs::read_to_string(data_path(app, "state.json")).ok().and_then(|t| serde_json::from_str::<Value>(&t).ok()).unwrap_or(json!({}));
               if !v.is_object() { v = json!({}); }
               if let (Some(o), Some(d)) = (v.as_object_mut(), def.as_object()) {
@@ -157,6 +157,10 @@ jobs:
           fn cats_label(st: &St) -> String { st.cats.lock().unwrap().clone() }
           fn link_from(a: &[String]) -> Option<String> {
               a.iter().find(|x| x.starts_with("zzcard://")).and_then(|u| u.split("c=").nth(1)).map(|c| c.chars().take_while(|ch| ch.is_ascii_alphanumeric()).collect::<String>()).filter(|c| !c.is_empty())
+          }
+          /* タスクバーの 高さ（画面の 単位）。カードを その すぐ 上に 置く */
+          fn taskbar_h(app: &AppHandle) -> i64 {
+              primary(app).and_then(|(mx, my, mw, mh, sc)| win::taskbar(mx, my, mw, mh).filter(|t| t.1).map(|t| (((my + mh) - t.0) as f64 / sc).round() as i64)).unwrap_or(48).max(0)
           }
           fn primary(app: &AppHandle) -> Option<(i32, i32, i32, i32, f64)> {
               let m = app.primary_monitor().ok().flatten()?;
@@ -329,6 +333,9 @@ jobs:
                   "share": if sbool(st, "noShare") { "0" } else { "1" },
                   "q": if sbool(st, "lowQ") { "lo" } else { "hi" },
                   "tp": if sbool(st, "noTapShow") { "0" } else { "1" },
+                  "st": sget(st, "sceneTier").as_i64().unwrap_or(0).to_string(),
+                  "tm": sstr(st, "sceneTime"),
+                  "tb": taskbar_h(app).to_string(),
                   "card": if (mode == "wall" && sget(st, "cardWall").as_bool().unwrap_or(true)) || (mode != "wall" && sbool(st, "cardBar")) { "1" } else { "0" },
                   "sz": sget(st, "catScale").as_f64().unwrap_or(1.0).to_string()
               });
@@ -375,7 +382,8 @@ jobs:
           /* うしろの 景色の 壁紙（猫なし）。猫は タスクバー／全画面の まどに 出す */
           fn open_wall_scene(app: &AppHandle, st: &St, n: u32) {
               let label = format!("wall{}", n);
-              let q = json!({ "mode": "wall", "nocats": "1", "uid": sstr(st, "uid"), "q": if sbool(st, "lowQ") { "lo" } else { "hi" }, "card": "0", "tp": "0" });
+              let q = json!({ "mode": "wall", "nocats": "1", "uid": sstr(st, "uid"), "q": if sbool(st, "lowQ") { "lo" } else { "hi" }, "card": "0", "tp": "0",
+                  "st": sget(st, "sceneTier").as_i64().unwrap_or(0).to_string(), "tm": sstr(st, "sceneTime") });
               let r = WebviewWindowBuilder::new(app, &label, WebviewUrl::App("cats.html".into()))
                   .initialization_script(&format!("window.__ZZQ={};", q))
                   .title("zz").transparent(true).decorations(false).shadow(false).skip_taskbar(true)
@@ -451,6 +459,10 @@ jobs:
                       let hide = o.get("hideSleep").and_then(|v| v.as_bool()).unwrap_or(false);
                       let slm = o.get("sleepMode").and_then(|v| v.as_str()).unwrap_or(if hide { "hide" } else { "show" });
                       a.insert("sleepMode".into(), json!(if ["show", "wake", "hide"].contains(&slm) { slm } else { "show" }));   /* 寝ている子：出す／起こす／出さない */
+                      let tier = o.get("sceneTier").and_then(|v| v.as_i64()).unwrap_or(0).max(0).min(7);
+                      a.insert("sceneTier".into(), json!(tier));   /* 景色の 合目（0＝自動） */
+                      let tm = o.get("sceneTime").and_then(|v| v.as_str()).unwrap_or("auto");
+                      a.insert("sceneTime".into(), json!(if ["auto", "sky-dawn", "sky-morning", "sky-day", "sky-evening", "sky-night"].contains(&tm) { tm } else { "auto" }));
                       a.insert("autoStart".into(), json!(o.get("autoStart").and_then(|v| v.as_bool()).unwrap_or(true)));   /* PCを つけたら 開く：はじめは オン */
                       a.insert("cardWall".into(), json!(o.get("cardWall").and_then(|v| v.as_bool()).unwrap_or(true)));
                       a.insert("cardBar".into(), json!(o.get("cardBar").and_then(|v| v.as_bool()).unwrap_or(false)));
@@ -768,6 +780,8 @@ jobs:
           .sub{display:block;font-size:10px;font-weight:700;color:#a3acb9}
           .more{border-top:1px solid #eef1f5;padding-top:8px}.more summary{cursor:pointer;font-size:12px;font-weight:800;color:#8a93a3;list-style:none;display:flex;align-items:center;gap:6px}.more summary::before{content:"▸";font-size:10px}.more[open] summary::before{content:"▾"}
           .sokS{font-size:12px;font-weight:800;color:#3f9c6a}
+          .opt.col{flex-direction:column;align-items:stretch;gap:6px}
+          .seg{display:flex;background:#eef1f5;border-radius:10px;padding:3px;gap:2px}.seg button{flex:1;border:0;background:none;border-radius:8px;padding:5px 0;font:inherit;font-size:12px;font-weight:800;color:#8a93a3;cursor:pointer}.seg button.on{background:#2b3242;color:#fff}
           button:focus-visible,input:focus-visible{outline:2px solid #2b3242;outline-offset:2px}
           </style></head><body>
           <div class="p">
@@ -799,6 +813,10 @@ jobs:
               <button class="tile" data-m="full" type="button"><svg viewBox="0 0 250 140"><rect width="250" height="140" fill="#1f2433"/><path d="M110 50 L140 70 L110 90 Z" fill="#fff" opacity=".7"/><circle cx="80" cy="134" r="6" fill="#efe8dc"/><circle cx="104" cy="134" r="6" fill="#c98b5b"/></svg>全画面</button>
              </div>
                <div class="opt" id="wallRow">うしろに 景色の 壁紙<div class="sw" data-k="wallOn"><button type="button" data-v="1">使う</button><button type="button" data-v="0">使わない</button></div></div>
+            </div>
+            <div class="sec" id="sceneSec"><div class="lb">景色</div>
+             <div class="opt col"><span>合目</span><div class="seg" id="segT"><button type="button" data-v="0">自動</button><button type="button" data-v="1">1</button><button type="button" data-v="2">2</button><button type="button" data-v="3">3</button><button type="button" data-v="4">4</button><button type="button" data-v="5">5</button><button type="button" data-v="6">6</button><button type="button" data-v="7">7</button></div></div>
+             <div class="opt col"><span>時間帯</span><div class="seg" id="segM"><button type="button" data-v="auto">自動</button><button type="button" data-v="sky-dawn">早朝</button><button type="button" data-v="sky-morning">朝</button><button type="button" data-v="sky-day">昼</button><button type="button" data-v="sky-evening">夕方</button><button type="button" data-v="sky-night">夜</button></div></div>
             </div>
             <div class="sec"><div class="lb">ねこ</div>
              <div class="opt">寝ている子<div class="sw sw3" data-k="sleepMode"><button type="button" data-v="show">出す</button><button type="button" data-v="wake">起こす</button><button type="button" data-v="hide">出さない</button></div></div>
@@ -849,7 +867,7 @@ jobs:
           $('phAdd').addEventListener('click', () => $('phIn').click());
           $('phIn').addEventListener('change', async () => { for (const f of Array.from($('phIn').files || [])) { if (photos.length >= 4) break; try { const im = await loadImg(f), big = shrink(im, 1280, .82), sm = shrink(im, 240, .72); photos.push({ u: big.d, t: sm.d, w: big.w, h: big.h }); } catch (_) {} } $('phIn').value = ''; paintPh(); });
           $('go').addEventListener('click', async () => {
-            if (cur === 'S') { if (!suid) { $('msg').textContent = 'さきに つないでね'; return; } const o = Object.assign({}, so); delete o.card; o.sleepMode = slm; o.hideSleep = slm === 'hide'; await zz.start(Object.assign({ mode: sm, catScale: ssz / 100, cardWall: cw, cardBar: cb }, o)); $('msg').textContent = 'かえたよ！'; return; }
+            if (cur === 'S') { if (!suid) { $('msg').textContent = 'さきに つないでね'; return; } const o = Object.assign({}, so); delete o.card; o.sleepMode = slm; o.hideSleep = slm === 'hide'; o.sceneTier = stT; o.sceneTime = stM; await zz.start(Object.assign({ mode: sm, catScale: ssz / 100, cardWall: cw, cardBar: cb }, o)); $('msg').textContent = 'かえたよ！'; return; }
             const st = await zz.state(); if (!st.uid) { $('msg').textContent = 'せってい で つないでね'; return; }
             $('go').disabled = true; $('msg').textContent = '';
             try {
@@ -889,18 +907,23 @@ jobs:
           }
           $('tR').addEventListener('click', () => tab('R')); $('tG').addEventListener('click', () => tab('G')); $('tS').addEventListener('click', () => tab('S'));
           /* せってい（タブで 切りかえ） */
-          let sm = 'wall', so = {}, ssz = 100, suid = '', cw = true, cb = false, slm = 'show';
+          let sm = 'wall', so = {}, ssz = 100, suid = '', cw = true, cb = false, slm = 'show', stT = 0, stM = 'auto';
           function paintS() {
-            $('sOk').hidden = !suid; $('sNg').hidden = !!suid; $('wallRow').hidden = sm === 'wall'; so.card = sm === 'wall' ? cw : cb;
+            $('sOk').hidden = !suid; $('sNg').hidden = !!suid; $('wallRow').hidden = sm === 'wall';
+            $('sceneSec').hidden = !(sm === 'wall' || so.wallOn);   /* 景色は 壁紙を 使う 時だけ */
+            document.querySelectorAll('#segT button').forEach((b) => b.classList.toggle('on', +b.dataset.v === stT));
+            document.querySelectorAll('#segM button').forEach((b) => b.classList.toggle('on', b.dataset.v === stM)); so.card = sm === 'wall' ? cw : cb;
             $('cardSub').textContent = sm === 'wall' ? 'ひとこと・写真（壁紙）' : 'ひとこと・写真（画面の 左に 小さく）';
             document.querySelectorAll('#pS .tile').forEach((t) => t.classList.toggle('on', t.dataset.m === sm));
             document.querySelectorAll('#pS .sw:not(.sw3)').forEach((w) => w.querySelectorAll('button').forEach((b) => b.classList.toggle('on', String(+!!so[w.dataset.k]) === b.dataset.v)));
             document.querySelectorAll('#pS .sw3 button').forEach((b) => b.classList.toggle('on', b.dataset.v === slm));
             $('sz').value = ssz; $('szV').textContent = ssz;
           }
-          async function loadS() { const st = await zz.state(); suid = st.uid || ''; sm = st.mode || 'wall'; so = { wallOn: !!st.wallOn, noEmo: !!st.noEmo, noShare: !!st.noShare, noTapShow: !!st.noTapShow, autoStart: st.autoStart !== false, lowQ: !!st.lowQ }; cw = st.cardWall !== false; cb = !!st.cardBar; slm = st.sleepMode || (st.hideSleep ? 'hide' : 'show'); ssz = Math.round((st.catScale || 1) * 100); paintS(); }
+          async function loadS() { const st = await zz.state(); suid = st.uid || ''; sm = st.mode || 'wall'; so = { wallOn: !!st.wallOn, noEmo: !!st.noEmo, noShare: !!st.noShare, noTapShow: !!st.noTapShow, autoStart: st.autoStart !== false, lowQ: !!st.lowQ }; cw = st.cardWall !== false; cb = !!st.cardBar; slm = st.sleepMode || (st.hideSleep ? 'hide' : 'show'); stT = +st.sceneTier || 0; stM = st.sceneTime || 'auto'; ssz = Math.round((st.catScale || 1) * 100); paintS(); }
           document.querySelectorAll('#pS .tile').forEach((t) => t.addEventListener('click', () => { sm = t.dataset.m; paintS(); }));
           document.querySelectorAll('#pS .sw3 button').forEach((b) => b.addEventListener('click', () => { slm = b.dataset.v; paintS(); }));
+          document.querySelectorAll('#segT button').forEach((b) => b.addEventListener('click', () => { stT = +b.dataset.v; paintS(); }));
+          document.querySelectorAll('#segM button').forEach((b) => b.addEventListener('click', () => { stM = b.dataset.v; paintS(); }));
           document.querySelectorAll('#pS .sw:not(.sw3) button').forEach((b) => b.addEventListener('click', () => { const k = b.parentNode.dataset.k, v = b.dataset.v === '1'; if (k === 'card') { if (sm === 'wall') cw = v; else cb = v; } else so[k] = v; paintS(); }));
           $('sz').addEventListener('input', () => { ssz = +$('sz').value; $('szV').textContent = ssz; });
           $('sLink').addEventListener('click', async () => { $('sLink').disabled = true; try { const uid = await redeem($('sCode').value); await zz.set({ uid }); suid = uid; paintS(); } catch (e) { $('msg').style.color = '#c9546b'; $('msg').textContent = 'つなげなかったよ'; setTimeout(() => { $('msg').style.color = ''; }, 3000); } $('sLink').disabled = false; });
@@ -995,7 +1018,10 @@ jobs:
           import { hill, pubTaps, allTaps } from './fb.js';
           const Q = window.__ZZQ || Object.fromEntries(new URLSearchParams(location.search)), P = { get: (k) => (Q[k] != null ? String(Q[k]) : null) }, MODE = P.get('mode') || 'wall', UID = P.get('uid') || '', SHOW_SLEEP = P.get('sleep') !== '0', WAKE = P.get('sleep') === '2', EMO = P.get('emo') !== '0', SHARE = P.get('share') !== '0', CARD = P.get('card') === '1', TAPS = P.get('tp') !== '0', LOWQ = P.get('q') === 'lo', SIZE = Math.max(.5, Math.min(2, +P.get('sz') || 1));
           const FPH0 = Object.assign({}, FP_H);   /* サイトの 大きさ（ここに 大きさの バーを かける） */
-          const FLAT = MODE !== 'wall', NOCATS = P.get('nocats') === '1';   /* NOCATS：うしろの 景色だけ（猫は タスクバー／全画面の 方に 出す） */
+          const FLAT = MODE !== 'wall', NOCATS = P.get('nocats') === '1';
+          const FIXT = Math.max(0, Math.min(7, +P.get('st') || 0)), FIXTM = P.get('tm') || 'auto', TBH = +P.get('tb') || 48;   /* 景色：合目・時間帯（0／auto＝ホームと 同じ 自動） */
+          const TM_HOUR = { 'sky-dawn': 6, 'sky-morning': 9, 'sky-day': 13, 'sky-evening': 17, 'sky-night': 22 };
+          if (FIXTM !== 'auto' && TM_HOUR[FIXTM] != null) window.currentSkyKey = function () { return FIXTM; };   /* NOCATS：うしろの 景色だけ（猫は タスクバー／全画面の 方に 出す） */
           if (NOCATS) { document.getElementById('hint').hidden = true; document.getElementById('card').hidden = true; }   /* タスクバー・全画面：画面の 下を 歩く */
           if (!EMO) window._fpEmo = function () {};   /* 気持ちの 絵 なし */
           if (LOWQ) {   /* 画質 低：1秒 30回・霧と 土ぼこり なし（かるい）。高は ふつうの なめらかさ */
@@ -1031,7 +1057,7 @@ jobs:
             if (!data) return [];
             return data.cats.filter((c) => SHOW_SLEEP || c.today).map((c) => { const sleep = !c.today && !WAKE, el = figEl(c, sleep);   /* 起こす：自分の 画面だけ 起きて いる あつかい */ return el ? { fig: el, h: (c.fig && c.fig.h) || 60, w: (c.fig && c.fig.w) || 74, sleep, self: c.self } : null; }).filter(Boolean);
           };
-          function skyGrad() { try { if (typeof skyGradientForHour === 'function') return skyGradientForHour(new Date().getHours()); } catch (_) {} return 'linear-gradient(#8fc3e8,#cfe6f6 55%,#eef6fb)'; }
+          function skyGrad() { try { if (typeof skyGradientForHour === 'function') return skyGradientForHour(TM_HOUR[FIXTM] != null ? TM_HOUR[FIXTM] : new Date().getHours()); } catch (_) {} return 'linear-gradient(#8fc3e8,#cfe6f6 55%,#eef6fb)'; }
           function layout() {
             const lay = $('farPlay'), bw = lay.clientWidth || innerWidth, bh = lay.clientHeight || innerHeight;
             if (MODE === 'wall') {
@@ -1054,7 +1080,7 @@ jobs:
             hintX = Math.max(10, x - 6); hintY = (MODE === 'wall' ? y + 8 : bh - 18);
             const c = $('card');
             if (FLAT) { c.classList.add('sm'); c.style.left = '10px'; c.style.top = 'auto'; c.style.bottom = '8px'; h.style.left = '12px'; h.style.top = 'auto'; h.style.bottom = (CARD && cards.length && !c.hidden) ? '104px' : '4px'; }
-            else { c.style.left = Math.max(14, x) + 'px'; c.style.top = Math.max(10, y - 160) + 'px'; }
+            else { c.style.left = '20px'; c.style.top = 'auto'; c.style.bottom = (TBH + 16) + 'px'; }   /* 壁紙：画面の 左下（タスクバーの すぐ 上） */
           }
           function showCard() {
             const c = $('card');
@@ -1079,7 +1105,7 @@ jobs:
           async function load() {
             try {
               data = await hill(UID);
-              tier = Math.max(1, Math.min(7, (data.myfig && data.myfig.tier) || 1));
+              tier = FIXT || Math.max(1, Math.min(7, (data.myfig && data.myfig.tier) || 1));
               cards = data.cards || []; ci = 0; showCard();
               const me = data.me, mf = data.myfig; const wk = (mf && Number.isFinite(mf.wake)) ? mf.wake : ((me && Number.isFinite(me.wakeHour)) ? me.wakeHour + (me.wakeMin || 0) / 60 : null);
               if (wk !== null && window.zz) zz.setWake(wk);
@@ -1102,7 +1128,7 @@ jobs:
             b.style.top = (-((_fpG && _fpG.hp) || 40) * 1.5).toFixed(0) + 'px'; c.el.appendChild(b);
             setTimeout(() => { try { b.remove(); } catch (_) {} c.soc = false; }, 16000);
           }
-          window.__zzCats = { setData: (d) => { data = d; tier = Math.max(1, Math.min(7, (d.myfig && d.myfig.tier) || 1)); cards = d.cards || []; ci = 0; showCard(); restart(); }, wake, pause };
+          window.__zzCats = { setData: (d) => { data = d; tier = FIXT || Math.max(1, Math.min(7, (d.myfig && d.myfig.tier) || 1)); cards = d.cards || []; ci = 0; showCard(); restart(); }, wake, pause };
           /* 今日の キーボードの タップ数：自分の 猫の 上に ふきだし */
           function tapPos() {
             others();

@@ -406,6 +406,11 @@ jobs:
               *st.bar_shown.lock().unwrap() = false;
               *st.sent.lock().unwrap() = -1;
               let mode = sstr(st, "mode");
+              /* json! の 中で { } の 計算は できないので、先に 計算して おく */
+              let cw = sget(st, "cardW").as_str().map(|s| s.to_string()).unwrap_or_else(|| if sget(st, "cardWall").as_bool().unwrap_or(true) { "corner".to_string() } else { "off".to_string() });
+              let cb = sget(st, "cardB").as_str().map(|s| s.to_string()).unwrap_or_else(|| if sbool(st, "cardBar") { "corner".to_string() } else { "off".to_string() });
+              let card_v = match (if mode == "wall" { cw } else { cb }).as_str() { "corner" => "1", "head" => "h", _ => "0" };
+              let mv_v = { let v = sstr(st, "motion"); if v.is_empty() { "normal".to_string() } else { v } };
               let q = json!({
                   "mode": mode, "uid": sstr(st, "uid"),
                   "sleep": match sstr(st, "sleepMode").as_str() { "hide" => "0", "wake" => "2", "show" => "1", _ => if sbool(st, "hideSleep") { "0" } else { "1" } },
@@ -416,12 +421,8 @@ jobs:
                   "st": sget(st, "sceneTier").as_i64().unwrap_or(0).to_string(),
                   "tm": sstr(st, "sceneTime"),
                   "tb": taskbar_h(app).to_string(),
-                  "card": {
-                      let cw = sget(st, "cardW").as_str().map(|s| s.to_string()).unwrap_or_else(|| if sget(st, "cardWall").as_bool().unwrap_or(true) { "corner".into() } else { "off".into() });
-                      let cb = sget(st, "cardB").as_str().map(|s| s.to_string()).unwrap_or_else(|| if sbool(st, "cardBar") { "corner".into() } else { "off".into() });
-                      match (if mode == "wall" { cw } else { cb }).as_str() { "corner" => "1", "head" => "h", _ => "0" }
-                  },
-                  "mv": { let v = sstr(st, "motion"); if v.is_empty() { "normal".to_string() } else { v } },
+                  "card": card_v,
+                  "mv": mv_v,
                   "sz": sget(st, "catScale").as_f64().unwrap_or(1.0).to_string()
               });
               let r = WebviewWindowBuilder::new(app, &label, WebviewUrl::App("cats.html".into()))

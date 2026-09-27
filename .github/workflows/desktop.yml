@@ -108,6 +108,9 @@ jobs:
           use tauri_plugin_notification::NotificationExt;
           use tauri_plugin_updater::UpdaterExt;
 
+          /* 壁紙の まどは デスクトップの アイコンの 層の うしろに あるので、WebView2 が「かくれて いる」と 思って
+             描くのを 止める ことが ある → 止めない 合図。WebView2 は 全部の まどで 同じ 合図に しないと まどが 作れない */
+          const WV_ARGS: &str = "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection,CalculateNativeWinOcclusion --disable-background-timer-throttling --disable-renderer-backgrounding --disable-backgrounding-occluded-windows";
           struct Zz {
               s: Mutex<Value>,
               taps: Mutex<(String, u64)>,
@@ -259,9 +262,10 @@ jobs:
                       if ["Progman", "WorkerW", "Shell_TrayWnd", "Shell_SecondaryTrayWnd"].contains(&cls.as_str()) { return (false, false); }
                       let mut r = Rect::default(); if GetWindowRect(h, &mut r) == 0 { return (false, false); }
                       let full = r.left <= mx && r.top <= my && r.right >= mx + mw && r.bottom >= my + mh;
-                      let area = ((r.right - r.left).max(0) as i64) * ((r.bottom - r.top).max(0) as i64);
-                      let big = area * 100 >= (mw as i64) * (mh as i64) * 85;
-                      (full, full || IsZoomed(h) != 0 || big)
+                      let iw = (r.right.min(mx + mw) - r.left.max(mx)).max(0) as i64, ih = (r.bottom.min(my + mh) - r.top.max(my)).max(0) as i64;
+                      let big = iw * ih * 100 >= (mw as i64) * (mh as i64) * 85;   /* メインの 画面の 85%以上を おおって いる */
+                      let _ = IsZoomed;
+                      (full, full || big)
                   }
               }
               fn w(s: &str) -> Vec<u16> { s.encode_utf16().chain(std::iter::once(0)).collect() }
@@ -344,6 +348,7 @@ jobs:
           fn open_setup(app: &AppHandle) {
               if let Some(w) = app.get_webview_window("setup") { let _ = w.unminimize(); let _ = w.show(); let _ = w.set_focus(); return; }
               let r = WebviewWindowBuilder::new(app, "setup", WebviewUrl::App("setup.html".into()))
+                  .additional_browser_args(WV_ARGS)
                   .title("ズズラジオ体操部").inner_size(620.0, 800.0).resizable(false).maximizable(false).build();
               match r {
                   Ok(w) => {
@@ -374,6 +379,7 @@ jobs:
               let Some((mx, my, _mw, mh, sc)) = primary(app) else { return };
               let lh = ((mh as f64) / sc - 120.0).min(840.0).max(560.0);
               let r = WebviewWindowBuilder::new(app, "panel", WebviewUrl::App("panel.html".into()))
+                  .additional_browser_args(WV_ARGS)
                   .title("ズズラジオ体操部").inner_size(420.0, lh).resizable(false).maximizable(false)
                   .decorations(false).transparent(true).shadow(false).always_on_top(true).visible(false).build();
               match r {
@@ -426,6 +432,7 @@ jobs:
                   "sz": sget(st, "catScale").as_f64().unwrap_or(1.0).to_string()
               });
               let r = WebviewWindowBuilder::new(app, &label, WebviewUrl::App("cats.html".into()))
+                  .additional_browser_args(WV_ARGS)
                   .initialization_script(&format!("window.__ZZQ={};", q))
                   .title("zz").transparent(mode != "wall").decorations(false).shadow(false).skip_taskbar(true)
                   .resizable(false).focused(false).visible(false).always_on_top(mode != "wall").build();
@@ -471,6 +478,7 @@ jobs:
               let q = json!({ "mode": "wall", "nocats": "1", "uid": sstr(st, "uid"), "q": if sbool(st, "lowQ") { "lo" } else { "hi" }, "card": "0", "tp": "0",
                   "st": sget(st, "sceneTier").as_i64().unwrap_or(0).to_string(), "tm": sstr(st, "sceneTime") });
               let r = WebviewWindowBuilder::new(app, &label, WebviewUrl::App("cats.html".into()))
+                  .additional_browser_args(WV_ARGS)
                   .initialization_script(&format!("window.__ZZQ={};", q))
                   .title("zz").transparent(false).decorations(false).shadow(false).skip_taskbar(true)
                   .resizable(false).focused(false).visible(false).always_on_top(false).build();
@@ -1179,7 +1187,7 @@ jobs:
           #sceneBg{position:absolute;inset:0;}#sceneBg svg{width:100%;height:100%;display:block;}
           #sceneBg img{width:100%;height:100%;display:block;}
           body.zzPaused *{animation-play-state:paused !important;}
-          body.zzHide #farPlay{visibility:hidden;}
+          body.zzHide #farPlay,body.zzHide #tap,body.zzHide .tapO,body.zzHide .hcm{visibility:hidden;}
           #farPlay{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .8s ease;overflow:hidden;}
           #farPlay.on{opacity:1;}
           #farPlay .fpCat{position:absolute;left:0;top:0;width:0;height:0;will-change:transform;}
@@ -1205,13 +1213,13 @@ jobs:
           #farPlay .fpCat{will-change:auto;}
           #farPlay .fpCat .catFig .catPose,#farPlay .fpCat .catFig svg{display:block;width:100%;height:100%;}
           #farPlay .fpEmo{scale:.5;}
-          #tap{position:absolute;left:0;top:0;transform:translate(-50%,-100%);display:flex;align-items:baseline;gap:3px;background:rgba(255,255,255,.94);border-radius:999px;padding:4px 10px;font-family:"Yu Gothic UI","Meiryo",system-ui,sans-serif;color:#2b3242;box-shadow:0 3px 10px rgba(20,26,40,.2);white-space:nowrap;pointer-events:none;z-index:45000;}
+          #tap{left:0;top:0;will-change:transform;position:absolute;display:flex;align-items:baseline;gap:3px;background:rgba(255,255,255,.94);border-radius:999px;padding:4px 10px;font-family:"Yu Gothic UI","Meiryo",system-ui,sans-serif;color:#2b3242;box-shadow:0 3px 10px rgba(20,26,40,.2);white-space:nowrap;pointer-events:none;z-index:45000;}
           #tap[hidden]{display:none;}
           #tap b{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;}
           #tap{border:1.5px solid rgba(95,180,230,.5);}   /* 自分の ふきだし：ほんのり 縁 */
-          .tapO{position:absolute;left:0;top:0;transform:translate(-50%,-100%);display:flex;align-items:baseline;gap:2px;background:rgba(255,255,255,.82);border-radius:999px;padding:2px 8px;font-family:"Yu Gothic UI","Meiryo",system-ui,sans-serif;color:#2b3242;box-shadow:0 2px 8px rgba(20,26,40,.16);white-space:nowrap;pointer-events:none;z-index:44000;}
+          .tapO{left:0;top:0;will-change:transform;position:absolute;display:flex;align-items:baseline;gap:2px;background:rgba(255,255,255,.82);border-radius:999px;padding:2px 8px;font-family:"Yu Gothic UI","Meiryo",system-ui,sans-serif;color:#2b3242;box-shadow:0 2px 8px rgba(20,26,40,.16);white-space:nowrap;pointer-events:none;z-index:44000;}
           .tapO[hidden]{display:none;}
-          .hcm{position:absolute;left:0;top:0;transform:translate(-50%,-100%);max-width:180px;background:rgba(255,255,255,.92);border-radius:12px;padding:3px 9px;font-family:"Yu Gothic UI","Meiryo",system-ui,sans-serif;font-size:12px;font-weight:800;color:#2b3242;box-shadow:0 2px 8px rgba(20,26,40,.16);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none;z-index:44001;}
+          .hcm{left:0;top:0;will-change:transform;position:absolute;max-width:180px;background:rgba(255,255,255,.92);border-radius:12px;padding:3px 9px;font-family:"Yu Gothic UI","Meiryo",system-ui,sans-serif;font-size:12px;font-weight:800;color:#2b3242;box-shadow:0 2px 8px rgba(20,26,40,.16);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none;z-index:44001;}
           .hcm[hidden]{display:none;}
           .tapO b{font-size:12px;font-weight:800;font-variant-numeric:tabular-nums;}
           .tapO small{font-size:9px;font-weight:700;color:#8a93a3;}
@@ -1371,7 +1379,7 @@ jobs:
             setTimeout(() => {
               if (!data || !data.cats.length) return;
               layout();
-              if (_fpStart()) { data.cats.filter((c) => SHOW_SLEEP || c.today).forEach((c, i) => { if (_fpCats[i]) { _fpCats[i].isSelf = !!c.self; _fpCats[i].uid = c.uid; } }); if (paused) pause(true);
+              if (_fpStart()) { setTimeout(kick, 120); setTimeout(kick, 1500); data.cats.filter((c) => SHOW_SLEEP || c.today).forEach((c, i) => { if (_fpCats[i]) { _fpCats[i].isSelf = !!c.self; _fpCats[i].uid = c.uid; } }); if (paused) pause(true);
                 if (MV === 'still') _fpCats.forEach((c) => { c.q = [{ a: 'wait', d: 1e9, pose: c.pose || 'sit' }]; }); }   /* 止める：その場で 座った まま */
             }, 80);
           }
@@ -1386,7 +1394,7 @@ jobs:
               restart();
             } catch (e) { try { zz.log('load ' + (e && e.message)); } catch (_) {} }
           }
-          let autoRest = false, slowT = 0, lastF = 0;
+          let autoRest = false, slowT = 0, lastF = 0, tickAt = 0, stallLogged = false;
           function pause(p) {
             lastF = 0;
             paused = !!p;
@@ -1414,13 +1422,16 @@ jobs:
           }
           window.__zzCats = { setData: (d) => { data = d; tier = FIXT || Math.max(1, Math.min(7, (d.myfig && d.myfig.tier) || 1)); cards = d.cards || []; ci = 0; showCard(); restart(); }, wake, pause };
           /* 今日の キーボードの タップ数：自分の 猫の 上に ふきだし */
+          /* ふきだしを 軽く 動かす：left/top ではなく transform（画面の 組み直し なし）・同じ 位置なら 書かない */
+          function mv(e, x, y) { const v = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px) translate(-50%,-100%)'; if (e._tf !== v) { e._tf = v; e.style.transform = v; } }
+          function txt(e, s) { if (e._tx !== s) { e._tx = s; e.textContent = s; } }
           function tapPos() {
             others();
             const t = $('tap'); if (!taps || !TAPS) { t.hidden = true; return; }
             t.hidden = false;
             const c = (typeof _fpCats !== 'undefined') && _fpCats.find((x) => x.isSelf && x.px != null);
-            if (c && !c.hidden) { const hp = (_fpG && _fpG.hp) || 30; t.style.left = c.px + 'px'; t.style.top = (c.py - hp * 1.25 - (c.lift || 0) - (c.hop || 0) * hp * .55) + 'px'; }
-            else { t.style.left = (hintX + 50) + 'px'; t.style.top = (hintY - 6) + 'px'; }
+            if (c && !c.hidden) { const hp = (_fpG && _fpG.hp) || 30; mv(t, c.px, c.py - hp * 1.25 - (c.lift || 0) - (c.hop || 0) * hp * .55); }
+            else mv(t, hintX + 50, hintY - 6);
           }
           /* ほかの 人の タップ数（PC版を 開いている 人どうし・見せる 設定の 人だけ） */
           let oTaps = {}; const oEl = {};
@@ -1430,8 +1441,8 @@ jobs:
             if (typeof _fpCats !== 'undefined') _fpCats.forEach((c) => {
               if (!TAPS || c.isSelf || !c.uid || !(oTaps[c.uid] > 0) || c.px == null || c.hidden) return;
               let e = oEl[c.uid]; if (!e) { e = oEl[c.uid] = document.createElement('div'); e.className = 'tapO'; e.innerHTML = '<b></b><small>タップ</small>'; document.body.appendChild(e); }
-              e.firstChild.textContent = oTaps[c.uid].toLocaleString('ja-JP');
-              const hp = (_fpG && _fpG.hp) || 30; e.style.left = c.px + 'px'; e.style.top = (c.py - hp * 1.2 - (c.lift || 0) - (c.hop || 0) * hp * .55) + 'px'; e.hidden = false; seen[c.uid] = 1;
+              txt(e.firstChild, oTaps[c.uid].toLocaleString('ja-JP'));
+              const hp = (_fpG && _fpG.hp) || 30; mv(e, c.px, c.py - hp * 1.2 - (c.lift || 0) - (c.hop || 0) * hp * .55); if (e.hidden) e.hidden = false; seen[c.uid] = 1;
             });
             Object.keys(oEl).forEach((u) => { if (!seen[u]) oEl[u].hidden = true; });
           }
@@ -1444,9 +1455,9 @@ jobs:
               _fpCats.forEach((c) => {
                 const t = c.uid && by[c.uid]; if (!t || c.px == null || c.hidden) return;
                 let e = hEl[c.uid]; if (!e) { e = hEl[c.uid] = document.createElement('div'); e.className = 'hcm'; document.body.appendChild(e); }
-                e.textContent = t.length > 18 ? t.slice(0, 17) + '…' : t;
+                txt(e, t.length > 18 ? t.slice(0, 17) + '…' : t);
                 const hp = (_fpG && _fpG.hp) || 30, up = (TAPS && ((c.isSelf && taps) || oTaps[c.uid] > 0)) ? 24 : 0;
-                e.style.left = c.px + 'px'; e.style.top = (c.py - hp * 1.2 - (c.lift || 0) - (c.hop || 0) * hp * .55 - up) + 'px'; e.hidden = false; seen[c.uid] = 1;
+                mv(e, c.px, c.py - hp * 1.2 - (c.lift || 0) - (c.hop || 0) * hp * .55 - up); if (e.hidden) e.hidden = false; seen[c.uid] = 1;
               });
             }
             Object.keys(hEl).forEach((u) => { if (!seen[u]) hEl[u].hidden = true; });
@@ -1458,6 +1469,7 @@ jobs:
             const orig = window._fpTick;
             if (typeof orig !== 'function') return;
             window._fpTick = function (now) {
+              tickAt = performance.now();
               if (lastF) {
                 const d = now - lastF, lim = LOWQ ? 75 : 50;
                 if (d > lim && d < 1000) slowT += d; else if (d <= lim) slowT = Math.max(0, slowT - d * 0.5);
@@ -1468,10 +1480,10 @@ jobs:
                 }
               }
               lastF = now;
-              return orig(now);
+              const r = orig(now); try { tapPos(); } catch (_) {} return r;
             };
           })();
-          setInterval(() => { if (!paused && !autoRest) tapPos(); }, LOWQ ? 150 : 100);
+          setInterval(() => { if (!paused && (!_fpOn || autoRest)) tapPos(); }, 1000);   /* 猫が 止まって いる 時だけ ゆっくり（ふだんは 描く たびに） */
           setInterval(showCard, 8000);
           setInterval(() => { if (MODE === 'wall' && currentSkyKey() !== tk) restart(); }, 60000);
           setInterval(load, 10 * 60 * 1000);
@@ -1534,6 +1546,24 @@ jobs:
 
           /* 今 PC版を 開いて いる（自分の 猫は このアプリでは 起きて いる あつかい・みんなの 画面でも） */
           if (UID && !NOCATS) { const ping = () => setOnline(UID).catch(() => {}); ping(); setInterval(ping, 60000); }
+
+          /* 猫を 動かす 処理が 止まって いても、その場に 1回 描く（予約を けしてから 1回 → 2重に ならない） */
+          function kick() {
+            try {
+              if (paused || NOCATS || typeof _fpOn === 'undefined' || !_fpOn || !_fpCats.length) return;
+              if (tickAt && performance.now() - tickAt < 400) return;   /* ちゃんと 動いて いる */
+              try { cancelAnimationFrame(_fpRaf); } catch (_) {}
+              _fpTick(performance.now());
+            } catch (e) { try { zz.log('kick ' + e); } catch (_) {} }
+          }
+          /* 3秒 以上 止まったら その場に 描き直す（動かないけど 見える）・記録に 残す */
+          setInterval(() => {
+            if (paused || autoRest || NOCATS || typeof _fpOn === 'undefined' || !_fpOn) return;
+            if (tickAt && performance.now() - tickAt > 3000) {
+              if (!stallLogged) { stallLogged = true; try { zz.log('frames stalled (' + MODE + ') ' + Math.round(performance.now() - tickAt) + 'ms, visibility=' + document.visibilityState); } catch (_) {} }
+              kick();
+            }
+          }, 3000);
           ZZEOF
           cat > pc/dist/fb.js << 'ZZEOF'
           /* PC版：クラウド（Firebase）との やりとり。サイトと 同じ データを 読み書きする */
@@ -1769,6 +1799,4 @@ jobs:
           printf '{"version":"%s","notes":"PC版 %s","pub_date":"%s","platforms":{"windows-x86_64":{"signature":"%s","url":"https://github.com/zzcafe2800/zzcard/releases/download/v%s/zzcard-setup.exe"}}}\n' "$VER" "$VER" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$SIG" "$VER" > latest.json
           cat latest.json
           ls -la zzcard-setup.exe
-          git tag "v$VER"
-          git push origin "v$VER"
-          gh release create "v$VER" zzcard-setup.exe latest.json --title "PC版 $VER" --notes "ズズラジオ体操部 PC版 $VER（かるい 版）" --latest
+          gh release create "v$VER" zzcard-setup.exe latest.json --target "$GITHUB_SHA" --title "PC版 $VER" --notes "ズズラジオ体操部 PC版 $VER（かるい 版）" --latest

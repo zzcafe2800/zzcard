@@ -1,0 +1,30 @@
+{
+  "name": "zzcard-desktop",
+  "productName": "ズズラジオ体操部",
+  "version": "0.1.0",
+  "description": "ズズラジオ体操部 PC版",
+  "author": "zzcafe2800",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win --publish never",
+    "release": "electron-builder --win --publish always"
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.9"
+  },
+  "devDependencies": {
+    "electron": "^44.4.5",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "io.github.zzcafe2800.zzcard",
+    "productName": "ズズラジオ体操部",
+    "artifactName": "zzcard-setup.${ext}",
+    "files": ["main.js", "preload.js", "offline.html", "build/icon.png"],
+    "protocols": [{ "name": "zzcard", "schemes": ["zzcard"] }],
+    "win": { "target": "nsis", "icon": "build/icon.ico" },
+    "nsis": { "oneClick": true, "perMachine": false, "createDesktopShortcut": true, "shortcutName": "ズズラジオ体操部" },
+    "publish": [{ "provider": "github", "owner": "zzcafe2800", "repo": "zzcard", "releaseType": "release" }]
+  }
+}

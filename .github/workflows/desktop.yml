@@ -136,7 +136,7 @@ jobs:
               }
           }
           fn load_state(app: &AppHandle) -> Value {
-              let def = json!({"uid":"","mode":"wall","setupDone":false,"wakeDay":"","hideSleep":false,"noEmo":false,"noShare":false,"autoStart":false,"lowQ":false,"catScale":1.0,"cardWall":true,"cardBar":false});
+              let def = json!({"uid":"","mode":"wall","setupDone":false,"wakeDay":"","hideSleep":false,"noEmo":false,"noShare":false,"autoStart":false,"lowQ":false,"catScale":1.0,"cardWall":true,"cardBar":false,"noTapShow":false});
               let mut v = std::fs::read_to_string(data_path(app, "state.json")).ok().and_then(|t| serde_json::from_str::<Value>(&t).ok()).unwrap_or(json!({}));
               if !v.is_object() { v = json!({}); }
               if let (Some(o), Some(d)) = (v.as_object_mut(), def.as_object()) {
@@ -325,6 +325,7 @@ jobs:
                   "emo": if sbool(st, "noEmo") { "0" } else { "1" },
                   "share": if sbool(st, "noShare") { "0" } else { "1" },
                   "q": if sbool(st, "lowQ") { "lo" } else { "hi" },
+                  "tp": if sbool(st, "noTapShow") { "0" } else { "1" },
                   "card": if (mode == "wall" && sget(st, "cardWall").as_bool().unwrap_or(true)) || (mode != "wall" && sbool(st, "cardBar")) { "1" } else { "0" },
                   "sz": sget(st, "catScale").as_f64().unwrap_or(1.0).to_string()
               });
@@ -414,7 +415,7 @@ jobs:
                   if let Some(a) = s.as_object_mut() {
                       let mode = o.get("mode").and_then(|m| m.as_str()).unwrap_or("wall");
                       a.insert("mode".into(), json!(if ["wall", "bar", "full"].contains(&mode) { mode } else { "wall" }));
-                      for k in ["hideSleep", "noEmo", "noShare", "autoStart", "lowQ"] { a.insert(k.into(), json!(o.get(k).and_then(|v| v.as_bool()).unwrap_or(false))); }
+                      for k in ["hideSleep", "noEmo", "noShare", "noTapShow", "autoStart", "lowQ"] { a.insert(k.into(), json!(o.get(k).and_then(|v| v.as_bool()).unwrap_or(false))); }
                       a.insert("cardWall".into(), json!(o.get("cardWall").and_then(|v| v.as_bool()).unwrap_or(true)));
                       a.insert("cardBar".into(), json!(o.get("cardBar").and_then(|v| v.as_bool()).unwrap_or(false)));
                       let sc = o.get("catScale").and_then(|v| v.as_f64()).unwrap_or(1.0).max(0.5).min(2.0);
@@ -524,14 +525,14 @@ jobs:
                       /* タップ数を 猫の 画面へ（1.5秒ごと）・ときどき 保存 */
                       let (a1, st1) = (h.clone(), st.clone());
                       std::thread::spawn(move || {
-                          let mut i = 0u32;
+                          let mut saved: i64 = -1;
                           loop {
                               std::thread::sleep(Duration::from_millis(1500));
                               let n = { let mut t = st1.taps.lock().unwrap(); let d = today(); if t.0 != d { *t = (d, 0); } t.1 as i64 };
                               let mut s = st1.sent.lock().unwrap();
                               if n != *s { *s = n; let lb = cats_label(&st1); let _ = a1.emit_to(lb.as_str(), "zz-taps", n); }
                               drop(s);
-                              i += 1; if i % 20 == 0 { save_state(&a1, &st1); }
+                              if n != saved { saved = n; save_state(&a1, &st1); }   /* ★変わったら すぐ 保存（閉じても 今日の 分が のこる） */
                           }
                       });
                       /* 止める／うごかす（3秒ごと）・タスクバーに あわせる（0.7秒ごと） */
@@ -583,8 +584,11 @@ jobs:
                       let _ = win::redraw;
                       Ok(())
                   })
-                  .run(tauri::generate_context!())
-                  .expect("zzcard failed");
+                  .build(tauri::generate_context!())
+                  .expect("zzcard failed")
+                  .run(|app, e| {
+                      if let tauri::RunEvent::Exit = e { let st = app.state::<St>().inner().clone(); save_state(app, &st); }   /* 閉じる 時も 保存 */
+                  });
           }
           ZZEOF
           cat > pc/dist/zz.js << 'ZZEOF'
@@ -676,7 +680,7 @@ jobs:
           $('link').addEventListener('click', () => doLink($('code').value));
           $('code').addEventListener('keydown', (e) => { if (e.key === 'Enter') doLink($('code').value); });
           document.querySelectorAll('.tile').forEach((t) => t.addEventListener('click', () => { mode = t.dataset.m; paint(); }));
-          $('go').addEventListener('click', () => zz.start({ mode, hideSleep: opt.hideSleep, noEmo: opt.noEmo, noShare: opt.noShare, autoStart: opt.autoStart, lowQ: opt.lowQ, catScale: size / 100, cardWall: st.cardWall !== false, cardBar: !!st.cardBar }));
+          $('go').addEventListener('click', () => zz.start({ mode, hideSleep: opt.hideSleep, noEmo: opt.noEmo, noShare: opt.noShare, noTapShow: !!st.noTapShow, autoStart: opt.autoStart, lowQ: opt.lowQ, catScale: size / 100, cardWall: st.cardWall !== false, cardBar: !!st.cardBar }));
           document.querySelectorAll('.sw button').forEach((b) => b.addEventListener('click', () => { opt[b.parentNode.dataset.k] = b.dataset.v === '1'; paint(); }));
           zz.on('zz-link', (code) => { $('code').value = code; doLink(code); });
           zz.ready();
@@ -766,7 +770,8 @@ jobs:
             </div>
             <div class="sec"><div class="lb">みんな</div>
              <div class="opt"><span>カード<small class="sub" id="cardSub">ひとこと・写真</small></span><div class="sw" data-k="card"><button type="button" data-v="1">出す</button><button type="button" data-v="0">出さない</button></div></div>
-             <div class="opt">タップ数を 見せる<div class="sw" data-k="noShare"><button type="button" data-v="0">見せる</button><button type="button" data-v="1">見せない</button></div></div>
+             <div class="opt">タップ数を 画面に<div class="sw" data-k="noTapShow"><button type="button" data-v="0">出す</button><button type="button" data-v="1">出さない</button></div></div>
+             <div class="opt">自分の タップ数を みんなに<div class="sw" data-k="noShare"><button type="button" data-v="0">見せる</button><button type="button" data-v="1">見せない</button></div></div>
             </div>
             <details class="more"><summary>そのほか</summary>
              <div class="opt">PCを つけたら 開く<div class="sw" data-k="autoStart"><button type="button" data-v="1">する</button><button type="button" data-v="0">しない</button></div></div>
@@ -855,7 +860,7 @@ jobs:
             document.querySelectorAll('#pS .sw').forEach((w) => w.querySelectorAll('button').forEach((b) => b.classList.toggle('on', String(+!!so[w.dataset.k]) === b.dataset.v)));
             $('sz').value = ssz; $('szV').textContent = ssz;
           }
-          async function loadS() { const st = await zz.state(); suid = st.uid || ''; sm = st.mode || 'wall'; so = { hideSleep: !!st.hideSleep, noEmo: !!st.noEmo, noShare: !!st.noShare, autoStart: !!st.autoStart, lowQ: !!st.lowQ }; cw = st.cardWall !== false; cb = !!st.cardBar; ssz = Math.round((st.catScale || 1) * 100); paintS(); }
+          async function loadS() { const st = await zz.state(); suid = st.uid || ''; sm = st.mode || 'wall'; so = { hideSleep: !!st.hideSleep, noEmo: !!st.noEmo, noShare: !!st.noShare, noTapShow: !!st.noTapShow, autoStart: !!st.autoStart, lowQ: !!st.lowQ }; cw = st.cardWall !== false; cb = !!st.cardBar; ssz = Math.round((st.catScale || 1) * 100); paintS(); }
           document.querySelectorAll('#pS .tile').forEach((t) => t.addEventListener('click', () => { sm = t.dataset.m; paintS(); }));
           document.querySelectorAll('#pS .sw button').forEach((b) => b.addEventListener('click', () => { const k = b.parentNode.dataset.k, v = b.dataset.v === '1'; if (k === 'card') { if (sm === 'wall') cw = v; else cb = v; } else so[k] = v; paintS(); }));
           $('sz').addEventListener('input', () => { ssz = +$('sz').value; $('szV').textContent = ssz; });
@@ -902,6 +907,7 @@ jobs:
           #tap{position:absolute;left:0;top:0;transform:translate(-50%,-100%);display:flex;align-items:baseline;gap:3px;background:rgba(255,255,255,.94);border-radius:999px;padding:4px 10px;font-family:"Yu Gothic UI","Meiryo",system-ui,sans-serif;color:#2b3242;box-shadow:0 3px 10px rgba(20,26,40,.2);white-space:nowrap;pointer-events:none;z-index:45000;}
           #tap[hidden]{display:none;}
           #tap b{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;}
+          #tap{border:1.5px solid rgba(95,180,230,.5);}   /* 自分の ふきだし：ほんのり 縁 */
           .tapO{position:absolute;left:0;top:0;transform:translate(-50%,-100%);display:flex;align-items:baseline;gap:2px;background:rgba(255,255,255,.82);border-radius:999px;padding:2px 8px;font-family:"Yu Gothic UI","Meiryo",system-ui,sans-serif;color:#2b3242;box-shadow:0 2px 8px rgba(20,26,40,.16);white-space:nowrap;pointer-events:none;z-index:44000;}
           .tapO[hidden]{display:none;}
           .tapO b{font-size:12px;font-weight:800;font-variant-numeric:tabular-nums;}
@@ -947,7 +953,7 @@ jobs:
           cat > pc/dist/cats.js << 'ZZEOF'
           /* 猫を 出す 画面：壁紙（景色＋猫＋みんなの カード）／タスクバー（猫だけ）。うごきは サイトの「奥で あそぶ 猫」と 同じ */
           import { hill, pubTaps, allTaps } from './fb.js';
-          const Q = window.__ZZQ || Object.fromEntries(new URLSearchParams(location.search)), P = { get: (k) => (Q[k] != null ? String(Q[k]) : null) }, MODE = P.get('mode') || 'wall', UID = P.get('uid') || '', SHOW_SLEEP = P.get('sleep') !== '0', EMO = P.get('emo') !== '0', SHARE = P.get('share') !== '0', CARD = P.get('card') === '1', LOWQ = P.get('q') === 'lo', SIZE = Math.max(.5, Math.min(2, +P.get('sz') || 1));
+          const Q = window.__ZZQ || Object.fromEntries(new URLSearchParams(location.search)), P = { get: (k) => (Q[k] != null ? String(Q[k]) : null) }, MODE = P.get('mode') || 'wall', UID = P.get('uid') || '', SHOW_SLEEP = P.get('sleep') !== '0', EMO = P.get('emo') !== '0', SHARE = P.get('share') !== '0', CARD = P.get('card') === '1', TAPS = P.get('tp') !== '0', LOWQ = P.get('q') === 'lo', SIZE = Math.max(.5, Math.min(2, +P.get('sz') || 1));
           const FPH0 = Object.assign({}, FP_H);   /* サイトの 大きさ（ここに 大きさの バーを かける） */
           const FLAT = MODE !== 'wall';   /* タスクバー・全画面：画面の 下を 歩く */
           if (!EMO) window._fpEmo = function () {};   /* 気持ちの 絵 なし */
@@ -1058,7 +1064,7 @@ jobs:
           /* 今日の キーボードの タップ数：自分の 猫の 上に ふきだし */
           function tapPos() {
             others();
-            const t = $('tap'); if (!taps) { t.hidden = true; return; }
+            const t = $('tap'); if (!taps || !TAPS) { t.hidden = true; return; }
             t.hidden = false;
             const c = (typeof _fpCats !== 'undefined') && _fpCats.find((x) => x.isSelf && x.px != null);
             if (c && !c.hidden) { const hp = (_fpG && _fpG.hp) || 30; t.style.left = c.px + 'px'; t.style.top = (c.py - hp * 1.25 - (c.lift || 0) - (c.hop || 0) * hp * .55) + 'px'; }
@@ -1069,7 +1075,7 @@ jobs:
           function others() {
             const seen = {};
             if (typeof _fpCats !== 'undefined') _fpCats.forEach((c) => {
-              if (c.isSelf || !c.uid || !(oTaps[c.uid] > 0) || c.px == null || c.hidden) return;
+              if (!TAPS || c.isSelf || !c.uid || !(oTaps[c.uid] > 0) || c.px == null || c.hidden) return;
               let e = oEl[c.uid]; if (!e) { e = oEl[c.uid] = document.createElement('div'); e.className = 'tapO'; e.innerHTML = '<b></b><small>タップ</small>'; document.body.appendChild(e); }
               e.firstChild.textContent = oTaps[c.uid].toLocaleString('ja-JP');
               const hp = (_fpG && _fpG.hp) || 30; e.style.left = c.px + 'px'; e.style.top = (c.py - hp * 1.2 - (c.lift || 0) - (c.hop || 0) * hp * .55) + 'px'; e.hidden = false; seen[c.uid] = 1;
@@ -1196,8 +1202,8 @@ jobs:
           export async function allTaps() {
             const { db, D } = await fb();
             const v = (await D.get(D.ref(db, 'pctaps')).catch(() => null));
-            const o = (v && v.val()) || {}, now = Date.now(), day = jstKey(), out = {};
-            Object.keys(o).forEach((u) => { const x = o[u]; if (x && x.day === day && now - (x.t || 0) < 120000) out[u] = x.n | 0; });
+            const o = (v && v.val()) || {}, day = jstKey(), out = {};
+            Object.keys(o).forEach((u) => { const x = o[u]; if (x && x.day === day && (x.n | 0) > 0) out[u] = x.n | 0; });   /* その日の あいだは 閉じても 出す */
             return out;
           }
           ZZEOF

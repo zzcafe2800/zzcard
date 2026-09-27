@@ -8840,42 +8840,43 @@ html:not(.lite) #fabNews{order:5 !important;}
 html.lite #fabNews{display:none !important;}
 .newsBang{position:absolute;top:4px;left:calc(50% + 6px);min-width:16px;height:16px;padding:0 4px;border-radius:999px;background:#e0625a;color:#fff;font:800 11px/16px system-ui,sans-serif;font-style:normal;text-align:center;box-shadow:0 0 0 2px #f6f7f9;pointer-events:none;}
 .newsBang[hidden]{display:none !important;}
-#newsScreen{position:fixed;inset:0;z-index:4300;background:#141824;overflow:hidden;font-family:inherit;}
+#newsScreen{position:fixed;inset:0;z-index:4300;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:26px 36px 24px;box-sizing:border-box;overflow:hidden;color:#fff;
+  background:radial-gradient(110% 80% at 50% 0%,#3b4660 0%,#283042 52%,#1c2231 100%);}
 html:not(.lite) #newsScreen{left:84px;}
 #newsScreen[hidden]{display:none;}
-#newsScreen .nwSlides img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.6s ease;transform:scale(1.02);}
-#newsScreen .nwSlides img.on{opacity:1;animation:nwZoom 9s ease-out forwards;}
-@keyframes nwZoom{from{transform:scale(1.02);}to{transform:scale(1.09);}}
-#newsScreen .nwFade{position:absolute;inset:0;background:linear-gradient(to top,rgba(16,20,32,.92) 0%,rgba(16,20,32,.55) 34%,rgba(16,20,32,.08) 62%,rgba(16,20,32,0) 100%);pointer-events:none;}
-#newsScreen .nwX{position:absolute;right:20px;top:18px;z-index:3;width:42px;height:42px;border-radius:50%;border:1.5px solid rgba(255,255,255,.5);background:rgba(20,24,36,.35);backdrop-filter:blur(6px);color:#fff;font-size:20px;cursor:pointer;}
-#newsScreen .nwCenter{position:absolute;left:50%;bottom:17%;transform:translateX(-50%);z-index:2;text-align:center;color:#fff;width:min(92%,640px);}
+#newsScreen .nwX{position:absolute;right:20px;top:18px;width:42px;height:42px;border-radius:50%;border:1.5px solid rgba(255,255,255,.35);background:rgba(255,255,255,.06);color:#fff;font-size:20px;cursor:pointer;}
+#newsScreen .nwHead{text-align:center;flex:none;}
 #newsScreen .nwTag{display:inline-block;background:#8fd3f0;color:#1d2a3a;font-size:11px;font-weight:800;letter-spacing:.14em;border-radius:999px;padding:3px 12px;}
-#newsScreen h2{margin:10px 0 4px;font-size:clamp(28px,4.2vw,44px);letter-spacing:.06em;text-shadow:0 2px 16px rgba(0,0,0,.35);}
-#newsScreen .nwSub{margin:0 0 20px;font-size:15px;opacity:.9;}
+#newsScreen h2{margin:8px 0 2px;font-size:clamp(22px,3vw,34px);letter-spacing:.06em;}
+#newsScreen .nwSub{margin:0;font-size:14px;opacity:.75;}
+#newsScreen .nwStage{position:relative;flex:0 1 auto;min-height:0;height:min(56vh,calc((100vw - 200px) * .5625));aspect-ratio:16/9;max-width:100%;border-radius:18px;overflow:hidden;background:#141a26;border:1px solid rgba(255,255,255,.12);box-shadow:0 22px 50px rgba(0,0,0,.45);}
+#newsScreen .nwSlides img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;transition:opacity 1.2s ease;}
+#newsScreen .nwSlides img.on{opacity:1;}
+#newsScreen .nwInfo{flex:none;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;}
+#newsScreen .nwInfo b{font-size:16px;letter-spacing:.06em;}
+#newsScreen .nwInfo span{font-size:13px;opacity:.8;}
+#newsScreen .nwDots{display:flex;gap:8px;margin-top:6px;}
+#newsScreen .nwDots i{width:22px;height:4px;border-radius:2px;background:rgba(255,255,255,.28);cursor:pointer;transition:background .3s;}
+#newsScreen .nwDots i.on{background:#8fd3f0;}
+#newsScreen .nwAct{flex:none;display:flex;flex-direction:column;align-items:center;}
 #newsScreen .nwBtns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
-#newsScreen .nwDl{display:flex;align-items:center;gap:12px;height:60px;padding:0 28px 0 22px;border-radius:999px;background:#fff;color:#2b3242;text-decoration:none;font-size:18px;font-weight:800;box-shadow:0 10px 30px rgba(0,0,0,.3);transition:transform .15s,box-shadow .15s;}
+#newsScreen .nwDl{display:flex;align-items:center;gap:12px;height:56px;padding:0 28px 0 22px;border-radius:999px;background:#fff;color:#2b3242;text-decoration:none;font-size:17px;font-weight:800;box-shadow:0 10px 26px rgba(0,0,0,.3);transition:transform .15s;}
 #newsScreen .nwDl span{display:flex;flex-direction:column;align-items:flex-start;line-height:1.15;}
 #newsScreen .nwDl small{font-size:11px;font-weight:700;color:#7a8596;}
-#newsScreen .nwDl:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(0,0,0,.36);}
-#newsScreen .nwConn{display:flex;align-items:center;gap:10px;height:60px;padding:0 26px;border-radius:999px;border:1.5px solid rgba(255,255,255,.7);background:rgba(255,255,255,.14);backdrop-filter:blur(8px);color:#fff;font:inherit;font-size:16px;font-weight:800;cursor:pointer;transition:background .15s;}
-#newsScreen .nwConn:hover{background:rgba(143,211,240,.35);}
+#newsScreen .nwDl:hover{transform:translateY(-2px);}
+#newsScreen .nwConn{display:flex;align-items:center;gap:10px;height:56px;padding:0 26px;border-radius:999px;border:1.5px solid rgba(255,255,255,.55);background:rgba(255,255,255,.08);color:#fff;font:inherit;font-size:16px;font-weight:800;cursor:pointer;transition:background .15s;}
+#newsScreen .nwConn:hover{background:rgba(143,211,240,.22);}
 #newsScreen .nwConn:disabled{opacity:.6;cursor:default;}
-#newsScreen .nwDl:focus-visible,#newsScreen .nwConn:focus-visible,#newsScreen .nwX:focus-visible{outline:2px solid #8fd3f0;outline-offset:3px;}
-#newsScreen .nwCodeRow{display:flex;align-items:baseline;justify-content:center;gap:12px;margin-top:14px;}
+#newsScreen .nwDl:focus-visible,#newsScreen .nwConn:focus-visible,#newsScreen .nwX:focus-visible,#newsScreen .nwDots i:focus-visible{outline:2px solid #8fd3f0;outline-offset:3px;}
+#newsScreen .nwCodeRow{display:flex;align-items:baseline;justify-content:center;gap:12px;margin-top:10px;}
 #newsScreen .nwCodeRow[hidden]{display:none;}
-#newsScreen .nwCodeRow small{font-size:12px;opacity:.85;}
-#newsScreen .nwCodeRow b{font-size:28px;letter-spacing:.14em;font-variant-numeric:tabular-nums;}
-#newsScreen .nwInfo{position:absolute;left:28px;bottom:24px;z-index:2;color:#fff;display:flex;flex-direction:column;gap:4px;max-width:44%;}
-#newsScreen .nwInfo b{font-size:15px;letter-spacing:.06em;}
-#newsScreen .nwInfo span{font-size:12px;opacity:.85;}
-#newsScreen .nwDots{display:flex;gap:6px;margin-top:6px;}
-#newsScreen .nwDots i{width:18px;height:3px;border-radius:2px;background:rgba(255,255,255,.35);transition:background .3s;}
-#newsScreen .nwDots i.on{background:#8fd3f0;}
-#newsScreen .nwHow{position:absolute;right:24px;bottom:22px;z-index:2;color:#fff;font-size:12px;max-width:340px;text-align:right;}
-#newsScreen .nwHow summary{cursor:pointer;opacity:.85;list-style:none;}
-#newsScreen .nwHow[open]{background:rgba(20,24,36,.7);backdrop-filter:blur(8px);border-radius:14px;padding:10px 14px;text-align:left;}
+#newsScreen .nwCodeRow small{font-size:12px;opacity:.8;}
+#newsScreen .nwCodeRow b{font-size:26px;letter-spacing:.14em;font-variant-numeric:tabular-nums;}
+#newsScreen .nwHow{position:absolute;right:24px;bottom:20px;font-size:12px;max-width:340px;text-align:right;}
+#newsScreen .nwHow summary{cursor:pointer;opacity:.75;list-style:none;}
+#newsScreen .nwHow[open]{background:rgba(20,24,36,.85);border-radius:14px;padding:10px 14px;text-align:left;}
 #newsScreen .nwHow ol{margin:8px 0 0;padding-left:18px;line-height:1.6;}
-@media (prefers-reduced-motion:reduce){#newsScreen .nwSlides img.on{animation:none;}#newsScreen .nwSlides img{transition:none;}}
+@media (prefers-reduced-motion:reduce){#newsScreen .nwSlides img{transition:none;}}
 #closetHint{font-size:10px;color:rgba(43,50,66,.42);text-align:right;margin:4px 8px 0;letter-spacing:.02em;pointer-events:none;}
 html:not(.lite) #volPanel{left:auto !important;right:20px !important;}
 /* PC：合目を 上のまんなかに（押すと 登山） */
@@ -20856,13 +20857,12 @@ function setAmbVol(i,v){ var t=AMB_TRACKS[i]; if(!t)return; t.vol=Math.max(0,Mat
   function close(){ sc.hidden=true; try{ b.focus(); }catch(_){} }
   b.addEventListener("click",open,true);
   /* 画像を ゆっくり 入れかえ（開いて いる 時だけ）・ダウンロードの 容量 */
-  var nwI=0; setInterval(function(){ try{
-    var sc=$("newsScreen"); if(!sc||sc.hidden)return;
-    var im=sc.querySelectorAll(".nwSlides img"), ds=sc.querySelectorAll(".nwDots i"); if(!im.length)return;
-    im[nwI].classList.remove("on"); if(ds[nwI])ds[nwI].classList.remove("on");
-    nwI=(nwI+1)%im.length; im[nwI].classList.add("on"); if(ds[nwI])ds[nwI].classList.add("on");
-    $("nwCapT").textContent=im[nwI].dataset.t; $("nwCapS").textContent=im[nwI].dataset.s;
-  }catch(_){} },6000);
+  var nwI=0,nwAt=Date.now();
+  function nwShow(n){ try{ var sc=$("newsScreen"),im=sc.querySelectorAll(".nwSlides img"),ds=sc.querySelectorAll(".nwDots i"); if(!im.length)return;
+    im[nwI].classList.remove("on"); if(ds[nwI])ds[nwI].classList.remove("on"); nwI=(n+im.length)%im.length;
+    im[nwI].classList.add("on"); if(ds[nwI])ds[nwI].classList.add("on"); $("nwCapT").textContent=im[nwI].dataset.t; $("nwCapS").textContent=im[nwI].dataset.s; nwAt=Date.now(); }catch(_){} }
+  setInterval(function(){ var sc=$("newsScreen"); if(!sc||sc.hidden||Date.now()-nwAt<5800)return; nwShow(nwI+1); },500);
+  document.querySelectorAll("#nwDots i").forEach(function(d,k){ d.addEventListener("click",function(){ nwShow(k); }); d.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); nwShow(k); } }); });
   b.addEventListener("click",function(){ try{ if(window._nwSized)return; window._nwSized=1;
     fetch("https://api.github.com/repos/zzcafe2800/zzcard/releases/latest").then(function(r){return r.json();}).then(function(j){
       var a=(j.assets||[]).find(function(x){return /zzcard-setup\.exe$/i.test(x.name);}); if(a&&a.size)$("nwSize").textContent="Windows・無料・"+(a.size/1048576).toFixed(1)+"MB";
@@ -42816,26 +42816,21 @@ function _gpStreetHTML(){
   </div>
 </div>
 <div id="newsScreen" hidden role="dialog" aria-modal="true" aria-labelledby="newsTtl">
-  <div class="nwSlides" id="nwSlides">
-    <img src="news_pc1.jpg" alt="" class="on" data-t="壁紙" data-s="山の 景色の 中を 猫たちが 走りまわる">
-    <img src="news_pc2.jpg" alt="" data-t="タスクバー" data-s="作業中も 画面の 下で あそぶ" loading="lazy">
-    <img src="news_pc3.jpg" alt="" data-t="全画面" data-s="ゲームや 動画の 時も いっしょ" loading="lazy">
-    <img src="news_pc4.jpg" alt="" data-t="ラジオ体操" data-s="Ctrl+Alt+P で 体操・ねむり・写真を きろく" loading="lazy">
-    <img src="news_pc5.jpg" alt="" data-t="ねっこ" data-s="出す 場所や 猫の 動きを えらぶ" loading="lazy">
-  </div>
-  <div class="nwFade"></div>
   <button id="newsX" class="nwX" type="button" aria-label="とじる">×</button>
-  <div class="nwCenter">
-    <div class="nwTag">NEW</div>
-    <h2 id="newsTtl">PC版が できたよ</h2>
-    <p class="nwSub">パソコンの 画面で、みんなの 猫と いっしょ</p>
-    <div class="nwBtns">
+  <div class="nwHead"><span class="nwTag">NEW</span><h2 id="newsTtl">PC版が できたよ</h2><p class="nwSub">パソコンの 画面で、みんなの 猫と いっしょ</p></div>
+  <div class="nwStage"><div class="nwSlides" id="nwSlides">
+    <img src="news_pc1.jpg" alt="" class="on" data-t="壁紙" data-s="山の 景色の 中を 猫たちが 走りまわる">
+    <img src="news_pc2.jpg" alt="" data-t="タスクバー" data-s="作業中も 画面の 下で あそぶ">
+    <img src="news_pc3.jpg" alt="" data-t="全画面" data-s="ゲームや 動画の 時も いっしょ">
+    <img src="news_pc4.jpg" alt="" data-t="ラジオ体操" data-s="Ctrl+Alt+P で 体操・ねむり・写真を きろく">
+    <img src="news_pc5.jpg" alt="" data-t="ねっこ" data-s="出す 場所や 猫の 動きを えらぶ">
+  </div></div>
+  <div class="nwInfo"><b id="nwCapT">壁紙</b><span id="nwCapS">山の 景色の 中を 猫たちが 走りまわる</span><div class="nwDots" id="nwDots"><i class="on" role="button" tabindex="0" aria-label="1枚目"></i><i role="button" tabindex="0" aria-label="2枚目"></i><i role="button" tabindex="0" aria-label="3枚目"></i><i role="button" tabindex="0" aria-label="4枚目"></i><i role="button" tabindex="0" aria-label="5枚目"></i></div></div>
+  <div class="nwAct"><div class="nwBtns">
       <a class="nwDl" href="https://github.com/zzcafe2800/zzcard/releases/latest/download/zzcard-setup.exe" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><span>ダウンロード<small id="nwSize">Windows・無料</small></span></a>
       <button id="nwCodeBtn" class="nwConn" type="button"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>アプリと つなぐ</button>
     </div>
-    <div class="nwCodeRow" id="nwCodeRow" hidden><small>つなぎコード</small><b id="nwCode"></b></div>
-  </div>
-  <div class="nwInfo"><b id="nwCapT">壁紙</b><span id="nwCapS">山の 景色の 中を 猫たちが 走りまわる</span><div class="nwDots" id="nwDots"><i class="on"></i><i></i><i></i><i></i><i></i></div></div>
+    <div class="nwCodeRow" id="nwCodeRow" hidden><small>つなぎコード</small><b id="nwCode"></b></div></div>
   <details class="nwHow"><summary>はじめかた</summary><ol><li>ダウンロードして 開く（「PCが 保護されました」が 出たら 詳細情報 → 実行）</li><li>「アプリと つなぐ」を おす</li><li>出す 場所を えらんで はじめる</li></ol></details>
 </div>
 <div id="settingsScreen">

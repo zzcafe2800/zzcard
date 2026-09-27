@@ -26510,8 +26510,7 @@ function openAskCard(then){
   /* ★ゆうせん順： きょう すでに きろく／自動で ついた 値 → 前回の 値 → いまの 時刻
      （ここを 読まずに 上書きして いたので「更新した 時間で 変わる」バグに なっていた） */
   /* ★おきた時間＝いま、ねた時間＝その 7時間まえ */
-_krWakeH=_n.getHours()+_n.getMinutes()/60;
-_krBedH=((_krWakeH-7)%24+24)%24;
+  _krInitTimes();
   _askPaint();
   try{ _krStep=1; _krSlpyTouched=false; _krStepPaint(); }catch(_){}
   try{ var bx=$("askBox"); if(bx){ bx.classList.remove("done"); if(bx.scrollIntoView)bx.scrollIntoView({block:"center",behavior:"smooth"}); } }catch(_){}
@@ -26520,8 +26519,8 @@ _krBedH=((_krWakeH-7)%24+24)%24;
 try{ document.addEventListener("change",function(e){
   try{
     var t=e.target; if(!t)return;
-    if(t.id==="krWakeSel"){ _krWakeH=parseFloat(t.value); _krPaintNew(); return; }
-    if(t.id==="krBedSel"){ _krBedH=parseFloat(t.value); _krPaintNew(); return; }
+    if(t.id==="krWakeSel"){ _krWakeH=parseFloat(t.value); _krMarkTimeEdit(); _krPaintNew(); return; }
+    if(t.id==="krBedSel"){ _krBedH=parseFloat(t.value); _krMarkTimeEdit(); _krPaintNew(); return; }
 
   }catch(_){}
 }); }catch(_){}
@@ -26531,9 +26530,9 @@ try{ document.addEventListener("click",function(e){
     var q=t.closest(".krQ");
     if(q){ try{playClick();}catch(_){}
       var n2=new Date();
-      if(q.dataset.t==="wake") _krWakeH=(_krWakeH==null)?n2.getHours():null;
-      else _krBedH=(_krBedH==null)?((n2.getHours()-6)%24+24)%24:null;
-      _krPaintNew(); return; }
+      if(q.dataset.t==="wake") _krWakeH=(_krWakeH==null)?_krNowH():null;
+      else _krBedH=(_krBedH==null)?((_krNowH()-7)%24+24)%24:null;
+      _krMarkTimeEdit(); _krPaintNew(); return; }
     var pt=t.closest("#krSlpyPts .krSlpyPt"); if(!pt)return;
     try{playClick();}catch(_){}
     _krSlpy=parseInt(pt.dataset.p,10)||3; _krPaintNew();
@@ -26705,7 +26704,7 @@ try{ document.addEventListener("click",function(e){
     try{playClick();}catch(_){}
     var h=_kcTo24();
     if(_kcT==="wake")_krWakeH=h; else _krBedH=h;
-    closeKrClock(); try{_krPaintNew();}catch(_){}
+    _krMarkTimeEdit(); closeKrClock(); try{_krPaintNew();}catch(_){}
     return;
   }
   if(t.closest("#krClockPop")&&!t.closest("#kcBox")){ closeKrClock(); return; }
@@ -26722,7 +26721,7 @@ try{ document.addEventListener("wheel",function(e){
       var d=(e.deltaY<0)?1:-1;
       var nv=((Math.round(cur)+d)%24+24)%24;
       if(isW)_krWakeH=nv; else _krBedH=nv;
-      _krPaintNew(); e.preventDefault(); return;
+      _krMarkTimeEdit(); _krPaintNew(); e.preventDefault(); return;
     }
     if(t.closest("#kcFace")||t.closest("#kcNow")){
       var d2=(e.deltaY<0)?1:-1;
@@ -26827,14 +26826,12 @@ function _askSyncInline(){
       _askM1=(lt.m1!=null)?lt.m1:null;_askM2=null;_askM3=null;
       try{_krSlp=getSlpLog()[k]||lt.slp||null;}catch(_){_krSlp=lt.slp||null;}
       try{_krSlpy=getSlpyLog()[k]||lt.slpy||3;}catch(_){_krSlpy=lt.slpy||3;}
-      /* きょう すでに きろくして いれば その値を 出す */
-      try{ var wlg=getWakeLog(); if(Number.isFinite(wlg[k]))_krWakeH=wlg[k];
-        else _krWakeH=(lt.wake!=null)?lt.wake:n.getHours(); }catch(_){ _krWakeH=n.getHours(); }
-      try{ var slg=getSleepLog(); if(Number.isFinite(slg[k]))_krBedH=slg[k];
-        else _krBedH=(lt.bed!=null)?lt.bed:((n.getHours()-6)%24+24)%24; }catch(_){ _krBedH=((n.getHours()-6)%24+24)%24; }
+      /* ★おきた＝いまの 時刻、ねた＝その 7時間まえ（その日 保存ずみなら 保存した 時刻） */
+      _krInitTimes();
       try{ var mm2=_moodMap()[k];
         if(mm2&&mm2.l){ for(var mi=0;mi<MOOD3.length;mi++){ if(MOOD3[mi].l===mm2.l){_askM1=mi;break;} } } }catch(_){}
     }
+    else if(!_krTimeEdited&&!_krTimesSetToday())_krDefaultTimes();   /* ★ひらきっぱなしでも いまの 時刻に あわせる */
     /* ★きろくずみでも かならず 中身を 描く（前は ここで return していて ①③が 空だった） */
     _askPaint();
     if(done){ _askPaintDone(); return; }
@@ -26843,6 +26840,15 @@ function _askSyncInline(){
   }catch(_){}
 }
 /* ★保存でも スキップでも：おきた時間・ねた時間を 日にちつきで 入れる */
+/* ねた・おきた時間の 初期値：おきた＝いまの 時刻（分まで）、ねた＝その 7時間まえ。
+   その日 いちど 保存したら、つぎから 保存した 時刻を 出す（あとで 昼に こうしんしても 上書きしない） */
+var _krTimeEdited=false;
+function _krNowH(){ var n=new Date(); return n.getHours()+n.getMinutes()/60; }
+function _krDefaultTimes(){ _krWakeH=_krNowH(); _krBedH=((_krWakeH-7)%24+24)%24; }
+function _krMarkTimeEdit(){ _krTimeEdited=true; }
+function _krTimesSetToday(){ try{ return localStorage.getItem("radio_krtime_set")===jstKey(); }catch(_){ return false; } }
+function _krLoadTodayTimes(){ var k=jstKey(); try{ var wl=getWakeLog(); _krWakeH=Number.isFinite(wl[k])?wl[k]:null; }catch(_){ _krWakeH=null; } try{ var sl=getSleepLog(); _krBedH=Number.isFinite(sl[k])?sl[k]:null; }catch(_){ _krBedH=null; } }
+function _krInitTimes(){ _krTimeEdited=false; if(_krTimesSetToday())_krLoadTodayTimes(); else _krDefaultTimes(); }
 function _krStoreTimes(){
   var k=jstKey(),mid=_dayMid(k);
   if(_krWakeH!=null){ var wl=getWakeLog(); wl[k]=_krWakeH; localStorage.setItem(WAKELOG_KEY,JSON.stringify(wl)); try{localStorage.setItem("radio_wake_manual",k);}catch(_){} }
@@ -26854,9 +26860,12 @@ function _krStoreTimes(){
     else if(Number.isFinite(mid)){ o.b=Math.round(mid+(_krBedH>=12?_krBedH-24:_krBedH)*3600000); }
   }
   ts[k]=o; setSleepTs(ts);
+  try{ localStorage.setItem("radio_krtime_set",k); }catch(_){}
 }
 function _askClose(save){
+  try{ if(!_krTimeEdited&&!_krTimesSetToday())_krDefaultTimes(); }catch(_){}   /* ★なにも さわらずに こうしん／スキップ ＝ いまの 時刻で 自動保存 */
   try{ _krStoreTimes(); }catch(_){}
+  _krTimeEdited=false;
   try{ if(save){setSlpFor(jstKey(),_krSlp);setSlpyFor(jstKey(),_krSlpy);
     setKrLast({wake:_krWakeH,bed:_krBedH,m1:_askM1,slp:_krSlp,slpy:_krSlpy});
     _krDoneSound();
@@ -32439,14 +32448,14 @@ try{
     if(pick("m3",v=>{_askM3=v;}))return;
     var stp=t.closest(".krStep");
     if(stp){try{playClick();}catch(_){}var tp=stp.dataset.t,dd=parseInt(stp.dataset.d,10);
-      if(tp==="wake"){ if(_krWakeH==null)_krWakeH=new Date().getHours(); _krWakeH=((_krWakeH+dd)%24+24)%24; }
-      else{ if(_krBedH==null)_krBedH=((new Date().getHours()-6)%24+24)%24; _krBedH=((_krBedH+dd)%24+24)%24; }
-      _askPaint();return;}
+      if(tp==="wake"){ if(_krWakeH==null)_krWakeH=_krNowH(); _krWakeH=((_krWakeH+dd)%24+24)%24; }
+      else{ if(_krBedH==null)_krBedH=((_krNowH()-7)%24+24)%24; _krBedH=((_krBedH+dd)%24+24)%24; }
+      _krMarkTimeEdit(); _askPaint();return;}
     var dn=t.closest(".krDunno");
     if(dn){try{playClick();}catch(_){}var tp2=dn.dataset.t;
-      if(tp2==="wake")_krWakeH=(_krWakeH==null)?new Date().getHours():null;
-      else _krBedH=(_krBedH==null)?(((new Date().getHours()-6)%24+24)%24):null;
-      _askPaint();return;}
+      if(tp2==="wake")_krWakeH=(_krWakeH==null)?_krNowH():null;
+      else _krBedH=(_krBedH==null)?(((_krNowH()-7)%24+24)%24):null;
+      _krMarkTimeEdit(); _askPaint();return;}
     if(t.closest("#krSave")){try{playClick();}catch(_){}_askClose(true);return;}
     if(t.closest("#krSkip")){try{playClick();}catch(_){}_askClose(false);return;}
   });

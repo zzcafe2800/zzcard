@@ -16012,7 +16012,7 @@ function _hs2(tier,tk,W){
     fogBand(449,7,.4);
     fill("M-20 486Q"+F(cx-W*.3)+" 480 "+F(cx-W*.16)+" 500Q"+F(cx)+" 516 "+F(cx+W*.18)+" 499Q"+F(cx+W*.32)+" 481 "+F(W+20)+" 488V640H-20Z",P.mL);
     for(var gp2=0;gp2<Math.round(W/40);gp2++)fill(sm(blob(r(0,W),r(500,570),r(14,70),r(3,8),10,.45),true),rnd()<.5?P.mD:mix(P.mL,P.fl2,.22),r(.25,.5));
-    var pr=cx+W*.14; o.push('<rect x="'+F(pr-3)+'" y="486" width="6" height="18" fill="'+P.wood+'"/>'); for(var pl=0;pl<5;pl++)o.push('<rect x="'+F(pr-3)+'" y="'+F(487+pl*3.6)+'" width="6" height=".8" fill="'+P.woodD+'"/>');
+    /* （なぞの 桟橋は なし） */
     var gv=[]; [[W*.02,W*.3],[W*.68,W*.99]].forEach(function(g){ var bx=g[0]; while(bx<g[1]){ gv.push({x:bx,y:r(506,546),h:r(34,96),k:rnd()}); bx+=r(7,26); } });
     for(var ex=0;ex<Math.max(1,Math.round(W/300));ex++)gv.push({x:r(W*.3,W*.68),y:r(530,548),h:r(30,60),k:.95});
     fogRows(gv.sort(function(a,b){return a.y-b.y;}),[[522,13,.45],[538,14,.5]],function(g){ capProp(g.y,[g.x-g.h*.5,g.y-g.h*1.05,g.h,g.h*1.1],function(){ if(g.k<.72)birch(g.x,g.y,g.h,g.h>55); else if(g.k<.9)broad(g.x,g.y,g.h*.7,g.h>50); else shrub(g.x,g.y,g.h*.3); }); });
@@ -16120,6 +16120,7 @@ function _hs2(tier,tk,W){
   else { /* 7：雲の上：山頂の しるし・ほこら */
     [[cx-W*.33,452,118,W*.17],[cx+W*.36,456,92,W*.14],[cx+W*.08,440,60,W*.1]].forEach(function(m){ peak(m[0],m[1],m[2],m[3],P.far2,mix(P.far2,P.ink,.14),{snow:.35}); });
     haze(420,470,.5);
+    fill("M-30 500H"+F(W+30)+"V"+H+"H-30Z",mix(P.cloudD,P.cloudL,.35));   /* 雲の 下の すき間から 空が 見えない ように */
     clouds(446,12,.55,mix(P.cloudL,P.haze,.35),P.cloudD,.95); clouds(482,16,.85,P.cloudL,P.cloudD,1); clouds(524,22,1.25,P.cloudL,P.cloudD,1);
     var smt=[cx+W*.04,476],sm2=md([-30,604],smt,40,5).concat(md(smt,[W+30,594],40,5).slice(1));
     fill(pth(sm2.concat([[W+30,H],[-30,H]]),true),P.rL);

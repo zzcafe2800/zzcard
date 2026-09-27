@@ -136,7 +136,7 @@ jobs:
               }
           }
           fn load_state(app: &AppHandle) -> Value {
-              let def = json!({"uid":"","mode":"wall","setupDone":false,"wakeDay":"","hideSleep":false,"noEmo":false,"noShare":false,"autoStart":false,"lowQ":false,"catScale":1.0,"cardWall":true,"cardBar":false,"noTapShow":false});
+              let def = json!({"uid":"","mode":"wall","setupDone":false,"wakeDay":"","hideSleep":false,"noEmo":false,"noShare":false,"autoStart":true,"lowQ":false,"catScale":1.0,"cardWall":true,"cardBar":false,"noTapShow":false});
               let mut v = std::fs::read_to_string(data_path(app, "state.json")).ok().and_then(|t| serde_json::from_str::<Value>(&t).ok()).unwrap_or(json!({}));
               if !v.is_object() { v = json!({}); }
               if let (Some(o), Some(d)) = (v.as_object_mut(), def.as_object()) {
@@ -415,7 +415,8 @@ jobs:
                   if let Some(a) = s.as_object_mut() {
                       let mode = o.get("mode").and_then(|m| m.as_str()).unwrap_or("wall");
                       a.insert("mode".into(), json!(if ["wall", "bar", "full"].contains(&mode) { mode } else { "wall" }));
-                      for k in ["hideSleep", "noEmo", "noShare", "noTapShow", "autoStart", "lowQ"] { a.insert(k.into(), json!(o.get(k).and_then(|v| v.as_bool()).unwrap_or(false))); }
+                      for k in ["hideSleep", "noEmo", "noShare", "noTapShow", "lowQ"] { a.insert(k.into(), json!(o.get(k).and_then(|v| v.as_bool()).unwrap_or(false))); }
+                      a.insert("autoStart".into(), json!(o.get("autoStart").and_then(|v| v.as_bool()).unwrap_or(true)));   /* PCを つけたら 開く：はじめは オン */
                       a.insert("cardWall".into(), json!(o.get("cardWall").and_then(|v| v.as_bool()).unwrap_or(true)));
                       a.insert("cardBar".into(), json!(o.get("cardBar").and_then(|v| v.as_bool()).unwrap_or(false)));
                       let sc = o.get("catScale").and_then(|v| v.as_f64()).unwrap_or(1.0).max(0.5).min(2.0);
@@ -663,7 +664,7 @@ jobs:
           <script src="fbconfig.js"></script>
           <script type="module">
           import { redeem } from './fb.js';
-          let st = await zz.state(), mode = st.mode || 'wall', opt = { hideSleep: !!st.hideSleep, noEmo: !!st.noEmo, noShare: !!st.noShare, autoStart: !!st.autoStart, lowQ: !!st.lowQ }, size = Math.round((st.catScale || 1) * 100);
+          let st = await zz.state(), mode = st.mode || 'wall', opt = { hideSleep: !!st.hideSleep, noEmo: !!st.noEmo, noShare: !!st.noShare, autoStart: st.autoStart !== false, lowQ: !!st.lowQ }, size = Math.round((st.catScale || 1) * 100);
           const $ = (id) => document.getElementById(id);
           function paint() {
             $('ok').hidden = !st.uid; $('ng').hidden = !!st.uid;
@@ -860,7 +861,7 @@ jobs:
             document.querySelectorAll('#pS .sw').forEach((w) => w.querySelectorAll('button').forEach((b) => b.classList.toggle('on', String(+!!so[w.dataset.k]) === b.dataset.v)));
             $('sz').value = ssz; $('szV').textContent = ssz;
           }
-          async function loadS() { const st = await zz.state(); suid = st.uid || ''; sm = st.mode || 'wall'; so = { hideSleep: !!st.hideSleep, noEmo: !!st.noEmo, noShare: !!st.noShare, noTapShow: !!st.noTapShow, autoStart: !!st.autoStart, lowQ: !!st.lowQ }; cw = st.cardWall !== false; cb = !!st.cardBar; ssz = Math.round((st.catScale || 1) * 100); paintS(); }
+          async function loadS() { const st = await zz.state(); suid = st.uid || ''; sm = st.mode || 'wall'; so = { hideSleep: !!st.hideSleep, noEmo: !!st.noEmo, noShare: !!st.noShare, noTapShow: !!st.noTapShow, autoStart: st.autoStart !== false, lowQ: !!st.lowQ }; cw = st.cardWall !== false; cb = !!st.cardBar; ssz = Math.round((st.catScale || 1) * 100); paintS(); }
           document.querySelectorAll('#pS .tile').forEach((t) => t.addEventListener('click', () => { sm = t.dataset.m; paintS(); }));
           document.querySelectorAll('#pS .sw button').forEach((b) => b.addEventListener('click', () => { const k = b.parentNode.dataset.k, v = b.dataset.v === '1'; if (k === 'card') { if (sm === 'wall') cw = v; else cb = v; } else so[k] = v; paintS(); }));
           $('sz').addEventListener('input', () => { ssz = +$('sz').value; $('szV').textContent = ssz; });

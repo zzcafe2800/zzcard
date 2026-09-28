@@ -28779,7 +28779,7 @@ function _artBaseHSL(a){
   let sx=0,sy=0,ss=0,n=0;
   try{
     ((a&&a.L)||[]).forEach(ly=>{if(ly&&ly.on===0)return;((ly&&ly.s)||[]).forEach(st=>{
-      const c=_hex2hsl(ART_PAL[st[0]]||"#1c1c1c");
+      const c=_hex2hsl(((typeof st[0]==="string")?st[0]:ART_PAL[st[0]])||"#1c1c1c");
       if(c.s<0.08)return;
       const r=c.h*Math.PI/180;sx+=Math.cos(r);sy+=Math.sin(r);ss+=c.s;n++;
     });});
@@ -28901,7 +28901,7 @@ function _artLayersSVG(a,cs,tn){
 }
 function _artStrokePath(st,cs){
   const pts=_artUnpack(st[2]);if(!pts.length)return"";
-  const col=_artTintCol(ART_PAL[st[0]]||"#1c1c1c",arguments[2]);
+  const col=_artTintCol(((typeof st[0]==="string")?st[0]:ART_PAL[st[0]])||"#1c1c1c",arguments[2]);
   const op=(st[3]==null||st[3]>=10)?1:Math.max(0.05,st[3]/10);
   if(st[1]===-1){
     let d2="";for(let i=0;i<pts.length;i++)d2+=(i?"L":"M")+pts[i].x.toFixed(1)+" "+pts[i].y.toFixed(1)+" ";
@@ -28942,7 +28942,7 @@ function _artDrawLayers(ctx,layers,cs,scale){
     const _la=(ly.a!=null&&ly.a<10)?Math.max(0,ly.a)/10:1;
     (ly.s||[]).forEach(st=>{
       const pts=_artUnpack(st[2]);if(!pts.length)return;
-      ctx.strokeStyle=ctx.fillStyle=ART_PAL[st[0]]||"#1c1c1c";
+      ctx.strokeStyle=ctx.fillStyle=((typeof st[0]==="string")?st[0]:ART_PAL[st[0]])||"#1c1c1c";
       const _op=((st[3]==null||st[3]>=10)?1:Math.max(0.05,st[3]/10))*_la;
       ctx.globalAlpha=_op;
       if(st[1]===-1){
@@ -39443,7 +39443,7 @@ function _drPastePreview(ctx){
     if(l2&&l2.on===0)return;
     (l2&&l2.s||[]).forEach(st=>{
       const pts=_artUnpack(st[2]);if(!pts.length)return;
-      ctx.strokeStyle=ctx.fillStyle=ART_PAL[st[0]]||"#1c1c1c";
+      ctx.strokeStyle=ctx.fillStyle=((typeof st[0]==="string")?st[0]:ART_PAL[st[0]])||"#1c1c1c";
       ctx.lineWidth=(ART_W[st[1]]||ART_W[1])*src.w*sc*_drScale;
       ctx.beginPath();
       pts.forEach((p,i)=>{
@@ -42753,7 +42753,7 @@ function _gpStreetHTML(){
 
 /* フレンドを アプリに：コードを 出す（アプリの フレンドタブに 入れる） */
 (function(){ const b=$("nwFrBtn"); if(!b)return; b.addEventListener("click",async function(){ b.disabled=true;
-  try{ const c=await _pcMakeCode(); const e=$("nwFrCode"); e.textContent="コード "+c.slice(0,4)+" "+c.slice(4); e.hidden=false; }catch(_){ try{toast("コードを 作れなかったよ");}catch(_){} }
+  try{ const c=await _pcMakeCode(); const e=$("nwFrCode"); e.textContent="コード "+c.slice(0,4)+" "+c.slice(4); e.hidden=false; try{ location.href="zzcard://link?c="+c; }catch(_){} }catch(_){ try{toast("コードを 作れなかったよ");}catch(_){} }
   b.disabled=false; }); })();
 </script>
 <button id="storyTestBtn" type="button" hidden>📖 ストーリー(テスト)</button>

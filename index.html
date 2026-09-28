@@ -20880,7 +20880,7 @@ function setAmbVol(i,v){ var t=AMB_TRACKS[i]; if(!t)return; t.vol=Math.max(0,Mat
   document.querySelectorAll("#nwDots i").forEach(function(d,k){ d.addEventListener("click",function(){ nwShow(k); }); d.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); nwShow(k); } }); });
   b.addEventListener("click",function(){ try{ if(window._nwSized)return; window._nwSized=1;
     fetch("https://api.github.com/repos/zzcafe2800/zzcard/releases/latest").then(function(r){return r.json();}).then(function(j){
-      var a=(j.assets||[]).find(function(x){return /zzcard-setup\.exe$/i.test(x.name);}); if(a&&a.size)$("nwSize").textContent="BOOTH・Windows・"+(a.size/1048576).toFixed(1)+"MB";
+      var a=(j.assets||[]).find(function(x){return /zzcard-setup\.exe$/i.test(x.name);}); if(a&&a.size);
     }).catch(function(){});
   }catch(_){} });
   $("newsX").addEventListener("click",function(){ try{playClick();}catch(_){} close(); });
@@ -42846,7 +42846,7 @@ function _gpStreetHTML(){
   </div></div>
   <div class="nwInfo"><b id="nwCapT">壁紙</b><span id="nwCapS">山の 景色の 中を 猫たちが 走りまわる</span><div class="nwDots" id="nwDots"><i class="on" role="button" tabindex="0" aria-label="1枚目"></i><i role="button" tabindex="0" aria-label="2枚目"></i><i role="button" tabindex="0" aria-label="3枚目"></i><i role="button" tabindex="0" aria-label="4枚目"></i><i role="button" tabindex="0" aria-label="5枚目"></i></div></div>
   <div class="nwAct"><div class="nwBtns">
-      <a class="nwDl" href="https://zzcaffe.booth.pm/items/8910157" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><span>ダウンロード<small id="nwSize">BOOTH・Windows</small></span></a>
+      <a class="nwDl" href="https://zzcaffe.booth.pm/items/8910157" target="_blank" rel="noopener"><span>BOOTH</span></a>
       
     </div></div>
   <details class="nwHow"><summary>はじめかた</summary><ol><li>BOOTH で 手に入れて 開く（「PCが 保護されました」が 出たら 詳細情報 → 実行）</li><li>猫の 名前と 見た目を きめて はじめる</li></ol></details>

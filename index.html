@@ -28892,7 +28892,7 @@ function _artLayersSVG(a,cs,tn){
   ((a&&a.L)||[]).forEach(ly=>{
     if(ly&&ly.on===0)return;
     let inner="";
-    ((ly&&ly.s)||[]).forEach(st=>{inner+=_artStrokePath(st,cs,tn);});
+    ((ly&&ly.s)||[]).forEach(st=>{ if(st&&st[0]==="E"){ const id="ae"+Math.random().toString(36).slice(2,9),W=(cs&&cs.w)||120,H=(cs&&cs.h)||124; inner='<mask id="'+id+'" maskUnits="userSpaceOnUse" x="'+(-W)+'" y="'+(-H)+'" width="'+(W*3)+'" height="'+(H*3)+'"><rect x="'+(-W)+'" y="'+(-H)+'" width="'+(W*3)+'" height="'+(H*3)+'" fill="#fff"/>'+_artStrokePath(["#000",st[1],st[2],10],cs)+'</mask><g mask="url(#'+id+')">'+inner+'</g>'; } else inner+=_artStrokePath(st,cs,tn); });   /* 消しゴム：前の 線を くり抜く */
     if(!inner)return;
     const la=(ly&&ly.a!=null&&ly.a<10)?Math.max(0,ly.a)/10:1;
     out+=(la<1)?('<g opacity="'+la.toFixed(2)+'">'+inner+'</g>'):inner;
@@ -42878,11 +42878,11 @@ function _gpStreetHTML(){
   <button id="newsX" class="nwX" type="button" aria-label="とじる">×</button>
   <div class="nwHead"><span class="nwTag">NEW</span><h2 id="newsTtl">PC版が できたよ</h2><p class="nwSub">パソコンの 画面で、みんなの 猫と いっしょ</p></div>
   <div class="nwStage"><div class="nwSlides" id="nwSlides">
-    <img src="news_pc1.jpg" alt="" class="on" data-t="壁紙" data-s="山の 景色の 中を 猫たちが 走りまわる">
-    <img src="news_pc2.jpg" alt="" data-t="タスクバー" data-s="作業中も 画面の 下で あそぶ">
-    <img src="news_pc3.jpg" alt="" data-t="全画面" data-s="ゲームや 動画の 時も いっしょ">
-    <img src="news_pc4.jpg" alt="" data-t="ラジオ体操" data-s="Ctrl+Alt+P で 体操・ねむり・写真を きろく">
-    <img src="news_pc5.jpg" alt="" data-t="ねっこ" data-s="出す 場所や 猫の 動きを えらぶ">
+    <img src="news_pc1.png" alt="" class="on" data-t="壁紙" data-s="山の 景色の 中を 猫たちが 走りまわる">
+    <img src="news_pc2.png" alt="" data-t="タスクバー" data-s="作業中も 画面の 下で あそぶ">
+    <img src="news_pc3.png" alt="" data-t="全画面" data-s="ゲームや 動画の 時も いっしょ">
+    <img src="news_pc4.png" alt="" data-t="ラジオ体操" data-s="Ctrl+Alt+P で 体操・ねむり・写真を きろく">
+    <img src="news_pc5.png" alt="" data-t="ねっこ" data-s="出す 場所や 猫の 動きを えらぶ">
   </div></div>
   <div class="nwInfo"><b id="nwCapT">壁紙</b><span id="nwCapS">山の 景色の 中を 猫たちが 走りまわる</span><div class="nwDots" id="nwDots"><i class="on" role="button" tabindex="0" aria-label="1枚目"></i><i role="button" tabindex="0" aria-label="2枚目"></i><i role="button" tabindex="0" aria-label="3枚目"></i><i role="button" tabindex="0" aria-label="4枚目"></i><i role="button" tabindex="0" aria-label="5枚目"></i></div></div>
   <div class="nwAct"><div class="nwBtns">

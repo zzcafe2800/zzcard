@@ -496,9 +496,9 @@ jobs:
                       });
                   }
                   "full" => {
-                      let h = (170.0 * sc) as i32;
-                      let _ = w.set_position(PhysicalPosition::new(mx, my + mh - h));
-                      let _ = w.set_size(PhysicalSize::new(mw as u32, h as u32));
+                      let _ = sc;
+                      let _ = w.set_position(PhysicalPosition::new(mx, my));
+                      let _ = w.set_size(PhysicalSize::new(mw as u32, mh as u32));   /* 画面 ぜんぶ（猫は 下を 歩く・上まで 浮ける） */
                       let _ = w.show();
                   }
                   _ => { place_bar(app, st); }
@@ -541,13 +541,14 @@ jobs:
               if sstr(st, "mode") != "bar" { return; }
               let Some(w) = app.get_webview_window(&cats_label(st)) else { return };
               let Some((mx, my, mw, mh, sc)) = primary(app) else { return };
-              let h = (170.0 * sc) as i32;
+              let _ = sc;
               let mut top = my + mh - (48.0 * sc) as i32;
               let mut show = !*st.paused.lock().unwrap();
               if let Some((t, bottom, vis)) = win::taskbar(mx, my, mw, mh) {
                   if bottom { top = t; if !vis { show = false; } } else { top = my + mh; }
               }
-              let want = PhysicalPosition::new(mx, top - h);
+              let h = (top - my).max(200);   /* 画面の 上から タスクバーの 上まで */
+              let want = PhysicalPosition::new(mx, my);
               if w.outer_position().map(|p| p != want).unwrap_or(true) { let _ = w.set_position(want); }
               if w.outer_size().map(|s| s.width as i32 != mw || s.height as i32 != h).unwrap_or(true) { let _ = w.set_size(PhysicalSize::new(mw as u32, h as u32)); }
               let mut sh = st.bar_shown.lock().unwrap();
@@ -1013,6 +1014,7 @@ jobs:
           .rsec{margin-top:8px}.rr{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:14px;border:1.5px solid var(--ln);margin-top:6px;cursor:pointer;font-size:13px;font-weight:800}.rr span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rr small{font-size:11px;color:var(--mu);font-weight:700}.rr.on{border-color:var(--nv);background:var(--pc2)}.rr.dis{opacity:.5;cursor:default}
           .rdot{width:8px;height:8px;border-radius:50%;background:#f0a64a;flex:none}.rdot.on{background:#5cc28a}.rdot.priv{background:#b8bfca}
           .rnone{font-size:11px;color:var(--mu);padding:4px 2px}
+          #frRooms,#pubRooms{height:128px;overflow:auto;border:1.5px dashed var(--ln);border-radius:14px;padding:2px 6px 6px}
           .steps{display:flex;align-items:center;justify-content:center;gap:6px;margin:10px 0 2px;font-size:12px;font-weight:800;color:var(--mu)}.steps b{padding:5px 11px;border-radius:999px;cursor:pointer}.steps b.on{background:var(--nv);color:#fff}.steps i{width:14px;height:2px;background:var(--ln)}
           .fold>.lb{cursor:pointer}.fold.shut>:not(.lb){display:none}
           .ksec{display:flex;gap:6px;justify-content:center;margin:10px 0 0}.ksec button{border:0;border-radius:999px;background:#eef1f5;color:var(--nv);font:inherit;font-size:12px;font-weight:800;padding:7px 14px;cursor:pointer}.ksec button.on{background:var(--nv);color:#fff}
@@ -1026,6 +1028,9 @@ jobs:
           .khd{display:flex;align-items:center;justify-content:space-between}.kmine{border:0;width:34px;height:34px;border-radius:50%;background:#eef1f5;color:var(--nv);cursor:pointer;display:flex;align-items:center;justify-content:center}.kmine.on{background:var(--nv);color:#fff}
           #wpScr{position:absolute;left:10px;right:10px;top:100px;bottom:96px;z-index:31;background:#fff;border-radius:24px;border:1.5px solid var(--nv);padding:14px;display:flex;flex-direction:column;gap:12px;overflow:auto}
           .wpb{position:absolute;left:50%;transform:translateX(-50%);border:0;border-radius:999px;background:rgba(255,255,255,.14);color:#fff;font:inherit;font-size:12px;font-weight:800;padding:6px 14px;cursor:pointer}
+          .wppv{height:150px;border-radius:16px;overflow:hidden;background:#dfe6ee}.wppv svg{width:100%;height:100%;display:block}
+          .crh{display:flex;align-items:baseline;gap:8px;margin:4px 0 6px}.crh b{font-size:20px;letter-spacing:.12em}.crh small{font-size:11px;color:var(--mu)}
+          .nxt.solo{background:#fff;color:var(--nv);border:2px solid var(--nv)}
           .mko{display:flex;flex-direction:column;gap:8px;padding:12px;border:1.5px solid var(--ln);border-radius:16px;margin-top:10px}.mko b{font-size:15px}.mko small{font-size:11px;color:var(--mu)}.mko .nxt{margin-top:2px}
           .tile[data-m="wall"]{display:none !important}
           #draw{position:absolute;left:10px;right:10px;top:100px;bottom:96px;z-index:30;background:#fff;border-radius:24px;border:1.5px solid var(--nv);padding:10px;display:flex;flex-direction:column;gap:6px;overflow:auto}#draw.full{left:0;right:0;top:0;bottom:0;border-radius:0;border:0}
@@ -1041,6 +1046,9 @@ jobs:
           .kmy{border:0;border-radius:999px;background:#eef1f5;color:var(--nv);font:inherit;font-size:11px;font-weight:800;padding:6px 12px;cursor:pointer;margin-left:auto}
           .kstreet{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}.kst{border:1.5px solid var(--ln);border-radius:16px;background:#fff;padding:8px 4px;cursor:pointer;text-align:center;font:inherit}.kst .kth{width:100%;height:64px;margin-bottom:4px}.kst span{display:block;font-size:11px;font-weight:800;color:var(--nv);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
           .kst.off{background:linear-gradient(135deg,#fff4d6,#ffe3a3);border-color:#f4c73b}.kst.off span{color:#8a5a00}
+          .ksrch{display:flex;gap:6px;align-items:center;margin-top:8px}.ksrch input{flex:1;min-width:0;height:34px;border-radius:999px;border:1.5px solid var(--ln);padding:0 12px;font:inherit;font-size:12px;font-weight:700}
+          .kshops{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:8px}.ksh{border:0;border-radius:16px;background:#fff;box-shadow:0 2px 8px rgba(20,26,40,.08);padding:10px 6px;cursor:pointer;font:inherit;text-align:center}.ksh svg{width:54px;height:54px;background:#f1f4f8;border-radius:12px;padding:6px}.ksh b{display:block;font-size:12px;margin-top:4px}.ksh small{font-size:10px;color:var(--mu)}
+          .kroom{margin-top:8px;border-radius:16px;padding:12px 8px 16px;background:linear-gradient(#f6ecdf 0 58%,#d9b489 58% 60%,#e9d2b3 60%);min-height:260px}.kroom .kinv{margin-top:6px}.kroom .kc{background:repeating-conic-gradient(#f7f3ec 0 25%,#fffdf9 0 50%) 0 0/12px 12px;border-color:#ead9c2}.kc .kby{position:absolute;left:0;right:0;bottom:14px;font-size:8px;color:#9a8a76;text-align:center}
           .kinv{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}.kc{position:relative;aspect-ratio:1/1.05;border:2px solid var(--ln);border-radius:14px;background:repeating-conic-gradient(#f2f5f9 0 25%,#fff 0 50%) 0 0/12px 12px;cursor:pointer;padding:0;font:inherit;display:flex;align-items:flex-end;justify-content:center;overflow:hidden}
           .kc.on{border-color:#5cc28a;box-shadow:0 0 0 2px rgba(92,194,138,.25)}.kc .kth{background:none;width:100%;height:100%}.kc span{position:absolute;left:3px;right:3px;bottom:2px;font-size:8.5px;font-weight:800;color:#5a6b80;text-align:center;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
           .kc .kcol{position:absolute;right:4px;bottom:14px;width:13px;height:13px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--ln)}.kc.lock{opacity:.55}.kc.lock::after{content:"🔒";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:18px}.kc.none{align-items:center;font-size:13px;font-weight:900;color:var(--mu);background:#f7f9fb}
@@ -1048,6 +1056,7 @@ jobs:
           .kgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}.kit{border:1.5px solid var(--ln);border-radius:14px;padding:8px 4px;text-align:center;cursor:pointer;background:#fff;font:inherit}.kit.on{border-color:var(--nv);background:var(--pc2)}.kit i{display:block;width:14px;height:14px;border-radius:50%;margin:0 auto 4px}.kit span{display:block;font-size:11px;font-weight:800;color:var(--nv);line-height:1.3}.kit b{display:block;font-size:13px;color:#5fb4e6;margin-top:2px}.kit b small{font-size:9px;color:var(--mu)}
           .sbl{display:flex;align-items:center;gap:8px}.mny{font-size:11px;color:#ffe08a}
           .flv{font-size:12px;font-weight:900;color:#e8798f;text-align:right;letter-spacing:.02em;display:flex;flex-direction:column;align-items:flex-end;line-height:1.1}.flv small{font-size:9px;color:var(--mu);font-weight:800;letter-spacing:0}
+          .hts2{display:inline-flex;gap:1px}.ht{font-style:normal;background:linear-gradient(90deg,#e8798f var(--f),#f3d3db var(--f));-webkit-background-clip:text;background-clip:text;color:transparent}.hn{font-style:normal;font-size:11px;color:var(--nv);margin-left:4px;font-weight:900}.hn small{font-size:8px;color:var(--mu)}
           #affLv{display:flex;flex-direction:column;line-height:1.1}#affLv .hts{font-size:22px;color:#e8798f;letter-spacing:.04em}#affLv small{font-size:12px;color:var(--mu);font-weight:800}.fbar{width:54px;height:6px;border-radius:999px;background:var(--pc2);overflow:hidden}.fbar i{display:block;height:100%;background:linear-gradient(90deg,#f2a6b8,#e8798f)}
           .rq{display:flex;align-items:center;gap:6px;padding:8px 2px;border-top:1px solid var(--ln);font-size:13px;font-weight:800}.rq:first-child{border-top:0}.rq span{flex:1}.rq button{border:0;border-radius:999px;padding:6px 12px;font:inherit;font-size:11px;font-weight:800;cursor:pointer}.rq .ok{background:var(--nv);color:#fff}.rq .ng{background:#eef1f5;color:var(--mu)}
           .pm{display:flex;align-items:center;gap:8px;padding:6px 4px;font-size:12px;font-weight:800}.pm span{flex:1}.pm button{border:0;border-radius:999px;background:var(--nv);color:#fff;font:inherit;font-size:11px;padding:4px 10px;cursor:pointer}.pm i{font-style:normal;color:#e8798f;font-size:11px}
@@ -1078,12 +1087,13 @@ jobs:
 
             <section id="pK" hidden>
              <div class="card kpv"><div id="kFig"></div><button id="kBag" class="kbag" type="button" aria-label="かばん"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M8 8V6a4 4 0 0 1 8 0v2"/><rect x="3" y="8" width="18" height="13" rx="3"/></svg></button></div>
-             <div class="card" id="kStreet"><div class="khd"><button type="button" id="kBack" class="kback" hidden>‹</button><div class="lb" id="kTtl">商店街</div><button type="button" id="kMy" class="kmy">マイショップ</button></div><div id="kList"></div><div id="kMsg" class="msg"></div></div>
+             <div class="card" id="kStreet"><div class="khd"><button type="button" id="kBack" class="kback" hidden>‹</button><div class="lb" id="kTtl">商店街</div><button type="button" id="kMy" class="kmy">マイショップ</button></div><div class="ksrch" id="kSrch"><input type="text" id="kQ" placeholder="お店・なまえで さがす"><div class="sg" id="kSort"><button type="button" data-v="new">さいきん</button><button type="button" data-v="many">商品が多い</button></div></div><div id="kList"></div><div id="kMsg" class="msg"></div></div>
              <div class="card" id="kBagCard" hidden><div class="lb">からだ</div><div class="kdots" id="kBody"></div><div class="lb" style="margin-top:8px">みみ・目</div><div class="kdots" id="kEar"></div><div class="kinv" id="kInv"></div></div>
              <div class="card" id="kMyCard" hidden><div class="khd"><button type="button" id="kMyBack" class="kback">‹</button><div class="lb">マイショップ</div><div class="sg" id="kPubSw"><button type="button" data-v="1">公開</button><button type="button" data-v="0">非公開</button></div></div><button type="button" class="nxt" id="kMake">衣装を 作る</button><button id="kDraw" type="button" hidden></button><div class="kinv" id="kMyList"></div></div>
             </section>
             <div id="wpScr" class="ovl" hidden>
              <div class="dwTop"><b>壁紙設定</b><span><button id="wpX" type="button" aria-label="とじる">✕</button></span></div>
+             <div id="wpPv" class="wppv"></div>
              <div class="op">壁紙<div class="sg" id="wpApply"><button type="button" data-v="1">適用</button><button type="button" data-v="0">しない</button></div></div>
              <div id="wpBody"></div>
              <button type="button" class="nxt" id="wpSave">ほぞん</button>
@@ -1098,6 +1108,7 @@ jobs:
              <button id="dwSave" type="button" class="dwSave">ほぞん</button>
             </div>
             <section id="pB" hidden>
+             <div class="card" id="curRoom" hidden><div class="lb">いまの お部屋</div><div class="crh"><b id="crId"></b><small id="crHost"></small></div><div id="crMem"></div><button type="button" class="nxt" id="crLeave">退出</button></div>
              <div class="steps" id="nkSteps"><b data-s="1">① 表示方法</b><i></i><b data-s="2">② お部屋</b><i></i><b data-s="3">③ はじめる</b></div>
              <div class="card" data-step="1"><div class="lb">猫の 表示方法</div><div class="tiles">
                <div class="tile" data-m="wall" role="button" tabindex="0"><div class="tv" id="wallPrev"></div><span class="alw" id="alw" role="switch" tabindex="0" title="ほかの 場所に 出して いる 時も 壁紙を 出す"><i></i>適用</span><span class="nm">壁紙</span></div>
@@ -1105,15 +1116,16 @@ jobs:
                <div class="tile" data-m="full" role="button" tabindex="0"><div class="tv"><svg viewBox="0 0 160 100"><rect width="160" height="100" fill="#26233d"/><path d="M70 36l24 14-24 14z" fill="#fff" opacity=".7"/><circle cx="52" cy="94" r="5" fill="#efe8dc"/><circle cx="68" cy="94" r="5" fill="#ffb27d"/></svg></div><span class="nm">全画面</span></div>
               </div></div>
              <button type="button" class="nxt" data-step="1" id="nk1">つぎへ</button>
-             <div class="card" id="roomCard" data-step="2"><div class="lb">お部屋</div>
-              <div class="row"><input type="text" id="roomId" maxlength="6" placeholder="ルームID" autocomplete="off" spellcheck="false" style="flex:1;min-width:0;height:38px;border-radius:999px;border:1.5px solid var(--nv);padding:0 14px;font:inherit;font-weight:800;letter-spacing:.14em;text-transform:uppercase"><button id="roomGo" class="rbtn" type="button">入る</button></div>
+             <div class="card" id="roomCard" data-step="2"><div class="lb">お部屋（マルチ）</div>
+              <div class="row"><input type="text" id="roomId" maxlength="6" placeholder="さがす（なまえ・ID）" autocomplete="off" spellcheck="false" style="flex:1;min-width:0;height:38px;border-radius:999px;border:1.5px solid var(--nv);padding:0 14px;font:inherit;font-weight:800"><button id="roomGo" class="rbtn" type="button">検索</button></div>
               <div class="rsec"><div class="lb">フレンド</div><div id="frRooms"></div></div>
               <div class="rsec"><div class="lb">公開ルーム</div><div id="pubRooms"></div></div>
-              <button type="button" class="nxt" id="toMk">プライベート / ルーム作成</button>
+              <button type="button" class="nxt" id="toMk">ルーム作成</button>
               <div id="roomMsg" class="msg"></div>
              </div>
-             <div class="card" id="mkCard" data-step="2b" hidden><div class="khd"><button type="button" id="mkBack" class="kback">‹</button><div class="lb">つくる</div></div>
-              <div class="mko"><b>プライベート</b><small>自分の 猫だけ</small><button type="button" class="nxt" id="myRoom">制作</button></div>
+             <button type="button" class="nxt solo" id="solo" data-step="2">一人で 遊ぶ</button>
+             <div class="card" id="mkCard" data-step="2b" hidden><div class="khd"><button type="button" id="mkBack" class="kback">‹</button><div class="lb">ルーム作成</div></div>
+              <button type="button" id="myRoom" hidden></button>
               <div class="mko"><b>ルーム作成</b><div class="sg" id="pubSw"><button type="button" data-v="1">公開</button><button type="button" data-v="0">非公開</button></div><button type="button" class="nxt" id="mkRoom">制作</button></div>
              </div>
              <div class="card" data-step="3"><div class="lb" id="memTtl">お部屋</div><div id="roomMem"></div></div>
@@ -1147,7 +1159,7 @@ jobs:
           <script>var $=function(id){ return document.getElementById(id); };</script>
           <script src="scene.js"></script>
           <script type="module">
-          import { diaryDay, mine, figs2, linkSite, siteFriends, inviteApp, myCode, addFriend, friends, setPlay, rooms, getAff, wallet, fAffAll, fLevel, requests, answerReq, sendReq, getLook, saveLook, addNet, saveArt, publishShop, unpublishShop, shopList, buyShop, collectSales, soldCounts } from './fb.js';
+          import { diaryDay, mine, figs2, linkSite, siteFriends, inviteApp, myCode, addFriend, friends, setPlay, rooms, getAff, wallet, fAffAll, fLevel, requests, answerReq, sendReq, getLook, saveLook, addNet, saveArt, publishShop, unpublishShop, siteShops, siteArt, buySite, getSiteLook, putAppLook, shopList, buyShop, collectSales, soldCounts } from './fb.js';
           /* ===== ステータスバーの 時計 ===== */
           function clk() { const d = new Date(); $('clk').textContent = d.getHours() + ':' + String(d.getMinutes()).padStart(2, '0'); }
           clk(); setInterval(clk, 20000);
@@ -1172,6 +1184,7 @@ jobs:
            $('sOk').hidden = !S.uid;
             if (S.strip !== 'bar' && S.strip !== 'full') S.strip = 'bar'; S.mode = S.strip;   /* 猫は タスクバー か 全画面（壁紙は 別の 設定） */
             document.querySelectorAll('#wpApply button').forEach((b) => b.classList.toggle('on', b.dataset.v === (S.wallOn ? '1' : '0')));
+            if ($('wpScr') && !$('wpScr').hidden) { try { $('wpPv').innerHTML = sceneSvg(Math.round(640 * 1.9)).replace('<svg', '<svg preserveAspectRatio="xMidYMax slice"'); } catch (_) {} }
             document.querySelectorAll('.tile').forEach((t) => t.classList.toggle('on', t.dataset.m === 'wall' ? !!S.wallOn : t.dataset.m === S.strip));
             $('alw').classList.toggle('on', !!S.wallOn); $('alw').setAttribute('aria-checked', String(!!S.wallOn));
             $('selT').value = String(S.stT); $('selM').value = S.stM; $('scnRow').hidden = !(S.mode === 'wall' || S.wallOn);   /* 壁紙を 使う 時だけ */
@@ -1289,7 +1302,7 @@ jobs:
           function artsSVG() { const lib = LOOK.artLib || {}, eq = LOOK.arts || {}; let out = ''; (typeof _ACOS_ORDER !== 'undefined' ? _ACOS_ORDER : ['body', 'neck', 'tail', 'hat']).forEach((sl) => { const k = eq[sl]; if (k && lib[k]) try { out += _artLayersSVG(lib[k], { w: 120, h: 124 }); } catch (_) {} }); return out; }
           function kFigHtml(pose) { try { _artCosOverride = artsSVG() || null; return buildCatFig(LOOK.body, LOOK.ear, LOOK.cos || {}, pose).outerHTML; } catch (_) { return ''; } finally { try { _artCosOverride = null; } catch (_) {} } }
           function kThumb(cos, art) { try { _artCosOverride = art ? _artLayersSVG(art, { w: 120, h: 124 }) : null; return '<div class="kth">' + buildCatFig(LOOK.body, LOOK.ear, cos || {}, 'sit').outerHTML + '</div>'; } catch (_) { return '<div class="kth"></div>'; } finally { try { _artCosOverride = null; } catch (_) {} } }
-          function kSave() { clearTimeout(kSaveT); LOOK.pose = 'sit'; kSaveT = setTimeout(async () => { try { await saveLook(KUID, LOOK, kFigHtml('sit'), kFigHtml('sleep'), KNAME); zz.recorded(); } catch (_) {} }, 500); }
+          function kSave() { clearTimeout(kSaveT); LOOK.pose = 'sit'; kSaveT = setTimeout(async () => { try { await saveLook(KUID, LOOK, kFigHtml('sit'), kFigHtml('sleep'), KNAME); zz.recorded(); if (SITE_SU) { LOOK.siteT = Date.now(); await putAppLook(SITE_SU, LOOK); } } catch (_) {} }, 500); }   /* サイトと つないで いれば サイトにも */
           function kPaint() {
             if (!LOOK) return;
             $('kFig').innerHTML = kFigHtml('sit');
@@ -1300,17 +1313,35 @@ jobs:
             const own = LOOK.own || {}, lib = LOOK.artLib || {};
             $('kBack').hidden = !KSHOP; $('kMy').hidden = !!KSHOP;
             if (!KSHOP) {
-              $('kTtl').textContent = '商店街'; const sellers = {};
+              $('kTtl').textContent = '商店街'; $('kSrch').hidden = false; return kSitePaint(); const sellers = {};
               SHOP.filter((s) => s.u !== KUID).forEach((s) => { (sellers[s.u] = sellers[s.u] || { n: s.sn || 'だれか', items: [] }).items.push(s); });
               $('kList').className = 'kstreet';
               $('kList').innerHTML = '<button type="button" class="kst off" data-shop="official">' + kThumb({ hat: { id: 'crown', col: '#f4c73b' } }) + '<span>公式ショップ</span></button>' + Object.keys(sellers).map((u) => '<button type="button" class="kst" data-shop="' + esc(u) + '">' + kThumb({}, sellers[u].items[0].art) + '<span>' + esc(sellers[u].n) + '</span></button>').join('');
               return;
             }
-            $('kList').className = 'kinv';
+            $('kSrch').hidden = true; $('kList').className = 'kinv';
+            if (SSHOP && KSHOP === 'site:' + SSHOP.id) return kSiteRoom();
             if (KSHOP === 'official') { $('kTtl').textContent = '公式ショップ';
               $('kList').innerHTML = ITEMS.filter((it) => !own[it.id]).map((it) => '<button type="button" class="kc" data-buy="' + it.id + '">' + kThumb({ [it.slot]: { id: it.id, col: it.def } }) + '<b class="kpr">' + (KPRICE[it.star] || 30) + '</b><span>' + it.name + '</span></button>').join('') || '<div class="rnone">ぜんぶ 持ってるよ</div>';
             } else { const its = SHOP.filter((s) => s.u === KSHOP && !lib['s:' + s.key]); $('kTtl').textContent = (its[0] && its[0].sn) || 'だれか';
               $('kList').innerHTML = its.map((s) => '<button type="button" class="kc" data-sbuy="' + esc(s.key) + '">' + kThumb({}, s.art) + '<b class="kpr">' + s.p + '</b><span>' + esc(s.n || '') + '</span></button>').join('') || '<div class="rnone">ぜんぶ 持ってるよ</div>'; }
+          }
+          let SSHOPS = null, SSHOP = null, KSORT = 'new', SARTS = {}, SITE_SU = null;
+          const HOUSE = (c) => '<svg viewBox="0 0 40 40"><path d="M4 18 20 6l16 12" fill="' + c + '"/><path d="M4 18 20 6l16 12H4z" fill="' + c + '"/><rect x="8" y="18" width="24" height="17" fill="#fdf3e4"/><rect x="17" y="24" width="7" height="11" fill="' + c + '" opacity=".75"/></svg>';
+          async function kSitePaint() {
+            $('kList').className = 'kshops';
+            if (!SSHOPS) { $('kList').innerHTML = '<div class="rnone">よみこみ中…</div>'; try { SSHOPS = await siteShops(); } catch (_) { SSHOPS = []; } }
+            const q = ($('kQ').value || '').trim(); let l = SSHOPS.filter((s) => !q || (s.name || '').indexOf(q) >= 0);
+            l = l.slice().sort((a, b) => KSORT === 'many' ? Object.keys(b.items).length - Object.keys(a.items).length : (b.t || 0) - (a.t || 0));
+            document.querySelectorAll('#kSort button').forEach((b) => b.classList.toggle('on', b.dataset.v === KSORT));
+            const cols = ['#e0588f', '#7cb2e8', '#f4a24a', '#7bc47f', '#b7a6e8'];
+            $('kList').innerHTML = '<button type="button" class="ksh" data-shop="official" style="background:linear-gradient(135deg,#fff4d6,#ffe3a3)">' + HOUSE('#f4c73b') + '<b>公式ショップ</b><small>' + ITEMS.length + 'こ</small></button>'
+              + l.map((s, i) => '<button type="button" class="ksh" data-site="' + esc(s.id) + '">' + HOUSE(cols[i % cols.length]) + '<b>' + esc(s.name || 'だれか') + 'の お店</b><small>' + Object.keys(s.items).length + 'こ</small></button>').join('');
+          }
+          async function kSiteRoom() {
+            $('kTtl').textContent = (SSHOP.name || 'だれか') + 'の お店'; $('kList').className = 'kroom';
+            const ids = Object.keys(SSHOP.items); $('kList').innerHTML = '<div class="kinv">' + ids.map((id) => '<button type="button" class="kc' + (LOOK.artLib['w:' + id] ? ' on' : '') + '" data-sid="' + esc(id) + '"><div class="kth"></div><b class="kpr">' + (LOOK.artLib['w:' + id] ? 'もってる' : (+(SSHOP.items[id].price || SSHOP.items[id].p || 0)) + 'zz') + '</b><span>' + esc(SSHOP.items[id].name || SSHOP.items[id].n || '') + '</span></button>').join('') + '</div>';
+            SARTS = {}; for (const id of ids) { const it = SSHOP.items[id] || {}, by = it.by || SSHOP.uid; const a = await siteArt(by, id); SARTS[id] = a; const el = $('kList').querySelector('[data-sid="' + id + '"] .kth'); if (a && el) el.outerHTML = kThumb({}, a); }
           }
           function kBagPaint() {
             const own = LOOK.own || {}, cos = LOOK.cos || {}, lib = LOOK.artLib || {}, eq = LOOK.arts || {};
@@ -1330,7 +1361,9 @@ jobs:
           async function kise() {
             const st = await zz.state(); if (!st.uid) return; KUID = st.uid;
             if (!LOOK) { LOOK = (await getLook(KUID).catch(() => null)) || { body: '#1c1c1c', ear: '#a6bfd2', pose: 'sit', cos: {}, own: {} }; ['cos', 'own', 'artLib', 'arts', 'shopSel'].forEach((k) => { LOOK[k] = LOOK[k] || {}; });
-              if (LOOK.pose && LOOK.pose !== 'sit') { LOOK.pose = 'sit'; kSave(); } }   /* ポーズは おすわり 固定（前の ポーズも もどす） */
+              if (LOOK.pose && LOOK.pose !== 'sit') { LOOK.pose = 'sit'; kSave(); }
+              try { const sl = await getSiteLook(KUID); if (sl) { SITE_SU = sl.su; const v = sl.look;   /* サイトの 方が 新しければ 取りこむ */
+                if (v && v.t > (LOOK.siteT || 0)) { if (v.body) LOOK.body = v.body; if (v.ear) LOOK.ear = v.ear; LOOK.cos = v.cos || {}; Object.keys(v.own || {}).forEach((id) => { LOOK.own[id] = true; }); LOOK.siteT = v.t; await saveLook(KUID, LOOK, kFigHtml('sit'), kFigHtml('sleep'), KNAME).catch(() => {}); zz.recorded(); } } } catch (_) {} }   /* ポーズは おすわり 固定（前の ポーズも もどす） */
             try { if (!KNAME) { const h = await mine(KUID); KNAME = (h.cats[0] && h.cats[0].name) || ''; } } catch (_) {}
             shopList().then((l) => { SHOP = l; kPaint(); }).catch(() => {});
             soldCounts(KUID).then((c) => { SOLD = c || {}; if (KMODE === 'my') kPaint(); }).catch(() => {});
@@ -1340,7 +1373,9 @@ jobs:
           $('kBag').addEventListener('click', () => { KMODE = KMODE === 'bag' ? 'street' : 'bag'; kPaint(); });
           $('kMy').addEventListener('click', () => { KMODE = 'my'; kPaint(); });
           $('kMyBack').addEventListener('click', () => { KMODE = 'street'; kPaint(); });
-          $('kBack').addEventListener('click', () => { KSHOP = null; kPaint(); });
+          $('kBack').addEventListener('click', () => { KSHOP = null; SSHOP = null; kPaint(); });
+          $('kQ').addEventListener('input', () => { if (!KSHOP) kSitePaint(); });
+          document.querySelectorAll('#kSort button').forEach((b) => b.addEventListener('click', () => { KSORT = b.dataset.v; kSitePaint(); }));
           $('kMake').addEventListener('click', () => $('kDraw').click());
           document.querySelectorAll('#kPubSw button').forEach((b) => b.addEventListener('click', () => { LOOK.shopPub = b.dataset.v === '1'; kMyPaint(); kSave(); kShopSync(); }));
           $('kBody').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; LOOK.body = b.dataset.c; kPaint(); kSave(); });
@@ -1358,6 +1393,12 @@ jobs:
             if (LOOK.cos[it.slot] && LOOK.cos[it.slot].id === it.id) delete LOOK.cos[it.slot]; else LOOK.cos[it.slot] = { id: it.id, col: it.def }; kPaint(); kSave();
           });
           $('kList').addEventListener('click', async (e) => {
+            const sb = e.target.closest('[data-sid]'); if (sb && SSHOP) { const id = sb.dataset.sid, it = SSHOP.items[id] || {}, a = SARTS[id], pr = +(it.price || it.p || 0); if (LOOK.artLib['w:' + id] || !a) return;
+              let bal = 0; try { bal = (await wallet(KUID)).bal; } catch (_) {}
+              if (bal < pr) { $('kMsg').style.color = '#c9546b'; $('kMsg').textContent = 'zz が たりないよ'; return; }
+              try { await buySite(KUID, SSHOP, id, it, pr); } catch (_) { return; }
+              const k = 'w:' + id; LOOK.artLib[k] = Object.assign({}, a, { n: it.name || it.n || a.n || '' }); LOOK.arts[a.sub || 'body'] = k; $('kMsg').style.color = ''; $('kMsg').textContent = (it.name || 'ふく') + ' を かったよ（' + pr + 'zz）'; kSave(); money(); kSiteRoom(); return; }
+            const sh2 = e.target.closest('.ksh'); if (sh2) { if (sh2.dataset.site) { SSHOP = (SSHOPS || []).find((x) => x.id === sh2.dataset.site); KSHOP = 'site:' + sh2.dataset.site; } else KSHOP = sh2.dataset.shop; kPaint(); return; }
             const st = e.target.closest('.kst'); if (st) { KSHOP = st.dataset.shop; kPaint(); return; }
             const b = e.target.closest('.kc'); if (!b) return; let bal = 0; try { bal = (await wallet(KUID)).bal; } catch (_) {}
             if (b.dataset.buy) { const it = ITEMS.find((x) => x.id === b.dataset.buy), pr = KPRICE[it.star] || 30; if (bal < pr) { $('kMsg').style.color = '#c9546b'; $('kMsg').textContent = 'zz が たりないよ'; return; }
@@ -1414,8 +1455,10 @@ jobs:
           function nkStep(n) { NKS = n; document.querySelectorAll('#pB [data-step]').forEach((e) => { e.hidden = +e.dataset.step !== n; }); document.querySelectorAll('#nkSteps b').forEach((b) => b.classList.toggle('on', +b.dataset.s === n)); if (n === 3) { $('memTtl').textContent = $('roomMsg').textContent || 'お部屋'; try { loadPV(); } catch (_) {} } }
           document.querySelectorAll('#nkSteps b').forEach((b) => b.addEventListener('click', () => { if (+b.dataset.s < NKS || +b.dataset.s === 2) nkStep(+b.dataset.s); }));
           $('nk1').addEventListener('click', () => nkStep(2));
+          $('crLeave').addEventListener('click', () => { S.room = { kind: 'my' }; $('curRoom').hidden = true; startNow(); });   /* 退出 → マイルーム */
           $('toMk').addEventListener('click', () => { document.querySelectorAll('#pB [data-step]').forEach((e) => { e.hidden = e.dataset.step !== '2b'; }); });
           $('mkBack').addEventListener('click', () => nkStep(2));
+          $('solo').addEventListener('click', () => pick({ kind: 'my' }));   /* 一人で 遊ぶ＝マイルーム */
           /* 壁紙設定：適用・時間・合目 */
           (() => { const r = $('scnRow'); if (r) { r.removeAttribute('data-step'); r.hidden = false; $('wpBody').appendChild(r); } })();
           $('wpBtn').addEventListener('click', () => { $('wpScr').hidden = false; paintS(); });
@@ -1432,6 +1475,10 @@ jobs:
             if (!S.uid) return;
             let fr = [], rs = []; try { [fr, rs, RFA] = await Promise.all([friends(S.uid), rooms(), fAffAll(S.uid)]); } catch (_) {}
             RLIST = rs; RFR = new Set(fr.map((x) => x.uid));
+            try { const st = await zz.state(), cr = st.room || {}; const inRoom = cr.kind === 'join' || cr.kind === 'host'; $('curRoom').hidden = !inRoom;
+              if (inRoom) { const r = rs.find((x) => x.id === cr.id) || {}; $('crId').textContent = cr.id || ''; $('crHost').textContent = (r.n ? r.n + ' の お部屋' : '') + (r.c ? '・' + r.c + '人' : '');
+                $('crMem').innerHTML = (r.m || []).filter((x) => x.u !== S.uid).map((x) => '<div class="pm"><span>' + String(x.n || 'だれか').replace(/[<>&]/g, '') + '</span>' + (RFR.has(x.u) ? '<i>' + heartOf(fLevel(RFA[x.u] || 0).lv).h + '</i>' : '<button type="button" data-u="' + x.u + '">申請</button>') + '</div>').join('') || '<div class="rnone">ほかに だれも いないよ</div>';
+                $('crMem').querySelectorAll('button[data-u]').forEach((b) => b.addEventListener('click', () => { sendReq(S.uid, b.dataset.u, myName).then(() => { b.textContent = '送った'; b.disabled = true; }).catch(() => {}); })); } } catch (_) {}
             const esc2 = (s) => String(s || '').replace(/[<>&"]/g, '');
             $('frRooms').innerHTML = fr.length ? fr.map((f) => {
               if (f.priv) return '<div class="rr dis"><i class="rdot priv"></i><span>' + esc2(f.name) + '</span><small>プライベート</small></div>';
@@ -1447,11 +1494,15 @@ jobs:
           $('myRoom').addEventListener('click', () => pick({ kind: 'my' }));
           $('mkRoom').addEventListener('click', () => pick({ kind: 'host', id: newRoomId(), pub: RPUB }));
           document.querySelectorAll('#pubSw button').forEach((b) => b.addEventListener('click', () => { RPUB = b.dataset.v === '1'; if ((S.room || {}).kind === 'host') S.room.pub = RPUB; paintRooms(); }));
-          $('roomGo').addEventListener('click', () => { const id = $('roomId').value.toUpperCase().replace(/[^A-Z0-9]/g, ''); if (id.length === 6) pick({ kind: 'join', id }); else $('roomMsg').textContent = 'ルームIDは 6文字だよ'; });
+          function roomFilter() { const q = ($('roomId').value || '').trim().toUpperCase();
+            document.querySelectorAll('#frRooms .rr, #pubRooms .rr').forEach((e) => { e.hidden = !!q && e.textContent.toUpperCase().indexOf(q) < 0 && String(e.dataset.join || '').indexOf(q) < 0; });
+            let x = $('roomIdJoin'); if (!x) { x = document.createElement('div'); x.id = 'roomIdJoin'; x.className = 'rr'; $('pubRooms').prepend(x); x.addEventListener('click', () => pick({ kind: 'join', id: x.dataset.id })); }
+            const id = q.replace(/[^A-Z0-9]/g, ''); x.hidden = id.length !== 6; x.dataset.id = id; x.innerHTML = '<i class="rdot on"></i><span>ID ' + id + ' に 入る</span>'; }
+          $('roomGo').addEventListener('click', roomFilter); $('roomId').addEventListener('input', roomFilter);
           /* ===== フレンド ===== */
           let myName = '';
           const HNAME = ['はじめまして', 'なかよし', 'だいすき', 'しんゆう', 'かぞく'];
-          function heartOf(lv) { const s = Math.min(5, Math.max(1, Math.ceil(lv / 20))); return { s, name: HNAME[s - 1], h: '♥'.repeat(s) + '♡'.repeat(5 - s) }; }
+          function heartOf(lv) { lv = Math.max(1, Math.min(100, lv)); const s = Math.min(5, Math.max(1, Math.ceil(lv / 20))); let h = ''; for (let i = 0; i < 5; i++) { const f = Math.max(0, Math.min(1, (lv - i * 20) / 20)); h += '<i class="ht" style="--f:' + Math.round(f * 100) + '%">♥</i>'; } return { s, name: HNAME[s - 1], h: '<span class="hts2">' + h + '</span><em class="hn">' + lv + '<small>/100</small></em>' }; }
           async function friendsTab() {
             const st = await zz.state(); if (!st.uid) { $('fList').innerHTML = '<div class="dn0">ねっこ で つないでね</div>'; return; }
             siteFriends(st.uid).then((sl) => { $('sfIn').hidden = !!sl; if (!sl) { $('sfList').innerHTML = ''; return; }
@@ -1588,6 +1639,7 @@ jobs:
           </script>
           <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
           <script src="zz.js"></script>
+          <script src="catfig.js"></script>
           <script src="fbconfig.js"></script>
           <script src="scene.js"></script>
           <script src="engine.js"></script>
@@ -1645,7 +1697,12 @@ jobs:
               html = html.replace(new RegExp('id="' + e + '"', 'g'), 'id="' + id + sfx + '"').replace(new RegExp('url\\(#' + e + '\\)', 'g'), 'url(#' + id + sfx + ')').replace(new RegExp('href="#' + e + '"', 'g'), 'href="#' + id + sfx + '"'); });
             return html;
           }
-          function figEl(c, sleep) { const f = c.fig || {}; const d = document.createElement('div'); d.innerHTML = uniqIds((sleep ? f.z : f.s) || simpleFig(c.body, c.ear, sleep), 'c'); return d.firstElementChild; }
+          function lookFig(lk, sleep) {
+            if (!lk || typeof buildCatFig !== 'function') return '';
+            let art = ''; try { const lib = lk.artLib || {}, eq = lk.arts || {}; (typeof _ACOS_ORDER !== 'undefined' ? _ACOS_ORDER : ['body', 'neck', 'tail', 'hat']).forEach((sl) => { const k = eq[sl]; if (k && lib[k]) art += _artLayersSVG(lib[k], { w: 120, h: 124 }); }); } catch (_) {}
+            try { _artCosOverride = art || null; return buildCatFig(lk.body || '#1c1c1c', lk.ear || '#a6bfd2', lk.cos || {}, sleep ? 'sleep' : 'sit').outerHTML; } catch (_) { return ''; } finally { try { _artCosOverride = null; } catch (_) {} }
+          }
+          function figEl(c, sleep) { const f = c.fig || {}; const d = document.createElement('div'); d.innerHTML = uniqIds(lookFig(c.look, sleep) || (sleep ? f.z : f.s) || simpleFig(c.body, c.ear, sleep), 'c'); return d.firstElementChild; }   /* ポーズは おすわり 固定 */
           window._fpTodayFigs = function () {
             if (!data) return [];
             return data.cats.filter((c) => SHOW_SLEEP || c.today).map((c) => { const sleep = !c.today && !WAKE, el = figEl(c, sleep);   /* 起こす：自分の 画面だけ 起きて いる あつかい */ return el ? { fig: el, h: (c.fig && c.fig.h) || 60, w: (c.fig && c.fig.w) || 74, sleep, self: c.self } : null; }).filter(Boolean);
@@ -1716,7 +1773,7 @@ jobs:
               NET = (ROOM.kind === 'my' || ROOM.kind === 'visit') ? 'offline' : (ROOM.kind === 'host' || ROOM.kind === 'join') ? 'room' : 'online'; SCOPE = 'all';
               data = await mine(UID);
               if (NET === 'room') { data.cards = []; if (PEER) data.cats = memberCats(); else { data.cats = data.cats.filter((c) => c.self).map((c) => Object.assign(c, { today: true, online: true })); startRoom(); } }
-              if (ROOM.kind === 'visit' && ROOM.friend) { try { const fo = await figOf(ROOM.friend); data.cats = data.cats.filter((c) => c.self).concat([{ uid: ROOM.friend, name: ROOM.name || fo.name, today: true, online: false, body: fo.body || '#8a8d99', ear: fo.ear || '#a6bfd2', fig: fo.fig }]);
+              if (ROOM.kind === 'visit' && ROOM.friend) { try { const fo = await figOf(ROOM.friend); data.cats = data.cats.filter((c) => c.self).concat([{ uid: ROOM.friend, look: fo.look || null, name: ROOM.name || fo.name, today: true, online: false, body: fo.body || '#8a8d99', ear: fo.ear || '#a6bfd2', fig: fo.fig }]);
                 const vk = 'zz_visit_' + ROOM.friend + '_' + new Date().toDateString(); if (!localStorage.getItem(vk)) { localStorage.setItem(vk, '1'); sendVisit({ to: ROOM.friend, by: UID, bn: nameOf(UID) }).catch(() => {}); } } catch (_) {} }
               if (NET === 'offline') { data.cats = data.cats.filter((c) => c.self); data.cards = []; }
               if (String(UID).startsWith('pc_') && NET !== 'offline' && SCOPE !== 'friends') { try { const fs = await friendSet(UID); data.cards = (data.cards || []).filter((d) => fs.has(d.uid)); } catch (_) { data.cards = []; } }   /* はじめからの 人：ひとことは フレンドの だけ */
@@ -1927,15 +1984,15 @@ jobs:
           }
           /* ===== お部屋（PeerJS：立てた 人が サーバー・星型・最大 8人） ===== */
           const RPFX = 'zzroom-';
-          let PEER = null, CONNS = [], HOSTC = null, MEMB = {}, RST = {}, REMOTE = false, RB = [];
+          let PEER = null, CONNS = [], HOSTC = null, MEMB = {}, RST = {}, REMOTE = false, RB = [], EVR = null, JTRY = 0;
           function chime() { try { const a = new (window.AudioContext || window.webkitAudioContext)(); [880, 1175].forEach((fq, i) => { const o = a.createOscillator(), g = a.createGain(), t0 = a.currentTime + i * .16; o.type = 'sine'; o.frequency.value = fq; g.gain.setValueAtTime(.0001, t0); g.gain.exponentialRampToValueAtTime(.16, t0 + .02); g.gain.exponentialRampToValueAtTime(.0001, t0 + .45); o.connect(g).connect(a.destination); o.start(t0); o.stop(t0 + .5); }); } catch (_) {} }
-          function myInfo() { const me = ((data && data.cats) || []).find((c) => c.self) || {}; return { uid: UID, name: me.name || '', body: me.body, ear: me.ear, fig: me.fig ? { s: me.fig.s, z: me.fig.z, h: me.fig.h, w: me.fig.w } : null }; }
+          function myInfo() { const me = ((data && data.cats) || []).find((c) => c.self) || {}; return { uid: UID, name: me.name || '', body: me.body, ear: me.ear, look: me.look || null, fig: me.fig ? { s: me.fig.s, z: me.fig.z, h: me.fig.h, w: me.fig.w } : null }; }
           function bcast(o) { CONNS.forEach((c) => { try { if (c.open) c.send(o); } catch (_) {} }); }
-          function memberCats() { return Object.values(MEMB).map((i) => ({ uid: i.uid, name: i.name, today: true, online: true, self: i.uid === UID, body: i.body || '#1c1c1c', ear: i.ear || '#a6bfd2', fig: i.fig })); }
+          function memberCats() { return Object.values(MEMB).sort((a, b) => (a.j || 0) - (b.j || 0)).map((i) => ({ uid: i.uid, name: i.name, look: i.look || null, today: true, online: true, self: i.uid === UID, body: i.body || '#1c1c1c', ear: i.ear || '#a6bfd2', fig: i.fig })); }
           function rebuild() { data.cats = memberCats(); restart(); }
           function startRoom() {
             if (PEER || NOCATS || typeof Peer === 'undefined') { if (typeof Peer === 'undefined') try { zz.log('peerjs missing'); } catch (_) {} return; }
-            MEMB = {}; MEMB[UID] = myInfo();
+            MEMB = {}; MEMB[UID] = Object.assign(myInfo(), { j: Date.now(), h: ROOM.kind === 'host' ? 1 : 0 });
             if (ROOM.kind === 'host') {
               PEER = new Peer(RPFX + ROOM.id);
               PEER.on('open', () => { const pub = () => publishRoom(ROOM.id, { h: UID, n: MEMB[UID].name, c: Object.keys(MEMB).length, pub: !!ROOM.pub, m: Object.values(MEMB).map((i) => ({ u: i.uid, n: i.name })) }).catch(() => {}); pub(); setInterval(pub, 30000); });
@@ -1944,7 +2001,7 @@ jobs:
                   if (!m || typeof m !== 'object') return;
                   if (m.t === 'hello' && m.info && m.info.uid) {
                     if (Object.keys(MEMB).length >= 8) { try { cn.send({ t: 'full' }); } catch (_) {} setTimeout(() => cn.close(), 300); return; }
-                    cn._u = m.info.uid; MEMB[cn._u] = m.info; CONNS.push(cn); bcast({ t: 'members', m: MEMB }); try { cn.send({ t: 'bags', b: GM.bags }); } catch (_) {} bcast({ t: 'join', name: m.info.name }); chime(); rebuild();
+                    cn._u = m.info.uid; MEMB[cn._u] = Object.assign(m.info, { j: Date.now(), h: 0 }); CONNS.push(cn); bcast({ t: 'members', m: MEMB }); try { cn.send({ t: 'bags', b: GM.bags }); } catch (_) {} bcast({ t: 'join', name: m.info.name }); chime(); rebuild();
                     publishRoom(ROOM.id, { h: UID, n: MEMB[UID].name, c: Object.keys(MEMB).length, pub: !!ROOM.pub }).catch(() => {});
                   } else if (m.t === 'taps' && cn._u && MEMB[cn._u]) MEMB[cn._u].taps = +m.n || 0;
                   else if (m.t === 'pet' && m.to) { const c = catOf(m.to); if (c) hearts(c); bcast({ t: 'emo', u: m.to }); }
@@ -1955,17 +2012,17 @@ jobs:
                 });
                 cn.on('close', () => { CONNS = CONNS.filter((x) => x !== cn); if (cn._u) { delete MEMB[cn._u]; bcast({ t: 'members', m: MEMB }); rebuild(); } });
               });
-              PEER.on('error', (e) => { try { zz.log('room host ' + (e && e.type)); } catch (_) {} });
+              PEER.on('error', (e) => { try { zz.log('room host ' + (e && e.type)); } catch (_) {} if (e && e.type === 'unavailable-id') { try { PEER.destroy(); } catch (_) {} PEER = null; setTimeout(startRoom, 2500); } });   /* 前の 主の IDが まだ 空いて いない → 少し 待って もう一度 */
               setInterval(() => { if (!CONNS.length || typeof _fpCats === 'undefined') return;
                 const tp = {}; Object.keys(MEMB).forEach((u) => { tp[u] = u === UID ? taps : (MEMB[u].taps || 0); }); oTaps = tp;
                 bcast({ t: 'st', tp, s: _fpCats.map((c) => [c.uid, +(+c.t).toFixed(4), +(c.zo || 0).toFixed(3), c.dir, c.pose, +(c.hop || 0).toFixed(2), +(c.lift || 0).toFixed(1), c.hidden ? 1 : 0]) }); }, 125);
               window.addEventListener('beforeunload', () => { closeRoom(ROOM.id); });
             } else {
-              REMOTE = true; window._fpEvStart = function () {};   /* 入った 人は 自分で 遊びを 始めない（立てた 人の 動きを 描く） */
+              if (!EVR) EVR = window._fpEvStart; REMOTE = true; window._fpEvStart = function () {};   /* 入った 人は 自分で 遊びを 始めない（立てた 人の 動きを 描く） */
               PEER = new Peer();
               PEER.on('open', () => {
                 HOSTC = PEER.connect(RPFX + ROOM.id, { reliable: true });
-                HOSTC.on('open', () => HOSTC.send({ t: 'hello', info: myInfo() }));
+                HOSTC.on('open', () => { JTRY = 0; HOSTC.send({ t: 'hello', info: myInfo() }); });
                 HOSTC.on('data', (m) => {
                   if (!m || typeof m !== 'object') return;
                   if (m.t === 'members') { MEMB = m.m || {}; rebuild(); }
@@ -1975,9 +2032,15 @@ jobs:
                   else if (m.t === 'full') { try { zz.log('room full'); } catch (_) {} }
                   else if (m.t === 'bags') { RB = m.b || []; drawBags(); }
                 });
-                HOSTC.on('close', () => { try { zz.log('room closed'); } catch (_) {} MEMB = {}; MEMB[UID] = myInfo(); RST = {}; REMOTE = false; rebuild(); });
+                HOSTC.on('close', () => {   /* 主が 抜けた → いちばん 早く 入った 人が 次の 主・ほかの 人は つなぎ直す */
+                  try { zz.log('room host left'); } catch (_) {}
+                  const rest = Object.values(MEMB).filter((i) => !i.h).sort((a, b) => (a.j || 0) - (b.j || 0));
+                  try { PEER.destroy(); } catch (_) {} PEER = null; HOSTC = null; RST = {};
+                  if (rest.length && rest[0].uid === UID) { ROOM.kind = 'host'; REMOTE = false; if (EVR) window._fpEvStart = EVR; MEMB = {}; setTimeout(startRoom, 2000); }
+                  else { MEMB = {}; MEMB[UID] = myInfo(); REMOTE = false; if (EVR) window._fpEvStart = EVR; rebuild(); if (rest.length) setTimeout(startRoom, 4500); }
+                });
               });
-              PEER.on('error', (e) => { try { zz.log('room join ' + (e && e.type)); } catch (_) {} });
+              PEER.on('error', (e) => { try { zz.log('room join ' + (e && e.type)); } catch (_) {} if (e && e.type === 'peer-unavailable' && JTRY < 6) { JTRY++; try { PEER.destroy(); } catch (_) {} PEER = null; setTimeout(startRoom, 3000); } });
             }
           }
           /* 入った 人：猫の 動きは 立てた 人から 届いた ものを なめらかに 追う */
@@ -3938,9 +4001,9 @@ jobs:
           export async function figOf(uid) {
             const { db, D } = await fb();
             const get = (p) => D.get(D.ref(db, p)).then((s) => s.val()).catch(() => null);
-            const [a, b, p, c2] = await Promise.all([get('pcfigs/' + uid), get('pcfig/' + uid), get('pcprof/' + uid), get('pcfig2/' + uid)]);
+            const [a, b, p, c2, lk] = await Promise.all([get('pcfigs/' + uid), get('pcfig/' + uid), get('pcprof/' + uid), get('pcfig2/' + uid), get('pclook/' + uid)]);
             const f = (c2 && c2.s) ? c2 : (a && a.s) ? a : b;
-            return { fig: f || null, name: (p && p.name) || (b && b.name) || '', body: p && p.body, ear: p && p.ear };
+            return { look: lk || null, fig: f || null, name: (p && p.name) || (b && b.name) || '', body: p && p.body, ear: p && p.ear };
           }
           export async function sendVisit(o) { const { db, D } = await fb(); await D.push(D.ref(db, 'pcvisits'), { to: o.to, by: o.by, bn: String(o.bn || '').slice(0, 20), t: Date.now() }); }
 
@@ -3978,9 +4041,15 @@ jobs:
           export async function shopList() { const { db, D } = await fb(); const v = await D.get(D.ref(db, 'pcshop')).then((s) => s.val()).catch(() => null); return Object.keys(v || {}).map((k) => Object.assign({ key: k }, v[k])).sort((a, b) => (b.t || 0) - (a.t || 0)).slice(0, 60); }
           export async function buyShop(buyer, it) { const { db, D } = await fb(); await D.push(D.ref(db, 'pcsales/' + it.u), { p: it.p, by: buyer, n: it.n, id: it.id, t: Date.now() }); }
           export async function collectSales(uid) {
-            const { db, D } = await fb(); const r = D.ref(db, 'pcsales/' + uid);
+            const { db, D } = await fb();
+            const su = await D.get(D.ref(db, 'pcsitelink/' + uid)).then((s) => s.val()).catch(() => null);
+            let got = 0; if (su) got = await collectFrom(su, uid);
+            return got + await collectFrom(uid, uid);
+          }
+          async function collectFrom(key, uid) {
+            const { db, D } = await fb(); const r = D.ref(db, 'pcsales/' + key);
             const v = await D.get(r).then((s) => s.val()).catch(() => null); if (!v) return 0;
-            let sum = 0; const cnt = {}; for (const k of Object.keys(v)) { sum += +v[k].p || 0; if (v[k].id) cnt[v[k].id] = (cnt[v[k].id] || 0) + 1; await D.remove(D.ref(db, 'pcsales/' + uid + '/' + k)).catch(() => {}); }
+            let sum = 0; const cnt = {}; for (const k of Object.keys(v)) { sum += +v[k].p || 0; if (v[k].id) cnt[v[k].id] = (cnt[v[k].id] || 0) + 1; await D.remove(D.ref(db, 'pcsales/' + key + '/' + k)).catch(() => {}); }
             for (const id of Object.keys(cnt)) await D.runTransaction(D.ref(db, 'pcsold/' + uid + '/' + id), (x) => (x || 0) + cnt[id]).catch(() => {});   /* 何枚 売れたか */
             if (sum) await addNet(uid, sum); return sum;
           }
@@ -3993,7 +4062,7 @@ jobs:
             const get = (p) => D.get(D.ref(db, p)).then((s) => s.val()).catch(() => null);
             const [f2, pr0, lk] = await Promise.all([get('pcfig2/' + uid), get('pcprof/' + uid), get('pclook/' + uid)]); const pr = Object.assign({}, pr0 || {}, lk ? { body: lk.body, ear: lk.ear } : {});
             const name = (f2 && f2.name) || (pr && pr.name) || '';
-            return { cats: [{ uid, self: true, today: true, online: true, name, body: (pr && pr.body) || '#1c1c1c', ear: (pr && pr.ear) || '#a6bfd2', fig: f2 && f2.s ? f2 : null }], cards: [], me: null, myfig: { tier: 1 } };
+            return { cats: [{ uid, look: lk || null, self: true, today: true, online: true, name, body: (pr && pr.body) || '#1c1c1c', ear: (pr && pr.ear) || '#a6bfd2', fig: f2 && f2.s ? f2 : null }], cards: [], me: null, myfig: { tier: 1 } };
           }
 
           export async function unpublishShop(uid, id) { const { db, D } = await fb(); await D.remove(D.ref(db, 'pcshop/' + uid + '_' + id)).catch(() => {}); }
@@ -4007,6 +4076,25 @@ jobs:
             return await Promise.all(Object.keys(fr).map(async (k) => ({ su: k, name: (fr[k] && fr[k].name) || '', app: await get('pcsite/' + k) })));
           }
           export async function inviteApp(toSu, fromName) { const { db, D } = await fb(); await D.push(D.ref(db, 'appinv/' + toSu), { from: String(fromName || '').slice(0, 20), t: Date.now() }); }
+
+          /* ===== サイトの 商店街（お店と 商品）：見る ===== */
+          export async function siteShops() {
+            const { db, D } = await fb(); const v = await D.get(D.ref(db, 'shops')).then((s) => s.val()).catch(() => null);
+            return Object.keys(v || {}).map((k) => { const s = v[k] || {}; return { id: k, uid: s.uid || k, name: s.name || s.ownerName || s.owner || s.n || '', items: s.items || {}, t: s.at || s.t || s.updatedAt || 0 }; }).filter((s) => Object.keys(s.items).length);
+          }
+          export async function siteArt(by, id) { const { db, D } = await fb(); return await D.get(D.ref(db, 'art/' + by + '/' + id)).then((s) => s.val()).catch(() => null); }
+
+          /* ===== サイトの お店の 商品を アプリの zz で 買う → 売上は 売り主の アプリの おさいふへ（アプリ未登録なら サイトの 名前で 取っておく） ===== */
+          export async function buySite(buyer, shop, id, it, price) {
+            const { db, D } = await fb();
+            const su = it.by || shop.uid; const app = await D.get(D.ref(db, 'pcsite/' + su)).then((s) => s.val()).catch(() => null);
+            await addNet(buyer, -price);
+            await D.push(D.ref(db, 'pcsales/' + (app || su)), { p: price, by: buyer, n: String(it.name || it.n || '').slice(0, 16), id, t: Date.now() });
+          }
+
+          /* ===== サイトと 見た目を 共有（サイトと つないだ 人） ===== */
+          export async function getSiteLook(uid) { const { db, D } = await fb(); const get = (p) => D.get(D.ref(db, p)).then((s) => s.val()).catch(() => null); const su = await get('pcsitelink/' + uid); if (!su) return null; return { su, look: await get('sitelook/' + su) }; }
+          export async function putAppLook(su, look) { const { db, D } = await fb(); await D.set(D.ref(db, 'applook/' + su), { body: look.body, ear: look.ear, cos: look.cos || {}, t: Date.now() }); }
           ZZEOF
           cat > pc/prep.js << 'ZZEOF'
           /* サイトの index.html から PC版に いる 部品だけを 取り出す：アイコン・景色・空の色・猫の うごき・Firebaseの 設定 */

@@ -123,6 +123,7 @@ jobs:
               bar_shown: Mutex<bool>,
               tab: Mutex<Option<String>>,
               wall: Mutex<String>,
+              update: Mutex<Option<String>>,
           }
           type St = Arc<Zz>;
 
@@ -139,7 +140,7 @@ jobs:
               }
           }
           fn load_state(app: &AppHandle) -> Value {
-              let def = json!({"uid":"","mode":"wall","setupDone":false,"wakeDay":"","hideSleep":false,"noEmo":false,"noShare":false,"autoStart":true,"lowQ":false,"catScale":1.0,"cardWall":true,"cardBar":false,"noTapShow":false,"sleepMode":"show","wallOn":false,"sceneTier":0,"sceneTime":"auto"});
+              let def = json!({"uid":"","mode":"wall","setupDone":false,"wakeDay":"","hideSleep":false,"noEmo":false,"noShare":false,"autoStart":false,"countTaps":false,"lowQ":false,"catScale":1.0,"cardWall":true,"cardBar":false,"noTapShow":false,"sleepMode":"show","wallOn":false,"sceneTier":0,"sceneTime":"auto"});
               let mut v = std::fs::read_to_string(data_path(app, "state.json")).ok().and_then(|t| serde_json::from_str::<Value>(&t).ok()).unwrap_or(json!({}));
               if !v.is_object() { v = json!({}); }
               if let (Some(o), Some(d)) = (v.as_object_mut(), def.as_object()) {
@@ -393,6 +394,13 @@ jobs:
                   Err(e) => log(app, &format!("panel window {}", e)),
               }
           }
+          /* キーの 回数を 数える しくみ（Raw Input）は「数える」に した 人だけ・1回だけ 始める */
+          static KEYS_ON: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+          fn start_keys(st: &St) {
+              if !sbool(st, "countTaps") { return; }
+              if KEYS_ON.swap(true, std::sync::atomic::Ordering::SeqCst) { return; }
+              std::thread::spawn(|| win::keys_loop());
+          }
           /* きろくの まどを 前に 出して、タブ（せってい など）を 開く */
           fn show_panel_tab(app: &AppHandle, tab: &str) {
               let st = app.state::<St>().inner().clone();
@@ -563,7 +571,8 @@ jobs:
                           let v = o.get(k).and_then(|v| v.as_str()).unwrap_or(d);
                           a.insert(k.into(), json!(if ["corner", "head", "off"].contains(&v) { v } else { d }));
                       }
-                      a.insert("autoStart".into(), json!(o.get("autoStart").and_then(|v| v.as_bool()).unwrap_or(true)));   /* PCを つけたら 開く：はじめは オン */
+                      a.insert("autoStart".into(), json!(o.get("autoStart").and_then(|v| v.as_bool()).unwrap_or(false)));   /* PCを つけたら 開く：はじめは オフ */
+                      a.insert("countTaps".into(), json!(o.get("countTaps").and_then(|v| v.as_bool()).unwrap_or(false)));   /* キーの 回数：数える 人だけ */
                       a.insert("cardWall".into(), json!(o.get("cardWall").and_then(|v| v.as_bool()).unwrap_or(true)));
                       a.insert("cardBar".into(), json!(o.get("cardBar").and_then(|v| v.as_bool()).unwrap_or(false)));
                       let sc = o.get("catScale").and_then(|v| v.as_f64()).unwrap_or(1.0).max(0.5).min(2.0);
@@ -573,6 +582,7 @@ jobs:
               }
               save_state(&app, &st);
               apply_autostart(&app, &st);
+              start_keys(&st);
               open_cats(&app, &st);
               if let Some(w) = app.get_webview_window("setup") { let _ = w.destroy(); }
               Ok(())
@@ -585,6 +595,18 @@ jobs:
           }
           #[tauri::command]
           fn zz_panel_tab(st: tauri::State<'_, St>) -> Option<String> { st.tab.lock().unwrap().take() }
+          #[tauri::command]
+          fn zz_update_info(st: tauri::State<'_, St>) -> Option<String> { st.update.lock().unwrap().clone() }
+          #[tauri::command]
+          async fn zz_update_install(app: AppHandle) -> Result<(), String> {
+              let up = app.updater().map_err(|e| e.to_string())?;
+              let found = up.check().await.map_err(|e| e.to_string())?;
+              if let Some(u) = found {
+                  u.download_and_install(|_, _| {}, || {}).await.map_err(|e| e.to_string())?;
+                  app.restart();
+              }
+              Ok(())
+          }
           #[tauri::command]
           fn zz_quit(app: AppHandle) { app.exit(0); }
           #[tauri::command]
@@ -601,7 +623,7 @@ jobs:
           fn main() {
               let st: St = Arc::new(Zz {
                   s: Mutex::new(json!({})), taps: Mutex::new((today(), 0)), sent: Mutex::new(-1), paused: Mutex::new(false),
-                  wake: Mutex::new(None), link: Mutex::new(None), cats: Mutex::new(String::new()), seq: Mutex::new(0), bar_shown: Mutex::new(false), tab: Mutex::new(None), wall: Mutex::new(String::new()),
+                  wake: Mutex::new(None), link: Mutex::new(None), cats: Mutex::new(String::new()), seq: Mutex::new(0), bar_shown: Mutex::new(false), tab: Mutex::new(None), wall: Mutex::new(String::new()), update: Mutex::new(None),
               });
               tauri::Builder::default()
                   .plugin(tauri_plugin_single_instance::init(|app, argv, _cwd| {
@@ -633,7 +655,7 @@ jobs:
                   .plugin(tauri_plugin_updater::Builder::new().build())
                   .plugin(tauri_plugin_notification::init())
                   .manage(st.clone())
-                  .invoke_handler(tauri::generate_handler![zz_state, zz_set, zz_start, zz_open_setup, zz_quit, zz_hide_panel, zz_recorded, zz_set_wake, zz_log, zz_ready, zz_panel_tab])
+                  .invoke_handler(tauri::generate_handler![zz_state, zz_set, zz_start, zz_open_setup, zz_quit, zz_hide_panel, zz_recorded, zz_set_wake, zz_log, zz_ready, zz_panel_tab, zz_update_info, zz_update_install])
                   .setup(move |app| {
                       let h = app.handle().clone();
                       {
@@ -654,8 +676,8 @@ jobs:
                       let first = !sbool(&st, "setupDone") || sstr(&st, "uid").is_empty() || st.link.lock().unwrap().is_some();
                       if first { open_setup(&h); } else { open_cats(&h, &st); }
 
-                      /* 今日の キーボードの タップ数：Raw Input（割りこまない・マウスは 見ない） */
-                      std::thread::spawn(|| win::keys_loop());
+                      /* 今日の キーボードの タップ数：数える 人だけ（Raw Input・割りこまない・マウスは 見ない） */
+                      start_keys(&st);
                       /* タップ数を 猫の 画面へ（1.5秒ごと）・ときどき 保存 */
                       let (a1, st1) = (h.clone(), st.clone());
                       std::thread::spawn(move || {
@@ -664,6 +686,7 @@ jobs:
                           loop {
                               std::thread::sleep(Duration::from_millis(1500));
                               let add = win::TAPS.swap(0, std::sync::atomic::Ordering::Relaxed);
+                              if !sbool(&st1, "countTaps") { continue; }   /* 数えない 人は 何も 送らない */
                               let n = { let mut t = st1.taps.lock().unwrap(); let d = today(); if t.0 != d { *t = (d, 0); } t.1 += add; t.1 as i64 };
                               let mut s = st1.sent.lock().unwrap();
                               if n != *s { *s = n; let lb = cats_label(&st1); let _ = a1.emit_to(lb.as_str(), "zz-taps", n); }
@@ -727,14 +750,17 @@ jobs:
                           let _ = a4.emit_to(lb.as_str(), "zz-wake", ());
                           let _ = a4.notification().builder().title("おはよう！").body("体操の 時間だよ").show();
                       });
-                      /* 自動アップデート */
-                      let a5 = h.clone();
+                      /* アップデート：見つけたら 知らせる だけ（入れるのは「入れる」を 押した 時） */
+                      let (a5, st5) = (h.clone(), st.clone());
                       tauri::async_runtime::spawn(async move {
                           if let Ok(up) = a5.updater() {
                               match up.check().await {
                                   Ok(Some(u)) => {
-                                      log(&a5, &format!("update {}", u.version));
-                                      if u.download_and_install(|_, _| {}, || {}).await.is_ok() { a5.restart(); }
+                                      let v = u.version.clone();
+                                      log(&a5, &format!("update available {}", v));
+                                      *st5.update.lock().unwrap() = Some(v.clone());
+                                      let _ = a5.emit_to("panel", "zz-update", v.clone());
+                                      let _ = a5.notification().builder().title("ズズラジオ体操部").body(format!("新しい 版（{}）が あるよ。ラジオ体操の 画面から 入れられるよ", v)).show();
                                   }
                                   Ok(None) => {}
                                   Err(e) => log(&a5, &format!("update check {}", e)),
@@ -756,7 +782,7 @@ jobs:
           (function () {
             var T = window.__TAURI__;
             function inv(c, a) { try { return T.core.invoke(c, a || {}); } catch (e) { return Promise.reject(e); } }
-            var CH = ['zz-link', 'zz-wake', 'zz-pause', 'zz-refresh', 'zz-panel-open', 'zz-taps', 'zz-cursor', 'zz-back', 'zz-item'];
+            var CH = ['zz-link', 'zz-wake', 'zz-pause', 'zz-refresh', 'zz-panel-open', 'zz-taps', 'zz-cursor', 'zz-back', 'zz-item', 'zz-update'];
             window.zz = {
               state: function () { return inv('zz_state'); },
               set: function (o) { return inv('zz_set', { o: o }); },
@@ -769,6 +795,8 @@ jobs:
               log: function (m) { return inv('zz_log', { m: String(m) }); },
               ready: function () { return inv('zz_ready'); },
               panelTab: function () { return inv('zz_panel_tab'); },
+              updateInfo: function () { return inv('zz_update_info'); },
+              updateInstall: function () { return inv('zz_update_install'); },
               on: function (ch, cb) {
                 if (CH.indexOf(ch) < 0) return;
                 try { T.webviewWindow.getCurrentWebviewWindow().listen(ch, function (e) { try { cb(e.payload); } catch (_) {} }); } catch (_) {}
@@ -816,6 +844,8 @@ jobs:
              <button class="tile" data-m="bar" type="button"><svg viewBox="0 0 250 140"><rect width="250" height="140" fill="#b8c7e6"/><rect x="34" y="16" width="150" height="84" rx="6" fill="#fff"/><rect y="128" width="250" height="12" fill="#2b3242"/><circle cx="80" cy="122" r="6" fill="#1c1c1c"/><circle cx="104" cy="122" r="6" fill="#c98b5b"/><circle cx="160" cy="123" r="5" fill="#8a8f9c"/></svg>タスクバー</button>
              <button class="tile" data-m="full" type="button"><svg viewBox="0 0 250 140"><rect width="250" height="140" fill="#1f2433"/><path d="M110 50 L140 70 L110 90 Z" fill="#fff" opacity=".7"/><circle cx="80" cy="134" r="6" fill="#efe8dc"/><circle cx="104" cy="134" r="6" fill="#c98b5b"/><circle cx="160" cy="135" r="5" fill="#8a8f9c"/></svg>全画面</button>
             </div></div>
+           <div class="opt">PCを つけたら 開く<div class="sw" data-k="autoStart"><button type="button" data-v="1">する</button><button type="button" data-v="0">しない</button></div></div>
+           <div class="opt">キーの 回数を 数える<div class="sw" data-k="countTaps"><button type="button" data-v="1">数える</button><button type="button" data-v="0">数えない</button></div></div>
            <button id="go" class="go" type="button" disabled>はじめる</button>
            <div class="hint">Ctrl+Alt+P きろく ・ Ctrl+Alt+Shift+P せってい</div>
           </div>
@@ -823,7 +853,7 @@ jobs:
           <script src="fbconfig.js"></script>
           <script type="module">
           import { redeem } from './fb.js';
-          let st = await zz.state(), mode = st.mode || 'wall', opt = { hideSleep: !!st.hideSleep, noEmo: !!st.noEmo, noShare: !!st.noShare, autoStart: st.autoStart !== false, lowQ: !!st.lowQ }, size = Math.round((st.catScale || 1) * 100);
+          let st = await zz.state(), mode = st.mode || 'wall', opt = { hideSleep: !!st.hideSleep, noEmo: !!st.noEmo, noShare: !!st.noShare, autoStart: !!st.autoStart, countTaps: !!st.countTaps, lowQ: !!st.lowQ }, size = Math.round((st.catScale || 1) * 100);
           const $ = (id) => document.getElementById(id);
           function paint() {
             $('ok').hidden = !st.uid; $('ng').hidden = !!st.uid;
@@ -840,7 +870,7 @@ jobs:
           $('link').addEventListener('click', () => doLink($('code').value));
           $('code').addEventListener('keydown', (e) => { if (e.key === 'Enter') doLink($('code').value); });
           document.querySelectorAll('.tile').forEach((t) => t.addEventListener('click', () => { mode = t.dataset.m; paint(); }));
-          $('go').addEventListener('click', () => zz.start({ mode, sleepMode: st.sleepMode || (opt.hideSleep ? 'hide' : 'show'), hideSleep: opt.hideSleep, noEmo: opt.noEmo, noShare: opt.noShare, noTapShow: !!st.noTapShow, autoStart: opt.autoStart, lowQ: opt.lowQ, catScale: size / 100, cardWall: st.cardWall !== false, cardBar: !!st.cardBar }));
+          $('go').addEventListener('click', () => zz.start({ mode, sleepMode: st.sleepMode || (opt.hideSleep ? 'hide' : 'show'), hideSleep: opt.hideSleep, noEmo: opt.noEmo, noShare: opt.noShare, noTapShow: !!st.noTapShow, autoStart: opt.autoStart, countTaps: opt.countTaps, lowQ: opt.lowQ, catScale: size / 100, cardWall: st.cardWall !== false, cardBar: !!st.cardBar }));
           document.querySelectorAll('.sw button').forEach((b) => b.addEventListener('click', () => { opt[b.parentNode.dataset.k] = b.dataset.v === '1'; paint(); }));
           zz.on('zz-link', (code) => { $('code').value = code; doLink(code); });
           zz.ready();
@@ -928,7 +958,8 @@ jobs:
           .pgh button{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--nv);background:#fff;color:var(--nv);cursor:pointer;font-size:11px}
           .pgh button:hover{background:var(--pc2)}
           .dots{display:flex;gap:4px;justify-content:center;margin-top:4px}.dots i{width:6px;height:6px;border-radius:50%;background:var(--ln)}.dots i.on{background:var(--nv)}
-          .pg{height:184px;overflow:auto}   /* ページを 切りかえても カードの 大きさを 変えない */
+          .pg{height:184px;overflow:auto}
+          .upd{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;padding:8px 8px 8px 14px;border-radius:16px;background:var(--pc2);font-size:13px;font-weight:800}.upd button{border:0;border-radius:999px;background:var(--nv);color:#fff;font:inherit;font-size:12px;font-weight:800;padding:7px 14px;cursor:pointer}.upd button:disabled{opacity:.6}   /* ページを 切りかえても カードの 大きさを 変えない */
           .dl{display:flex;flex-direction:column}.de{display:flex;align-items:flex-start;gap:10px;padding:9px 2px;border-top:1px solid var(--ln);font-size:13px;font-weight:700;line-height:1.45}.de:first-child{border-top:0}.de time{flex:none;width:38px;font-size:11px;font-weight:800;color:var(--mu);padding-top:2px;font-variant-numeric:tabular-nums}.de i{flex:none;width:24px;height:24px;border-radius:50%;background:var(--pc2);display:flex;align-items:center;justify-content:center;font-style:normal;font-size:12px}.dn0{text-align:center;color:var(--mu);font-size:12px;padding:24px 0}
           .dic{position:absolute;left:5%;top:8%;display:flex;flex-direction:column;gap:6px;height:72%}.tv .dic svg,.pv .dic svg{position:static;inset:auto;width:auto;height:18%;min-height:12px;display:block;filter:drop-shadow(0 1px 1px rgba(0,0,0,.3))}
           /* 下の タブバー */
@@ -944,6 +975,7 @@ jobs:
             <div class="hd" data-tauri-drag-region><h1 id="ttl">ラジオ体操</h1><div class="wb"><button id="min" type="button" aria-label="しまう" title="しまう"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 6.5h8" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg></button><button id="x" type="button" aria-label="おわる" title="おわる"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M3 3l6 6M9 3l-6 6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg></button></div></div>
            </div>
            <main>
+            <div class="upd" id="upd" hidden><span>新しい 版 <b id="updV"></b></span><button id="updGo" type="button">入れる</button></div>
             <section id="pA">
              <div class="card"><div class="pills" id="gms"><button class="pl on" data-m="wake" type="button">起床</button><button class="pl on" data-m="bed" type="button">就寝</button><button class="pl" data-m="mood" type="button">気分</button></div><div class="gr" id="gr"></div></div>
              <div class="card">
@@ -972,7 +1004,7 @@ jobs:
              <div class="card pgc">
               <div class="pgh"><button id="pgL" type="button" aria-label="まえ">◀</button><div><b id="pgT">ねこ</b><div class="dots" id="dots"><i></i><i></i><i></i></div></div><button id="pgR" type="button" aria-label="つぎ">▶</button></div>
               <div class="pg" data-t="ねこ" hidden><div class="op">猫の 動き<div class="sg" data-k="mv"><button type="button" data-v="normal">ふつう</button><button type="button" data-v="calm">ひかえめ</button><button type="button" data-v="still">止める</button></div></div><div class="op">寝ている子<div class="sg" data-k="slm"><button type="button" data-v="show">出す</button><button type="button" data-v="wake">起こす</button><button type="button" data-v="hide">出さない</button></div></div><div class="op">大きさ<span class="sz"><input id="sz" type="range" min="50" max="200" step="10" aria-label="猫の 大きさ"><b id="szV">100</b><small>%</small></span></div><div class="op"><span class="emo" aria-label="気持ちの 絵"><svg viewBox="0 0 20 20" width="18" height="18"><path d="M10 16.6C5.4 13.3 3 10.8 3 8.1 3 6 4.6 4.5 6.5 4.5c1.4 0 2.6.8 3.5 2 .9-1.2 2.1-2 3.5-2C15.4 4.5 17 6 17 8.1c0 2.7-2.4 5.2-7 8.5z" fill="#e8798f"/></svg><svg viewBox="0 0 20 20" width="18" height="18"><rect x="8.4" y="3" width="3.2" height="10" rx="1.6" fill="#f2a65a"/><circle cx="10" cy="16" r="1.8" fill="#f2a65a"/></svg></span><div class="sg" data-k="noEmo"><button type="button" data-v="0">出す</button><button type="button" data-v="1">出さない</button></div></div></div>
-              <div class="pg" data-t="みんな" hidden><div class="op">ひとこと<div class="sg" data-k="card"><button type="button" data-v="corner">左下</button><button type="button" data-v="head">頭の上</button><button type="button" data-v="off">出さない</button></div></div><div class="op">タップ数<div class="sg" data-k="noTapShow"><button type="button" data-v="0">出す</button><button type="button" data-v="1">出さない</button></div></div><div class="op">自分の タップ数を みんなに<div class="sg" data-k="noShare"><button type="button" data-v="0">見せる</button><button type="button" data-v="1">見せない</button></div></div></div>
+              <div class="pg" data-t="みんな" hidden><div class="op">キーの 回数を 数える<div class="sg" data-k="countTaps"><button type="button" data-v="1">数える</button><button type="button" data-v="0">数えない</button></div></div><div class="op">ひとこと<div class="sg" data-k="card"><button type="button" data-v="corner">左下</button><button type="button" data-v="head">頭の上</button><button type="button" data-v="off">出さない</button></div></div><div class="op">タップ数<div class="sg" data-k="noTapShow"><button type="button" data-v="0">出す</button><button type="button" data-v="1">出さない</button></div></div><div class="op">自分の タップ数を みんなに<div class="sg" data-k="noShare"><button type="button" data-v="0">見せる</button><button type="button" data-v="1">見せない</button></div></div></div>
               <div class="pg" data-t="そのほか" hidden><div class="op">PCを つけたら 開く<div class="sg" data-k="autoStart"><button type="button" data-v="1">する</button><button type="button" data-v="0">しない</button></div></div><div class="op">画質<div class="sg" data-k="lowQ"><button type="button" data-v="0">なめらか</button><button type="button" data-v="1">かるい</button></div></div><div class="op">つなぐ<span id="sOk" style="color:#3f9c6a;font-size:12px">✓ つながっている</span></div><div class="hint">Ctrl+Alt+P ひらく ・ Ctrl+Alt+Shift+P ねっこ</div></div>
              </div>
              <div class="pv" id="pv" role="button" tabindex="0" aria-label="はじめる"><span class="startT" id="start"><i class="pi"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M3.5 2.2 10 6l-6.5 3.8z" fill="#4fa9df"/></svg></i>はじめる</span><div class="lay" id="pvIn"></div><div class="pvOv"><span class="ovIn"><i class="pi big"><svg width="18" height="18" viewBox="0 0 12 12"><path d="M3.5 2.2 10 6l-6.5 3.8z" fill="#4fa9df"/></svg></i>はじめる</span></div></div>
@@ -1061,7 +1093,7 @@ jobs:
           function skyBg() { try { const k = skyP(); return skyGradientForHour(TMH[k] != null ? TMH[k] : new Date().getHours()); } catch (_) { return '#cfd8e8'; } }
           async function loadS() {
             const st = await zz.state();
-            S = { uid: st.uid || '', mode: st.mode || 'wall', wallOn: !!st.wallOn, noEmo: !!st.noEmo, noShare: !!st.noShare, noTapShow: !!st.noTapShow, autoStart: st.autoStart !== false, lowQ: !!st.lowQ,
+            S = { uid: st.uid || '', mode: st.mode || 'wall', wallOn: !!st.wallOn, noEmo: !!st.noEmo, noShare: !!st.noShare, noTapShow: !!st.noTapShow, autoStart: !!st.autoStart, countTaps: !!st.countTaps, lowQ: !!st.lowQ,
               slm: st.sleepMode || (st.hideSleep ? 'hide' : 'show'), stT: +st.sceneTier || 0, stM: st.sceneTime || 'auto', sz: Math.round((st.catScale || 1) * 100),
               cardW: st.cardW || (st.cardWall === false ? 'off' : 'corner'), cardB: st.cardB || (st.cardBar ? 'corner' : 'off'), mv: st.motion || 'normal' };
             paintS();
@@ -1131,7 +1163,7 @@ jobs:
           }
           async function startNow() {
             if (!S.uid) { $('msgB').textContent = 'さきに つないでね'; return; }
-            await zz.start({ mode: S.mode, wallOn: S.wallOn, noEmo: S.noEmo, noShare: S.noShare, noTapShow: S.noTapShow, autoStart: S.autoStart, lowQ: S.lowQ,
+            await zz.start({ mode: S.mode, wallOn: S.wallOn, noEmo: S.noEmo, noShare: S.noShare, noTapShow: S.noTapShow, autoStart: S.autoStart, countTaps: S.countTaps, lowQ: S.lowQ,
               sleepMode: S.slm, hideSleep: S.slm === 'hide', sceneTier: S.stT, sceneTime: S.stM, catScale: S.sz / 100, cardW: S.cardW, cardB: S.cardB, motion: S.mv });
             $('msgB').textContent = 'はじめたよ！'; setTimeout(() => { $('msgB').textContent = ''; }, 2500);
           }
@@ -1177,6 +1209,10 @@ jobs:
           function openTab() { zz.panelTab().then((t) => { if (t === 'settings') tab('B'); }).catch(() => {}); }
           zz.on('zz-panel-open', () => { $('msg').textContent = ''; defaults(); if (!$('pA').hidden) graph(); openTab(); });
           defaults(); graph(); openTab();
+          /* 新しい 版：知らせる だけ。押した 時だけ 入れる */
+          function showUpd(v) { if (!v) return; $('updV').textContent = String(v); $('upd').hidden = false; }
+          zz.updateInfo().then(showUpd).catch(() => {}); zz.on('zz-update', showUpd);
+          $('updGo').addEventListener('click', () => { $('updGo').disabled = true; $('updGo').textContent = '入れて いるよ…'; zz.updateInstall().catch(() => { $('updGo').disabled = false; $('updGo').textContent = 'もう 一度'; }); });
           </script></body></html>
           ZZEOF
           cat > pc/dist/cats.html << 'ZZEOF'

@@ -678,16 +678,6 @@ jobs:
                       if ev.state() != ShortcutState::Pressed { return; }
                       { let st = app.state::<St>().inner().clone(); let (om, oc) = op_parts(&sstr(&st, "opKey"));
                         if sc.matches(om, oc) { let on = !OP_ON.load(std::sync::atomic::Ordering::SeqCst); let a = app.clone(); std::thread::spawn(move || set_op(&a, on)); return; } }
-                      let settings = sc.matches(Modifiers::CONTROL | Modifiers::ALT | Modifiers::SHIFT, Code::KeyP);
-                      let record = sc.matches(Modifiers::CONTROL | Modifiers::ALT, Code::KeyP);
-                      if sc.matches(Modifiers::CONTROL | Modifiers::ALT, Code::KeyI) { let st = app.state::<St>().inner().clone(); let lb = cats_label(&st); let _ = app.emit_to(lb.as_str(), "zz-item", ()); return; }
-                      let a = app.clone();
-                      std::thread::spawn(move || {
-                          if settings {
-                              let st = a.state::<St>().inner().clone();
-                              if sstr(&st, "uid").is_empty() { open_setup(&a); } else { show_panel_tab(&a, "settings"); }
-                          } else if record { open_panel(&a, true); }
-                      });
                   }).build())
                   .plugin(tauri_plugin_autostart::init(MacosLauncher::LaunchAgent, None))
                   .plugin(tauri_plugin_updater::Builder::new().build())
@@ -707,9 +697,6 @@ jobs:
                           let _ = app.deep_link().register_all();
                       }
                       *st.link.lock().unwrap() = link_from(&std::env::args().collect::<Vec<_>>());
-                      let _ = app.global_shortcut().register(Shortcut::new(Some(Modifiers::CONTROL | Modifiers::ALT), Code::KeyP));
-                      let _ = app.global_shortcut().register(Shortcut::new(Some(Modifiers::CONTROL | Modifiers::ALT | Modifiers::SHIFT), Code::KeyP));
-                      let _ = app.global_shortcut().register(Shortcut::new(Some(Modifiers::CONTROL | Modifiers::ALT), Code::KeyI));
                       { let (om, oc) = op_parts(&sstr(&st, "opKey")); let _ = app.global_shortcut().register(Shortcut::new(Some(om), oc)); }
                       apply_autostart(&h, &st);
                       let first = !sbool(&st, "setupDone") || sstr(&st, "uid").is_empty() || st.link.lock().unwrap().is_some();
@@ -852,7 +839,7 @@ jobs:
           body{margin:0;min-height:100vh;font-family:"Yu Gothic UI","Meiryo",system-ui,sans-serif;color:var(--nv);background:radial-gradient(120% 90% at 50% 0%,#3b4660,#283042 55%,#1c2231);display:flex;justify-content:center;padding:26px 20px}
           .wrap{width:100%;max-width:580px}
           h1{margin:0 0 16px;color:#fff;font-size:22px;letter-spacing:.06em;text-align:center}
-          .cols{display:flex;gap:12px;align-items:stretch}
+          .cols{display:flex;gap:12px;align-items:stretch;max-width:320px;margin:0 auto}
           .col{flex:1;background:#fff;border-radius:24px;padding:16px;display:flex;flex-direction:column;gap:10px;border:3px solid transparent;transition:border-color .15s}
           .col.on{border-color:var(--pc)}
           .ttl{font-size:16px;font-weight:900;text-align:center}
@@ -884,12 +871,7 @@ jobs:
              <div class="lb">からだ</div><div class="dots" id="bodyDots"></div>
              <div class="lb">みみ・目</div><div class="dots" id="earDots"></div>
             </section>
-            <div class="or">または</div>
-            <section class="col" id="colLink">
-             <div class="ttl">サイトと つなぐ</div>
-             <div class="lk" id="lkIn"><div class="hint">サイトの おしらせ<br>→「アプリと つなぐ」</div><input type="text" id="code" maxlength="9" placeholder="つなぎコード" autocomplete="off" spellcheck="false" style="text-transform:uppercase;letter-spacing:.12em;text-align:center"><button class="sbtn" id="link" type="button">つなぐ</button></div>
-             <div class="lk" id="lkOk" hidden><div class="ok">✓ つながった</div></div>
-            </section>
+
            </div>
            <div class="opts">
             <div class="opt">PCを つけたら 開く<div class="sw" data-k="autoStart"><button type="button" data-v="1">する</button><button type="button" data-v="0">しない</button></div></div>
@@ -912,7 +894,7 @@ jobs:
           }
           </script>
           <script type="module">
-          import { redeem, createLocal, saveLook } from './fb.js';
+          import { createLocal, saveLook } from './fb.js';
           const $ = (id) => document.getElementById(id);
           const BODY = ['#1c1c1c', '#f2efe8', '#c98b5b', '#8a8d99', '#e8c07a', '#7a5230', '#d9d4ce', '#5b6275'];
           const EAR = ['#a6bfd2', '#f2a6b8', '#f4c95d', '#9ad0a0', '#b7a6e8', '#f59f7a'];
@@ -924,8 +906,7 @@ jobs:
             $('bodyDots').querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.c === body));
             $('earDots').querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.c === ear));
             const named = $('nm').value.trim().length > 0;
-            $('colNew').classList.toggle('on', named); $('colLink').classList.toggle('on', linked);
-            $('lkIn').hidden = linked; $('lkOk').hidden = !linked;
+            $('colNew').classList.toggle('on', named); 
             document.querySelectorAll('.sw').forEach((w) => w.querySelectorAll('button').forEach((b) => b.classList.toggle('on', String(+!!opt[w.dataset.k]) === b.dataset.v)));
             $('go').disabled = !named;   /* 名前と 見た目は だれでも 最初から（サイトと つなぐのは つなぎたい 人だけ） */
           }
@@ -933,12 +914,6 @@ jobs:
           dots('earDots', EAR, (c) => { ear = c; });
           $('nm').addEventListener('input', paint);
           document.querySelectorAll('.sw button').forEach((b) => b.addEventListener('click', () => { opt[b.parentNode.dataset.k] = b.dataset.v === '1'; paint(); }));
-          async function link() {
-            $('link').disabled = true; $('msg').textContent = '';
-            try { const uid = await redeem($('code').value); await zz.set({ uid, local: false }); st.uid = uid; linked = true; } catch (e) { $('msg').textContent = 'つなげなかったよ'; }
-            $('link').disabled = false; paint();
-          }
-          $('link').addEventListener('click', link);
           $('go').addEventListener('click', async () => {
             $('go').disabled = true; $('msg').textContent = '';
             try {
@@ -948,7 +923,6 @@ jobs:
               await zz.start({ mode: st.mode || 'wall', hideSleep: !!st.hideSleep, noEmo: !!st.noEmo, noShare: !!st.noShare, noTapShow: !!st.noTapShow, autoStart: opt.autoStart, countTaps: opt.countTaps, lowQ: !!st.lowQ, catScale: st.catScale || 1, cardWall: st.cardWall !== false, cardBar: !!st.cardBar, sleepMode: st.sleepMode || 'show' });
             } catch (e) { $('msg').textContent = 'はじめられなかったよ'; $('go').disabled = false; }
           });
-          zz.on('zz-link', (c) => { $('code').value = c; link(); });
           zz.state().then((s) => { st = s || {}; linked = !!st.uid && st.local !== true; opt = { autoStart: !!st.autoStart, countTaps: !!st.countTaps }; paint(); zz.ready(); }).catch(() => paint());
           paint();
           </script></body></html>
@@ -1039,6 +1013,13 @@ jobs:
           .rsec{margin-top:8px}.rr{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:14px;border:1.5px solid var(--ln);margin-top:6px;cursor:pointer;font-size:13px;font-weight:800}.rr span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rr small{font-size:11px;color:var(--mu);font-weight:700}.rr.on{border-color:var(--nv);background:var(--pc2)}.rr.dis{opacity:.5;cursor:default}
           .rdot{width:8px;height:8px;border-radius:50%;background:#f0a64a;flex:none}.rdot.on{background:#5cc28a}.rdot.priv{background:#b8bfca}
           .rnone{font-size:11px;color:var(--mu);padding:4px 2px}
+          .steps{display:flex;align-items:center;justify-content:center;gap:6px;margin:10px 0 2px;font-size:12px;font-weight:800;color:var(--mu)}.steps b{padding:5px 11px;border-radius:999px;cursor:pointer}.steps b.on{background:var(--nv);color:#fff}.steps i{width:14px;height:2px;background:var(--ln)}
+          .fold>.lb{cursor:pointer}.fold.shut>:not(.lb){display:none}
+          .ksec{display:flex;gap:6px;justify-content:center;margin:10px 0 0}.ksec button{border:0;border-radius:999px;background:#eef1f5;color:var(--nv);font:inherit;font-size:12px;font-weight:800;padding:7px 14px;cursor:pointer}.ksec button.on{background:var(--nv);color:#fff}
+          .kback{border:0;background:#eef1f5;color:var(--nv);width:30px;height:30px;border-radius:50%;font-size:18px;font-weight:900;cursor:pointer;margin-right:6px}
+          .kshop{display:flex;align-items:center;gap:10px;padding:10px 6px;border-top:1px solid var(--ln);cursor:pointer}.kshop:first-child{border-top:0}.kshop .kth{width:46px;height:48px;flex:none}.kshop span{flex:1;font-size:14px;font-weight:800}.kshop small{font-size:11px;color:var(--mu)}
+          .kth{display:flex;align-items:flex-end;justify-content:center;border-radius:12px;background:#f4f6f9;overflow:hidden}.kth .catFig{position:relative;width:90%;height:90%}.kth svg{width:100%;height:100%}.kth .catZ{display:none}.kit .kth{width:100%;height:78px;margin-bottom:4px}
+          .nxt{display:block;width:100%;height:46px;border:0;border-radius:999px;background:var(--nv);color:#fff;font:inherit;font-size:15px;font-weight:900;cursor:pointer;margin-top:10px}
           .kpv{display:flex;justify-content:center;padding:10px}#kFig{width:150px;height:156px;display:flex;align-items:flex-end;justify-content:center}#kFig .catFig{position:relative;width:140px;height:146px}#kFig svg{width:100%;height:100%}#kFig .catZ{display:none}
           .kchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.kchips button{border:1.5px solid var(--ln);background:#fff;border-radius:999px;padding:5px 11px;font:inherit;font-size:12px;font-weight:800;color:var(--nv);cursor:pointer}.kchips button.on{background:var(--nv);color:#fff;border-color:var(--nv)}
           .kdots{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.kdots button{width:24px;height:24px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1.5px var(--ln);cursor:pointer;padding:0}.kdots button.on{box-shadow:0 0 0 2.5px var(--nv)}
@@ -1079,30 +1060,15 @@ jobs:
            </div>
            <main>
             <div class="upd" id="upd" hidden><span>新しい 版 <b id="updV"></b></span><button id="updGo" type="button">入れる</button></div>
-            <section id="pA">
-             <div class="card"><div class="pills" id="gms"><button class="pl on" data-m="wake" type="button">起床</button><button class="pl on" data-m="bed" type="button">就寝</button><button class="pl" data-m="mood" type="button">気分</button></div><div class="gr" id="gr"></div></div>
-             <div class="card">
-              <div class="steps"><button class="stp on" data-s="1" type="button" aria-label="気分"><i>1</i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5c1 1.4 2.2 2 3.5 2s2.5-.6 3.5-2" stroke-linecap="round"/><circle cx="9" cy="10" r=".8" fill="currentColor"/><circle cx="15" cy="10" r=".8" fill="currentColor"/></svg></button><button class="stp" data-s="2" type="button" aria-label="ねむり"><i>2</i><svg width="22" height="22" viewBox="0 0 24 24"><path d="M19 14.5A7.5 7.5 0 0 1 9.5 5a7.5 7.5 0 1 0 9.5 9.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button><button class="stp" data-s="3" type="button" aria-label="ねむけ"><i>3</i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 10h6l-6 7h6M13 5h6l-6 7h6"/></svg></button></div>
-              <div id="s1"><div class="row" id="md"></div></div>
-              <div id="s2" hidden>
-               <div class="tm">
-                <div class="t" id="tb"><div><small>ねた</small><b id="vb">--:--</b></div><div class="st"><button data-t="b" data-d="1" type="button">▲</button><button data-t="b" data-d="-1" type="button">▼</button></div></div>
-                <div class="t" id="tw"><div><small>おきた</small><b id="vw">--:--</b></div><div class="st"><button data-t="w" data-d="1" type="button">▲</button><button data-t="w" data-d="-1" type="button">▼</button></div></div>
-               </div>
-               <div class="row" id="sq"><button class="ch" data-v="1" type="button"><b>○</b><i>すぐ ねた</i></button><button class="ch" data-v="2" type="button"><b>△</b><i>ふつう</i></button><button class="ch" data-v="3" type="button"><b>×</b><i>なかなか</i></button></div>
-              </div>
-              <div id="s3" hidden><div class="row" id="sy"></div></div>
-              <div class="ex"><button id="done" class="dn on" type="button">✓ 体操した</button><input type="text" id="cm" maxlength="30" placeholder="ひとこと"><button class="cb" id="phAdd" type="button" aria-label="写真"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="3"/><circle cx="12" cy="12.5" r="3.2"/><path d="M8.5 6l1.4-2h4.2l1.4 2"/></svg></button></div>
-              <div class="ph" id="ph"></div><input id="phIn" type="file" accept="image/*" multiple hidden>
-             </div>
-             <button id="go" class="go" type="button">きろく</button><div id="msg" class="msg"></div>
-            </section>
+
             <section id="pK" hidden>
              <div class="card kpv"><div id="kFig"></div></div>
-             <div class="card"><div class="lb">ポーズ</div><div class="kchips" id="kPose"></div>
-              <div class="lb" style="margin-top:10px">からだ</div><div class="kdots" id="kBody"></div>
-              <div class="lb" style="margin-top:8px">みみ・目</div><div class="kdots" id="kEar"></div></div>
-             <div class="card"><div class="khd"><div class="lb" id="kTtl">おみせ</div><button id="kDraw" type="button" class="kmine" aria-label="つくる"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l4-1 11-11-3-3L5 16z"/><path d="M14 6l3 3"/></svg></button><button id="kMine" type="button" class="kmine" aria-label="もちもの"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M8 3 4 6l2 4 2-1v11h8V9l2 1 2-4-4-3c-.5 1.6-2 2.6-4 2.6S8.5 4.6 8 3z"/></svg></button></div><div class="kgrid" id="kList"></div><div id="kMsg" class="msg"></div></div>
+             <div class="ksec" id="kSec"><button type="button" data-k="fuku">ふく</button><button type="button" data-k="pose">ポーズ</button><button type="button" data-k="color">いろ</button><button type="button" data-k="draw">おえかき</button></div>
+             <div class="card" data-ks="pose"><div class="kchips" id="kPose"></div></div>
+             <div class="card" data-ks="color"><div class="lb">からだ</div><div class="kdots" id="kBody"></div>
+              <div class="lb" style="margin-top:10px">みみ・目</div><div class="kdots" id="kEar"></div></div>
+             <div class="card kdrw" data-ks="draw"><button type="button" class="nxt" id="kDraw2">えがく</button></div>
+             <div class="card" data-ks="fuku"><div class="khd"><button type="button" id="kBack" class="kback" hidden>‹</button><div class="lb" id="kTtl">商店街</div><button id="kDraw" type="button" class="kmine" hidden aria-label="つくる"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l4-1 11-11-3-3L5 16z"/><path d="M14 6l3 3"/></svg></button><button id="kMine" type="button" class="kmine" aria-label="もちもの"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M8 3 4 6l2 4 2-1v11h8V9l2 1 2-4-4-3c-.5 1.6-2 2.6-4 2.6S8.5 4.6 8 3z"/></svg></button></div><div class="kgrid" id="kList"></div><div id="kMsg" class="msg"></div></div>
             </section>
             <div id="draw" hidden>
              <div class="dwTop"><b>おえかき</b><span><button id="dwFull" type="button">全画面</button><button id="dwX" type="button" aria-label="とじる">✕</button></span></div>
@@ -1114,34 +1080,34 @@ jobs:
              <button id="dwSave" type="button" class="dwSave">ほぞん</button>
             </div>
             <section id="pB" hidden>
-             <div class="card warn" id="sNg"><div class="lb">まず つなぐ</div><div class="row"><input type="text" id="sCode" maxlength="9" placeholder="つなぎコード" autocomplete="off" spellcheck="false"><button id="sLink" class="sbtn" type="button">つなぐ</button></div></div>
-             <div class="card"><div class="lb">出す 場所</div><div class="tiles">
+             <div class="steps" id="nkSteps"><b data-s="1">① 出す場所</b><i></i><b data-s="2">② お部屋</b><i></i><b data-s="3">③ はじめる</b></div>
+             <div class="card" data-step="1"><div class="lb">出す 場所</div><div class="tiles">
                <div class="tile" data-m="wall" role="button" tabindex="0"><div class="tv" id="wallPrev"></div><span class="alw" id="alw" role="switch" tabindex="0" title="ほかの 場所に 出して いる 時も 壁紙を 出す"><i></i>適用</span><span class="nm">壁紙</span></div>
                <div class="tile" data-m="bar" role="button" tabindex="0"><div class="tv"><svg viewBox="0 0 160 100"><rect width="160" height="100" fill="#b8c7e6"/><rect x="22" y="12" width="96" height="58" rx="6" fill="#fff"/><rect y="88" width="160" height="12" fill="#2b3242"/><circle cx="52" cy="83" r="5" fill="#2b3242"/><circle cx="68" cy="83" r="5" fill="#ffb27d"/></svg></div><span class="nm">タスクバー</span></div>
                <div class="tile" data-m="full" role="button" tabindex="0"><div class="tv"><svg viewBox="0 0 160 100"><rect width="160" height="100" fill="#26233d"/><path d="M70 36l24 14-24 14z" fill="#fff" opacity=".7"/><circle cx="52" cy="94" r="5" fill="#efe8dc"/><circle cx="68" cy="94" r="5" fill="#ffb27d"/></svg></div><span class="nm">全画面</span></div>
               </div></div>
-             <div class="card" id="roomCard"><div class="lb">お部屋</div>
+             <button type="button" class="nxt" data-step="1" id="nk1">つぎへ</button>
+             <div class="card" id="roomCard" data-step="2"><div class="lb">お部屋</div>
               <div class="row"><input type="text" id="roomId" maxlength="6" placeholder="ルームID" autocomplete="off" spellcheck="false" style="flex:1;min-width:0;height:38px;border-radius:999px;border:1.5px solid var(--nv);padding:0 14px;font:inherit;font-weight:800;letter-spacing:.14em;text-transform:uppercase"><button id="roomGo" class="rbtn" type="button">入る</button></div>
               <div class="rsec"><div class="lb">フレンド</div><div id="frRooms"></div></div>
               <div class="rsec"><div class="lb">公開ルーム</div><div id="pubRooms"></div></div>
-              <div class="rr" data-sel="hill"><i class="rdot on"></i><span>みんなの丘</span><small>サイトの 猫</small></div>
               <div class="row" style="margin-top:8px"><button id="myRoom" class="rbtn2" type="button">マイルーム</button><button id="mkRoom" class="rbtn2" type="button">ルームを 作る</button><div class="sg" id="pubSw"><button type="button" data-v="1">公開</button><button type="button" data-v="0">非公開</button></div></div>
               <div id="roomMsg" class="msg"></div>
-              <div id="roomMem"></div>
              </div>
-             <div class="card pgc">
+             <div class="card" data-step="3"><div class="lb" id="memTtl">お部屋</div><div id="roomMem"></div></div>
+             <div data-step="3" class="card pgc" data-step="3">
               <div class="pgh"><button id="pgL" type="button" aria-label="まえ">◀</button><div><b id="pgT">ねこ</b><div class="dots" id="dots"><i></i><i></i><i></i></div></div><button id="pgR" type="button" aria-label="つぎ">▶</button></div>
               <div class="pg" data-t="ねこ" hidden><div class="op">猫の 動き<div class="sg" data-k="mv"><button type="button" data-v="normal">ふつう</button><button type="button" data-v="calm">ひかえめ</button><button type="button" data-v="still">止める</button></div></div><div class="op">寝ている子<div class="sg" data-k="slm"><button type="button" data-v="show">出す</button><button type="button" data-v="wake">起こす</button><button type="button" data-v="hide">出さない</button></div></div><div class="op">大きさ<span class="sz"><input id="sz" type="range" min="50" max="200" step="10" aria-label="猫の 大きさ"><b id="szV">100</b><small>%</small></span></div><div class="op"><span class="emo" aria-label="気持ちの 絵"><svg viewBox="0 0 20 20" width="18" height="18"><path d="M10 16.6C5.4 13.3 3 10.8 3 8.1 3 6 4.6 4.5 6.5 4.5c1.4 0 2.6.8 3.5 2 .9-1.2 2.1-2 3.5-2C15.4 4.5 17 6 17 8.1c0 2.7-2.4 5.2-7 8.5z" fill="#e8798f"/></svg><svg viewBox="0 0 20 20" width="18" height="18"><rect x="8.4" y="3" width="3.2" height="10" rx="1.6" fill="#f2a65a"/><circle cx="10" cy="16" r="1.8" fill="#f2a65a"/></svg></span><div class="sg" data-k="noEmo"><button type="button" data-v="0">出す</button><button type="button" data-v="1">出さない</button></div></div></div>
               <div class="pg" data-t="みんな" hidden><div class="op">キーの 回数を 数える<div class="sg" data-k="countTaps"><button type="button" data-v="1">数える</button><button type="button" data-v="0">数えない</button></div></div><div class="op">ひとこと<div class="sg" data-k="card"><button type="button" data-v="corner">左下</button><button type="button" data-v="head">頭の上</button><button type="button" data-v="off">出さない</button></div></div><div class="op">タップ数<div class="sg" data-k="noTapShow"><button type="button" data-v="0">出す</button><button type="button" data-v="1">出さない</button></div></div></div>
               <div class="pg" data-t="そのほか" hidden><div class="op">操作モード<div class="sg" data-k="opKey"><button type="button" data-v="alt+z">Alt+Z</button><button type="button" data-v="alt+x">Alt+X</button><button type="button" data-v="alt+q">Alt+Q</button><button type="button" data-v="ctrl+alt+z">Ctrl+Alt+Z</button></div></div><div class="op">PCを つけたら 開く<div class="sg" data-k="autoStart"><button type="button" data-v="1">する</button><button type="button" data-v="0">しない</button></div></div><div class="op">画質<div class="sg" data-k="lowQ"><button type="button" data-v="0">なめらか</button><button type="button" data-v="1">かるい</button></div></div><div class="op">つなぐ<span id="sOk" style="color:#3f9c6a;font-size:12px">✓ つながっている</span></div><div class="hint">Ctrl+Alt+P ひらく ・ Ctrl+Alt+Shift+P ねっこ</div></div>
              </div>
-             <div class="pv" id="pv" role="button" tabindex="0" aria-label="はじめる"><span class="startT" id="start"><i class="pi"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M3.5 2.2 10 6l-6.5 3.8z" fill="#4fa9df"/></svg></i>はじめる</span><div class="lay" id="pvIn"></div><div class="pvOv"><span class="ovIn"><i class="pi big"><svg width="18" height="18" viewBox="0 0 12 12"><path d="M3.5 2.2 10 6l-6.5 3.8z" fill="#4fa9df"/></svg></i>はじめる</span></div></div>
-             <div class="scn" id="scnRow"><label><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><select id="selM" aria-label="時間帯"><option value="auto">自動</option><option value="sky-dawn">早朝</option><option value="sky-morning">朝</option><option value="sky-day">昼</option><option value="sky-evening">夕方</option><option value="sky-night">夜</option></select></label><label><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M3 20 10 7l4 6 2-3 5 10z"/></svg><select id="selT" aria-label="合目"><option value="0">自動</option><option value="1">1合目</option><option value="2">2合目</option><option value="3">3合目</option><option value="4">4合目</option><option value="5">5合目</option><option value="6">6合目</option><option value="7">7合目</option></select></label></div>
+             <div data-step="3" class="pv" id="pv" role="button" tabindex="0" aria-label="はじめる"><span class="startT" id="start"><i class="pi"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M3.5 2.2 10 6l-6.5 3.8z" fill="#4fa9df"/></svg></i>はじめる</span><div class="lay" id="pvIn"></div><div class="pvOv"><span class="ovIn"><i class="pi big"><svg width="18" height="18" viewBox="0 0 12 12"><path d="M3.5 2.2 10 6l-6.5 3.8z" fill="#4fa9df"/></svg></i>はじめる</span></div></div>
+             <div data-step="3" class="scn" id="scnRow"><label><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><select id="selM" aria-label="時間帯"><option value="auto">自動</option><option value="sky-dawn">早朝</option><option value="sky-morning">朝</option><option value="sky-day">昼</option><option value="sky-evening">夕方</option><option value="sky-night">夜</option></select></label><label><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M3 20 10 7l4 6 2-3 5 10z"/></svg><select id="selT" aria-label="合目"><option value="0">自動</option><option value="1">1合目</option><option value="2">2合目</option><option value="3">3合目</option><option value="4">4合目</option><option value="5">5合目</option><option value="6">6合目</option><option value="7">7合目</option></select></label></div>
              <div id="msgB" class="msg"></div>
             </section>
             <section id="pF" hidden>
-             <div class="card fc"><div class="lb">あなたの フレンドコード</div><div class="code"><b id="myCode">------</b><button id="cpCode" type="button">コピー</button></div></div>
-             <div class="card"><div class="row"><input type="text" id="fCode" maxlength="8" placeholder="フレンドの コード" autocomplete="off" spellcheck="false"><button id="fAdd" type="button">追加</button></div><div id="fMsg" class="msg"></div></div>
+             <div class="card fc fold shut"><div class="lb">あなたの フレンドコード ▾</div><div class="code"><b id="myCode">------</b><button id="cpCode" type="button">コピー</button></div></div>
+             <div class="card fold shut"><div class="lb">コードで 追加 ▾</div><div class="row"><input type="text" id="fCode" maxlength="8" placeholder="フレンドの コード" autocomplete="off" spellcheck="false"><button id="fAdd" type="button">追加</button></div><div id="fMsg" class="msg"></div></div>
              <div class="card" id="rqCard" hidden><div class="lb">リクエスト</div><div id="rqList"></div></div>
              <div class="card"><div class="lb">フレンド</div><div id="fList"><div class="dn0">まだ いないよ</div></div></div>
             </section>
@@ -1150,75 +1116,18 @@ jobs:
              <div class="card"><div class="pgh"><button id="dL" type="button" aria-label="まえの 日">◀</button><div><b id="dT">きょう</b></div><button id="dR" type="button" aria-label="つぎの 日">▶</button></div><div id="dList" class="dl"></div></div>
             </section>
            </main>
-           <nav class="tb"><button id="tA" class="on" type="button"><span class="bi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg></span>ラジオ体操</button><button id="tK" type="button"><span class="bi"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M8 3 4 6l2 4 2-1v11h8V9l2 1 2-4-4-3c-.5 1.6-2 2.6-4 2.6S8.5 4.6 8 3z"/></svg></span>きせかえ</button><button id="tB" type="button"><span class="bi"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4l4.2 4.2A8 8 0 0 1 12 7.5a8 8 0 0 1 3.8.7L20 4v8.5a8 8 0 0 1-16 0z"/><circle cx="9.3" cy="12.8" r="1.3" fill="#2b3242"/><circle cx="14.7" cy="12.8" r="1.3" fill="#2b3242"/></svg></span>ねっこ</button><button id="tF" type="button"><span class="bi"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8.5" r="3.2"/><circle cx="17" cy="9.5" r="2.6"/><path d="M3.5 19c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5M14.5 14.6c.8-.4 1.6-.6 2.5-.6 2.2 0 3.9 1.5 4.4 4"/></svg></span>フレンド</button><button id="tC" type="button"><span class="bi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11M9 8h6"/></svg></span>にっき</button></nav>
+           <nav class="tb"><button id="tB" type="button"><span class="bi"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4l4.2 4.2A8 8 0 0 1 12 7.5a8 8 0 0 1 3.8.7L20 4v8.5a8 8 0 0 1-16 0z"/><circle cx="9.3" cy="12.8" r="1.3" fill="#2b3242"/><circle cx="14.7" cy="12.8" r="1.3" fill="#2b3242"/></svg></span>ねっこ</button><button id="tK" type="button"><span class="bi"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M8 3 4 6l2 4 2-1v11h8V9l2 1 2-4-4-3c-.5 1.6-2 2.6-4 2.6S8.5 4.6 8 3z"/></svg></span>きせかえ</button><button id="tF" type="button"><span class="bi"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8.5" r="3.2"/><circle cx="17" cy="9.5" r="2.6"/><path d="M3.5 19c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5M14.5 14.6c.8-.4 1.6-.6 2.5-.6 2.2 0 3.9 1.5 4.4 4"/></svg></span>フレンド</button><button id="tC" type="button"><span class="bi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11M9 8h6"/></svg></span>にっき</button></nav>
           </div></div>
           <script src="zz.js"></script>
           <script src="fbconfig.js"></script>
-          <script src="rec.js"></script>
           <script src="catfig.js"></script>
           <script>var $=function(id){ return document.getElementById(id); };</script>
-          <script src="graph.js"></script>
           <script src="scene.js"></script>
           <script type="module">
-          import { record, recData, redeem, hill, allTaps, diaryDay, myCode, addFriend, friends, setPlay, rooms, getAff, wallet, fAffAll, fLevel, requests, answerReq, sendReq, getLook, saveLook, addNet, saveArt, publishShop, shopList, buyShop, collectSales, soldCounts } from './fb.js';
-          const R = window.ZZREC || { mood: [], slpy: [] };
+          import { diaryDay, mine, myCode, addFriend, friends, setPlay, rooms, getAff, wallet, fAffAll, fLevel, requests, answerReq, sendReq, getLook, saveLook, addNet, saveArt, publishShop, shopList, buyShop, collectSales, soldCounts } from './fb.js';
           /* ===== ステータスバーの 時計 ===== */
           function clk() { const d = new Date(); $('clk').textContent = d.getHours() + ':' + String(d.getMinutes()).padStart(2, '0'); }
           clk(); setInterval(clk, 20000);
-          /* ===== ラジオ体操：きろく ===== */
-          let W = 0, Bd = 0, done = true, edited = false, photos = [], md = null, sq = null, sy = 3, stp = 1;
-          const fmt = (h) => { h = ((h % 24) + 24) % 24; let hh = Math.floor(h), mm = Math.round((h - hh) * 60); if (mm === 60) { hh = (hh + 1) % 24; mm = 0; } return hh + ':' + String(mm).padStart(2, '0'); };
-          $('md').innerHTML = R.mood.map((m, i) => '<button class="ch" data-v="' + i + '" type="button"><b>' + m.e + '</b><i>' + m.l + '</i></button>').join('');
-          $('sy').innerHTML = R.slpy.map((q, i) => '<button class="ch" data-v="' + (5 - i) + '" type="button">' + (typeof _krFace === 'function' ? _krFace(q.k, 26) : '') + '<i>' + q.l.replace('とても', 'とても<br>') + '</i></button>').join('');
-          function showStep(n) { stp = n; [1, 2, 3].forEach((k) => { $('s' + k).hidden = k !== n; }); paint(); }
-          function paint() {
-            $('vw').textContent = fmt(W); $('vb').textContent = fmt(Bd);
-            $('done').classList.toggle('on', done); $('done').textContent = (done ? '✓ ' : '') + '体操した';
-            [['md', md], ['sq', sq], ['sy', sy]].forEach(([id, v]) => $(id).querySelectorAll('.ch').forEach((b) => b.classList.toggle('on', String(v) === b.dataset.v)));
-            document.querySelectorAll('.stp').forEach((b) => { const n = +b.dataset.s; b.classList.toggle('on', n === stp); b.classList.toggle('ok', n === 1 ? md != null : n === 2 ? (sq != null || edited) : sy != null); });
-          }
-          function defaults() { if (edited) return; const n = new Date(); W = n.getHours() + n.getMinutes() / 60; Bd = ((W - 7) % 24 + 24) % 24; paint(); }
-          function stepT(t, d) { edited = true; const q = 0.25 * d; if (t === 'w') W = ((W + q) % 24 + 24) % 24; else Bd = ((Bd + q) % 24 + 24) % 24; paint(); }
-          document.querySelectorAll('.st button').forEach((b) => b.addEventListener('click', () => stepT(b.dataset.t, +b.dataset.d)));
-          [['tw', 'w'], ['tb', 'b']].forEach(([id, t]) => $(id).addEventListener('wheel', (e) => { e.preventDefault(); stepT(t, e.deltaY < 0 ? 1 : -1); }, { passive: false }));
-          document.querySelectorAll('.stp').forEach((b) => b.addEventListener('click', () => showStep(+b.dataset.s)));
-          $('md').addEventListener('click', (e) => { const b = e.target.closest('.ch'); if (b) { md = +b.dataset.v; paint(); setTimeout(() => showStep(2), 250); } });
-          $('sq').addEventListener('click', (e) => { const b = e.target.closest('.ch'); if (b) { sq = +b.dataset.v; paint(); setTimeout(() => showStep(3), 250); } });
-          $('sy').addEventListener('click', (e) => { const b = e.target.closest('.ch'); if (b) { sy = +b.dataset.v; paint(); } });
-          $('done').addEventListener('click', () => { done = !done; paint(); });
-          function shrink(img, max, q) { const s = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight)), c = document.createElement('canvas'); c.width = Math.round(img.naturalWidth * s); c.height = Math.round(img.naturalHeight * s); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); return { d: c.toDataURL('image/jpeg', q), w: c.width, h: c.height }; }
-          function loadImg(f) { return new Promise((ok, ng) => { const r = new FileReader(); r.onload = () => { const im = new Image(); im.onload = () => ok(im); im.onerror = ng; im.src = r.result; }; r.onerror = ng; r.readAsDataURL(f); }); }
-          function paintPh() { const box = $('ph'); box.innerHTML = ''; photos.forEach((q, i) => { const d = document.createElement('div'); d.className = 'th'; d.innerHTML = '<img alt=""><button type="button" aria-label="けす">×</button>'; d.querySelector('img').src = q.t; d.querySelector('button').onclick = () => { photos.splice(i, 1); paintPh(); }; box.appendChild(d); }); $('phAdd').hidden = photos.length >= 4; }
-          $('phAdd').addEventListener('click', () => $('phIn').click());
-          $('phIn').addEventListener('change', async () => { for (const f of Array.from($('phIn').files || [])) { if (photos.length >= 4) break; try { const im = await loadImg(f), big = shrink(im, 1280, .82), sm = shrink(im, 240, .72); photos.push({ u: big.d, t: sm.d, w: big.w, h: big.h }); } catch (_) {} } $('phIn').value = ''; paintPh(); });
-          $('go').addEventListener('click', async () => {
-            const st = await zz.state(); if (!st.uid) { $('msg').textContent = 'ねっこ で つないでね'; return; }
-            $('go').disabled = true; $('msg').textContent = '';
-            try {
-              await record(st.uid, { done, wake: +W.toFixed(3), bed: +Bd.toFixed(3), md, sq, sy, comment: $('cm').value.trim(), photos });
-              $('msg').textContent = 'きろく できたよ！'; zz.recorded(); graph(); setTimeout(() => zz.hidePanel(), 1400);
-              $('cm').value = ''; edited = false; photos = []; paintPh();
-            } catch (e) { $('msg').style.color = '#c9546b'; $('msg').textContent = 'きろく できなかったよ'; setTimeout(() => { $('msg').style.color = ''; }, 3000); }
-            $('go').disabled = false;
-          });
-          /* ===== ラジオ体操：うつりかわり（サイトと 同じ 折れ線） ===== */
-          let gModes = ['wake', 'bed'];
-          async function graph() {
-            const st = await zz.state(); if (!st.uid) return;
-            try {
-              const { data, pcrec } = await recData(st.uid);
-              ['radio_wakelog', 'radio_sleeplog', 'radio_moods', 'radio_profile', 'radio_sleepts'].forEach((k) => { if (data[k] != null) localStorage.setItem(k, data[k]); else localStorage.removeItem(k); });
-              const wl = JSON.parse(localStorage.getItem('radio_wakelog') || '{}'), sl = JSON.parse(localStorage.getItem('radio_sleeplog') || '{}'), mm = JSON.parse(localStorage.getItem('radio_moods') || '{}');
-              Object.keys(pcrec).forEach((d) => { const r = pcrec[d]; if (!r || r.m) return; if (Number.isFinite(r.w)) wl[d] = r.w; if (Number.isFinite(r.b)) sl[d] = r.b; if (Number.isFinite(r.md) && R.mood[r.md]) mm[d] = { e: R.mood[r.md].e, l: R.mood[r.md].l }; });
-              localStorage.setItem('radio_wakelog', JSON.stringify(wl)); localStorage.setItem('radio_sleeplog', JSON.stringify(sl)); localStorage.setItem('radio_moods', JSON.stringify(mm));
-            } catch (_) {}
-            try { _recGraphModes = gModes.slice(); buildRecGraph($('gr')); } catch (e) { $('gr').textContent = ''; }
-          }
-          document.querySelectorAll('#gms .pl').forEach((b) => b.addEventListener('click', () => {
-            const m = b.dataset.m, on = gModes.includes(m); if (on && gModes.length === 1) return;
-            gModes = on ? gModes.filter((x) => x !== m) : gModes.concat(m);
-            document.querySelectorAll('#gms .pl').forEach((x) => x.classList.toggle('on', gModes.includes(x.dataset.m))); graph();
-          }));
           /* ===== ねっこ ===== */
           let S = {};
           const TMH = { 'sky-dawn': 6, 'sky-morning': 9, 'sky-day': 13, 'sky-evening': 17, 'sky-night': 22 };
@@ -1229,7 +1138,7 @@ jobs:
           function skyBg() { try { const k = skyP(); return skyGradientForHour(TMH[k] != null ? TMH[k] : new Date().getHours()); } catch (_) { return '#cfd8e8'; } }
           async function loadS() {
             const st = await zz.state();
-            S = { uid: st.uid || '', mode: st.mode || 'wall', strip: (st.mode === 'bar' || st.mode === 'full') ? st.mode : 'none', wallOn: !!st.wallOn || !st.mode || st.mode === 'wall', room: st.room || { kind: st.net === 'offline' ? 'my' : 'hill' }, noEmo: !!st.noEmo, noShare: !!st.noShare, noTapShow: !!st.noTapShow, autoStart: !!st.autoStart, countTaps: !!st.countTaps, lowQ: !!st.lowQ,
+            S = { uid: st.uid || '', mode: st.mode || 'wall', strip: (st.mode === 'bar' || st.mode === 'full') ? st.mode : 'none', wallOn: !!st.wallOn || !st.mode || st.mode === 'wall', room: (st.room && st.room.kind && st.room.kind !== 'hill') ? st.room : { kind: 'my' }, noEmo: !!st.noEmo, noShare: !!st.noShare, noTapShow: !!st.noTapShow, autoStart: !!st.autoStart, countTaps: !!st.countTaps, lowQ: !!st.lowQ,
               slm: st.sleepMode || (st.hideSleep ? 'hide' : 'show'), stT: +st.sceneTier || 0, stM: st.sceneTime || 'auto', sz: Math.round((st.catScale || 1) * 100),
               cardW: st.cardW || (st.cardWall === false ? 'off' : 'corner'), cardB: st.cardB || (st.cardBar ? 'corner' : 'off'), mv: st.motion || 'normal', opKey: st.opKey || 'alt+z' };
             paintS();
@@ -1237,7 +1146,7 @@ jobs:
           const DIC = '<div class="dic"><svg viewBox="0 0 24 20"><path d="M1 3a2 2 0 0 1 2-2h6l2 2h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2z" fill="#f4c95d"/></svg><svg viewBox="0 0 18 22"><path d="M1 2a1 1 0 0 1 1-1h10l5 5v14a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1z" fill="#fff"/><path d="M12 1v5h5" fill="#dfe6ee"/><path d="M4 11h9M4 14h9M4 17h6" stroke="#9aa6b6" stroke-width="1.2"/></svg><svg viewBox="0 0 22 22"><rect x="1" y="1" width="20" height="20" rx="5" fill="#7cc8ee"/><path d="M6 15l3.5-4.5 2.5 3 2-2.5L17 15z" fill="#fff"/><circle cx="8" cy="7.5" r="1.8" fill="#fff"/></svg></div>';
           let prevKey = '';
           function paintS() {
-            $('sNg').hidden = !!S.uid; $('sOk').hidden = !S.uid;
+           $('sOk').hidden = !S.uid;
             if (S.strip === 'none') S.wallOn = true; S.mode = S.strip !== 'none' ? S.strip : 'wall';
             document.querySelectorAll('.tile').forEach((t) => t.classList.toggle('on', t.dataset.m === 'wall' ? !!S.wallOn : t.dataset.m === S.strip));
             $('alw').classList.toggle('on', !!S.wallOn); $('alw').setAttribute('aria-checked', String(!!S.wallOn));
@@ -1261,13 +1170,12 @@ jobs:
             paintS();
           }));
           $('sz').addEventListener('input', () => { S.sz = +$('sz').value; $('szV').textContent = S.sz; preview(); });
-          $('sLink').addEventListener('click', async () => { $('sLink').disabled = true; try { const uid = await redeem($('sCode').value); await zz.set({ uid }); S.uid = uid; paintS(); } catch (e) { $('msgB').style.color = '#c9546b'; $('msgB').textContent = 'つなげなかったよ'; setTimeout(() => { $('msgB').style.color = ''; }, 3000); } $('sLink').disabled = false; });
           /* プレビュー：実際と ほぼ 同じ 見え方（自分と みんなの 本物の 猫・今日の タップ数・本当の ひとこと） */
           let PV = null, PT = {}, myTaps = 0;
           async function loadPV() {
             if (!S.uid) return;
             try { const st = await zz.state(); const t = st.taps || {}; const d = new Date(); const dk = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); myTaps = t.day === dk ? (t.n | 0) : 0; } catch (_) {}
-            if (!PV) { try { PV = await hill(S.uid); } catch (_) { PV = { cats: [], cards: [] }; } try { PT = await allTaps(); } catch (_) {} }
+            if (!PV) { try { PV = await mine(S.uid); } catch (_) { PV = { cats: [], cards: [] }; } try { PT = await allTaps(); } catch (_) {} }
             preview();
           }
           const TASKBAR = (h) => '<div style="position:absolute;left:0;right:0;bottom:0;height:' + h + 'px;background:rgba(32,36,48,.94);display:flex;align-items:center;gap:5px;padding:0 6px"><i style="width:8px;height:8px;border-radius:2px;background:#7cc8ee"></i><i style="width:26px;height:6px;border-radius:3px;background:#4b5263"></i><i style="width:7px;height:7px;border-radius:2px;background:#f4c95d"></i><i style="width:7px;height:7px;border-radius:2px;background:#9ad0a0"></i><i style="width:7px;height:7px;border-radius:2px;background:#e8798f"></i><span style="margin-left:auto;font-size:7px;color:#dfe4ea;font-weight:700">' + $('clk').textContent + '</span></div>';
@@ -1316,11 +1224,11 @@ jobs:
           $('pgL').addEventListener('click', () => page(pg - 1)); $('pgR').addEventListener('click', () => page(pg + 1)); page(0);
           /* ===== タブ ===== */
           function tab(t) {
-            ['A', 'K', 'B', 'F', 'C'].forEach((k) => { $('t' + k).classList.toggle('on', t === k); $('p' + k).hidden = t !== k; });
-            $('ttl').textContent = t === 'A' ? 'ラジオ体操' : t === 'K' ? 'きせかえ' : t === 'B' ? 'ねっこ' : t === 'F' ? 'フレンド' : 'にっき';
-            if (t === 'A') graph(); else if (t === 'K') kise(); else if (t === 'B') loadS().then(loadPV).then(roomsList); else if (t === 'F') friendsTab(); else diary();
+            ['K', 'B', 'F', 'C'].forEach((k) => { $('t' + k).classList.toggle('on', t === k); $('p' + k).hidden = t !== k; });
+            $('ttl').textContent = t === 'K' ? 'きせかえ' : t === 'B' ? 'ねっこ' : t === 'F' ? 'フレンド' : 'にっき';
+            if (t === 'K') kise(); else if (t === 'B') { nkStep(1); loadS().then(loadPV).then(roomsList); } else if (t === 'F') friendsTab(); else diary();
           }
-          $('tA').addEventListener('click', () => tab('A')); $('tB').addEventListener('click', () => tab('B')); $('tC').addEventListener('click', () => tab('C')); $('tK').addEventListener('click', () => tab('K')); $('tF').addEventListener('click', () => tab('F'));
+          $('tB').addEventListener('click', () => tab('B')); $('tC').addEventListener('click', () => tab('C')); $('tK').addEventListener('click', () => tab('K')); $('tF').addEventListener('click', () => tab('F'));
           /* ===== にっき：自分の 猫の 日記（時刻つき） ===== */
           const ITEMN = { ball: 'ボール', mouse: 'ねずみ', bug: 'むし', balloon: 'ふうせん', gift: 'プレゼント', box: 'はこ' };
           let dOff = 0;
@@ -1345,8 +1253,7 @@ jobs:
           $('x').addEventListener('click', () => zz.quit());
           document.addEventListener('keydown', (e) => { if (e.key === 'Escape') zz.hidePanel(); });
           function openTab() { zz.panelTab().then((t) => { if (t === 'settings') tab('B'); }).catch(() => {}); }
-          zz.on('zz-panel-open', () => { $('msg').textContent = ''; defaults(); if (!$('pA').hidden) graph(); openTab(); });
-          defaults(); graph(); openTab();
+          zz.on('zz-panel-open', () => { openTab(); });
           /* ===== きせかえ（PC版だけの 見た目：ポーズ・色・服）・お店は PC版の おさいふ ===== */
           const KPOSE = [['sit', 'おすわり'], ['fish', 'もふもふ'], ['stare', 'みつめ'], ['surprise', 'びっくり'], ['stand', 'おたち'], ['bow', 'おじぎ'], ['lie', 'ごろん'], ['stand4', 'よつあし'], ['turn', 'うしろ'], ['sleep', 'まるね']];
           const KBODY = ['#1c1c1c', '#f2efe8', '#c98b5b', '#8a8d99', '#e8c07a', '#7a5230', '#d9d4ce', '#5b6275'], KEAR = ['#a6bfd2', '#f2a6b8', '#f4c95d', '#9ad0a0', '#b7a6e8', '#f59f7a'];
@@ -1355,16 +1262,42 @@ jobs:
           function artsSVG() { const lib = LOOK.artLib || {}, eq = LOOK.arts || {}; let out = ''; (typeof _ACOS_ORDER !== 'undefined' ? _ACOS_ORDER : ['body', 'neck', 'tail', 'hat']).forEach((sl) => { const k = eq[sl]; if (k && lib[k]) try { out += _artLayersSVG(lib[k], { w: 120, h: 124 }); } catch (_) {} }); return out; }
           function kFigHtml(pose) { try { _artCosOverride = artsSVG() || null; return buildCatFig(LOOK.body, LOOK.ear, LOOK.cos || {}, pose).outerHTML; } catch (_) { return ''; } finally { try { _artCosOverride = null; } catch (_) {} } }
           let SHOP = [], SOLD = {};
+          let KSEC = 'fuku', KSHOP = null;   /* KSHOP：null＝お店の 一覧・'mine'＝もちもの・'official'＝公式・それ以外＝その人の お店 */
+          function kThumb(cos, art) { try { _artCosOverride = art ? _artLayersSVG(art, { w: 120, h: 124 }) : null; return '<div class="kth">' + buildCatFig(LOOK.body, LOOK.ear, cos || {}, 'sit').outerHTML + '</div>'; } catch (_) { return '<div class="kth"></div>'; } finally { try { _artCosOverride = null; } catch (_) {} } }
+          function kShops() {
+            const lib = LOOK.artLib || {}, sellers = {};
+            SHOP.filter((s) => s.u !== KUID).forEach((s) => { (sellers[s.u] = sellers[s.u] || { n: s.sn || 'だれか', items: [] }).items.push(s); });
+            let h = '<div class="kshop" data-shop="mine">' + kThumb(LOOK.cos) + '<span>もちもの</span><small>' + (Object.keys(LOOK.own || {}).length + Object.keys(lib).length) + '</small></div>';
+            h += '<div class="kshop" data-shop="official">' + kThumb({ hat: { id: 'crown', col: '#f4c73b' } }) + '<span>公式ショップ</span><small>' + ITEMS.length + '</small></div>';
+            Object.keys(sellers).forEach((u) => { const sv = sellers[u]; h += '<div class="kshop" data-shop="' + esc(u) + '">' + kThumb({}, sv.items[0].art) + '<span>' + esc(sv.n) + ' の お店</span><small>' + sv.items.length + '</small></div>'; });
+            return h;
+          }
+          function kSecPaint() {
+            document.querySelectorAll('#kSec button').forEach((b) => b.classList.toggle('on', b.dataset.k === KSEC));
+            document.querySelectorAll('#pK [data-ks]').forEach((e) => { e.hidden = e.dataset.ks !== KSEC; });
+          }
           function kPaint() {
-            if (!LOOK) return;
+            if (!LOOK) return; kSecPaint();
             $('kFig').innerHTML = kFigHtml(LOOK.pose || 'sit');
             $('kPose').innerHTML = KPOSE.map(([k, n]) => '<button type="button" data-k="' + k + '" class="' + ((LOOK.pose || 'sit') === k ? 'on' : '') + '">' + n + '</button>').join('');
             $('kBody').innerHTML = KBODY.map((c) => '<button type="button" data-c="' + c + '" class="' + (LOOK.body === c ? 'on' : '') + '" style="background:' + c + '"></button>').join('');
             $('kEar').innerHTML = KEAR.map((c) => '<button type="button" data-c="' + c + '" class="' + (LOOK.ear === c ? 'on' : '') + '" style="background:' + c + '"></button>').join('');
-            const own = LOOK.own || {}, cos = LOOK.cos || {}, list = ITEMS.filter((it) => KMINE ? own[it.id] : !own[it.id]), lib = LOOK.artLib || {}, eq = LOOK.arts || {};
-            const arts = KMINE ? Object.keys(lib).map((k) => '<button type="button" class="kit' + (eq[lib[k].sub || 'body'] === k ? ' on' : '') + '" data-art="' + k + '"><i style="background:#f2a6b8"></i><span>' + esc(lib[k].n || 'おえかき') + '</span>' + (k.startsWith('m:') && SOLD[k.slice(2)] ? '<em>' + SOLD[k.slice(2)] + '枚 売れた</em>' : '') + '</button>').join('') : SHOP.filter((s) => s.u !== KUID && !lib['s:' + s.key]).map((s) => '<button type="button" class="kit" data-shop="' + esc(s.key) + '"><i style="background:#7cc8ee"></i><span>' + esc(s.n || 'みんなの服') + '</span><em>みんなの服</em><b>' + s.p + '<small>zz</small></b></button>').join('');
-            $('kTtl').textContent = KMINE ? 'もちもの' : 'おみせ'; $('kMine').classList.toggle('on', KMINE);
-            $('kList').innerHTML = arts + (list.length ? list.map((it) => '<button type="button" class="kit' + (cos[it.slot] && cos[it.slot].id === it.id ? ' on' : '') + '" data-id="' + it.id + '"><i style="background:' + (it.def || '#ccc') + '"></i><span>' + it.name + '</span>' + (KMINE ? '' : '<b>' + (KPRICE[it.star] || 30) + '<small>zz</small></b>') + '</button>').join('') : '<div class="rnone">' + (KMINE ? 'まだ ないよ' : 'ぜんぶ 持ってるよ') + '</div>');
+            const own = LOOK.own || {}, cos = LOOK.cos || {}, lib = LOOK.artLib || {}, eq = LOOK.arts || {};
+            $('kBack').hidden = !KSHOP; $('kMine').hidden = true;
+            if (!KSHOP) { $('kTtl').textContent = '商店街'; $('kList').className = ''; $('kList').innerHTML = kShops(); return; }
+            $('kList').className = 'kgrid'; let h = '';
+            if (KSHOP === 'mine') {
+              $('kTtl').textContent = 'もちもの';
+              h = Object.keys(lib).map((k) => '<button type="button" class="kit' + (eq[lib[k].sub || 'body'] === k ? ' on' : '') + '" data-art="' + k + '">' + kThumb({}, lib[k]) + '<span>' + esc(lib[k].n || 'おえかき') + '</span>' + (k.startsWith('m:') && SOLD[k.slice(2)] ? '<em>' + SOLD[k.slice(2)] + '枚 売れた</em>' : '') + '</button>').join('')
+                + ITEMS.filter((it) => own[it.id]).map((it) => '<button type="button" class="kit' + (cos[it.slot] && cos[it.slot].id === it.id ? ' on' : '') + '" data-id="' + it.id + '" data-mine="1">' + kThumb({ [it.slot]: { id: it.id, col: it.def } }) + '<span>' + it.name + '</span></button>').join('');
+            } else if (KSHOP === 'official') {
+              $('kTtl').textContent = '公式ショップ';
+              h = ITEMS.filter((it) => !own[it.id]).map((it) => '<button type="button" class="kit" data-id="' + it.id + '">' + kThumb({ [it.slot]: { id: it.id, col: it.def } }) + '<span>' + it.name + '</span><b>' + (KPRICE[it.star] || 30) + '<small>zz</small></b></button>').join('');
+            } else {
+              const its = SHOP.filter((s) => s.u === KSHOP && !lib['s:' + s.key]); $('kTtl').textContent = ((its[0] && its[0].sn) || 'だれか') + ' の お店';
+              h = its.map((s) => '<button type="button" class="kit" data-shop="' + esc(s.key) + '">' + kThumb({}, s.art) + '<span>' + esc(s.n || 'みんなの服') + '</span><b>' + s.p + '<small>zz</small></b></button>').join('');
+            }
+            $('kList').innerHTML = h || '<div class="rnone">' + (KSHOP === 'mine' ? 'まだ ないよ' : 'ぜんぶ 持ってるよ') + '</div>';
           }
           function kSave() { clearTimeout(kSaveT); kSaveT = setTimeout(async () => { try { await saveLook(KUID, LOOK, kFigHtml(LOOK.pose === 'sleep' ? 'sit' : (LOOK.pose || 'sit')), kFigHtml('sleep'), KNAME); zz.recorded(); } catch (_) {} }, 600); }
           async function kise() {
@@ -1373,14 +1306,18 @@ jobs:
             shopList().then((l) => { SHOP = l; kPaint(); }).catch(() => {});
             soldCounts(KUID).then((c) => { SOLD = c || {}; kPaint(); }).catch(() => {});
             collectSales(KUID).then((n) => { if (n) { soldCounts(KUID).then((c) => { SOLD = c || {}; kPaint(); }).catch(() => {}); $('kMsg').style.color = ''; $('kMsg').textContent = 'マイショップで ' + n + 'zz 売れたよ'; money(); } }).catch(() => {});
-            try { if (!KNAME) { const h = PV || await hill(KUID); const me = (h.cats || []).find((c) => c.self); KNAME = (me && me.name) || ''; } } catch (_) {}
+            try { if (!KNAME) { const h = PV || await mine(KUID); const me = (h.cats || []).find((c) => c.self); KNAME = (me && me.name) || ''; } } catch (_) {}
             kPaint();
           }
           $('kPose').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; LOOK.pose = b.dataset.k; kPaint(); kSave(); });
           $('kBody').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; LOOK.body = b.dataset.c; kPaint(); kSave(); });
           $('kEar').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; LOOK.ear = b.dataset.c; kPaint(); kSave(); });
-          $('kMine').addEventListener('click', () => { KMINE = !KMINE; $('kMsg').textContent = ''; kPaint(); });
+          $('kBack').addEventListener('click', () => { KSHOP = null; kPaint(); });
+          $('kSec').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; KSEC = b.dataset.k; kPaint(); });
+          $('kDraw2').addEventListener('click', () => $('kDraw').click());
+          document.querySelectorAll('.fold>.lb').forEach((l) => l.addEventListener('click', () => l.parentNode.classList.toggle('shut')));
           $('kList').addEventListener('click', async (e) => {
+            const sh = e.target.closest('.kshop'); if (sh) { KSHOP = sh.dataset.shop; kPaint(); return; }
             const b = e.target.closest('.kit'); if (!b) return;
             if (b.dataset.art) { const a = LOOK.artLib[b.dataset.art], sl = (a && a.sub) || 'body'; if (LOOK.arts[sl] === b.dataset.art) delete LOOK.arts[sl]; else LOOK.arts[sl] = b.dataset.art; kPaint(); kSave(); return; }
             if (b.dataset.shop) { const s = SHOP.find((x) => x.key === b.dataset.shop); if (!s) return; let bal = 0; try { bal = (await wallet(KUID)).bal; } catch (_) {}
@@ -1388,7 +1325,7 @@ jobs:
               try { await addNet(KUID, -s.p); await buyShop(KUID, s); } catch (_) { return; }
               const k = 's:' + s.key; LOOK.artLib[k] = Object.assign({}, s.art, { n: s.n }); LOOK.arts[s.sub || 'body'] = k; $('kMsg').style.color = ''; $('kMsg').textContent = s.n + ' を かったよ'; kPaint(); kSave(); money(); return; }
             const it = ITEMS.find((x) => x.id === b.dataset.id); if (!it) return;
-            if (KMINE) { if (LOOK.cos[it.slot] && LOOK.cos[it.slot].id === it.id) delete LOOK.cos[it.slot]; else LOOK.cos[it.slot] = { id: it.id, col: it.def }; kPaint(); kSave(); return; }
+            if (b.dataset.mine) { if (LOOK.cos[it.slot] && LOOK.cos[it.slot].id === it.id) delete LOOK.cos[it.slot]; else LOOK.cos[it.slot] = { id: it.id, col: it.def }; kPaint(); kSave(); return; }
             const pr = KPRICE[it.star] || 30; let bal = 0; try { bal = (await wallet(KUID)).bal; } catch (_) {}
             if (bal < pr) { $('kMsg').style.color = '#c9546b'; $('kMsg').textContent = 'zz が たりないよ'; return; }
             try { await addNet(KUID, -pr); } catch (_) { return; }
@@ -1420,7 +1357,7 @@ jobs:
             if (!DW.s.length) return;
             const art = { id: 'a' + Date.now().toString(36), use: 'cos', sub: DW.sub, n: $('dwName').value.trim().slice(0, 16) || 'おえかき', L: [{ s: DW.s.slice() }] }, k = 'm:' + art.id;
             LOOK.artLib[k] = art; LOOK.arts[art.sub] = k;
-            try { await saveArt(KUID, art); if ($('dwShop').checked) await publishShop(KUID, art, +$('dwPrice').value || 50); } catch (_) {}
+            try { await saveArt(KUID, art); if ($('dwShop').checked) await publishShop(KUID, art, +$('dwPrice').value || 50, KNAME); } catch (_) {}
             $('draw').hidden = true; $('draw').classList.remove('full'); $('kMsg').style.color = ''; $('kMsg').textContent = art.n + ' を ほぞんしたよ' + ($('dwShop').checked ? '（マイショップに 出したよ）' : ''); kPaint(); kSave();
           });
           async function money() { try { const st = await zz.state(); if (!st.uid) return; const w = await wallet(st.uid); $('money').textContent = '💰' + w.bal.toLocaleString('ja-JP'); $('money').hidden = false; } catch (_) {} }
@@ -1435,10 +1372,14 @@ jobs:
             $('myRoom').classList.toggle('on', (S.room || {}).kind === 'my'); $('mkRoom').classList.toggle('on', (S.room || {}).kind === 'host');
             document.querySelectorAll('#pubSw button').forEach((b) => b.classList.toggle('on', b.dataset.v === (RPUB ? '1' : '0')));
             const r = S.room || {}; $('start').lastChild.textContent = roomLabel(r);
-            $('roomMsg').textContent = r.kind === 'host' ? 'ルームID ' + r.id + (r.pub ? '（公開）' : '（非公開）') : r.kind === 'join' ? 'ルームID ' + r.id + ' に 参加' : r.kind === 'visit' ? (r.name || 'フレンド') + ' の 猫と あそぶ' : r.kind === 'my' ? 'マイルーム（自分の 猫だけ）' : 'みんなの丘';
+            $('roomMsg').textContent = r.kind === 'host' ? 'ルームID ' + r.id + (r.pub ? '（公開）' : '（非公開）') : r.kind === 'join' ? 'ルームID ' + r.id + ' に 参加' : r.kind === 'visit' ? (r.name || 'フレンド') + ' の 猫と あそぶ' : 'マイルーム（自分の 猫だけ）';
           }
           let RLIST = [], RFA = {}, RFR = new Set();
-          function pick(r) { S.room = r; paintRooms(); members(r); }
+          function pick(r) { S.room = r; paintRooms(); members(r); nkStep(3); }
+          let NKS = 1;
+          function nkStep(n) { NKS = n; document.querySelectorAll('#pB [data-step]').forEach((e) => { e.hidden = +e.dataset.step !== n; }); document.querySelectorAll('#nkSteps b').forEach((b) => b.classList.toggle('on', +b.dataset.s === n)); if (n === 3) { $('memTtl').textContent = $('roomMsg').textContent || 'お部屋'; try { loadPV(); } catch (_) {} } }
+          document.querySelectorAll('#nkSteps b').forEach((b) => b.addEventListener('click', () => { if (+b.dataset.s < NKS || +b.dataset.s === 2) nkStep(+b.dataset.s); }));
+          $('nk1').addEventListener('click', () => nkStep(2));
           function members(r) {
             const box = $('roomMem'); const rr = r && r.kind === 'join' ? RLIST.find((x) => x.id === r.id) : null;
             if (!rr || !rr.m || !rr.m.length) { box.innerHTML = ''; return; }
@@ -1461,7 +1402,6 @@ jobs:
             document.querySelectorAll('#frRooms .rr[data-visit]').forEach((e) => e.addEventListener('click', () => pick({ kind: 'visit', friend: e.dataset.visit, name: e.dataset.name })));
             paintRooms();
           }
-          document.querySelector('#roomCard .rr[data-sel="hill"]').addEventListener('click', () => pick({ kind: 'hill' }));
           $('myRoom').addEventListener('click', () => pick({ kind: 'my' }));
           $('mkRoom').addEventListener('click', () => pick({ kind: 'host', id: newRoomId(), pub: RPUB }));
           document.querySelectorAll('#pubSw button').forEach((b) => b.addEventListener('click', () => { RPUB = b.dataset.v === '1'; if ((S.room || {}).kind === 'host') S.room.pub = RPUB; paintRooms(); }));
@@ -1472,7 +1412,7 @@ jobs:
             const st = await zz.state(); if (!st.uid) { $('fList').innerHTML = '<div class="dn0">ねっこ で つないでね</div>'; return; }
             requests(st.uid).then((rq) => { $('rqCard').hidden = !rq.length; $('rqList').innerHTML = rq.map((r) => '<div class="rq"><span>' + esc(r.name || 'だれか') + '</span><button class="ok" type="button" data-u="' + esc(r.uid) + '" data-n="' + esc(r.name) + '">承認</button><button class="ng" type="button" data-u="' + esc(r.uid) + '">ことわる</button></div>').join('');
               $('rqList').querySelectorAll('button').forEach((b) => b.addEventListener('click', async () => { b.disabled = true; try { await answerReq(st.uid, b.dataset.u, b.classList.contains('ok'), myName, b.dataset.n); zz.recorded(); } catch (_) {} friendsTab(); })); }).catch(() => {});
-            try { if (!myName) { const h = PV || await hill(st.uid); const me = (h.cats || []).find((c) => c.self); myName = (me && me.name) || ''; } } catch (_) {}
+            try { if (!myName) { const h = PV || await mine(st.uid); const me = (h.cats || []).find((c) => c.self); myName = (me && me.name) || ''; } } catch (_) {}
             try { $('myCode').textContent = await myCode(st.uid, myName); } catch (_) { $('myCode').textContent = '------'; }
             let l = []; try { l = await friends(st.uid); } catch (_) {}
             if (!l.length) { $('fList').innerHTML = '<div class="dn0">まだ いないよ</div>'; return; }
@@ -1492,6 +1432,8 @@ jobs:
           function showUpd(v) { if (!v) return; $('updV').textContent = String(v); $('upd').hidden = false; }
           zz.updateInfo().then(showUpd).catch(() => {}); zz.on('zz-update', showUpd);
           $('updGo').addEventListener('click', () => { $('updGo').disabled = true; $('updGo').textContent = '入れて いるよ…'; zz.updateInstall().catch(() => { $('updGo').disabled = false; $('updGo').textContent = 'もう 一度'; }); });
+          /* はじめに 開く タブ（ぜんぶ 用意できて から） */
+          tab('B'); openTab();
           </script></body></html>
           ZZEOF
           cat > pc/dist/cats.html << 'ZZEOF'
@@ -1585,7 +1527,7 @@ jobs:
           <body class="uiRest1"><div id="selectScreen" style="display:none"></div>
           <div id="homeScenery"><div id="sceneBg"></div><div id="farPlay"></div></div>
           <div id="card" hidden><img id="cImg" alt=""><div class="cb"><span class="cn" id="cName"></span><span class="ct" id="cTxt"></span></div></div>
-          <div id="hint">Ctrl+Alt+P ・ Ctrl+Alt+I アイテム</div>
+          <div id="hint">Alt + Z お世話モード</div>
           <div id="tap" hidden><b id="tapN">0</b><small>タップ</small></div>
           <script>
           var $=function(id){ return document.getElementById(id); };
@@ -1602,7 +1544,7 @@ jobs:
           ZZEOF
           cat > pc/dist/cats.js << 'ZZEOF'
           /* 猫を 出す 画面：壁紙（景色＋猫＋みんなの カード）／タスクバー（猫だけ）。うごきは サイトの「奥で あそぶ 猫」と 同じ */
-          import { hill, pubTaps, allTaps, sendPet, sendItem, onPets, onItems, diaryAdd, setOnline, friendSet, figOf, sendVisit, publishRoom, closeRoom, wallet, addNet, getAff, setAff, fAffAll, fAffAdd, fLevel, sendReq, friends } from './fb.js';
+          import { hill, pubTaps, allTaps, sendPet, sendItem, onPets, onItems, diaryAdd, setOnline, friendSet, figOf, sendVisit, publishRoom, closeRoom, wallet, addNet, getAff, setAff, fAffAll, fAffAdd, fLevel, sendReq, friends, mine } from './fb.js';
           const Q = window.__ZZQ || Object.fromEntries(new URLSearchParams(location.search)), P = { get: (k) => (Q[k] != null ? String(Q[k]) : null) }, MODE = P.get('mode') || 'wall', UID = P.get('uid') || '', SHOW_SLEEP = P.get('sleep') !== '0', WAKE = P.get('sleep') === '2', EMO = P.get('emo') !== '0', SHARE = P.get('share') !== '0', CARD = P.get('card') === '1', HEADC = P.get('card') === 'h', TAPS = P.get('tp') !== '0', LOWQ = P.get('q') === 'lo', SIZE = Math.max(.5, Math.min(2, +P.get('sz') || 1));
           const FPH0 = Object.assign({}, FP_H);   /* サイトの 大きさ（ここに 大きさの バーを かける） */
           const FLAT = MODE !== 'wall', NOCATS = P.get('nocats') === '1';
@@ -1718,9 +1660,9 @@ jobs:
           const peerOK = (u) => NET === 'room' ? !!MEMB[u] : (NET !== 'offline' && (SCOPE !== 'friends' || FS.has(u)));
           async function load() {
             try {
-              try { const st = await zz.state(); ROOM = (st.room && st.room.kind) ? st.room : { kind: st.net === 'offline' ? 'my' : 'hill' }; } catch (_) {}
+              try { const st = await zz.state(); ROOM = (st.room && st.room.kind && st.room.kind !== 'hill') ? st.room : { kind: 'my' }; const KL = { 'alt+z': 'Alt + Z', 'alt+x': 'Alt + X', 'alt+q': 'Alt + Q', 'ctrl+alt+z': 'Ctrl + Alt + Z' }; if ($('hint')) $('hint').textContent = (KL[st.opKey] || 'Alt + Z') + ' お世話モード'; } catch (_) {}
               NET = (ROOM.kind === 'my' || ROOM.kind === 'visit') ? 'offline' : (ROOM.kind === 'host' || ROOM.kind === 'join') ? 'room' : 'online'; SCOPE = 'all';
-              data = await hill(UID);
+              data = await mine(UID);
               if (NET === 'room') { data.cards = []; if (PEER) data.cats = memberCats(); else { data.cats = data.cats.filter((c) => c.self).map((c) => Object.assign(c, { today: true, online: true })); startRoom(); } }
               if (ROOM.kind === 'visit' && ROOM.friend) { try { const fo = await figOf(ROOM.friend); data.cats = data.cats.filter((c) => c.self).concat([{ uid: ROOM.friend, name: ROOM.name || fo.name, today: true, online: false, body: fo.body || '#8a8d99', ear: fo.ear || '#a6bfd2', fig: fo.fig }]);
                 const vk = 'zz_visit_' + ROOM.friend + '_' + new Date().toDateString(); if (!localStorage.getItem(vk)) { localStorage.setItem(vk, '1'); sendVisit({ to: ROOM.friend, by: UID, bn: nameOf(UID) }).catch(() => {}); } } catch (_) {} }
@@ -1766,12 +1708,13 @@ jobs:
           /* ふきだしを 軽く 動かす：left/top ではなく transform（画面の 組み直し なし）・同じ 位置なら 書かない */
           function mv(e, x, y) { const v = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px) translate(-50%,-100%)'; if (e._tf !== v) { e._tf = v; e.style.transform = v; } }
           function txt(e, s) { if (e._tx !== s) { e._tx = s; e.textContent = s; } }
+          function NMUP() { return (typeof NET !== 'undefined' && (NET === 'room' || ROOM.kind === 'visit')) ? 20 : 0; }   /* 名前の 札が 出る 時は タップ数を その 上に */
           function tapPos() {
             others();
             const t = $('tap'); if (!taps || !TAPS) { t.hidden = true; return; }
             t.hidden = false;
             const c = (typeof _fpCats !== 'undefined') && _fpCats.find((x) => x.isSelf && x.px != null);
-            if (c && !c.hidden) { const hp = (_fpG && _fpG.hp) || 30; mv(t, c.px, c.py - hp * 1.25 - (c.lift || 0) - (c.hop || 0) * hp * .55); }
+            if (c && !c.hidden) { const hp = (_fpG && _fpG.hp) || 30; mv(t, c.px, c.py - hp * 1.25 - (c.lift || 0) - (c.hop || 0) * hp * .55 - NMUP()); }
             else mv(t, hintX + 50, hintY - 6);
           }
           /* ほかの 人の タップ数（PC版を 開いている 人どうし・見せる 設定の 人だけ） */
@@ -1783,7 +1726,7 @@ jobs:
               if (!TAPS || c.isSelf || !c.uid || !(oTaps[c.uid] > 0) || c.px == null || c.hidden) return;
               let e = oEl[c.uid]; if (!e) { e = oEl[c.uid] = document.createElement('div'); e.className = 'tapO'; e.innerHTML = '<b></b><small>タップ</small>'; document.body.appendChild(e); }
               txt(e.firstChild, oTaps[c.uid].toLocaleString('ja-JP'));
-              const hp = (_fpG && _fpG.hp) || 30; mv(e, c.px, c.py - hp * 1.2 - (c.lift || 0) - (c.hop || 0) * hp * .55); if (e.hidden) e.hidden = false; seen[c.uid] = 1;
+              const hp = (_fpG && _fpG.hp) || 30; mv(e, c.px, c.py - hp * 1.2 - (c.lift || 0) - (c.hop || 0) * hp * .55 - NMUP()); if (e.hidden) e.hidden = false; seen[c.uid] = 1;
             });
             Object.keys(oEl).forEach((u) => { if (!seen[u]) oEl[u].hidden = true; });
           }
@@ -1925,7 +1868,7 @@ jobs:
               let e = nEl[c.uid]; if (!e) { e = nEl[c.uid] = document.createElement('div'); e.className = 'nmL'; e.innerHTML = '<i></i><span></span>'; document.body.appendChild(e); }
               const on = NET === 'room' ? true : c.isSelf ? true : !!info.online;
               e.firstChild.className = on ? 'on' : ''; txt(e.lastChild, nm);
-              const hp = (_fpG && _fpG.hp) || 30, up = (TAPS && ((c.isSelf && taps) || oTaps[c.uid] > 0)) ? 24 : 0, up2 = (HEADC && e._hc) ? 22 : 0;
+              const hp = (_fpG && _fpG.hp) || 30, up = 0, up2 = 0;   /* 名前は 猫の すぐ 上（タップ数は その 上） */
               mv(e, c.px, c.py - hp * 1.2 - (c.lift || 0) - (c.hop || 0) * hp * .55 - up - up2 - 2); if (e.hidden) e.hidden = false; seen[c.uid] = 1;
             });
             Object.keys(nEl).forEach((u) => { if (!seen[u]) nEl[u].hidden = true; });
@@ -2002,21 +1945,21 @@ jobs:
           let GM = { bags: [], lastPT: 0, lastPTime: Date.now(), mealT: Date.now(), mealTaps: 0, aff: 0, affTaps: 0 };
           try { Object.assign(GM, JSON.parse(localStorage.getItem(GK) || '{}')); } catch (_) {}
           const gsave = () => { try { localStorage.setItem(GK, JSON.stringify(GM)); } catch (_) {} };
-          const BAG = '<svg viewBox="0 0 26 28"><path d="M7 7c0-3 3-5 6-5s6 2 6 5" fill="none" stroke="#6b7384" stroke-width="2" stroke-linecap="round"/><path d="M3 11c0-3 3-5 10-5s10 2 10 5l-1 12c0 3-4 4-9 4s-9-1-9-4z" fill="#8a93a3"/><path d="M5 12c3 1 13 1 16 0" stroke="#6b7384" stroke-width="1.4" fill="none"/><path d="M10 17c0-2 2-3 3-4 1 1 3 2 3 4 1 0 2 1 2 2s-1 2-2 2h-6c-1 0-2-1-2-2s1-2 2-2z" fill="#9a6a3e"/></svg>';
+          const BAG = '<svg viewBox="0 0 28 26"><path d="M14 2c1 2-1 3 1 4 3 1 3 3 2 4 4 0 6 2 5 5 3 1 4 3 3 5-1 3-4 4-11 4S2 23 1 20c-1-2 0-4 3-5-1-3 1-5 5-5-1-2 1-4 4-5 1-1 0-2 1-3z" fill="#8a5a32"/><path d="M6 15c3 1 13 1 16 0M8 10c3 1 9 1 12 0" stroke="#6e4424" stroke-width="1.4" fill="none" stroke-linecap="round"/><circle cx="10" cy="19" r="1.3" fill="#fff"/><circle cx="17" cy="19" r="1.3" fill="#fff"/></svg>';
           const FOODS = [{ k: 'onigiri', n: 'おにぎり', p: 5, s: '<svg viewBox="0 0 24 22"><path d="M12 2 22 19c0 1-1 2-2 2H4c-1 0-2-1-2-2z" fill="#fff" stroke="#e1e6ec"/><rect x="7" y="13" width="10" height="8" rx="1" fill="#2b3242"/></svg>' },
             { k: 'fish', n: 'さかな', p: 10, s: '<svg viewBox="0 0 28 16"><path d="M2 8c4-6 14-7 19 0-5 7-15 6-19 0z" fill="#7cc8ee"/><path d="M21 8l6-5v10z" fill="#5fb4e6"/><circle cx="8" cy="7" r="1.4" fill="#2b3242"/></svg>' },
             { k: 'feast', n: 'ごちそう', p: 20, s: '<svg viewBox="0 0 28 20"><ellipse cx="14" cy="15" rx="13" ry="4" fill="#e1e6ec"/><path d="M5 14c0-6 4-10 9-10s9 4 9 10z" fill="#f2a65a"/><circle cx="10" cy="9" r="1.6" fill="#fff" opacity=".7"/></svg>' }];
-          let CDRAG = null, OP = false, DRAG = null, opIdle = 0, BAL = 0, cleaned = 0, earned = 0, fed = 0;
+          let GRP = [], CDRAG = null, OP = false, DRAG = null, opIdle = 0, BAL = 0, cleaned = 0, earned = 0, fed = 0;
           function gLayer() {
             if ($('game')) return;
             const L = document.createElement('div'); L.id = 'game';
             L.innerHTML = '<div id="trash"><svg viewBox="0 0 40 46"><rect x="6" y="12" width="28" height="32" rx="4" fill="#5fb4e6"/><rect x="3" y="6" width="34" height="7" rx="3" fill="#2b3242"/><rect x="15" y="2" width="10" height="5" rx="2" fill="#2b3242"/><path d="M14 19v18M20 19v18M26 19v18" stroke="#fff" stroke-width="2" opacity=".7" stroke-linecap="round"/></svg></div>' +
               '<div id="bagBtn"><svg viewBox="0 0 40 36"><path d="M13 12c0-5 3-8 7-8s7 3 7 8" fill="none" stroke="#2b3242" stroke-width="2.6" stroke-linecap="round"/><rect x="4" y="11" width="32" height="23" rx="6" fill="#f2a65a"/><rect x="4" y="18" width="32" height="4" fill="#d98a3e"/></svg><b id="balV">0</b><small>zz</small></div>' +
-              '<div id="foodMenu" hidden><div id="ppl"></div>' + FOODS.map((f) => '<button type="button" data-k="' + f.k + '">' + f.s + '<span>' + f.n + '</span><b>' + f.p + '</b></button>').join('') + '</div>' +
+              '<div id="foodMenu" hidden><div id="ppl"></div><div id="toys">' + ['ball', 'box', 'balloon', 'mouse', 'bug', 'gift'].map((k) => '<button type="button" data-toy="' + k + '">' + ({ ball: '⚽', box: '📦', balloon: '🎈', mouse: '🐭', bug: '🐞', gift: '🎁' })[k] + '</button>').join('') + '</div>' + FOODS.map((f) => '<button type="button" data-k="' + f.k + '">' + f.s + '<span>' + f.n + '</span><b>' + f.p + '</b></button>').join('') + '</div>' +
               '<button id="opEnd" type="button">おわる</button><div id="hung" hidden></div>';
             document.body.appendChild(L);
             $('bagBtn').addEventListener('click', () => { $('foodMenu').hidden = !$('foodMenu').hidden; if (!$('foodMenu').hidden) people(); });
-            $('foodMenu').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) buyFood(b.dataset.k); });
+            $('foodMenu').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; if (b.dataset.toy) { opIdle = Date.now(); if (REMOTE) { if (HOSTC && HOSTC.open) HOSTC.send({ t: 'item', k: b.dataset.toy }); } else if (canPlay()) playItem(b.dataset.toy); $('foodMenu').hidden = true; return; } if (b.dataset.k) buyFood(b.dataset.k); });
             $('opEnd').addEventListener('click', () => { setOp(false); try { zz.op(false); } catch (_) {} });
           }
           function drawBags() { gLayer(); document.querySelectorAll('#game .gbag').forEach((e) => e.remove()); (REMOTE ? RB : GM.bags).forEach((b) => { const e = document.createElement('div'); e.className = 'gbag'; e.dataset.id = b.id; e.innerHTML = BAG; e.style.left = (b.x * innerWidth) + 'px'; $('game').appendChild(e); }); }
@@ -2065,19 +2008,24 @@ jobs:
             /* つかんで はなす */
             document.addEventListener('pointerdown', (e) => { if (!OP) return; opIdle = Date.now(); const t = e.target.closest('.gbag,.gfood');
               if (!t && !e.target.closest('#trash,#bagBtn,#foodMenu,#opEnd')) { const c = catAt(e.clientX, e.clientY); if (c) { CDRAG = c; c.lift = 18; if (!REMOTE) c.q = [{ a: 'wait', d: 1e9 }]; e.preventDefault(); } return; }
-              if (!t || t.classList.contains('placed')) return; DRAG = t; t.classList.add('drag'); try { t.setPointerCapture(e.pointerId); } catch (_) {} e.preventDefault(); });
-            document.addEventListener('pointermove', (e) => { if (CDRAG) { const tt = tAtX(e.clientX); if (REMOTE) { if (HOSTC && HOSTC.open && Date.now() - (CDRAG._mt || 0) > 90) { CDRAG._mt = Date.now(); HOSTC.send({ t: 'move', u: CDRAG.uid, tt }); } } else { CDRAG.t = tt; } return; }
+              if (!t || t.classList.contains('placed')) return;
+              if (t.classList.contains('gbag')) { const r0 = t.getBoundingClientRect(); GRP = [...document.querySelectorAll('#game .gbag')].filter((o) => o !== t && Math.hypot(o.getBoundingClientRect().left - r0.left, o.getBoundingClientRect().top - r0.top) < 70); GRP.forEach((o, n) => { o.classList.add('drag'); o._dx = (n % 3 - 1) * 12; o._dy = -8 - Math.floor(n / 3) * 10; }); } else GRP = []; DRAG = t; t.classList.add('drag'); try { t.setPointerCapture(e.pointerId); } catch (_) {} e.preventDefault(); });
+            document.addEventListener('pointermove', (e) => { if (DRAG && GRP.length) GRP.forEach((o) => { o.style.left = (e.clientX + o._dx) + 'px'; o.style.top = (e.clientY + o._dy) + 'px'; });
+              if (CDRAG) { const tt = tAtX(e.clientX); if (REMOTE) { if (HOSTC && HOSTC.open && Date.now() - (CDRAG._mt || 0) > 90) { CDRAG._mt = Date.now(); HOSTC.send({ t: 'move', u: CDRAG.uid, tt }); } } else { CDRAG.t = tt; } return; }
               if (!DRAG) return; DRAG.style.left = e.clientX + 'px'; DRAG.style.top = e.clientY + 'px'; });
             document.addEventListener('pointerup', (e) => {
               if (CDRAG) { const c = CDRAG; CDRAG = null; c.lift = 0; if (REMOTE) { if (HOSTC && HOSTC.open) HOSTC.send({ t: 'drop', u: c.uid }); } else c.q = []; return; }
               if (!DRAG) return; const el = DRAG; DRAG = null; el.classList.remove('drag'); el.style.top = '';
               if (el.classList.contains('gbag')) {
                 const r = $('trash').getBoundingClientRect();
+                const grp = GRP; GRP = []; grp.forEach((o) => { o.classList.remove('drag'); o.style.top = ''; });
                 if (e.clientX >= r.left - 10 && e.clientX <= r.right + 10 && e.clientY >= r.top - 20 && e.clientY <= r.bottom + 10) {
+                  grp.forEach((o) => { if (REMOTE) { RB = RB.filter((b) => String(b.id) !== o.dataset.id); if (HOSTC && HOSTC.open) HOSTC.send({ t: 'clean', id: o.dataset.id }); } else GM.bags = GM.bags.filter((b) => String(b.id) !== o.dataset.id); o.remove(); BAL += 5; addNet(UID, 5).catch(() => {}); cleaned++; earned += 5; GM.aff = (GM.aff || 0) + 2; });
+                  if (grp.length) pop(r.left + r.width / 2, r.top - 18, '+' + (grp.length * 5) + ' zz');
                   if (REMOTE) { RB = RB.filter((b) => String(b.id) !== el.dataset.id); if (HOSTC && HOSTC.open) HOSTC.send({ t: 'clean', id: el.dataset.id }); } else { GM.bags = GM.bags.filter((b) => String(b.id) !== el.dataset.id); gsave(); if (NET === 'room') bcast({ t: 'bags', b: GM.bags }); } el.remove();
                   $('trash').classList.remove('shake'); void $('trash').offsetWidth; $('trash').classList.add('shake'); coin(); pop(r.left + r.width / 2, r.top, '+5 zz');
                   BAL += 5; if ($('balV')) $('balV').textContent = BAL.toLocaleString('ja-JP'); addNet(UID, 5).catch(() => {}); GM.aff = (GM.aff || 0) + 2; cleaned++; earned += 5; gsave();
-                } else { const b = GM.bags.find((x) => String(x.id) === el.dataset.id); if (b) { b.x = Math.max(.02, Math.min(.95, e.clientX / innerWidth)); gsave(); } }
+                } else { [el].concat(grp).forEach((o) => { const b = GM.bags.find((x) => String(x.id) === o.dataset.id); if (b) b.x = Math.max(.02, Math.min(.95, (e.clientX + (o._dx || 0)) / innerWidth)); }); gsave(); drawBags(); }
               } else eatAt(el, e.clientX);
             });
           }
@@ -3973,7 +3921,7 @@ jobs:
 
           /* ===== おえかき 服・マイショップ（PC版の 人どうし）・売れた 分の 受け取り ===== */
           export async function saveArt(uid, art) { const { db, D } = await fb(); await D.set(D.ref(db, 'pcarts/' + uid + '/' + art.id), art); }
-          export async function publishShop(uid, art, price) { const { db, D } = await fb(); await D.set(D.ref(db, 'pcshop/' + uid + '_' + art.id), { u: uid, id: art.id, n: String(art.n || '').slice(0, 16), p: Math.max(10, Math.min(500, Math.round(price) || 30)), sub: art.sub, art, t: Date.now() }); }
+          export async function publishShop(uid, art, price, sn) { const { db, D } = await fb(); await D.set(D.ref(db, 'pcshop/' + uid + '_' + art.id), { u: uid, sn: String(sn || '').slice(0, 12), id: art.id, n: String(art.n || '').slice(0, 16), p: Math.max(10, Math.min(500, Math.round(price) || 30)), sub: art.sub, art, t: Date.now() }); }
           export async function shopList() { const { db, D } = await fb(); const v = await D.get(D.ref(db, 'pcshop')).then((s) => s.val()).catch(() => null); return Object.keys(v || {}).map((k) => Object.assign({ key: k }, v[k])).sort((a, b) => (b.t || 0) - (a.t || 0)).slice(0, 60); }
           export async function buyShop(buyer, it) { const { db, D } = await fb(); await D.push(D.ref(db, 'pcsales/' + it.u), { p: it.p, by: buyer, n: it.n, id: it.id, t: Date.now() }); }
           export async function collectSales(uid) {
@@ -3985,6 +3933,15 @@ jobs:
           }
 
           export async function soldCounts(uid) { const { db, D } = await fb(); return await D.get(D.ref(db, 'pcsold/' + uid)).then((s) => s.val() || {}).catch(() => ({})); }
+
+          /* ===== 自分の 猫だけ（サイトの 丘は 読まない＝軽い） ===== */
+          export async function mine(uid) {
+            const { db, D } = await fb();
+            const get = (p) => D.get(D.ref(db, p)).then((s) => s.val()).catch(() => null);
+            const [f2, pr] = await Promise.all([get('pcfig2/' + uid), get('pcprof/' + uid)]);
+            const name = (f2 && f2.name) || (pr && pr.name) || '';
+            return { cats: [{ uid, self: true, today: true, online: true, name, body: (pr && pr.body) || '#1c1c1c', ear: (pr && pr.ear) || '#a6bfd2', fig: f2 && f2.s ? f2 : null }], cards: [], me: null, myfig: { tier: 1 } };
+          }
           ZZEOF
           cat > pc/prep.js << 'ZZEOF'
           /* サイトの index.html から PC版に いる 部品だけを 取り出す：アイコン・景色・空の色・猫の うごき・Firebaseの 設定 */
@@ -4004,7 +3961,6 @@ jobs:
           const vm = require('vm');
           const M = vm.runInNewContext('(' + stmt('var MOOD3=') + ')').map((x) => ({ e: x.e, l: x.l }));
           const Y = vm.runInNewContext('(' + stmt('var KR_SLPY=') + ')');
-          fs.writeFileSync('pc/dist/rec.js', 'window.ZZREC=' + JSON.stringify({ mood: M, slpy: Y }) + ';\n' + fn('_krFace') + '\n');
           console.log('prep ok');
           /* サイトの「きろくの うつりかわり」グラフを そのまま 取り出す（PC版の グラフ用） */
           function graphJS(s) {
@@ -4023,7 +3979,6 @@ jobs:
             FN.forEach((f) => { out += fn(f) + '\n'; });
             return out;
           }
-          fs.writeFileSync('pc/dist/graph.js', graphJS(s));
           console.log('graph ok');
           ZZEOF
           sed -i "s/0\.3\.RUNNUM/0.3.$GITHUB_RUN_NUMBER/" pc/src-tauri/tauri.conf.json

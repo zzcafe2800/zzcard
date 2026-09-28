@@ -1047,9 +1047,12 @@ jobs:
           .kc .kpr{position:absolute;top:3px;left:3px;font-size:10px;font-weight:900;color:#5fb4e6;background:rgba(255,255,255,.9);border-radius:999px;padding:1px 5px}.kc .kon{position:absolute;top:3px;right:3px;font-size:9px;font-weight:900;background:var(--nv);color:#fff;border-radius:999px;padding:1px 5px}
           .kgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}.kit{border:1.5px solid var(--ln);border-radius:14px;padding:8px 4px;text-align:center;cursor:pointer;background:#fff;font:inherit}.kit.on{border-color:var(--nv);background:var(--pc2)}.kit i{display:block;width:14px;height:14px;border-radius:50%;margin:0 auto 4px}.kit span{display:block;font-size:11px;font-weight:800;color:var(--nv);line-height:1.3}.kit b{display:block;font-size:13px;color:#5fb4e6;margin-top:2px}.kit b small{font-size:9px;color:var(--mu)}
           .sbl{display:flex;align-items:center;gap:8px}.mny{font-size:11px;color:#ffe08a}
-          .flv{font-size:11px;font-weight:900;color:#e8798f;min-width:44px;text-align:right}.fbar{width:54px;height:6px;border-radius:999px;background:var(--pc2);overflow:hidden}.fbar i{display:block;height:100%;background:linear-gradient(90deg,#f2a6b8,#e8798f)}
+          .flv{font-size:12px;font-weight:900;color:#e8798f;text-align:right;letter-spacing:.02em;display:flex;flex-direction:column;align-items:flex-end;line-height:1.1}.flv small{font-size:9px;color:var(--mu);font-weight:800;letter-spacing:0}
+          #affLv{display:flex;flex-direction:column;line-height:1.1}#affLv .hts{font-size:22px;color:#e8798f;letter-spacing:.04em}#affLv small{font-size:12px;color:var(--mu);font-weight:800}.fbar{width:54px;height:6px;border-radius:999px;background:var(--pc2);overflow:hidden}.fbar i{display:block;height:100%;background:linear-gradient(90deg,#f2a6b8,#e8798f)}
           .rq{display:flex;align-items:center;gap:6px;padding:8px 2px;border-top:1px solid var(--ln);font-size:13px;font-weight:800}.rq:first-child{border-top:0}.rq span{flex:1}.rq button{border:0;border-radius:999px;padding:6px 12px;font:inherit;font-size:11px;font-weight:800;cursor:pointer}.rq .ok{background:var(--nv);color:#fff}.rq .ng{background:#eef1f5;color:var(--mu)}
           .pm{display:flex;align-items:center;gap:8px;padding:6px 4px;font-size:12px;font-weight:800}.pm span{flex:1}.pm button{border:0;border-radius:999px;background:var(--nv);color:#fff;font:inherit;font-size:11px;padding:4px 10px;cursor:pointer}.pm i{font-style:normal;color:#e8798f;font-size:11px}
+          .aff{position:relative;overflow:hidden}.affcat{position:absolute;right:-6px;bottom:-10px;width:96px;height:100px;opacity:.16;pointer-events:none}.affcat .catFig{position:relative;width:100%;height:100%}.affcat svg{width:100%;height:100%}.affcat .catZ{display:none}
+          .ffc{position:relative;width:34px;height:34px;border-radius:50%;background:#eef1f5;overflow:hidden;flex:none}.ffc .catFig{position:absolute;width:70px;height:72px;left:-18px;top:-16px}.ffc svg{width:100%;height:100%}.ffc .catZ{display:none}.ffc .dot{position:absolute;right:1px;bottom:1px;border:2px solid #fff;width:10px;height:10px}
           .affr{display:flex;align-items:center;gap:12px}.affr b{font-size:26px;font-variant-numeric:tabular-nums}.affb{flex:1;height:10px;border-radius:999px;background:var(--pc2);overflow:hidden}.affb i{display:block;height:100%;width:0;background:linear-gradient(90deg,#f2a6b8,#e8798f);border-radius:999px}
           .nets{display:flex;gap:8px;padding:6px 0 0}.nsw{display:flex;background:rgba(255,255,255,.12);border-radius:999px;padding:3px}.nsw button{border:0;background:none;color:rgba(255,255,255,.7);border-radius:999px;padding:4px 11px;font:inherit;font-size:11px;font-weight:800;cursor:pointer}.nsw button.on{background:#fff;color:var(--nv)}
           .fc .code{display:flex;align-items:center;justify-content:space-between}.fc .code b{font-size:30px;letter-spacing:.18em;font-variant-numeric:tabular-nums}.fc .code button,#fAdd{border:0;border-radius:999px;background:var(--nv);color:#fff;font:inherit;font-size:12px;font-weight:800;padding:8px 16px;cursor:pointer}
@@ -1127,11 +1130,12 @@ jobs:
             <section id="pF" hidden>
              <div class="card fc fold shut"><div class="lb">あなたの フレンドコード ▾</div><div class="code"><b id="myCode">------</b><button id="cpCode" type="button">コピー</button></div></div>
              <div class="card fold shut"><div class="lb">コードで 追加 ▾</div><div class="row"><input type="text" id="fCode" maxlength="8" placeholder="フレンドの コード" autocomplete="off" spellcheck="false"><button id="fAdd" type="button">追加</button></div><div id="fMsg" class="msg"></div></div>
+             <div class="card fold shut" id="sfCard"><div class="lb">サイトの フレンド ▾</div><div id="sfIn"><div class="row"><input type="text" id="sfCode" maxlength="9" placeholder="サイトの コード" autocomplete="off" spellcheck="false"><button id="sfGo" type="button" class="rbtn">読みこむ</button></div></div><div id="sfList"></div><div id="sfMsg" class="msg"></div></div>
              <div class="card" id="rqCard" hidden><div class="lb">リクエスト</div><div id="rqList"></div></div>
              <div class="card"><div class="lb">フレンド</div><div id="fList"><div class="dn0">まだ いないよ</div></div></div>
             </section>
             <section id="pC" hidden>
-             <div class="card aff"><div class="lb">親密度</div><div class="affr"><b id="affLv">Lv.1</b><div class="affb"><i id="affBar"></i></div></div></div>
+             <div class="card aff"><div class="affcat" id="affCat"></div><div class="lb">親密度</div><div class="affr"><b id="affLv">Lv.1</b><div class="affb"><i id="affBar"></i></div></div></div>
              <div class="card"><div class="pgh"><button id="dL" type="button" aria-label="まえの 日">◀</button><div><b id="dT">きょう</b></div><button id="dR" type="button" aria-label="つぎの 日">▶</button></div><div id="dList" class="dl"></div></div>
             </section>
            </main>
@@ -1143,7 +1147,7 @@ jobs:
           <script>var $=function(id){ return document.getElementById(id); };</script>
           <script src="scene.js"></script>
           <script type="module">
-          import { diaryDay, mine, myCode, addFriend, friends, setPlay, rooms, getAff, wallet, fAffAll, fLevel, requests, answerReq, sendReq, getLook, saveLook, addNet, saveArt, publishShop, unpublishShop, shopList, buyShop, collectSales, soldCounts } from './fb.js';
+          import { diaryDay, mine, figs2, linkSite, siteFriends, inviteApp, myCode, addFriend, friends, setPlay, rooms, getAff, wallet, fAffAll, fLevel, requests, answerReq, sendReq, getLook, saveLook, addNet, saveArt, publishShop, unpublishShop, shopList, buyShop, collectSales, soldCounts } from './fb.js';
           /* ===== ステータスバーの 時計 ===== */
           function clk() { const d = new Date(); $('clk').textContent = d.getHours() + ':' + String(d.getMinutes()).padStart(2, '0'); }
           clk(); setInterval(clk, 20000);
@@ -1257,11 +1261,13 @@ jobs:
           const esc = (s) => String(s || '').replace(/[<>&"]/g, '');
           async function diary() {
             const st = await zz.state(), day = dKey(dOff), [, mo, da] = day.split('-');
-            if (st.uid) getAff(st.uid).then((pt) => { $('affLv').textContent = 'Lv.' + (1 + Math.floor(pt / 50)); $('affBar').style.width = ((pt % 50) * 2) + '%'; }).catch(() => {});
+            if (st.uid && !$('affCat').innerHTML) mine(st.uid).then((h) => { const f = h.cats[0] && h.cats[0].fig; if (f && f.s) $('affCat').innerHTML = f.s; }).catch(() => {});
+            if (st.uid) getAff(st.uid).then((pt) => { const lv = Math.min(100, 1 + Math.floor(pt / 50)), H = heartOf(lv); $('affLv').innerHTML = '<span class="hts">' + H.h + '</span><small>' + H.name + '</small>'; $('affBar').style.width = Math.round((((lv - 1) % 20) + (pt % 50) / 50) / 20 * 100) + '%'; }).catch(() => {});
             $('dT').textContent = dOff === 0 ? 'きょう' : dOff === 1 ? 'きのう' : (+mo) + '/' + (+da); $('dR').disabled = dOff === 0;
             if (!st.uid) { $('dList').innerHTML = '<div class="dn0">ねっこ で つないでね</div>'; return; }
             let es = []; try { es = await diaryDay(st.uid, day); } catch (_) {}
             if (!es.length) { $('dList').innerHTML = '<div class="dn0">まだ なにも ないよ</div>'; return; }
+            es = es.slice().sort((a, b) => (b.t || 0) - (a.t || 0));   /* 新しい 知らせほど 上 */
             $('dList').innerHTML = es.map((e) => {
               const d = new Date(e.t), tm = d.getHours() + ':' + String(d.getMinutes()).padStart(2, '0'), x = e.n > 1 ? ' ×' + e.n : '';
               const [ic, tx] = e.k === 'visitBy' ? ['🏠', esc(e.name || 'だれか') + 'の げぼくさんが 来て いっしょに 遊んだよ' + x] : e.k === 'clean' ? ['🧹', 'おそうじ した' + (e.n > 1 ? ' ×' + e.n : '') + (e.a ? '（+' + e.a + 'zz）' : '')] : e.k === 'feed' ? ['🍙', 'ごはんを あげた' + x] : e.k === 'petBy' ? ['💗', esc(e.name || 'だれか') + 'の げぼくさんに なでられた' + x] : e.k === 'pet' ? ['🤚', esc(e.name || 'だれか') + 'を なでた' + x]
@@ -1419,7 +1425,7 @@ jobs:
           function members(r) {
             const box = $('roomMem'); const rr = r && r.kind === 'join' ? RLIST.find((x) => x.id === r.id) : null;
             if (!rr || !rr.m || !rr.m.length) { box.innerHTML = ''; return; }
-            box.innerHTML = rr.m.filter((x) => x.u !== S.uid).map((x) => '<div class="pm"><span>' + String(x.n || 'だれか').replace(/[<>&]/g, '') + '</span>' + (RFR.has(x.u) ? '<i>フレンド Lv.' + fLevel(RFA[x.u] || 0).lv + '</i>' : '<button type="button" data-u="' + x.u + '">申請</button>') + '</div>').join('');
+            box.innerHTML = rr.m.filter((x) => x.u !== S.uid).map((x) => '<div class="pm"><span>' + String(x.n || 'だれか').replace(/[<>&]/g, '') + '</span>' + (RFR.has(x.u) ? '<i>' + heartOf(fLevel(RFA[x.u] || 0).lv).h + '</i>' : '<button type="button" data-u="' + x.u + '">申請</button>') + '</div>').join('');
             box.querySelectorAll('button[data-u]').forEach((b) => b.addEventListener('click', () => { sendReq(S.uid, b.dataset.u, myName).then(() => { b.textContent = '送った'; b.disabled = true; }).catch(() => {}); }));
           }
           async function roomsList() {
@@ -1444,17 +1450,25 @@ jobs:
           $('roomGo').addEventListener('click', () => { const id = $('roomId').value.toUpperCase().replace(/[^A-Z0-9]/g, ''); if (id.length === 6) pick({ kind: 'join', id }); else $('roomMsg').textContent = 'ルームIDは 6文字だよ'; });
           /* ===== フレンド ===== */
           let myName = '';
+          const HNAME = ['はじめまして', 'なかよし', 'だいすき', 'しんゆう', 'かぞく'];
+          function heartOf(lv) { const s = Math.min(5, Math.max(1, Math.ceil(lv / 20))); return { s, name: HNAME[s - 1], h: '♥'.repeat(s) + '♡'.repeat(5 - s) }; }
           async function friendsTab() {
             const st = await zz.state(); if (!st.uid) { $('fList').innerHTML = '<div class="dn0">ねっこ で つないでね</div>'; return; }
+            siteFriends(st.uid).then((sl) => { $('sfIn').hidden = !!sl; if (!sl) { $('sfList').innerHTML = ''; return; }
+              const fset = new Set(l.map((x) => x.uid));
+              $('sfList').innerHTML = sl.length ? sl.map((x) => '<div class="rq"><span>' + esc(x.name || 'だれか') + '</span>' + (x.app ? (fset.has(x.app) ? '<small style="color:var(--mu);font-size:11px">フレンド</small>' : '<button class="ok" type="button" data-req="' + esc(x.app) + '">申請</button>') : '<small style="color:var(--mu);font-size:11px">アプリ版未登録</small><button class="ok" type="button" data-inv="' + esc(x.su) + '">招待</button>') + '</div>').join('') : '<div class="rnone">サイトの フレンドは いないよ</div>';
+              $('sfList').querySelectorAll('button').forEach((b) => b.addEventListener('click', async () => { b.disabled = true; try { if (b.dataset.inv) await inviteApp(b.dataset.inv, myName); else await sendReq(st.uid, b.dataset.req, myName); b.textContent = '送った'; } catch (_) { b.disabled = false; } })); }).catch(() => {});
             requests(st.uid).then((rq) => { $('rqCard').hidden = !rq.length; $('rqList').innerHTML = rq.map((r) => '<div class="rq"><span>' + esc(r.name || 'だれか') + '</span><button class="ok" type="button" data-u="' + esc(r.uid) + '" data-n="' + esc(r.name) + '">承認</button><button class="ng" type="button" data-u="' + esc(r.uid) + '">ことわる</button></div>').join('');
               $('rqList').querySelectorAll('button').forEach((b) => b.addEventListener('click', async () => { b.disabled = true; try { await answerReq(st.uid, b.dataset.u, b.classList.contains('ok'), myName, b.dataset.n); zz.recorded(); } catch (_) {} friendsTab(); })); }).catch(() => {});
             try { if (!myName) { const h = PV || await mine(st.uid); const me = (h.cats || []).find((c) => c.self); myName = (me && me.name) || ''; } } catch (_) {}
             try { $('myCode').textContent = await myCode(st.uid, myName); } catch (_) { $('myCode').textContent = '------'; }
             let l = []; try { l = await friends(st.uid); } catch (_) {}
             if (!l.length) { $('fList').innerHTML = '<div class="dn0">まだ いないよ</div>'; return; }
-            const FA = await fAffAll(st.uid).catch(() => ({}));
-            $('fList').innerHTML = l.map((f) => { const L = fLevel(FA[f.uid] || 0), pct = L.need ? Math.round(L.cur / L.need * 100) : 100; return '<div class="fr"><i class="dot' + (f.online && !f.priv ? ' on' : '') + '"></i><span>' + esc(f.name || 'フレンド') + '</span><b class="flv">Lv.' + L.lv + '</b><div class="fbar"><i style="width:' + pct + '%"></i></div></div>'; }).join('');
+            const FA = await fAffAll(st.uid).catch(() => ({})); const FG = await figs2(l.map((f) => f.uid)).catch(() => ({}));
+            $('fList').innerHTML = l.map((f) => { const L = fLevel(FA[f.uid] || 0), H = heartOf(L.lv), pct = Math.round((((L.lv - 1) % 20) + (L.need ? L.cur / L.need : 1)) / 20 * 100); return '<div class="fr"><div class="ffc">' + ((FG[f.uid] && FG[f.uid].s) || '') + '<i class="dot' + (f.online && !f.priv ? ' on' : '') + '"></i></div><span>' + esc(f.name || 'フレンド') + '</span><b class="flv">' + H.h + '<small>' + H.name + '</small></b><div class="fbar"><i style="width:' + pct + '%"></i></div></div>'; }).join('');
           }
+          $('sfGo').addEventListener('click', async () => { const st = await zz.state(); if (!st.uid) return; $('sfGo').disabled = true; $('sfMsg').textContent = '';
+            try { await linkSite(st.uid, $('sfCode').value); $('sfCode').value = ''; friendsTab(); } catch (_) { $('sfMsg').style.color = '#c9546b'; $('sfMsg').textContent = 'コードが ちがうみたい'; } $('sfGo').disabled = false; });
           $('cpCode').addEventListener('click', () => { try { navigator.clipboard.writeText($('myCode').textContent); $('cpCode').textContent = 'コピーした'; setTimeout(() => { $('cpCode').textContent = 'コピー'; }, 1500); } catch (_) {} });
           $('fAdd').addEventListener('click', async () => {
             const st = await zz.state(); if (!st.uid) return;
@@ -2078,7 +2092,7 @@ jobs:
           function people() {
             const box = $('ppl'); if (!box) return;
             const list = NET === 'room' ? Object.values(MEMB).filter((i) => i.uid !== UID) : [];
-            box.innerHTML = list.length ? list.map((i) => '<div class="pp"><span>' + String(i.name || 'だれか').replace(/[<>&]/g, '') + '</span>' + (FRS.has(i.uid) ? '<i>フレンド Lv.' + fLevel(FAFF[i.uid] || 0).lv + '</i>' : '<button type="button" data-u="' + i.uid + '">申請</button>') + '</div>').join('') : '';
+            box.innerHTML = list.length ? list.map((i) => '<div class="pp"><span>' + String(i.name || 'だれか').replace(/[<>&]/g, '') + '</span>' + (FRS.has(i.uid) ? '<i>' + (() => { const s = Math.min(5, Math.max(1, Math.ceil(fLevel(FAFF[i.uid] || 0).lv / 20))); return '♥'.repeat(s) + '♡'.repeat(5 - s); })() + '</i>' : '<button type="button" data-u="' + i.uid + '">申請</button>') + '</div>').join('') : '';
             box.querySelectorAll('button[data-u]').forEach((b) => b.addEventListener('click', () => { sendReq(UID, b.dataset.u, nameOf(UID)).then(() => { b.textContent = '送った'; b.disabled = true; }).catch(() => {}); }));
           }
           /* フレンドの 親密度：一緒に いると たまる（オンライン 1/分・オフライン 0.4/分）・なでなで +3（1日 10回）
@@ -3983,6 +3997,16 @@ jobs:
           }
 
           export async function unpublishShop(uid, id) { const { db, D } = await fb(); await D.remove(D.ref(db, 'pcshop/' + uid + '_' + id)).catch(() => {}); }
+
+          /* ===== サイトの フレンド（フレンドの ためだけに つなぐ）・アプリ版の 招待状 ===== */
+          export async function linkSite(uid, code) { const su = await redeem(code); const { db, D } = await fb(); await D.set(D.ref(db, 'pcsitelink/' + uid), su); await D.set(D.ref(db, 'pcsite/' + su), uid); return su; }
+          export async function siteFriends(uid) {
+            const { db, D } = await fb(); const get = (p) => D.get(D.ref(db, p)).then((s) => s.val()).catch(() => null);
+            const su = await get('pcsitelink/' + uid); if (!su) return null;
+            const fr = (await get('friends/' + su)) || {};
+            return await Promise.all(Object.keys(fr).map(async (k) => ({ su: k, name: (fr[k] && fr[k].name) || '', app: await get('pcsite/' + k) })));
+          }
+          export async function inviteApp(toSu, fromName) { const { db, D } = await fb(); await D.push(D.ref(db, 'appinv/' + toSu), { from: String(fromName || '').slice(0, 20), t: Date.now() }); }
           ZZEOF
           cat > pc/prep.js << 'ZZEOF'
           /* サイトの index.html から PC版に いる 部品だけを 取り出す：アイコン・景色・空の色・猫の うごき・Firebaseの 設定 */

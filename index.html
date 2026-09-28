@@ -13714,6 +13714,25 @@ function openNotif(){
   saveSeenSet(_notifSeenSet);
   const c=$("tpbCount");if(c){c.textContent="0";c.classList.remove("show");}
 }
+/* ===== アプリ版と 見た目を 共有（アプリと つないだ 人だけ）：sitelook＝サイト→アプリ・applook＝アプリ→サイト ===== */
+async function _publishSiteLook(){ try{
+  const db=await getDB(); if(!db)return; const m=await import(FB_DB);
+  const own={}, it=getItems()||{}; Object.keys(it).forEach(function(k){ if(it[k]>0)own[k]=true; });
+  await m.set(m.ref(db,"sitelook/"+getUid()),{ body:profileBody(), ear:profileColor(), cos:getEquippedCostume(), own:own, t:Date.now() });
+}catch(e){ console.warn("sitelook",e); } }
+async function _applyAppLook(){ try{
+  const db=await getDB(); if(!db)return; const m=await import(FB_DB);
+  const v=(await m.get(m.ref(db,"applook/"+getUid()))).val(); if(!v||!v.t)return;
+  const last=+(localStorage.getItem("radio_applook_t")||0); if(v.t<=last)return;
+  const p=getProfile()||{}; if(v.body)p.catBody=v.body; if(v.ear)p.color=v.ear; saveProfile(p);
+  const e={}; Object.keys(v.cos||{}).forEach(function(sl){ const c=v.cos[sl]; if(c&&c.id&&itemCount(c.id)>0){ e[sl]=c.id; if(c.col)setItemColor(c.id,c.col); } }); setEquip(e);
+  localStorage.setItem("radio_applook_t",String(v.t)); try{syncSoon();}catch(_){}
+}catch(e){ console.warn("applook",e); } }
+async function _lookShareStart(){ try{
+  if(_isCrawler)return; const db=await getDB(); if(!db)return; await claimOwner(); const m=await import(FB_DB);
+  const app=(await m.get(m.ref(db,"pcsite/"+getUid()))).val(); if(!app)return;   /* アプリと つないで いない 人は なにも しない */
+  await _applyAppLook(); await _publishSiteLook(); setInterval(_publishSiteLook,300000);
+}catch(_){} }
 /* アプリ版の 招待状（フレンドから）：BOOTH で おしらせの 画面を 開く */
 async function _renderAppInviteNotif(list){
   try{
@@ -21036,7 +21055,7 @@ function _sessCover(dev){
   const go=$("pcCodeGo"); if(go)go.addEventListener("click",function(){ try{playClick();}catch(_){} const i=$("pcCodeIn"); _pcRedeem(i?i.value:""); });
   if(PC_DESK){ try{ window.zzDesktop.onLink(function(code){ _pcRedeem(code); }); }catch(_){} }
   setTimeout(function(){ _sessClaim().then(_sessWatch); },1200);   /* ★あとから 開いた 方で あそぶ（前の 場所には カバーが 出る） */
-   /* PC版とは つながない（ラジオ体操は サイトだけ） */ setInterval(_pcPublishAllFigs,30*60*1000+5000); setInterval(function(){ _pcPublishFig(false); },30*60*1000);
+  setTimeout(function(){ _lookShareStart(); },6000);   /* アプリ版と 見た目を 共有（つないだ 人だけ） */ setInterval(_pcPublishAllFigs,30*60*1000+5000); setInterval(function(){ _pcPublishFig(false); },30*60*1000);
   if(PC_DESK&&window.zzDesktop.setCats){ setTimeout(_pcSendCats,5000); setInterval(_pcSendCats,5*60*1000); document.addEventListener("visibilitychange",function(){ if(!document.hidden)setTimeout(_pcSendCats,2500); }); }
 }catch(e){ console.warn("pc init",e); } })();
 /* ===== ラジオ（猫の 下の ♡の 下）：BGMの えらびと 音量 ===== */

@@ -959,6 +959,10 @@ jobs:
           .pgh button:hover{background:var(--pc2)}
           .dots{display:flex;gap:4px;justify-content:center;margin-top:4px}.dots i{width:6px;height:6px;border-radius:50%;background:var(--ln)}.dots i.on{background:var(--nv)}
           .pg{height:184px;overflow:auto}
+          .nets{display:flex;gap:8px;padding:6px 0 0}.nsw{display:flex;background:rgba(255,255,255,.12);border-radius:999px;padding:3px}.nsw button{border:0;background:none;color:rgba(255,255,255,.7);border-radius:999px;padding:4px 11px;font:inherit;font-size:11px;font-weight:800;cursor:pointer}.nsw button.on{background:#fff;color:var(--nv)}
+          .fc .code{display:flex;align-items:center;justify-content:space-between}.fc .code b{font-size:30px;letter-spacing:.18em;font-variant-numeric:tabular-nums}.fc .code button,#fAdd{border:0;border-radius:999px;background:var(--nv);color:#fff;font:inherit;font-size:12px;font-weight:800;padding:8px 16px;cursor:pointer}
+          #fCode{flex:1;min-width:0;height:40px;border-radius:999px;border:1.5px solid var(--nv);padding:0 14px;font:inherit;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+          .fr{display:flex;align-items:center;gap:10px;padding:10px 2px;border-top:1px solid var(--ln);font-size:14px;font-weight:800}.fr:first-child{border-top:0}.fr .dot{width:9px;height:9px;border-radius:50%;background:#cfd5de;flex:none}.fr .dot.on{background:#5cc28a}.fr span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fr span.alw{flex:none}
           .upd{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;padding:8px 8px 8px 14px;border-radius:16px;background:var(--pc2);font-size:13px;font-weight:800}.upd button{border:0;border-radius:999px;background:var(--nv);color:#fff;font:inherit;font-size:12px;font-weight:800;padding:7px 14px;cursor:pointer}.upd button:disabled{opacity:.6}   /* ページを 切りかえても カードの 大きさを 変えない */
           .dl{display:flex;flex-direction:column}.de{display:flex;align-items:flex-start;gap:10px;padding:9px 2px;border-top:1px solid var(--ln);font-size:13px;font-weight:700;line-height:1.45}.de:first-child{border-top:0}.de time{flex:none;width:38px;font-size:11px;font-weight:800;color:var(--mu);padding-top:2px;font-variant-numeric:tabular-nums}.de i{flex:none;width:24px;height:24px;border-radius:50%;background:var(--pc2);display:flex;align-items:center;justify-content:center;font-style:normal;font-size:12px}.dn0{text-align:center;color:var(--mu);font-size:12px;padding:24px 0}
           .dic{position:absolute;left:5%;top:8%;display:flex;flex-direction:column;gap:6px;height:72%}.tv .dic svg,.pv .dic svg{position:static;inset:auto;width:auto;height:18%;min-height:12px;display:block;filter:drop-shadow(0 1px 1px rgba(0,0,0,.3))}
@@ -973,6 +977,7 @@ jobs:
            <div class="top" data-tauri-drag-region>
             <div class="sb" data-tauri-drag-region><b id="clk">9:41</b><i class="cam"></i><span class="ic"><svg width="14" height="10" viewBox="0 0 14 10"><path d="M1 9h2V6H1zM5 9h2V4H5zM9 9h2V2H9z" fill="#fff"/></svg><svg width="20" height="10" viewBox="0 0 20 10"><rect x=".5" y=".5" width="16" height="9" rx="2.5" fill="none" stroke="#fff"/><rect x="2" y="2" width="12" height="6" rx="1.5" fill="#fff"/><rect x="17.5" y="3" width="1.8" height="4" rx=".8" fill="#fff"/></svg></span></div>
             <div class="hd" data-tauri-drag-region><h1 id="ttl">ラジオ体操</h1><div class="wb"><button id="min" type="button" aria-label="しまう" title="しまう"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 6.5h8" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg></button><button id="x" type="button" aria-label="おわる" title="おわる"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M3 3l6 6M9 3l-6 6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg></button></div></div>
+            <div class="nets"><div class="nsw" id="netSw"><button type="button" data-v="offline">オフライン</button><button type="button" data-v="online">オンライン</button></div><div class="nsw" id="scopeSw"><button type="button" data-v="all">全体</button><button type="button" data-v="friends">フレンド</button></div></div>
            </div>
            <main>
             <div class="upd" id="upd" hidden><span>新しい 版 <b id="updV"></b></span><button id="updGo" type="button">入れる</button></div>
@@ -1011,11 +1016,16 @@ jobs:
              <div class="scn" id="scnRow"><label><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><select id="selM" aria-label="時間帯"><option value="auto">自動</option><option value="sky-dawn">早朝</option><option value="sky-morning">朝</option><option value="sky-day">昼</option><option value="sky-evening">夕方</option><option value="sky-night">夜</option></select></label><label><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M3 20 10 7l4 6 2-3 5 10z"/></svg><select id="selT" aria-label="合目"><option value="0">自動</option><option value="1">1合目</option><option value="2">2合目</option><option value="3">3合目</option><option value="4">4合目</option><option value="5">5合目</option><option value="6">6合目</option><option value="7">7合目</option></select></label></div>
              <div id="msgB" class="msg"></div>
             </section>
+            <section id="pF" hidden>
+             <div class="card fc"><div class="lb">あなたの フレンドコード</div><div class="code"><b id="myCode">------</b><button id="cpCode" type="button">コピー</button></div></div>
+             <div class="card"><div class="row"><input type="text" id="fCode" maxlength="8" placeholder="フレンドの コード" autocomplete="off" spellcheck="false"><button id="fAdd" type="button">追加</button></div><div id="fMsg" class="msg"></div></div>
+             <div class="card"><div class="lb">フレンド</div><div id="fList"><div class="dn0">まだ いないよ</div></div></div>
+            </section>
             <section id="pC" hidden>
              <div class="card"><div class="pgh"><button id="dL" type="button" aria-label="まえの 日">◀</button><div><b id="dT">きょう</b></div><button id="dR" type="button" aria-label="つぎの 日">▶</button></div><div id="dList" class="dl"></div></div>
             </section>
            </main>
-           <nav class="tb"><button id="tA" class="on" type="button"><span class="bi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg></span>ラジオ体操</button><button id="tB" type="button"><span class="bi"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4l4.2 4.2A8 8 0 0 1 12 7.5a8 8 0 0 1 3.8.7L20 4v8.5a8 8 0 0 1-16 0z"/><circle cx="9.3" cy="12.8" r="1.3" fill="#2b3242"/><circle cx="14.7" cy="12.8" r="1.3" fill="#2b3242"/></svg></span>ねっこ</button><button id="tC" type="button"><span class="bi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11M9 8h6"/></svg></span>にっき</button></nav>
+           <nav class="tb"><button id="tA" class="on" type="button"><span class="bi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg></span>ラジオ体操</button><button id="tB" type="button"><span class="bi"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4l4.2 4.2A8 8 0 0 1 12 7.5a8 8 0 0 1 3.8.7L20 4v8.5a8 8 0 0 1-16 0z"/><circle cx="9.3" cy="12.8" r="1.3" fill="#2b3242"/><circle cx="14.7" cy="12.8" r="1.3" fill="#2b3242"/></svg></span>ねっこ</button><button id="tF" type="button"><span class="bi"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8.5" r="3.2"/><circle cx="17" cy="9.5" r="2.6"/><path d="M3.5 19c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5M14.5 14.6c.8-.4 1.6-.6 2.5-.6 2.2 0 3.9 1.5 4.4 4"/></svg></span>フレンド</button><button id="tC" type="button"><span class="bi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11M9 8h6"/></svg></span>にっき</button></nav>
           </div></div>
           <script src="zz.js"></script>
           <script src="fbconfig.js"></script>
@@ -1024,7 +1034,7 @@ jobs:
           <script src="graph.js"></script>
           <script src="scene.js"></script>
           <script type="module">
-          import { record, recData, redeem, hill, allTaps, diaryDay } from './fb.js';
+          import { record, recData, redeem, hill, allTaps, diaryDay, myCode, addFriend, friends, setPlay } from './fb.js';
           const R = window.ZZREC || { mood: [], slpy: [] };
           /* ===== ステータスバーの 時計 ===== */
           function clk() { const d = new Date(); $('clk').textContent = d.getHours() + ':' + String(d.getMinutes()).padStart(2, '0'); }
@@ -1179,11 +1189,11 @@ jobs:
           $('pgL').addEventListener('click', () => page(pg - 1)); $('pgR').addEventListener('click', () => page(pg + 1)); page(0);
           /* ===== タブ ===== */
           function tab(t) {
-            ['A', 'B', 'C'].forEach((k) => { $('t' + k).classList.toggle('on', t === k); $('p' + k).hidden = t !== k; });
-            $('ttl').textContent = t === 'A' ? 'ラジオ体操' : t === 'B' ? 'ねっこ' : 'にっき';
-            if (t === 'A') graph(); else if (t === 'B') loadS().then(loadPV); else diary();
+            ['A', 'B', 'F', 'C'].forEach((k) => { $('t' + k).classList.toggle('on', t === k); $('p' + k).hidden = t !== k; });
+            $('ttl').textContent = t === 'A' ? 'ラジオ体操' : t === 'B' ? 'ねっこ' : t === 'F' ? 'フレンド' : 'にっき';
+            if (t === 'A') graph(); else if (t === 'B') loadS().then(loadPV); else if (t === 'F') friendsTab(); else diary();
           }
-          $('tA').addEventListener('click', () => tab('A')); $('tB').addEventListener('click', () => tab('B')); $('tC').addEventListener('click', () => tab('C'));
+          $('tA').addEventListener('click', () => tab('A')); $('tB').addEventListener('click', () => tab('B')); $('tC').addEventListener('click', () => tab('C')); $('tF').addEventListener('click', () => tab('F'));
           /* ===== にっき：自分の 猫の 日記（時刻つき） ===== */
           const ITEMN = { ball: 'ボール', mouse: 'ねずみ', bug: 'むし', balloon: 'ふうせん', gift: 'プレゼント', box: 'はこ' };
           let dOff = 0;
@@ -1209,6 +1219,39 @@ jobs:
           function openTab() { zz.panelTab().then((t) => { if (t === 'settings') tab('B'); }).catch(() => {}); }
           zz.on('zz-panel-open', () => { $('msg').textContent = ''; defaults(); if (!$('pA').hidden) graph(); openTab(); });
           defaults(); graph(); openTab();
+          /* ===== オフライン／オンライン（全体・フレンド） ===== */
+          let NETS = { net: 'online', scope: 'all' };
+          function paintNet() {
+            document.querySelectorAll('#netSw button').forEach((b) => b.classList.toggle('on', b.dataset.v === NETS.net));
+            document.querySelectorAll('#scopeSw button').forEach((b) => b.classList.toggle('on', b.dataset.v === NETS.scope));
+            $('scopeSw').hidden = NETS.net === 'offline';
+          }
+          zz.state().then((st) => { NETS = { net: st.net === 'offline' ? 'offline' : 'online', scope: st.scope === 'friends' ? 'friends' : 'all' }; paintNet(); }).catch(() => {});
+          function setNet(o) { Object.assign(NETS, o); paintNet(); zz.set({ net: NETS.net, scope: NETS.scope }).then(() => zz.recorded()).catch(() => {}); }
+          document.querySelectorAll('#netSw button').forEach((b) => b.addEventListener('click', () => setNet({ net: b.dataset.v })));
+          document.querySelectorAll('#scopeSw button').forEach((b) => b.addEventListener('click', () => setNet({ scope: b.dataset.v })));
+          /* ===== フレンド ===== */
+          let myName = '';
+          async function friendsTab() {
+            const st = await zz.state(); if (!st.uid) { $('fList').innerHTML = '<div class="dn0">ねっこ で つないでね</div>'; return; }
+            try { if (!myName) { const h = PV || await hill(st.uid); const me = (h.cats || []).find((c) => c.self); myName = (me && me.name) || ''; } } catch (_) {}
+            try { $('myCode').textContent = await myCode(st.uid, myName); } catch (_) { $('myCode').textContent = '------'; }
+            let l = []; try { l = await friends(st.uid); } catch (_) {}
+            if (!l.length) { $('fList').innerHTML = '<div class="dn0">まだ いないよ</div>'; return; }
+            $('fList').innerHTML = l.map((f) => '<div class="fr"><i class="dot' + (f.online ? ' on' : '') + '"></i><span>' + esc(f.name || 'フレンド') + '</span><span class="alw' + (f.play ? ' on' : '') + '" role="switch" tabindex="0" aria-checked="' + f.play + '" data-u="' + esc(f.uid) + '" style="position:static;background:var(--nv)"><i></i>あそぶ</span></div>').join('');
+            $('fList').querySelectorAll('.alw').forEach((sw) => {
+              const flip = async () => { const on = !sw.classList.contains('on'); sw.classList.toggle('on', on); sw.setAttribute('aria-checked', String(on)); try { await setPlay(st.uid, sw.dataset.u, on); zz.recorded(); } catch (_) {} };
+              sw.addEventListener('click', flip); sw.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flip(); } });
+            });
+          }
+          $('cpCode').addEventListener('click', () => { try { navigator.clipboard.writeText($('myCode').textContent); $('cpCode').textContent = 'コピーした'; setTimeout(() => { $('cpCode').textContent = 'コピー'; }, 1500); } catch (_) {} });
+          $('fAdd').addEventListener('click', async () => {
+            const st = await zz.state(); if (!st.uid) return;
+            $('fAdd').disabled = true; $('fMsg').style.color = '';
+            try { const r = await addFriend(st.uid, $('fCode').value, myName); $('fMsg').textContent = (r.name || 'フレンド') + ' と フレンドに なったよ'; $('fCode').value = ''; friendsTab(); zz.recorded(); }
+            catch (e) { $('fMsg').style.color = '#c9546b'; $('fMsg').textContent = e && e.message === 'self' ? 'じぶんの コードだよ' : 'コードが 見つからないよ'; }
+            $('fAdd').disabled = false;
+          });
           /* 新しい 版：知らせる だけ。押した 時だけ 入れる */
           function showUpd(v) { if (!v) return; $('updV').textContent = String(v); $('upd').hidden = false; }
           zz.updateInfo().then(showUpd).catch(() => {}); zz.on('zz-update', showUpd);
@@ -1301,7 +1344,7 @@ jobs:
           ZZEOF
           cat > pc/dist/cats.js << 'ZZEOF'
           /* 猫を 出す 画面：壁紙（景色＋猫＋みんなの カード）／タスクバー（猫だけ）。うごきは サイトの「奥で あそぶ 猫」と 同じ */
-          import { hill, pubTaps, allTaps, sendPet, sendItem, onPets, onItems, diaryAdd, setOnline } from './fb.js';
+          import { hill, pubTaps, allTaps, sendPet, sendItem, onPets, onItems, diaryAdd, setOnline, friendSet } from './fb.js';
           const Q = window.__ZZQ || Object.fromEntries(new URLSearchParams(location.search)), P = { get: (k) => (Q[k] != null ? String(Q[k]) : null) }, MODE = P.get('mode') || 'wall', UID = P.get('uid') || '', SHOW_SLEEP = P.get('sleep') !== '0', WAKE = P.get('sleep') === '2', EMO = P.get('emo') !== '0', SHARE = P.get('share') !== '0', CARD = P.get('card') === '1', HEADC = P.get('card') === 'h', TAPS = P.get('tp') !== '0', LOWQ = P.get('q') === 'lo', SIZE = Math.max(.5, Math.min(2, +P.get('sz') || 1));
           const FPH0 = Object.assign({}, FP_H);   /* サイトの 大きさ（ここに 大きさの バーを かける） */
           const FLAT = MODE !== 'wall', NOCATS = P.get('nocats') === '1';
@@ -1413,9 +1456,14 @@ jobs:
                 if (MV === 'still') _fpCats.forEach((c) => { c.q = [{ a: 'wait', d: 1e9, pose: c.pose || 'sit' }]; }); }   /* 止める：その場で 座った まま */
             }, 80);
           }
+          let NET = 'online', SCOPE = 'all', FS = new Set();   /* オフライン＝自分の 猫だけ／オンライン＝全体 か フレンド */
+          const peerOK = (u) => NET !== 'offline' && (SCOPE !== 'friends' || FS.has(u));
           async function load() {
             try {
+              try { const st = await zz.state(); NET = st.net === 'offline' ? 'offline' : 'online'; SCOPE = st.scope === 'friends' ? 'friends' : 'all'; } catch (_) {}
               data = await hill(UID);
+              if (NET === 'offline') { data.cats = data.cats.filter((c) => c.self); data.cards = []; }
+              else if (SCOPE === 'friends') { FS = await friendSet(UID); data.cats = data.cats.filter((c) => c.self || FS.has(c.uid)); data.cards = (data.cards || []).filter((d) => FS.has(d.uid)); }
               tier = FIXT || Math.max(1, Math.min(7, (data.myfig && data.myfig.tier) || 1));
               try { localStorage.setItem('zz_tier', String(Math.max(1, Math.min(7, (data.myfig && data.myfig.tier) || 1)))); } catch (_) {}
               cards = data.cards || []; ci = 0; showCard();
@@ -1492,7 +1540,7 @@ jobs:
             }
             Object.keys(hEl).forEach((u) => { if (!seen[u]) hEl[u].hidden = true; });
           }
-          async function syncTaps() { if (NOCATS) return; try { if (UID) await pubTaps(UID, taps, SHARE); oTaps = await allTaps(); } catch (_) {} }
+          async function syncTaps() { if (NOCATS) return; if (NET === 'offline') { oTaps = {}; return; } try { if (UID) await pubTaps(UID, taps, SHARE); const all = await allTaps(); oTaps = {}; Object.keys(all).forEach((u) => { if (peerOK(u)) oTaps[u] = all[u]; }); } catch (_) {} }
           setInterval(syncTaps, 30000); setTimeout(syncTaps, 4000);
           /* 3) 重く なったら 自動で 猫を 休ませる（1秒に 20回を 下回る 状態が 3秒 続いたら 60秒 休む → また ためす） */
           (function watchFps() {
@@ -1544,7 +1592,7 @@ jobs:
             if (!rub || rub.c !== c || now - rub.t0 > 3000) { rub = { c, x, dir: 0, flips: 0, t0: now }; return; }
             const dx = x - rub.x; if (Math.abs(dx) < 3) return;
             const d = dx > 0 ? 1 : -1; if (rub.dir && d !== rub.dir) rub.flips++; rub.dir = d; rub.x = x;
-            if (rub.flips >= 6 && now > petCool) { petCool = now + 2500; rub = null; hearts(c); if (UID && c.uid) sendPet({ to: c.uid, by: UID, tn: nameOf(c.uid), bn: nameOf(UID) }).catch(() => {}); }
+            if (rub.flips >= 6 && now > petCool) { petCool = now + 2500; rub = null; hearts(c); if (UID && c.uid && NET !== 'offline') sendPet({ to: c.uid, by: UID, tn: nameOf(c.uid), bn: nameOf(UID) }).catch(() => {}); }
           }
           /* アイテム：2〜4匹が その アイテムで 遊ぶ */
           function playItem(k) { try { if (!FP_EV[k]) return; const cs = awake().sort(() => Math.random() - .5), n = Math.min(cs.length, 2 + Math.floor(Math.random() * 3)); if (n) { EV0(k, cs.slice(0, n)); if (MV === 'still') setTimeout(() => _fpCats.forEach((c) => { if (!c.ev) c.q = [{ a: 'wait', d: 1e9, pose: 'sit' }]; }), 17000); } } catch (e) { try { zz.log('item ' + e); } catch (_) {} } }
@@ -1563,9 +1611,9 @@ jobs:
             zz.on('zz-cursor', onCursor);
             zz.on('zz-taps', typingReact);
             zz.on('zz-back', () => { if (!alive()) return; const me = _fpCats.find((c) => c.isSelf); if (me && Date.now() > backCool) { backCool = Date.now() + 6000; try { _fpEmo(me, 'ques'); } catch (_) {} } });
-            zz.on('zz-item', () => { if (!canPlay()) return; const ks = ITEMS.filter((k) => FP_EV[k]), k = ks[Math.floor(Math.random() * ks.length)]; if (!k) return; playItem(k); if (UID) { sendItem(k, UID).catch(() => {}); diaryAdd(UID, { k: 'item', a: k }).catch(() => {}); } });
-            onPets((v) => { if (!canPlay() || v.by === UID) return; const c = catOf(v.to); if (c) hearts(c); }).catch(() => {});
-            onItems((v) => { if (!canPlay() || v.by === UID) return; playItem(v.k); }).catch(() => {});
+            zz.on('zz-item', () => { if (!canPlay()) return; const ks = ITEMS.filter((k) => FP_EV[k]), k = ks[Math.floor(Math.random() * ks.length)]; if (!k) return; playItem(k); if (UID) { if (NET !== 'offline') sendItem(k, UID).catch(() => {}); diaryAdd(UID, { k: 'item', a: k }).catch(() => {}); } });
+            onPets((v) => { if (!canPlay() || v.by === UID || !peerOK(v.by)) return; const c = catOf(v.to); if (c) hearts(c); }).catch(() => {});
+            onItems((v) => { if (!canPlay() || v.by === UID || !peerOK(v.by)) return; playItem(v.k); }).catch(() => {});
           }
           /* しばらく 打たない → 自分の 猫が 寝る */
           setInterval(() => { if (!alive() || slept || Date.now() - idleAt < 180000) return; const me = _fpCats.find((c) => c.isSelf && !c.ev); if (!me) return; slept = true; try { me.q = [{ a: 'wait', d: 60, pose: 'lie' }]; _fpEmo(me, 'zzz'); } catch (_) {} }, 20000);
@@ -1575,7 +1623,7 @@ jobs:
           window.__zzFun = { onCursor, playItem, typingReact };
 
           /* 今 PC版を 開いて いる（自分の 猫は このアプリでは 起きて いる あつかい・みんなの 画面でも） */
-          if (UID && !NOCATS) { const ping = () => setOnline(UID).catch(() => {}); ping(); setInterval(ping, 60000); }
+          if (UID && !NOCATS) { const ping = () => { if (NET !== 'offline') setOnline(UID).catch(() => {}); }; setTimeout(ping, 3000); setInterval(ping, 60000); }
 
           /* 猫を 動かす 処理が 止まって いても、その場に 1回 描く（予約を けしてから 1回 → 2重に ならない） */
           function kick() {
@@ -1743,6 +1791,42 @@ jobs:
           }
 
           export async function setOnline(uid) { const { db, D } = await fb(); await D.set(D.ref(db, 'pconline/' + uid), { t: Date.now() }); }
+
+          /* ===== フレンド：6文字の コード・おたがい フレンド・いっしょに 遊ぶ 人を 選ぶ ===== */
+          const CODE_CH = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+          export async function myCode(uid, name) {
+            const { db, D } = await fb();
+            const nm = String(name || '').slice(0, 20);
+            const cur = await D.get(D.ref(db, 'pccodeOf/' + uid)).then((s) => s.val()).catch(() => null);
+            if (cur) { if (nm) D.update(D.ref(db, 'pccode/' + cur), { n: nm }).catch(() => {}); return cur; }
+            for (let i = 0; i < 8; i++) {
+              let c = ''; for (let k = 0; k < 6; k++) c += CODE_CH[Math.floor(Math.random() * CODE_CH.length)];
+              const r = await D.runTransaction(D.ref(db, 'pccode/' + c), (v) => (v ? undefined : { u: uid, n: nm, t: Date.now() }));
+              if (r.committed) { await D.set(D.ref(db, 'pccodeOf/' + uid), c); return c; }
+            }
+            throw new Error('code');
+          }
+          export async function addFriend(uid, code, myName) {
+            const { db, D } = await fb();
+            const c = String(code || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+            const v = await D.get(D.ref(db, 'pccode/' + c)).then((s) => s.val()).catch(() => null);
+            if (!v || !v.u) throw new Error('nocode');
+            if (v.u === uid) throw new Error('self');
+            const now = Date.now();
+            await D.set(D.ref(db, 'pcfriends/' + uid + '/' + v.u), { n: String(v.n || '').slice(0, 20), t: now, play: true });
+            await D.set(D.ref(db, 'pcfriends/' + v.u + '/' + uid), { n: String(myName || '').slice(0, 20), t: now, play: true });
+            return { uid: v.u, name: v.n || '' };
+          }
+          export async function friends(uid) {
+            const { db, D } = await fb();
+            const get = (p) => D.get(D.ref(db, p)).then((s) => s.val()).catch(() => null);
+            const [fr, onl] = await Promise.all([get('pcfriends/' + uid), get('pconline')]);
+            const now = Date.now();
+            return Object.keys(fr || {}).map((u) => ({ uid: u, name: fr[u].n || '', play: fr[u].play !== false, online: !!(onl && onl[u] && now - (onl[u].t || 0) < 180000) }))
+              .sort((a, b) => (b.online ? 1 : 0) - (a.online ? 1 : 0));
+          }
+          export async function setPlay(uid, fuid, on) { const { db, D } = await fb(); await D.update(D.ref(db, 'pcfriends/' + uid + '/' + fuid), { play: !!on }); }
+          export async function friendSet(uid) { const l = await friends(uid).catch(() => []); return new Set(l.filter((x) => x.play).map((x) => x.uid)); }
           ZZEOF
           cat > pc/prep.js << 'ZZEOF'
           /* サイトの index.html から PC版に いる 部品だけを 取り出す：アイコン・景色・空の色・猫の うごき・Firebaseの 設定 */

@@ -1837,4 +1837,52 @@ jobs:
           printf '{"version":"%s","notes":"PC版 %s","pub_date":"%s","platforms":{"windows-x86_64":{"signature":"%s","url":"https://github.com/zzcafe2800/zzcard/releases/download/v%s/zzcard-setup.exe"}}}\n' "$VER" "$VER" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$SIG" "$VER" > latest.json
           cat latest.json
           ls -la zzcard-setup.exe
-          gh release create "v$VER" zzcard-setup.exe latest.json --target "$GITHUB_SHA" --title "PC版 $VER" --notes "ズズラジオ体操部 PC版 $VER（かるい 版）" --latest
+          # BOOTH の 作品ファイル（インストーラー ＋ はじめに お読み ください）
+          mkdir -p booth
+          cp zzcard-setup.exe booth/zzcard-setup.exe
+          printf '\xEF\xBB\xBF' > booth/README.txt
+          cat >> booth/README.txt << 'ZZEOF'
+          ズズラジオ体操部 PC版（Windows）　バージョン VERSION_HERE
+
+          ■ 入れ方
+          1. zzcard-setup.exe を ダブルクリック
+          2.「Windows によって PC が 保護されました」と 出たら「詳細情報」→「実行」
+             （できた ばかりの アプリに 出る お知らせ です）
+          3. 画面の とおりに 進めると 入ります
+
+          ■ はじめての 設定
+          1. ズズラジオ体操部の サイトを 開く → おしらせ →「アプリと つなぐ」
+             （出た つなぎコードを アプリに 入れても OK）
+          2. 猫を 出す 場所（壁紙・タスクバー・全画面）を えらんで「はじめる」
+
+          ■ キー
+          Ctrl+Alt+P　　　　　ラジオ体操（きろく・うつりかわり・ねっこ・にっき）
+          Ctrl+Alt+Shift+P　ねっこ（設定）
+          Ctrl+Alt+I　　　　　アイテムを 投げこむ
+
+          ■ この アプリが する こと
+          ・デスクトップに みんなの 猫を 表示
+          ・ズズラジオ体操部の サーバーと 体操の きろくを やりとり
+          ・新しい 版が 出たら お知らせ（入れるのは「入れる」を 押した 時だけ）
+          ・（オンに した 人だけ）今日 キーを 押した 回数を 数える
+          ・（オンに した 人だけ）PC の 起動時に 開く
+
+          ■ この アプリが しない こと
+          ・何を 打ったか（キーの 内容）は 記録も 送信も しません
+          ・画面の 撮影は しません
+          ・あなたが 選んだ 写真 以外の ファイルは 読みません
+          ・広告は ありません
+
+          ■ やめる 時は
+          Windows の 設定 → アプリ → インストールされて いる アプリ →「ズズラジオ体操部」→ アンインストール
+
+          ■ 動作環境
+          Windows 10 / 11（64ビット）
+
+          ■ お問い合わせ
+          BOOTH の メッセージから どうぞ
+          ZZEOF
+          sed -i "s/VERSION_HERE/$VER/" booth/README.txt
+          (cd booth && 7z a -tzip ../zzcard-booth.zip zzcard-setup.exe README.txt > /dev/null)
+          ls -la zzcard-booth.zip
+          gh release create "v$VER" zzcard-setup.exe latest.json zzcard-booth.zip --target "$GITHUB_SHA" --title "PC版 $VER" --notes "ズズラジオ体操部 PC版 $VER（かるい 版）" --latest

@@ -16721,6 +16721,7 @@ function _fpSep(){ var G=_fpG; if(!G||!G.L)return; var cs=_fpCats,n=cs.length,ga
   for(var i=0;i<n;i++){ var a=cs[i]; if(a.hidden)continue;
     for(var j=i+1;j<n;j++){ var b=cs[j]; if(b.hidden)continue;
       var d=b.t-a.t,ad=Math.abs(d); if(ad>=gap||Math.abs((a.zo||0)-(b.zo||0))>=.6)continue;
+      var mva=a.q&&a.q[0]&&/^(go|goCat|chaseP)$/.test(a.q[0].a),mvb=b.q&&b.q[0]&&/^(go|goCat|chaseP)$/.test(b.q[0].a); if(mva||mvb)continue;   /* 歩いて いる 猫は 通りぬけて いい */
       var wa=a.sleep?0:1,wb=b.sleep?0:1; if(!wa&&!wb)continue;
       var sg=d>0?1:d<0?-1:(i%2?1:-1),push=(gap-ad)*.24/(wa+wb);
       if(wa)a.t=Math.max(.02,Math.min(.98,a.t-sg*push)); if(wb)b.t=Math.max(.02,Math.min(.98,b.t+sg*push)); } } }
@@ -20952,6 +20953,15 @@ async function _pcPublishAllFigs(){ try{
   var ks=Object.keys(ups); for(var i=0;i<ks.length;i++){ try{ await m.set(m.ref(db,"pcfigs/"+ks[i]),ups[ks[i]]); }catch(_){} }
   localStorage.setItem(TK,String(Date.now()));
 }catch(e){ console.warn("pcfigs",e); } }
+/* PC版の おさいふ（おそうじで もらった・ごはんに 使った zz の 差し引き）を サイトの zz に 足し引き */
+async function _pcMergeZZ(){ try{
+  if(_isCrawler)return;
+  var db=await getDB(); if(!db)return; await claimOwner(); var m=await import(FB_DB);
+  var r=m.ref(db,"pczz/"+getUid()), v=(await m.get(r)).val(); if(!v)return;
+  var d=(v.net||0)-(v.merged||0); if(!d)return;
+  addZZ(d); await m.update(r,{merged:v.net||0});
+  try{syncSoon();}catch(_){} try{ toast("PC版から "+(d>0?"+":"")+d+" zz"); }catch(_){}
+}catch(e){ console.warn("pczz",e); } }
 /* PC版で した きろくを とりこむ。体操した 日は、何日 あとに サイトを 開いても その日ごとに サイトで 体操した 時と 同じ ごほうび
    （zz・チェックイン・パーティー登山・世界樹・スタンプ・旅・一覧の 連続日数）＋ ユメっ子ガチャを 日数ぶん。すでに 体操した 日は 二重に しない */
 async function _pcMergeRec(){ try{
@@ -21015,7 +21025,7 @@ function _sessCover(dev){
   const go=$("pcCodeGo"); if(go)go.addEventListener("click",function(){ try{playClick();}catch(_){} const i=$("pcCodeIn"); _pcRedeem(i?i.value:""); });
   if(PC_DESK){ try{ window.zzDesktop.onLink(function(code){ _pcRedeem(code); }); }catch(_){} }
   setTimeout(function(){ _sessClaim().then(_sessWatch); },1200);   /* ★あとから 開いた 方で あそぶ（前の 場所には カバーが 出る） */
-  setTimeout(function(){ _pcMergeRec(); _pcPublishFig(false); _pcPublishAllFigs(); },6000); setInterval(_pcPublishAllFigs,30*60*1000+5000); setInterval(function(){ _pcPublishFig(false); },30*60*1000);
+  setTimeout(function(){ _pcMergeRec(); _pcPublishFig(false); _pcPublishAllFigs(); },6000);   /* 所持金は サイトと 分ける（PC版の おさいふは 足し引き しない） */ setInterval(_pcPublishAllFigs,30*60*1000+5000); setInterval(function(){ _pcPublishFig(false); },30*60*1000);
   if(PC_DESK&&window.zzDesktop.setCats){ setTimeout(_pcSendCats,5000); setInterval(_pcSendCats,5*60*1000); document.addEventListener("visibilitychange",function(){ if(!document.hidden)setTimeout(_pcSendCats,2500); }); }
 }catch(e){ console.warn("pc init",e); } })();
 /* ===== ラジオ（猫の 下の ♡の 下）：BGMの えらびと 音量 ===== */

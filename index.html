@@ -20883,8 +20883,6 @@ function setAmbVol(i,v){ var t=AMB_TRACKS[i]; if(!t)return; t.vol=Math.max(0,Mat
       var a=(j.assets||[]).find(function(x){return /zzcard-setup\.exe$/i.test(x.name);}); if(a&&a.size)$("nwSize").textContent="BOOTH・Windows・"+(a.size/1048576).toFixed(1)+"MB";
     }).catch(function(){});
   }catch(_){} });
-  var cb=$("nwCodeBtn"); if(cb)cb.addEventListener("click",async function(){ try{playClick();}catch(_){} cb.disabled=true;
-    try{ var c=await _pcMakeCode(); $("nwCode").textContent=c.slice(0,4)+" "+c.slice(4); $("nwCodeRow").hidden=false; location.href="zzcard://link?c="+c; }catch(e){ try{toast("コードを 作れなかったよ");}catch(_){} } cb.disabled=false; });
   $("newsX").addEventListener("click",function(){ try{playClick();}catch(_){} close(); });
   sc.addEventListener("click",function(e){ if(e.target===sc)close(); });
   document.addEventListener("keydown",function(e){ if(e.key==="Escape"&&!sc.hidden)close(); });
@@ -21019,13 +21017,10 @@ function _sessCover(dev){
 (function _pcInit(){ try{
   const w=$("pcWeb"),a=$("pcApp"); if(w)w.hidden=PC_DESK; if(a)a.hidden=!PC_DESK;   /* 見た目の 切りかえ（サイト／PC版） */
   if(_isCrawler)return;
-  const lk=$("pcLink"); if(lk)lk.addEventListener("click",async function(){ try{playClick();}catch(_){} lk.disabled=true;
-    try{ const c=await _pcMakeCode(); const b=$("pcCodeBox"),t=$("pcCode"); if(t)t.textContent=c.slice(0,4)+" "+c.slice(4); if(b)b.hidden=false; location.href="zzcard://link?c="+c; }
-    catch(e){ console.warn("pc code",e); toast("コードを 作れなかったよ"); } lk.disabled=false; });
   const go=$("pcCodeGo"); if(go)go.addEventListener("click",function(){ try{playClick();}catch(_){} const i=$("pcCodeIn"); _pcRedeem(i?i.value:""); });
   if(PC_DESK){ try{ window.zzDesktop.onLink(function(code){ _pcRedeem(code); }); }catch(_){} }
   setTimeout(function(){ _sessClaim().then(_sessWatch); },1200);   /* ★あとから 開いた 方で あそぶ（前の 場所には カバーが 出る） */
-  setTimeout(function(){ _pcMergeRec(); _pcPublishFig(false); _pcPublishAllFigs(); },6000);   /* 所持金は サイトと 分ける（PC版の おさいふは 足し引き しない） */ setInterval(_pcPublishAllFigs,30*60*1000+5000); setInterval(function(){ _pcPublishFig(false); },30*60*1000);
+   /* PC版とは つながない（ラジオ体操は サイトだけ） */ setInterval(_pcPublishAllFigs,30*60*1000+5000); setInterval(function(){ _pcPublishFig(false); },30*60*1000);
   if(PC_DESK&&window.zzDesktop.setCats){ setTimeout(_pcSendCats,5000); setInterval(_pcSendCats,5*60*1000); document.addEventListener("visibilitychange",function(){ if(!document.hidden)setTimeout(_pcSendCats,2500); }); }
 }catch(e){ console.warn("pc init",e); } })();
 /* ===== ラジオ（猫の 下の ♡の 下）：BGMの えらびと 音量 ===== */
@@ -42852,10 +42847,9 @@ function _gpStreetHTML(){
   <div class="nwInfo"><b id="nwCapT">壁紙</b><span id="nwCapS">山の 景色の 中を 猫たちが 走りまわる</span><div class="nwDots" id="nwDots"><i class="on" role="button" tabindex="0" aria-label="1枚目"></i><i role="button" tabindex="0" aria-label="2枚目"></i><i role="button" tabindex="0" aria-label="3枚目"></i><i role="button" tabindex="0" aria-label="4枚目"></i><i role="button" tabindex="0" aria-label="5枚目"></i></div></div>
   <div class="nwAct"><div class="nwBtns">
       <a class="nwDl" href="https://zzcaffe.booth.pm/items/8910157" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><span>ダウンロード<small id="nwSize">BOOTH・Windows</small></span></a>
-      <button id="nwCodeBtn" class="nwConn" type="button"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>アプリと つなぐ</button>
-    </div>
-    <div class="nwCodeRow" id="nwCodeRow" hidden><small>つなぎコード</small><b id="nwCode"></b></div></div>
-  <details class="nwHow"><summary>はじめかた</summary><ol><li>BOOTH で 手に入れて 開く（「PCが 保護されました」が 出たら 詳細情報 → 実行）</li><li>「アプリと つなぐ」を おす</li><li>出す 場所を えらんで はじめる</li></ol></details>
+      
+    </div></div>
+  <details class="nwHow"><summary>はじめかた</summary><ol><li>BOOTH で 手に入れて 開く（「PCが 保護されました」が 出たら 詳細情報 → 実行）</li><li>猫の 名前と 見た目を きめて はじめる</li></ol></details>
 </div>
 <div id="settingsScreen">
   <div id="setBox">
@@ -42934,7 +42928,7 @@ function _gpStreetHTML(){
         <summary><span class="setCardIco"><svg viewBox="0 0 48 48"><rect x="6" y="9" width="36" height="24" rx="3" fill="#8fd3f0"/><rect x="10" y="13" width="28" height="16" rx="1.5" fill="#eaf7fc"/><path d="M18 39h12M24 33v6" stroke="#8fd3f0" stroke-width="3" stroke-linecap="round"/></svg></span><span class="setCardTxt"><b>PC版</b><small>サイトと 同じ データで あそべる</small></span><span class="setCardArrow">›</span></summary>
         <div class="psRestoreInner">
           <div id="pcWeb">
-            <div class="pcRow"><a id="pcDl" class="pcBtn" href="https://zzcaffe.booth.pm/items/8910157" target="_blank" rel="noopener">ダウンロード</a><button id="pcLink" type="button" class="pcBtn pcMain">アプリで ひらく</button></div>
+            <div class="pcRow"><a id="pcDl" class="pcBtn" href="https://zzcaffe.booth.pm/items/8910157" target="_blank" rel="noopener">ダウンロード</a></div>
             <div id="pcCodeBox" hidden><small>つなぎコード</small><b id="pcCode">--------</b><small>30分</small></div>
           </div>
           <div id="pcApp" hidden>

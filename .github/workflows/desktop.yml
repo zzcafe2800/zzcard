@@ -90,7 +90,7 @@ jobs:
           }
           ZZEOF
           cat > pc/src-tauri/src/main.rs << 'ZZEOF'
-          // ズズラジオ体操部 PC版（Tauri・かるい 版）
+          // 画面のねっこ PC版（Tauri・かるい 版）
           // ・はじめての 時だけ 設定（つなぐ → 壁紙／タスクバー／全画面 → はじめる）
           // ・Ctrl+Alt+P で きろく（この まどは タスクバーにも いて、閉じると PC版ごと おわる）・Ctrl+Alt+Shift+P で 設定
           // ・タスクバーの 位置を 本当に 調べて、猫の 足を タスクバーの 上の ふちに。タスクバーが 消えたら 猫も 消える
@@ -354,7 +354,7 @@ jobs:
               if let Some(w) = app.get_webview_window("setup") { let _ = w.unminimize(); let _ = w.show(); let _ = w.set_focus(); return; }
               let r = WebviewWindowBuilder::new(app, "setup", WebviewUrl::App("setup.html".into()))
                   .additional_browser_args(WV_ARGS)
-                  .title("ズズラジオ体操部").inner_size(620.0, 800.0).resizable(false).maximizable(false).build();
+                  .title("画面のねっこ").inner_size(620.0, 800.0).resizable(false).maximizable(false).build();
               match r {
                   Ok(w) => {
                       let a = app.clone();
@@ -385,7 +385,7 @@ jobs:
               let lh = ((mh as f64) / sc - 120.0).min(840.0).max(560.0);
               let r = WebviewWindowBuilder::new(app, "panel", WebviewUrl::App("panel.html".into()))
                   .additional_browser_args(WV_ARGS)
-                  .title("ズズラジオ体操部").inner_size(420.0, lh).resizable(false).maximizable(false)
+                  .title("画面のねっこ").inner_size(420.0, lh).resizable(false).maximizable(false)
                   .decorations(false).transparent(true).shadow(false).always_on_top(true).visible(false).build();
               match r {
                   Ok(w) => {
@@ -414,7 +414,7 @@ jobs:
           fn set_op(app: &AppHandle, on: bool) {
               let st = app.state::<St>().inner().clone();
               if on && sstr(&st, "mode") == "wall" {
-                  let _ = app.notification().builder().title("ズズラジオ体操部").body("操作モードは タスクバーか 全画面で 使えるよ").show();
+                  let _ = app.notification().builder().title("画面のねっこ").body("操作モードは タスクバーか 全画面で 使えるよ").show();
                   return;
               }
               let lb = cats_label(&st);
@@ -490,7 +490,7 @@ jobs:
                           if r.is_err() {
                               if let Some(o) = st2.s.lock().unwrap().as_object_mut() { o.insert("mode".into(), json!("bar")); }
                               save_state(&a, &st2);
-                              let _ = a.notification().builder().title("ズズラジオ体操部").body("壁紙に 出せなかったので、タスクバーに したよ").show();
+                              let _ = a.notification().builder().title("画面のねっこ").body("壁紙に 出せなかったので、タスクバーに したよ").show();
                               open_cats(&a, &st2);
                           }
                       });
@@ -532,7 +532,7 @@ jobs:
                   log(&a, &format!("wall scene attach {:?}", r));
                   if r.is_err() {
                       let _ = w.destroy();
-                      let _ = a.notification().builder().title("ズズラジオ体操部").body("景色の 壁紙を 出せなかったよ").show();
+                      let _ = a.notification().builder().title("画面のねっこ").body("景色の 壁紙を 出せなかったよ").show();
                   }
               });
           }
@@ -788,7 +788,7 @@ jobs:
                                       log(&a5, &format!("update available {}", v));
                                       *st5.update.lock().unwrap() = Some(v.clone());
                                       let _ = a5.emit_to("panel", "zz-update", v.clone());
-                                      let _ = a5.notification().builder().title("ズズラジオ体操部").body(format!("新しい 版（{}）が あるよ。ラジオ体操の 画面から 入れられるよ", v)).show();
+                                      let _ = a5.notification().builder().title("画面のねっこ").body(format!("新しい 版（{}）が あるよ。ラジオ体操の 画面から 入れられるよ", v)).show();
                                   }
                                   Ok(None) => {}
                                   Err(e) => log(&a5, &format!("update check {}", e)),
@@ -835,7 +835,7 @@ jobs:
           })();
           ZZEOF
           cat > pc/dist/setup.html << 'ZZEOF'
-          <!doctype html><html lang="ja"><head><meta charset="utf-8"><title>ズズラジオ体操部</title>
+          <!doctype html><html lang="ja"><head><meta charset="utf-8"><title>画面のねっこ</title>
           <style>
           *{box-sizing:border-box}[hidden]{display:none !important}
           :root{--nv:#2b3242;--pc:#7cc8ee;--mu:#8a93a3;--ln:#e6eaf0}
@@ -865,7 +865,7 @@ jobs:
           button:focus-visible,input:focus-visible{outline:2px solid var(--pc);outline-offset:2px}
           </style></head><body>
           <div class="wrap">
-           <h1>ズズラジオ体操部</h1>
+           <h1>画面のねっこ</h1>
            <div class="cols">
             <section class="col" id="colNew">
              <div class="ttl">あなたの 猫</div>
@@ -932,7 +932,7 @@ jobs:
           </script></body></html>
           ZZEOF
           cat > pc/dist/panel.html << 'ZZEOF'
-          <!doctype html><html lang="ja"><head><meta charset="utf-8"><title>ズズラジオ体操部</title>
+          <!doctype html><html lang="ja"><head><meta charset="utf-8"><title>画面のねっこ</title>
           <style>
           *{box-sizing:border-box}[hidden]{display:none !important}html,body{margin:0;height:100%;background:transparent}
           :root{--nv:#2b3242;--pc:#7cc8ee;--pc2:#e3f3fb;--mu:#8a93a3;--ln:#e6eaf0}
@@ -1037,6 +1037,7 @@ jobs:
           .crm{display:flex;gap:6px;margin-top:6px}.crm button svg{width:60px;height:38px;display:block;margin:0 auto 4px}.crm button{flex:1;padding:8px 4px;height:auto;border-radius:16px!important;border-radius:999px;border:1.5px solid var(--ln);background:#fff;color:var(--nv);font:inherit;font-size:13px;font-weight:800;cursor:pointer}.crm button.on{background:var(--nv);color:#fff;border-color:var(--nv)}
           .crh{display:flex;align-items:baseline;gap:8px;margin:4px 0 6px}.crh b{font-size:20px;letter-spacing:.12em}.crh small{font-size:11px;color:var(--mu)}
 
+          .npchk{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800;margin:10px 4px 0}.npchk input{width:18px;height:18px;accent-color:var(--nv)}
           .mko{display:flex;flex-direction:column;gap:8px;padding:12px;border:1.5px solid var(--ln);border-radius:16px;margin-top:10px}.mko b{font-size:15px}.mko small{font-size:11px;color:var(--mu)}.mko .nxt{margin-top:2px}
           .tile[data-m="wall"]{display:none !important}
           #draw{position:absolute;left:10px;right:10px;top:100px;bottom:96px;z-index:30;background:#fff;border-radius:24px;border:1.5px solid var(--nv);padding:10px;display:flex;flex-direction:column;gap:6px;overflow:auto}#draw.full{left:0;right:0;top:0;bottom:0;border-radius:0;border:0}
@@ -1059,6 +1060,10 @@ jobs:
           .kshops{display:flex;flex-direction:column;gap:8px;margin-top:8px}.ksh{display:flex;align-items:center;gap:12px;border:0;border-radius:16px;background:#fff;box-shadow:0 2px 8px rgba(20,26,40,.08);padding:10px 12px;cursor:pointer;font:inherit;text-align:left}.ksh svg{width:46px;height:46px;background:#f1f4f8;border-radius:12px;padding:5px;flex:none}.kshn{flex:1;min-width:0}.kshn b{display:block;font-size:14px}.kshn small{font-size:11px;color:var(--mu)}.kshg{font-style:normal;font-size:22px;color:var(--mu)}
           .kroom{margin-top:8px;border-radius:16px;padding:12px 8px 16px;background:linear-gradient(#f6ecdf 0 58%,#d9b489 58% 60%,#e9d2b3 60%);min-height:260px}.kroom .kinv{margin-top:6px}.kroom .kc{background:repeating-conic-gradient(#f7f3ec 0 25%,#fffdf9 0 50%) 0 0/12px 12px;border-color:#ead9c2}.kc .kby{position:absolute;left:0;right:0;bottom:14px;font-size:8px;color:#9a8a76;text-align:center}
           .kcrow{display:flex;gap:10px}.kcc{flex:1;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;border:1.5px solid var(--ln);border-radius:14px;font-size:12px;font-weight:800;cursor:pointer}.kcc input{width:40px;height:28px;border:0;padding:0;background:none;cursor:pointer}
+          .yhd{display:flex;align-items:baseline;justify-content:space-between}.yhd b{font-size:16px}.yhd small{font-size:12px;color:var(--mu);font-weight:800}.yhd em{font-style:normal;font-size:18px;color:#f4a24a}
+          .ygrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.yc{border-radius:16px;background:#fff;box-shadow:0 2px 8px rgba(20,26,40,.08);padding:8px 4px;text-align:center}.yc img{width:100%;height:64px;object-fit:contain}.yc.no img{filter:brightness(0);opacity:.18}.yc b{display:block;font-size:11px;margin-top:2px}.yc.no b{color:#b8bfca}.yc i{display:block;font-style:normal;font-size:10px;color:#f4a24a;letter-spacing:.05em}.yc.no i{color:#cfd5de}
+          .yc.newget img{animation:ynew 1.6s ease}@keyframes ynew{0%{filter:brightness(0);opacity:.2;transform:scale(.8)}60%{filter:brightness(1.4);opacity:1;transform:scale(1.15)}100%{filter:none;transform:scale(1)}}
+          .ysel{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.ysel button{border:2px solid var(--ln);background:#fff;border-radius:14px;padding:4px;width:58px;cursor:pointer}.ysel button.on{border-color:#5cc28a;background:#eaf7ef}.ysel img{width:100%;height:40px;object-fit:contain;display:block}.ysel small{display:block;font-size:9px;font-weight:800;color:var(--nv);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
           .kinv{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}.kc{position:relative;aspect-ratio:1/1.05;border:2px solid var(--ln);border-radius:14px;background:repeating-conic-gradient(#f2f5f9 0 25%,#fff 0 50%) 0 0/12px 12px;cursor:pointer;padding:0;font:inherit;display:flex;align-items:flex-end;justify-content:center;overflow:hidden}
           .kc.on{border-color:#5cc28a;box-shadow:0 0 0 2px rgba(92,194,138,.25)}.kc .kth{background:none;width:100%;height:100%}.kc span{position:absolute;left:3px;right:3px;bottom:2px;font-size:8.5px;font-weight:800;color:#5a6b80;text-align:center;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
           .kpub{position:absolute;top:3px;right:3px;font-size:9px;font-weight:900;border-radius:999px;padding:2px 6px;background:#eef1f5;color:var(--mu);cursor:pointer;z-index:2}.kpub.on{background:var(--nv);color:#fff}
@@ -1101,7 +1106,7 @@ jobs:
              <div class="card kpv"><div id="kFig"></div><button id="kBag" class="kbag" type="button" aria-label="かばん"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M8 8V6a4 4 0 0 1 8 0v2"/><rect x="3" y="8" width="18" height="13" rx="3"/></svg></button></div>
              <div class="card" id="kStreet"><div class="khd"><button type="button" id="kBack" class="kback" hidden>‹</button><div class="lb" id="kTtl">商店街</div><button type="button" id="kOff" class="kmy">公式ショップ</button><button type="button" id="kMy" class="kmy" style="margin-left:6px">マイショップ</button></div><div class="ksrch" id="kSrch"><input type="text" id="kQ" placeholder="お店・なまえで さがす"><div class="sg" id="kSort"><button type="button" data-v="new">さいきん</button><button type="button" data-v="many">商品が多い</button></div></div><div id="kList"></div><div id="kMsg" class="msg"></div></div>
              <div class="card" id="kBagCard" hidden><div class="kcrow"><label class="kcc">からだ<input type="color" id="kBodyC"></label><label class="kcc">みみ・目<input type="color" id="kEarC"></label></div><div id="kBody" hidden></div><div id="kEar" hidden></div><input type="color" id="kItemC" hidden><div class="kinv" id="kInv"></div></div>
-             <div class="card" id="kMyCard" hidden><div class="khd"><button type="button" id="kMyBack" class="kback">‹</button><div class="lb">マイショップ</div><div class="sg" id="kPubSw" hidden><button type="button" data-v="1">公開</button><button type="button" data-v="0">非公開</button></div></div><button type="button" class="nxt" id="kMake">衣装を 作る</button><button id="kDraw" type="button" hidden></button><div class="kinv" id="kMyList"></div></div>
+             <div class="card" id="kMyCard" hidden><div class="khd"><button type="button" id="kMyBack" class="kback">‹</button><div class="lb">マイショップ</div><div class="sg" id="kPubSw" hidden><button type="button" data-v="1">公開</button><button type="button" data-v="0">非公開</button></div></div><input type="text" id="kShopName" maxlength="16" placeholder="お店の なまえ" style="width:100%;height:38px;border-radius:999px;border:1.5px solid var(--ln);padding:0 14px;font:inherit;font-weight:800;margin-top:8px"><button type="button" class="nxt" id="kMake">衣装を 作る</button><button id="kDraw" type="button" hidden></button><div class="kinv" id="kMyList"></div></div>
             </section>
             <div id="setScr" class="ovl" hidden>
              <div class="dwTop"><b>個人設定</b><span><button id="setX" type="button" aria-label="とじる">✕</button></span></div>
@@ -1150,13 +1155,14 @@ jobs:
               <button type="button" id="myRoom" hidden></button>
               <div class="mko"><b>ルーム作成</b><input type="text" id="rmName" maxlength="16" placeholder="お部屋の なまえ" style="height:38px;border-radius:999px;border:1.5px solid var(--ln);padding:0 14px;font:inherit;font-weight:700"><div class="sg" id="pubSw"><button type="button" data-v="1">公開</button><button type="button" data-v="f">フレンドのみ</button><button type="button" data-v="0">非公開</button></div><button type="button" class="nxt" id="mkRoom">制作</button></div>
              </div>
-             <div class="card" data-step="3"><div class="lb" id="memTtl">お部屋</div><div id="roomMem"></div></div>
+             <div class="card" data-step="3"><div class="lb" id="memTtl">お部屋</div><div id="roomMem"></div><div id="ySelBox" hidden><div class="lb" style="margin-top:8px">いっしょに あそぶ ユメっ子</div><div class="ysel" id="ySel"></div></div></div>
              <div data-step="3" class="card pgc" data-step="3">
               <div class="pgh"><button id="pgL" type="button" aria-label="まえ">◀</button><div><b id="pgT">ねこ</b><div class="dots" id="dots"><i></i><i></i><i></i></div></div><button id="pgR" type="button" aria-label="つぎ">▶</button></div>
               <div class="pg" data-t="ねこ" hidden><div class="op">猫の 動き<div class="sg" data-k="mv"><button type="button" data-v="normal">ふつう</button><button type="button" data-v="calm">ひかえめ</button><button type="button" data-v="still">止める</button></div></div><div class="op">寝ている子<div class="sg" data-k="slm"><button type="button" data-v="show">出す</button><button type="button" data-v="wake">起こす</button><button type="button" data-v="hide">出さない</button></div></div><div class="op">大きさ<span class="sz"><input id="sz" type="range" min="50" max="200" step="10" aria-label="猫の 大きさ"><b id="szV">100</b><small>%</small></span></div><div class="op"><span class="emo" aria-label="気持ちの 絵"><svg viewBox="0 0 20 20" width="18" height="18"><path d="M10 16.6C5.4 13.3 3 10.8 3 8.1 3 6 4.6 4.5 6.5 4.5c1.4 0 2.6.8 3.5 2 .9-1.2 2.1-2 3.5-2C15.4 4.5 17 6 17 8.1c0 2.7-2.4 5.2-7 8.5z" fill="#e8798f"/></svg><svg viewBox="0 0 20 20" width="18" height="18"><rect x="8.4" y="3" width="3.2" height="10" rx="1.6" fill="#f2a65a"/><circle cx="10" cy="16" r="1.8" fill="#f2a65a"/></svg></span><div class="sg" data-k="noEmo"><button type="button" data-v="0">出す</button><button type="button" data-v="1">出さない</button></div></div></div>
               <div class="pg" data-t="みんな" hidden><div class="op">キーの 回数を 数える<div class="sg" data-k="countTaps"><button type="button" data-v="1">数える</button><button type="button" data-v="0">数えない</button></div></div><div class="op">ひとこと<div class="sg" data-k="card"><button type="button" data-v="corner">左下</button><button type="button" data-v="head">頭の上</button><button type="button" data-v="off">出さない</button></div></div><div class="op">タップ数<div class="sg" data-k="noTapShow"><button type="button" data-v="0">出す</button><button type="button" data-v="1">出さない</button></div></div></div>
               <div class="pg" data-t="そのほか" hidden><div class="op">言語<div class="sg" data-k="lang"><button type="button" data-v="ja">日本語</button><button type="button" data-v="en">English</button></div></div><div class="op">自分の 情報を 非公開<div class="sg" data-k="priv"><button type="button" data-v="1">非公開</button><button type="button" data-v="0">公開</button></div></div><div class="op">操作モード<div class="sg" data-k="opKey"><button type="button" data-v="alt+z">Alt+Z</button><button type="button" data-v="alt+x">Alt+X</button><button type="button" data-v="alt+q">Alt+Q</button><button type="button" data-v="ctrl+alt+z">Ctrl+Alt+Z</button></div></div><div class="op">PCを つけたら 開く<div class="sg" data-k="autoStart"><button type="button" data-v="1">する</button><button type="button" data-v="0">しない</button></div></div><div class="op">画質<div class="sg" data-k="lowQ"><button type="button" data-v="0">なめらか</button><button type="button" data-v="1">かるい</button></div></div><div class="op">つなぐ<span id="sOk" style="color:#3f9c6a;font-size:12px">✓ つながっている</span></div><div class="hint">Ctrl+Alt+P ひらく ・ Ctrl+Alt+Shift+P ねっこ</div></div>
              </div>
+             <label class="npchk" data-step="3"><input type="checkbox" id="noPoop"> フンの 非表示</label>
              <div data-step="3" class="pv" id="pv" role="button" tabindex="0" aria-label="はじめる"><span class="startT" id="start"><i class="pi"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M3.5 2.2 10 6l-6.5 3.8z" fill="#4fa9df"/></svg></i>はじめる</span><div class="lay" id="pvIn"></div><div class="pvOv"><span class="ovIn"><i class="pi big"><svg width="18" height="18" viewBox="0 0 12 12"><path d="M3.5 2.2 10 6l-6.5 3.8z" fill="#4fa9df"/></svg></i>はじめる</span></div></div>
              <div data-step="3" class="scn" id="scnRow"><label><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><select id="selM" aria-label="時間帯"><option value="auto">自動</option><option value="sky-dawn">早朝</option><option value="sky-morning">朝</option><option value="sky-day">昼</option><option value="sky-evening">夕方</option><option value="sky-night">夜</option></select></label><label><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M3 20 10 7l4 6 2-3 5 10z"/></svg><select id="selT" aria-label="合目"><option value="0">自動</option><option value="1">1合目</option><option value="2">2合目</option><option value="3">3合目</option><option value="4">4合目</option><option value="5">5合目</option><option value="6">6合目</option><option value="7">7合目</option></select></label></div>
              <div id="msgB" class="msg"></div>
@@ -1168,21 +1174,25 @@ jobs:
              <div class="card" id="rqCard" hidden><div class="lb">リクエスト</div><div id="rqList"></div></div>
              <div class="card"><div class="lb">フレンド</div><div id="fList"><div class="dn0">まだ いないよ</div></div></div>
             </section>
+            <section id="pY" hidden>
+             <div class="card"><div class="yhd"><b>ユメっ子ずかん</b><small>あつめた <em id="yN">0</em> / <span id="yT">0</span></small></div><div class="ygrid" id="yGrid"></div></div>
+            </section>
             <section id="pC" hidden>
              <div class="card aff"><div class="affcat" id="affCat"></div><div class="lb">親密度 <b id="affN" class="affn"></b></div><div class="affr"><b id="affLv">Lv.1</b><div class="affb"><i id="affBar"></i></div></div></div>
              <div class="card"><div class="pgh"><button id="dL" type="button" aria-label="まえの 日">◀</button><div><b id="dT">きょう</b></div><button id="dR" type="button" aria-label="つぎの 日">▶</button></div><div id="dList" class="dl"></div></div>
             </section>
            </main>
-           <nav class="tb"><button id="tB" type="button"><span class="bi"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4l4.2 4.2A8 8 0 0 1 12 7.5a8 8 0 0 1 3.8.7L20 4v8.5a8 8 0 0 1-16 0z"/><circle cx="9.3" cy="12.8" r="1.3" fill="#2b3242"/><circle cx="14.7" cy="12.8" r="1.3" fill="#2b3242"/></svg></span>ねっこ</button><button id="tK" type="button"><span class="bi"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M8 3 4 6l2 4 2-1v11h8V9l2 1 2-4-4-3c-.5 1.6-2 2.6-4 2.6S8.5 4.6 8 3z"/></svg></span>きせかえ</button><button id="tF" type="button"><span class="bi"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8.5" r="3.2"/><circle cx="17" cy="9.5" r="2.6"/><path d="M3.5 19c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5M14.5 14.6c.8-.4 1.6-.6 2.5-.6 2.2 0 3.9 1.5 4.4 4"/></svg></span>フレンド</button><button id="tC" type="button"><span class="bi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11M9 8h6"/></svg></span>にっき</button></nav>
+           <nav class="tb"><button id="tB" type="button"><span class="bi"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4l4.2 4.2A8 8 0 0 1 12 7.5a8 8 0 0 1 3.8.7L20 4v8.5a8 8 0 0 1-16 0z"/><circle cx="9.3" cy="12.8" r="1.3" fill="#2b3242"/><circle cx="14.7" cy="12.8" r="1.3" fill="#2b3242"/></svg></span>ねっこ</button><button id="tK" type="button"><span class="bi"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M8 3 4 6l2 4 2-1v11h8V9l2 1 2-4-4-3c-.5 1.6-2 2.6-4 2.6S8.5 4.6 8 3z"/></svg></span>きせかえ</button><button id="tY" type="button"><span class="bi"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3c4.5 0 8 3.2 8 7.6 0 5-4.4 9.4-8 9.4s-8-4.4-8-9.4C4 6.2 7.5 3 12 3z"/><circle cx="9" cy="11" r="1.2" fill="currentColor"/><circle cx="15" cy="11" r="1.2" fill="currentColor"/><path d="M10 15c1.2 1 2.8 1 4 0"/></svg></span>ユメっ子</button><button id="tF" type="button"><span class="bi"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8.5" r="3.2"/><circle cx="17" cy="9.5" r="2.6"/><path d="M3.5 19c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5M14.5 14.6c.8-.4 1.6-.6 2.5-.6 2.2 0 3.9 1.5 4.4 4"/></svg></span>フレンド</button><button id="tC" type="button"><span class="bi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11M9 8h6"/></svg></span>にっき</button></nav>
           </div></div>
           <script src="zz.js"></script>
           <script src="i18n.js"></script>
           <script src="fbconfig.js"></script>
           <script src="catfig.js"></script>
+          <script src="yume.js"></script>
           <script>var $=function(id){ return document.getElementById(id); };</script>
           <script src="scene.js"></script>
           <script type="module">
-          import { diaryDay, mine, figs2, linkSite, siteFriends, inviteApp, myCode, addFriend, friends, setPlay, rooms, getAff, wallet, fAffAll, fLevel, requests, answerReq, sendReq, getLook, saveLook, addNet, saveArt, publishShop, unpublishShop, siteShops, siteArt, buySite, getSiteLook, putAppLook, shopList, buyShop, collectSales, soldCounts } from './fb.js';
+          import { diaryDay, mine, figs2, linkSite, siteFriends, inviteApp, myCode, addFriend, friends, setPlay, rooms, getAff, wallet, fAffAll, fLevel, requests, answerReq, sendReq, getLook, saveLook, addNet, saveArt, publishShop, unpublishShop, siteShops, siteArt, buySite, yumeGot, getSiteLook, putAppLook, shopList, buyShop, collectSales, soldCounts } from './fb.js';
           /* ===== ステータスバーの 時計 ===== */
           function clk() { const d = new Date(); $('clk').textContent = d.getHours() + ':' + String(d.getMinutes()).padStart(2, '0'); }
           clk(); setInterval(clk, 20000);
@@ -1199,7 +1209,7 @@ jobs:
             S = { uid: st.uid || '', mode: st.mode || 'wall', strip: (st.mode === 'bar' || st.mode === 'full') ? st.mode : 'none', wallOn: !!st.wallOn || !st.mode || st.mode === 'wall', room: (st.room && st.room.kind && st.room.kind !== 'hill') ? st.room : { kind: 'my' }, noEmo: !!st.noEmo, noShare: !!st.noShare, noTapShow: !!st.noTapShow, autoStart: !!st.autoStart, countTaps: !!st.countTaps, lowQ: !!st.lowQ,
               slm: st.sleepMode || (st.hideSleep ? 'hide' : 'show'), stT: +st.sceneTier || 0, stM: st.sceneTime || 'auto', sz: Math.round((st.catScale || 1) * 100),
               cardW: st.cardW || (st.cardWall === false ? 'off' : 'corner'), cardB: st.cardB || (st.cardBar ? 'corner' : 'off'), mv: st.motion || 'normal', opKey: st.opKey || 'alt+z', priv: !!st.priv, lang: st.lang === 'en' ? 'en' : 'ja' };
-            paintS();
+            paintS(); $('noPoop').checked = !!st.noPoop;   /* 変えるまで そのまま */
           }
           const DIC = '<div class="dic"><svg viewBox="0 0 24 20"><path d="M1 3a2 2 0 0 1 2-2h6l2 2h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2z" fill="#f4c95d"/></svg><svg viewBox="0 0 18 22"><path d="M1 2a1 1 0 0 1 1-1h10l5 5v14a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1z" fill="#fff"/><path d="M12 1v5h5" fill="#dfe6ee"/><path d="M4 11h9M4 14h9M4 17h6" stroke="#9aa6b6" stroke-width="1.2"/></svg><svg viewBox="0 0 22 22"><rect x="1" y="1" width="20" height="20" rx="5" fill="#7cc8ee"/><path d="M6 15l3.5-4.5 2.5 3 2-2.5L17 15z" fill="#fff"/><circle cx="8" cy="7.5" r="1.8" fill="#fff"/></svg></div>';
           let prevKey = '';
@@ -1267,7 +1277,7 @@ jobs:
             pv.innerHTML = h;
           }
           async function startNow() {
-            try { await zz.set({ priv: !!S.priv, lang: S.lang || 'ja' }); } catch (_) {}   /* 自分の 情報を 非公開・言語 */
+            try { await zz.set({ priv: !!S.priv, lang: S.lang || 'ja', noPoop: !!$('noPoop').checked }); } catch (_) {}   /* 自分の 情報を 非公開・言語 */
             if ((S.lang || 'ja') !== (window.__LANG || 'ja')) setTimeout(() => location.reload(), 400);
             if (!S.uid) { $('msgB').textContent = 'さきに つないでね'; return; }
             await zz.start({ room: S.room, mode: S.mode, wallOn: S.wallOn, noEmo: S.noEmo, noShare: S.noShare, noTapShow: S.noTapShow, autoStart: S.autoStart, countTaps: S.countTaps, lowQ: S.lowQ,
@@ -1287,12 +1297,12 @@ jobs:
           $('pgL').addEventListener('click', () => page(pg - 1)); $('pgR').addEventListener('click', () => page(pg + 1)); page(0);
           /* ===== タブ ===== */
           function tab(t) {
-            ['K', 'B', 'F', 'C'].forEach((k) => { $('t' + k).classList.toggle('on', t === k); $('p' + k).hidden = t !== k; });
-            $('ttl').textContent = t === 'K' ? 'きせかえ' : t === 'B' ? 'ねっこ' : t === 'F' ? 'フレンド' : 'にっき';
+            ['K', 'B', 'Y', 'F', 'C'].forEach((k) => { $('t' + k).classList.toggle('on', t === k); $('p' + k).hidden = t !== k; });
+            $('ttl').textContent = t === 'Y' ? 'ユメっ子' : t === 'K' ? 'きせかえ' : t === 'B' ? 'ねっこ' : t === 'F' ? 'フレンド' : 'にっき';
             $('wpBtn').hidden = t !== 'B';
-            if (t === 'K') kise(); else if (t === 'B') { nkStep(1); loadS().then(loadPV).then(roomsList); } else if (t === 'F') friendsTab(); else diary();
+            if (t === 'Y') yDex(); else if (t === 'K') kise(); else if (t === 'B') { nkStep(1); loadS().then(loadPV).then(roomsList); } else if (t === 'F') friendsTab(); else diary();
           }
-          $('tB').addEventListener('click', () => tab('B')); $('tC').addEventListener('click', () => tab('C')); $('tK').addEventListener('click', () => tab('K')); $('tF').addEventListener('click', () => tab('F'));
+          $('tB').addEventListener('click', () => tab('B')); $('tC').addEventListener('click', () => tab('C')); $('tK').addEventListener('click', () => tab('K')); $('tF').addEventListener('click', () => tab('F')); $('tY').addEventListener('click', () => tab('Y'));
           /* ===== にっき：自分の 猫の 日記（時刻つき） ===== */
           const ITEMN = { ball: 'ボール', mouse: 'ねずみ', bug: 'むし', balloon: 'ふうせん', gift: 'プレゼント', box: 'はこ' };
           let dOff = 0;
@@ -1354,20 +1364,22 @@ jobs:
               $('kList').innerHTML = its.map((s) => '<button type="button" class="kc" data-sbuy="' + esc(s.key) + '">' + kThumb({}, s.art) + '<b class="kpr">' + (s.u === KUID ? '出品中' : s.p) + '</b><span>' + esc(s.n || '') + '</span></button>').join('') || '<div class="rnone">ぜんぶ 持ってるよ</div>'; }
           }
           let SSHOPS = null, SSHOP = null, KSORT = 'new', SARTS = {}, SITE_SU = null;
+          const KANA_I = { あ: 'A', い: 'I', う: 'U', え: 'E', お: 'O', か: 'K', き: 'K', く: 'K', け: 'K', こ: 'K', さ: 'S', し: 'S', す: 'S', せ: 'S', そ: 'S', た: 'T', ち: 'C', つ: 'T', て: 'T', と: 'T', な: 'N', に: 'N', ぬ: 'N', ね: 'N', の: 'N', は: 'H', ひ: 'H', ふ: 'F', へ: 'H', ほ: 'H', ま: 'M', み: 'M', む: 'M', め: 'M', も: 'M', や: 'Y', ゆ: 'Y', よ: 'Y', ら: 'R', り: 'R', る: 'R', れ: 'R', ろ: 'R', わ: 'W', を: 'W', ん: 'N', が: 'G', ぎ: 'G', ぐ: 'G', げ: 'G', ご: 'G', ざ: 'Z', じ: 'J', ず: 'Z', ぜ: 'Z', ぞ: 'Z', だ: 'D', ぢ: 'J', づ: 'Z', で: 'D', ど: 'D', ば: 'B', び: 'B', ぶ: 'B', べ: 'B', ぼ: 'B', ぱ: 'P', ぴ: 'P', ぷ: 'P', ぺ: 'P', ぽ: 'P' };
+          function ini(n) { const c = String(n || '').trim().charAt(0); if (!c) return '？'; if (/[A-Za-z0-9]/.test(c)) return c.toUpperCase(); const k = c.charCodeAt(0); const h = (k >= 0x30a1 && k <= 0x30f6) ? String.fromCharCode(k - 0x60) : c; return KANA_I[h] || '？'; }   /* サイトの お店は イニシャル */
           const HOUSE = (c) => '<svg viewBox="0 0 40 40"><path d="M4 18 20 6l16 12" fill="' + c + '"/><path d="M4 18 20 6l16 12H4z" fill="' + c + '"/><rect x="8" y="18" width="24" height="17" fill="#fdf3e4"/><rect x="17" y="24" width="7" height="11" fill="' + c + '" opacity=".75"/></svg>';
           async function kSitePaint() {
             $('kList').className = 'kshops';
             if (!SSHOPS) { $('kList').innerHTML = '<div class="rnone">よみこみ中…</div>'; try { SSHOPS = await siteShops(); } catch (_) { SSHOPS = []; } }
             const q = ($('kQ').value || '').trim(); const ap = {}; SHOP.forEach((s) => { (ap[s.u] = ap[s.u] || { n: s.sn || 'だれか', c: 0 }).c++; });
-            const apHtml = Object.keys(ap).filter((u) => !q || ap[u].n.indexOf(q) >= 0).map((u) => '<button type="button" class="ksh" data-shop="' + esc(u) + '">' + HOUSE(u === KUID ? '#5cc28a' : '#9d7ad6') + '<span class="kshn"><b>' + esc(u === KUID ? 'じぶん' : ap[u].n) + 'の お店</b><small>服 ' + ap[u].c + 'こ・アプリ</small></span><i class="kshg">›</i></button>').join('');
+            const apHtml = Object.keys(ap).filter((u) => !q || ap[u].n.indexOf(q) >= 0).map((u) => '<button type="button" class="ksh" data-shop="' + esc(u) + '">' + HOUSE(u === KUID ? '#5cc28a' : '#9d7ad6') + '<span class="kshn"><b>' + esc(ap[u].n) + '</b><small>服 ' + ap[u].c + 'こ・アプリ' + (u === KUID ? '・じぶん' : '') + '</small></span><i class="kshg">›</i></button>').join('');
             let l = SSHOPS.filter((s) => !q || (s.name || '').indexOf(q) >= 0);
             l = l.slice().sort((a, b) => KSORT === 'many' ? Object.keys(b.items).length - Object.keys(a.items).length : (b.t || 0) - (a.t || 0));
             document.querySelectorAll('#kSort button').forEach((b) => b.classList.toggle('on', b.dataset.v === KSORT));
             const cols = ['#e0588f', '#7cb2e8', '#f4a24a', '#7bc47f', '#b7a6e8'];
-            $('kList').innerHTML = apHtml + ((l.length || apHtml) ? '' : '<div class="rnone">まだ お店が ないよ</div>') + l.map((s, i) => '<button type="button" class="ksh" data-site="' + esc(s.id) + '">' + HOUSE(cols[i % cols.length]) + '<span class="kshn"><b>' + esc(s.name || 'だれか') + 'の お店</b><small>服 ' + Object.keys(s.items).length + 'こ</small></span><i class="kshg">›</i></button>').join('');
+            $('kList').innerHTML = apHtml + ((l.length || apHtml) ? '' : '<div class="rnone">まだ お店が ないよ</div>') + l.map((s, i) => '<button type="button" class="ksh" data-site="' + esc(s.id) + '">' + HOUSE(cols[i % cols.length]) + '<span class="kshn"><b>' + ini(s.name) + 'さんの お店</b><small>服 ' + Object.keys(s.items).length + 'こ</small></span><i class="kshg">›</i></button>').join('');
           }
           async function kSiteRoom() {
-            $('kTtl').textContent = (SSHOP.name || 'だれか') + 'の お店'; $('kList').className = 'kroom';
+            $('kTtl').textContent = ini(SSHOP.name) + 'さんの お店'; $('kList').className = 'kroom';
             const ids = Object.keys(SSHOP.items); $('kList').innerHTML = '<div class="kinv">' + ids.map((id) => '<button type="button" class="kc' + (LOOK.artLib['w:' + id] ? ' on' : '') + '" data-sid="' + esc(id) + '"><div class="kth"></div><b class="kpr">' + (LOOK.artLib['w:' + id] ? 'もってる' : (+(SSHOP.items[id].price || SSHOP.items[id].p || 0)) + 'zz') + '</b><span>' + esc(SSHOP.items[id].name || SSHOP.items[id].n || '') + '</span></button>').join('') + '</div>';
             SARTS = {}; for (const id of ids) { const it = SSHOP.items[id] || {}, by = it.by || SSHOP.uid; const a = await siteArt(by, id); SARTS[id] = a; const el = $('kList').querySelector('[data-sid="' + id + '"] .kth'); if (a && el) el.outerHTML = kThumb({}, a); }
           }
@@ -1381,12 +1393,13 @@ jobs:
               + ITEMS.slice().sort((a, b) => (own[b.id] ? 1 : 0) - (own[a.id] ? 1 : 0)).map((it) => { const has = own[it.id], on = cos[it.slot] && cos[it.slot].id === it.id, col = (on && cos[it.slot].col) || it.def; return '<button type="button" class="kc' + (on ? ' on' : '') + (has ? '' : ' lock') + '" data-inv="' + it.id + '">' + kThumb({ [it.slot]: { id: it.id, col } }) + (has ? '<i class="kcol" data-col="' + it.id + '" style="background:' + col + '"></i>' : '') + '<span>' + it.name + '</span></button>'; }).join('');
           }
           function kMyPaint() {
+            if (document.activeElement !== $('kShopName')) $('kShopName').value = LOOK.shopName || ((KNAME || 'じぶん') + 'の お店');
             const lib = LOOK.artLib || {}, mineK = Object.keys(lib).filter((k) => k.startsWith('m:')), sel = LOOK.shopSel || {};
             document.querySelectorAll('#kPubSw button').forEach((b) => b.classList.toggle('on', b.dataset.v === (LOOK.shopPub === false ? '0' : '1')));
             $('kMyList').innerHTML = mineK.map((k) => { const id = k.slice(2), on = sel[id] != null; return '<button type="button" class="kc' + (on ? ' on' : '') + '" data-my="' + id + '">' + kThumb({}, lib[k]) + '<b class="kpub' + (on ? ' on' : '') + '" data-pub="' + id + '">' + (on ? '公開' : '非公開') + '</b>' + (on ? '<b class="kpr">' + sel[id] + '</b>' : '') + (SOLD[id] ? '<i class="kon" style="top:auto;bottom:14px">' + SOLD[id] + '枚</i>' : '') + '<span>' + esc(lib[k].n || '') + '</span></button>'; }).join('') || '<div class="rnone">まだ ないよ</div>';
           }
           async function kShopSync() { const sel = LOOK.shopSel || {}, lib = LOOK.artLib || {};
-            for (const k of Object.keys(lib).filter((x) => x.startsWith('m:'))) { const id = k.slice(2); try { if (LOOK.shopPub !== false && sel[id] != null) await publishShop(KUID, lib[k], sel[id], KNAME); else await unpublishShop(KUID, id); } catch (_) {} } }
+            for (const k of Object.keys(lib).filter((x) => x.startsWith('m:'))) { const id = k.slice(2); try { if (LOOK.shopPub !== false && sel[id] != null) await publishShop(KUID, lib[k], sel[id], LOOK.shopName || ((KNAME || 'じぶん') + 'の お店')); else await unpublishShop(KUID, id); } catch (_) {} } }
           async function kise() {
             const st = await zz.state(); if (!st.uid) return; KUID = st.uid;
             if (!LOOK) { LOOK = (await getLook(KUID).catch(() => null)) || { body: '#1c1c1c', ear: '#a6bfd2', pose: 'sit', cos: {}, own: {} }; ['cos', 'own', 'artLib', 'arts', 'shopSel'].forEach((k) => { LOOK[k] = LOOK[k] || {}; });
@@ -1407,6 +1420,7 @@ jobs:
           $('kQ').addEventListener('input', () => { if (!KSHOP) kSitePaint(); });
           document.querySelectorAll('#kSort button').forEach((b) => b.addEventListener('click', () => { KSORT = b.dataset.v; kSitePaint(); }));
           $('kMake').addEventListener('click', () => $('kDraw').click());
+          $('kShopName').addEventListener('change', () => { LOOK.shopName = ($('kShopName').value || '').trim().slice(0, 16); kSave(); kShopSync(); });   /* アプリの お店の 名前 */
           document.querySelectorAll('#kPubSw button').forEach((b) => b.addEventListener('click', () => { LOOK.shopPub = b.dataset.v === '1'; kMyPaint(); kSave(); kShopSync(); }));
           let kCT = 0; const kLater = () => { clearTimeout(kCT); kCT = setTimeout(() => { kPaint(); kSave(); }, 120); };
           $('kBodyC').addEventListener('input', () => { LOOK.body = $('kBodyC').value; kLater(); });
@@ -1512,7 +1526,18 @@ jobs:
           }
           let RLIST = [], RFA = {}, RFR = new Set();
           function showCur(r) { $('curRoom').hidden = false; $('nkSteps').hidden = true; document.querySelectorAll('#pB [data-step]').forEach((e) => { e.hidden = true; }); $('crId').textContent = r.id || ''; $('crHost').textContent = r.rn || ''; $('crMem').innerHTML = '<div class="rnone">よみこみ中…</div>'; document.querySelectorAll('#crMode button').forEach((b) => b.classList.toggle('on', b.dataset.m === (S.mode === 'full' ? 'full' : 'bar'))); setTimeout(() => { try { roomsList(); } catch (_) {} }, 3000); }
-          function pick(r) { S.room = r; paintRooms(); members(r); nkStep(3); }
+          function pick(r) { S.room = r; paintRooms(); members(r); nkStep(3); ySelPaint(); }
+          let YGOT = {};
+          async function ySelPaint() { const box = $('ySelBox'); if (!S.room || S.room.kind !== 'my' || !window.YUME_MASTER) { box.hidden = true; return; }
+            try { YGOT = await yumeGot(S.uid); } catch (_) { YGOT = {}; } const ids = YUME_MASTER.map((y, i) => i).filter((i) => YGOT['y' + i]); box.hidden = !ids.length; S.room.yume = S.room.yume || [];
+            $('ySel').innerHTML = ids.map((i) => '<button type="button" data-y="' + i + '" class="' + (S.room.yume.indexOf(i) >= 0 ? 'on' : '') + '"><img src="' + YUME_MASTER[i].img + '" alt=""><small>' + esc(YUME_MASTER[i].name) + '</small></button>').join(''); }
+          $('ySel').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b || !S.room) return; const i = +b.dataset.y, a = S.room.yume = S.room.yume || []; const k = a.indexOf(i); if (k >= 0) a.splice(k, 1); else a.push(i); b.classList.toggle('on', k < 0); });
+          /* ===== ユメっ子ずかん（新しく ゲットした 子は 色が つく アニメ） ===== */
+          async function yDex() { const M = window.YUME_MASTER || [], st = await zz.state(); let got = {}; try { if (st.uid) got = await yumeGot(st.uid); } catch (_) {}
+            let seen = {}; try { seen = JSON.parse(localStorage.getItem('zz_yseen') || '{}'); } catch (_) {}
+            $('yT').textContent = M.length; $('yN').textContent = M.filter((y, i) => got['y' + i]).length;
+            $('yGrid').innerHTML = M.map((y, i) => { const g = got['y' + i]; return '<div class="yc' + (g ? '' : ' no') + (g && !seen['y' + i] ? ' newget' : '') + '"><img src="' + y.img + '" alt=""><b>' + (g ? esc(y.name) : '？？？') + '</b><i>' + '★'.repeat(y.star || 1) + '☆'.repeat(3 - (y.star || 1)) + '</i></div>'; }).join('');
+            try { localStorage.setItem('zz_yseen', JSON.stringify(got)); } catch (_) {} }
           let NKS = 1;
           function nkStep(n) { NKS = n; document.querySelectorAll('#pB [data-step]').forEach((e) => { e.hidden = +e.dataset.step !== n; }); document.querySelectorAll('#nkSteps b').forEach((b) => b.classList.toggle('on', +b.dataset.s === n)); if (n === 3) { $('memTtl').textContent = $('roomMsg').textContent || 'お部屋'; try { loadPV(); } catch (_) {} } }
           document.querySelectorAll('#nkSteps b').forEach((b) => b.addEventListener('click', () => { if (+b.dataset.s < NKS || +b.dataset.s === 2) nkStep(+b.dataset.s); }));
@@ -1622,6 +1647,11 @@ jobs:
           cat > pc/dist/cats.html << 'ZZEOF'
           <!doctype html><html lang="ja"><head><meta charset="utf-8"><title>zz</title>
           <style>
+          body.noPoop #game .gbag{display:none}
+          .yume{position:fixed;bottom:4px;width:64px;height:64px;transform:translateX(-50%);pointer-events:none;z-index:43002}.yume img{width:100%;height:100%;object-fit:contain;filter:brightness(0);opacity:.55;transition:filter .8s,opacity .8s}.yume b{position:absolute;right:-6px;top:-14px;font:900 18px sans-serif;color:#f4a24a;text-shadow:0 1px 2px #fff;animation:ybang 1s infinite}@keyframes ybang{50%{transform:translateY(-4px)}}
+          .yume.got img{filter:none;opacity:1}.yume.got{animation:ygot 2.2s forwards}.yume.got b{display:none}@keyframes ygot{0%{transform:translateX(-50%) scale(1)}30%{transform:translateX(-50%) scale(1.35)}100%{transform:translateX(-50%) translateY(-60px) scale(.6);opacity:0}}
+          .yume.miss{animation:ymiss .5s}@keyframes ymiss{25%{margin-left:-6px}75%{margin-left:6px}}.yume.flee{transition:opacity .8s;opacity:0}
+          #farPlay .fpCat .yfig{filter:drop-shadow(0 1px 2px rgba(0,0,0,.25))}
           .gbag,.gfood{will-change:left,top}
           #opConf{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#fff;border-radius:18px;box-shadow:0 10px 30px rgba(20,26,40,.3);padding:16px 18px;z-index:47000;font:800 13px "Yu Gothic UI",sans-serif;color:#2b3242;text-align:center}#opConf div{display:flex;gap:8px;justify-content:center;margin-top:10px}#opConf button{border:0;border-radius:999px;padding:7px 18px;font:inherit;cursor:pointer;background:#eef1f5;color:#2b3242}#opConf #opYes{background:#2b3242;color:#fff}
           .wpc{display:flex;flex-direction:column;gap:4px;min-width:150px}.wpc b{font-size:13px}.wpc span{font-size:16px;font-weight:900}.wpc span small{font-size:10px;margin-left:2px;opacity:.7}
@@ -1731,6 +1761,7 @@ jobs:
           <script src="zz.js"></script>
           <script src="i18n.js"></script>
           <script src="catfig.js"></script>
+          <script src="yume.js"></script>
           <script src="fbconfig.js"></script>
           <script src="scene.js"></script>
           <script src="engine.js"></script>
@@ -1739,7 +1770,7 @@ jobs:
           ZZEOF
           cat > pc/dist/cats.js << 'ZZEOF'
           /* 猫を 出す 画面：壁紙（景色＋猫＋みんなの カード）／タスクバー（猫だけ）。うごきは サイトの「奥で あそぶ 猫」と 同じ */
-          import { hill, pubTaps, allTaps, sendPet, sendItem, onPets, onItems, diaryAdd, setOnline, friendSet, figOf, sendVisit, publishRoom, closeRoom, wallet, addNet, getAff, setAff, fAffAll, fAffAdd, fLevel, sendReq, friends, mine, savePhoto, myPhotos } from './fb.js';
+          import { hill, pubTaps, allTaps, sendPet, sendItem, onPets, onItems, diaryAdd, setOnline, friendSet, figOf, sendVisit, publishRoom, closeRoom, wallet, addNet, getAff, setAff, fAffAll, fAffAdd, fLevel, sendReq, friends, mine, savePhoto, myPhotos, yumeAdd } from './fb.js';
           const Q = window.__ZZQ || Object.fromEntries(new URLSearchParams(location.search)), P = { get: (k) => (Q[k] != null ? String(Q[k]) : null) }, MODE = P.get('mode') || 'wall', UID = P.get('uid') || '', SHOW_SLEEP = P.get('sleep') !== '0', WAKE = P.get('sleep') === '2', EMO = P.get('emo') !== '0', SHARE = P.get('share') !== '0', CARD = P.get('card') === '1', HEADC = P.get('card') === 'h', TAPS = P.get('tp') !== '0', LOWQ = P.get('q') === 'lo', SIZE = Math.max(.5, Math.min(2, +P.get('sz') || 1));
           const FPH0 = Object.assign({}, FP_H);   /* サイトの 大きさ（ここに 大きさの バーを かける） */
           const FLAT = MODE !== 'wall', NOCATS = P.get('nocats') === '1', WPM = P.get('wp') === '1';   /* WPM＝壁紙の 猫（自分＋フレンド） */
@@ -1777,7 +1808,11 @@ jobs:
             var W = c.fw * sc, H = c.fh * sc;
             if (!c._W || Math.abs(c._W - W) > .3 || Math.abs(c._H - H) > .3) { c._W = W; c._H = H; var s = c.fig.style; s.width = W.toFixed(1) + 'px'; s.height = H.toFixed(1) + 'px'; s.left = (-W * .52).toFixed(1) + 'px'; s.top = (-H * .95).toFixed(1) + 'px'; }
             /* 動いて いる 時：足を つくと ぎゅっ・浮くと びよん（体の 大きさは そのまま・左右に 少し ゆれる） */
-            let ax = c.sx, ay = c.sy, ar = c.rot || 0;
+            let ax = c.sx, ay = c.sy, ar = c.rot || 0; const tn = performance.now() / 1000;
+            if (c._pd != null && c._pd !== c.dir) c._tq = 1; c._pd = c.dir; if (c._tq > 0) { ax *= 1 - .28 * c._tq; ay *= 1 + .06 * c._tq; c._tq = Math.max(0, c._tq - .12); }   /* 向きを 変える：くるっと つぶれる */
+            if (c.sleep) { const b = Math.sin(tn * 1.4 + (c.ph || 0)); ay *= 1 + .04 * b; ax *= 1 - .02 * b; }   /* 寝息 */
+            else if ((c.hop || 0) <= .004) { const b = Math.sin(tn * 2.4 + (c.ph || 0)); ay *= 1 + .018 * b; ax *= 1 - .01 * b; }   /* 息づかい */
+            if ((c.lift || 0) > 2) { ay *= 1.08; ax *= .95; }   /* 持ち上げ：のびる */
             if ((c.hop || 0) > 0.004) { const g = c.gp || 0, up = Math.abs(Math.sin(g * Math.PI)), k = 0.9 + 0.2 * up; ay *= k; ax *= 1 / Math.sqrt(k); ar += Math.sin(g * Math.PI * 2) * 3; }
             c.fig.style.transform = (ar ? 'translate(0,' + (-H / 2).toFixed(1) + 'px) rotate(' + (ar * c.dir).toFixed(1) + 'deg) translate(0,' + (H / 2).toFixed(1) + 'px) ' : '') + 'scale(' + (-c.dir * ax).toFixed(3) + ',' + ay.toFixed(3) + ')';   /* 進む 方に 顔（しっぽは うしろ） */   /* 回るのは 体の まん中・つぶれは 足もと */
             var lie = c.pose === 'lie', sw = hp * (lie ? .8 : .56 - Math.min(.5, c.hop) * .22), shh = Math.max(1, hp * .12);
@@ -1796,7 +1831,8 @@ jobs:
             let art = ''; try { const lib = lk.artLib || {}, eq = lk.arts || {}; (typeof _ACOS_ORDER !== 'undefined' ? _ACOS_ORDER : ['body', 'neck', 'tail', 'hat']).forEach((sl) => { const k = eq[sl]; if (k && lib[k]) art += _artLayersSVG(lib[k], { w: 120, h: 124 }); }); } catch (_) {}
             try { _artCosOverride = art || null; return buildCatFig(lk.body || '#1c1c1c', lk.ear || '#a6bfd2', lk.cos || {}, sleep ? 'sleep' : 'sit').outerHTML; } catch (_) { return ''; } finally { try { _artCosOverride = null; } catch (_) {} }
           }
-          function figEl(c, sleep) { const f = c.fig || {}; const d = document.createElement('div'); d.innerHTML = uniqIds(lookFig(c.look, sleep) || (sleep ? f.z : f.s) || simpleFig(c.body, c.ear, sleep), 'c'); return d.firstElementChild; }   /* ポーズは おすわり 固定 */
+          function figEl(c, sleep) { if (c.yimg) { const d0 = document.createElement('div'); d0.innerHTML = '<div class="catFig yfig"><img src="' + c.yimg + '" alt="" style="width:100%;height:100%;object-fit:contain;display:block"></div>'; return d0.firstElementChild; }
+            const f = c.fig || {}; const d = document.createElement('div'); d.innerHTML = uniqIds(lookFig(c.look, sleep) || (sleep ? f.z : f.s) || simpleFig(c.body, c.ear, sleep), 'c'); return d.firstElementChild; }   /* ポーズは おすわり 固定 */
           window._fpTodayFigs = function () {
             if (!data) return [];
             return data.cats.filter((c) => SHOW_SLEEP || c.today).map((c) => { const sleep = !c.today && !WAKE, el = figEl(c, sleep);   /* 起こす：自分の 画面だけ 起きて いる あつかい */ return el ? { fig: el, h: (c.fig && c.fig.h) || 60, w: (c.fig && c.fig.w) || 74, sleep, self: c.self } : null; }).filter(Boolean);
@@ -1868,8 +1904,10 @@ jobs:
               try { const st = await zz.state(); ROOM = (st.room && st.room.kind && st.room.kind !== 'hill') ? st.room : { kind: 'my' }; const KL = { 'alt+z': 'Alt + Z', 'alt+x': 'Alt + X', 'alt+q': 'Alt + Q', 'ctrl+alt+z': 'Ctrl + Alt + Z' }; if ($('hint')) $('hint').textContent = (KL[st.opKey] || 'Alt + Z') + ' お世話モード'; } catch (_) {}
               NET = (ROOM.kind === 'my' || ROOM.kind === 'visit') ? 'offline' : (ROOM.kind === 'host' || ROOM.kind === 'join') ? 'room' : 'online'; SCOPE = 'all';
               if (WPM) NET = 'offline';
+              const YSEL = (!WPM && ROOM.kind === 'my' && Array.isArray(ROOM.yume)) ? ROOM.yume : [];
               if (PEER && NET !== 'room') { try { PEER.destroy(); } catch (_) {} PEER = null; REMOTE = false; HOSTC = null; CONNS = []; }
               data = WPM ? await wpData() : await mine(UID);
+              if (YSEL.length && window.YUME_MASTER) YSEL.forEach((i) => { const y = YUME_MASTER[i]; if (y) data.cats.push({ uid: 'y' + i, name: y.name, today: true, yimg: y.img, body: '#fff', ear: '#fff' }); });
               if (NET === 'room') { data.cards = []; if (PEER) data.cats = memberCats(); else { data.cats = data.cats.filter((c) => c.self).map((c) => Object.assign(c, { today: true, online: true })); startRoom(); } }
               if (ROOM.kind === 'visit' && ROOM.friend) { try { const fo = await figOf(ROOM.friend); data.cats = data.cats.filter((c) => c.self).concat([{ uid: ROOM.friend, look: fo.look || null, name: ROOM.name || fo.name, today: true, online: false, body: fo.body || '#8a8d99', ear: fo.ear || '#a6bfd2', fig: fo.fig }]);
                 const vk = 'zz_visit_' + ROOM.friend + '_' + new Date().toDateString(); if (!localStorage.getItem(vk) && !PRIV) { localStorage.setItem(vk, '1'); sendVisit({ to: ROOM.friend, by: UID, bn: nameOf(UID) }).catch(() => {}); } } catch (_) {} }
@@ -2195,6 +2233,7 @@ jobs:
             const e = document.createElement('div'); e.className = 'gfood'; e.dataset.k = k; e.innerHTML = f.s; e.style.left = '120px'; $('game').appendChild(e); $('foodMenu').hidden = true;
           }
           function eatAt(el, x) {
+            try { yTry(); } catch (_) {}   /* ユメっ子が いたら ゲットの チャンス */
             const me = _fpCats.find((c) => c.isSelf && !c.sleep); el.classList.add('placed');
             if (!me || REMOTE) { setTimeout(() => el.remove(), 3000); return; }
             me.ev = { kind: 'feed' };   /* ごはんに 向かう 間は 群れの 遊びに 呼ばれない */
@@ -2206,7 +2245,8 @@ jobs:
             zz.on('zz-op', (on) => setOp(on));
             /* フン：タップ 400回 か 25分 ごと（数えない 人も 遊べる）・最大 10こ */
             setInterval(() => {
-              if (REMOTE || paused || typeof _fpCats === 'undefined' || !_fpCats.length || GM.bags.length >= 10) return;
+              document.body.classList.toggle('noPoop', !!WPS.noPoop);
+              if (WPS.noPoop || REMOTE || paused || typeof _fpCats === 'undefined' || !_fpCats.length || GM.bags.length >= 10) return;   /* フンの 非表示：出さない（おそうじが ない ぶん 親密度は 上がりにくい） */
               if (taps - (GM.lastPT || 0) >= 2000) {
                 const cs = _fpCats.filter((c) => !c.sleep && !c.hidden && c.px != null); if (!cs.length) return;
                 const c = cs[Math.floor(Math.random() * cs.length)];
@@ -2303,6 +2343,22 @@ jobs:
             const here = NET === 'room' ? Object.keys(MEMB).filter((u) => u !== UID && FRS.has(u)) : (ROOM.kind === 'visit' && ROOM.friend ? [ROOM.friend] : []);
             here.forEach((u) => { TOG[u] = (TOG[u] || 0) + 1; if (TOG[u] >= 3 && !TOGD[u]) { TOGD[u] = 1; savePhoto(UID, u, { tier: +(localStorage.getItem('zz_tier') || 1) || 1, sky: SKY() }).catch(() => {}); } });
           }, 60000);
+
+          /* ===== ユメっ子：1万タップに 1回 シルエットで 出る → お世話モードで ごはん → 50% で ゲット・5分で 逃げる ===== */
+          let YOB = null;
+          function yPick() { const M = window.YUME_MASTER || []; if (!M.length) return -1; const w = M.map((y) => y.star === 3 ? 1 : y.star === 2 ? 3 : 6), sum = w.reduce((a, b) => a + b, 0); let r = Math.random() * sum; for (let i = 0; i < M.length; i++) { r -= w[i]; if (r < 0) return i; } return 0; }
+          function pico() { try { const a = new (window.AudioContext || window.webkitAudioContext)(); [1568, 2093].forEach((fq, i) => { const o = a.createOscillator(), g = a.createGain(), t0 = a.currentTime + i * .09; o.type = 'triangle'; o.frequency.value = fq; g.gain.setValueAtTime(.0001, t0); g.gain.exponentialRampToValueAtTime(.12, t0 + .01); g.gain.exponentialRampToValueAtTime(.0001, t0 + .25); o.connect(g).connect(a.destination); o.start(t0); o.stop(t0 + .3); }); } catch (_) {} }
+          function ySpawn() {
+            const i = yPick(); if (i < 0) return; const y = YUME_MASTER[i]; gLayer();
+            const e = document.createElement('div'); e.className = 'yume'; e.innerHTML = '<img src="' + y.img + '" alt=""><b>！</b>'; e.style.left = (12 + Math.random() * 70) + '%'; $('game').appendChild(e);
+            YOB = { i, el: e, t: setTimeout(() => { if (YOB && YOB.el === e) { e.classList.add('flee'); setTimeout(() => e.remove(), 900); YOB = null; } }, 300000) }; pico();
+          }
+          function yTry() {   /* ごはんを 置いた 時に よぶ */
+            if (!YOB) return; const o = YOB;
+            if (Math.random() < .5) { clearTimeout(o.t); YOB = null; o.el.classList.add('got'); try { yumeAdd(UID, o.i).catch(() => {}); diaryAdd(UID, { k: 'yume', a: String(o.i) }).catch(() => {}); } catch (_) {} setTimeout(() => o.el.remove(), 2200); }
+            else { o.el.classList.remove('miss'); void o.el.offsetWidth; o.el.classList.add('miss'); }
+          }
+          if (G_ON && !WPM) setInterval(() => { if (paused || YOB || !window.YUME_MASTER) return; if (GM.yT == null) { GM.yT = taps; gsave(); } if (taps - GM.yT >= 10000) { GM.yT = taps; gsave(); ySpawn(); } }, 10000);
           ZZEOF
           cat > pc/dist/catfig.js << 'ZZEOF'
           /* サイトの 猫の 絵（buildCatFig）と その 部品：PC版だけの 見た目に 使う */
@@ -4283,6 +4339,10 @@ jobs:
           /* ===== いっしょに 遊んだ 写真（記録だけ：いつ・どの 景色）＝ おたがいに ===== */
           export async function savePhoto(uid, fu, o) { const { db, D } = await fb(); const v = { t: Date.now(), tier: o.tier || 1, sky: o.sky || 'sky-day' }; await D.set(D.ref(db, 'pcphoto/' + uid + '/' + fu), v); await D.set(D.ref(db, 'pcphoto/' + fu + '/' + uid), v).catch(() => {}); }
           export async function myPhotos(uid) { const { db, D } = await fb(); return await D.get(D.ref(db, 'pcphoto/' + uid)).then((s) => s.val() || {}).catch(() => ({})); }
+
+          /* ===== ユメっ子（アプリだけ・自分だけ） ===== */
+          export async function yumeGot(uid) { const { db, D } = await fb(); return await D.get(D.ref(db, 'pcyume/' + uid)).then((s) => s.val() || {}).catch(() => ({})); }
+          export async function yumeAdd(uid, i) { const { db, D } = await fb(); await D.update(D.ref(db, 'pcyume/' + uid), { ['y' + i]: Date.now() }); }
           ZZEOF
           cat > pc/prep.js << 'ZZEOF'
           /* サイトの index.html から PC版に いる 部品だけを 取り出す：アイコン・景色・空の色・猫の うごき・Firebaseの 設定 */
@@ -4321,6 +4381,13 @@ jobs:
             return out;
           }
           console.log('graph ok');
+          /* ユメっ子：一覧（YUME_MASTER）と 絵（yume*.png）を アプリに 入れる */
+          try {
+            const mm = s.match(/var YUME_MASTER=\[[\s\S]*?\n\];/);
+            fs.writeFileSync('pc/dist/yume.js', mm ? mm[0].replace('var YUME_MASTER', 'window.YUME_MASTER') + '\n' : 'window.YUME_MASTER=[];\n');
+            for (const f of fs.readdirSync('.')) if (/^yume\d+\.(png|webp)$/.test(f)) fs.copyFileSync(f, 'pc/dist/' + f);
+            console.log('yume ok');
+          } catch (e) { console.log('yume skip', e.message); }
           ZZEOF
           sed -i "s/0\.3\.RUNNUM/0.3.$GITHUB_RUN_NUMBER/" pc/src-tauri/tauri.conf.json
           grep '"version"' pc/src-tauri/tauri.conf.json

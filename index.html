@@ -13707,11 +13707,27 @@ function openNotif(){
   $("notifPanel").classList.add("visible");
   try{_renderShopNotif(list);}catch(_){}
   try{_renderPartyInviteNotif(list);}catch(_){}
+  try{_renderAppInviteNotif(list);}catch(_){}
   try{_renderPartyApplyNotif(list);}catch(_){}
   /* 全部既読に（通知一覧は消えず残る） */
   _notifList.forEach(n=>_notifSeenSet.add(n.id));
   saveSeenSet(_notifSeenSet);
   const c=$("tpbCount");if(c){c.textContent="0";c.classList.remove("show");}
+}
+/* アプリ版の 招待状（フレンドから）：BOOTH で おしらせの 画面を 開く */
+async function _renderAppInviteNotif(list){
+  try{
+    const db=await getDB();if(!db)return;const{ref,get,remove}=await import(FB_DB);
+    const sn=await get(ref(db,"appinv/"+getUid()));const v=sn.exists()?sn.val():null;if(!v)return;
+    const em=list.querySelector(".notifMsg");if(em)em.remove();
+    Object.keys(v).forEach(function(k){ const it=v[k]||{};
+      const d=document.createElement("div");d.className="notifRow notifInvite unread";
+      d.innerHTML='<div class="niText">📩 <b>'+escHtml(it.from||"だれか")+'</b> さんから アプリ版の 招待状</div><div class="niBtns"><button class="niAccept" type="button">BOOTH</button><button class="niReject" type="button">とじる</button></div>';
+      list.insertBefore(d,list.firstChild);
+      d.querySelector(".niAccept").addEventListener("click",function(){ try{$("notifPanel").classList.remove("visible");}catch(_){} try{$("fabNews").click();}catch(_){} });
+      d.querySelector(".niReject").addEventListener("click",async function(){ try{await remove(ref(db,"appinv/"+getUid()+"/"+k));}catch(_){} d.remove(); });
+    });
+  }catch(_){}
 }
 async function _renderPartyInviteNotif(list){
   try{
@@ -42715,6 +42731,11 @@ function _gpStreetHTML(){
   '</div>';
 }
 
+
+/* フレンドを アプリに：コードを 出す（アプリの フレンドタブに 入れる） */
+(function(){ const b=$("nwFrBtn"); if(!b)return; b.addEventListener("click",async function(){ b.disabled=true;
+  try{ const c=await _pcMakeCode(); const e=$("nwFrCode"); e.textContent="コード "+c.slice(0,4)+" "+c.slice(4); e.hidden=false; }catch(_){ try{toast("コードを 作れなかったよ");}catch(_){} }
+  b.disabled=false; }); })();
 </script>
 <button id="storyTestBtn" type="button" hidden>📖 ストーリー(テスト)</button>
 <div id="storyPicker">
@@ -42847,6 +42868,7 @@ function _gpStreetHTML(){
   <div class="nwInfo"><b id="nwCapT">壁紙</b><span id="nwCapS">山の 景色の 中を 猫たちが 走りまわる</span><div class="nwDots" id="nwDots"><i class="on" role="button" tabindex="0" aria-label="1枚目"></i><i role="button" tabindex="0" aria-label="2枚目"></i><i role="button" tabindex="0" aria-label="3枚目"></i><i role="button" tabindex="0" aria-label="4枚目"></i><i role="button" tabindex="0" aria-label="5枚目"></i></div></div>
   <div class="nwAct"><div class="nwBtns">
       <a class="nwDl" href="https://zzcaffe.booth.pm/items/8910157" target="_blank" rel="noopener"><span>BOOTH</span></a>
+      <button type="button" class="nwConn" id="nwFrBtn">フレンドを アプリに</button><div class="nwCodeRow" id="nwFrCode" hidden></div>
       
     </div></div>
   <details class="nwHow"><summary>はじめかた</summary><ol><li>BOOTH で 手に入れて 開く（「PCが 保護されました」が 出たら 詳細情報 → 実行）</li><li>猫の 名前と 見た目を きめて はじめる</li></ol></details>

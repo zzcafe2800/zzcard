@@ -10,15 +10,13 @@ permissions:
 jobs:
   windows:
     runs-on: windows-latest
+    timeout-minutes: 75   # 止まった時に 何時間も 動きつづけない ように
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
         with:
           node-version: 22
       - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: "pc/src-tauri -> target"
       - name: PC版の ファイルを 組み立てる
         shell: bash
         run: |
@@ -2721,16 +2719,35 @@ jobs:
           $bmp.Save("$PWD\pc\app-icon.png", [System.Drawing.Imaging.ImageFormat]::Png)
           $brush.Dispose(); $path.Dispose(); $g.Dispose(); $bmp.Dispose(); $src.Dispose(); $ms.Dispose()
           Remove-Item "$PWD\pc\dist\icon192.png"
+      - name: 部品の 版を そろえる（キャッシュの 目じるし）
+        working-directory: pc/src-tauri
+        shell: bash
+        timeout-minutes: 10
+        run: cargo generate-lockfile
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "pc/src-tauri -> target"
+          prefix-key: "zz-v2"
+          cache-on-failure: true
       - name: PC版を 作る
         working-directory: pc
         shell: bash
+        timeout-minutes: 60   # ここで 止まったら 60分で 止めて 失敗に する
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ""
+          CI: "true"   # 聞き返し（入力まち）を しない
+          CARGO_PROFILE_RELEASE_LTO: thin   # 一番 おそい 最適化を やめる（やめると 3分の1 くらいに）
+          CARGO_PROFILE_RELEASE_CODEGEN_UNITS: "16"
+          CARGO_TERM_COLOR: never
         run: |
-          npm install
+          echo "== はじまり $(date -u +%H:%M:%S) UTC（さいしょの 1回は 15〜25分 かかる ことが あります）"
+          npm install --no-audit --no-fund
+          echo "== npm おわり $(date -u +%H:%M:%S) UTC"
           npx tauri icon app-icon.png
-          npx tauri build
+          echo "== アイコン おわり $(date -u +%H:%M:%S) UTC"
+          npx tauri build --verbose < /dev/null
+          echo "== ビルド おわり $(date -u +%H:%M:%S) UTC"
           ls src-tauri/target/release/bundle/nsis
       - name: Releases に のせる（インストーラー と 自動アップデート用の latest.json）
         shell: bash
